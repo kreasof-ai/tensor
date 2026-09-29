@@ -21,6 +21,7 @@ from pathlib import Path
 
 from experiments.p0.artifact_format import ArtifactError, read_bundle, sha256
 from experiments.p0.cuda_driver import CudaError, CudaUnavailable, Driver, Session
+from experiments.p0.provenance import snapshot
 
 FORBIDDEN = {"tilelang", "tvm", "tvm_ffi", "torch"}
 
@@ -97,7 +98,7 @@ def validate(path: Path, *, device=0, seed=0, iters=20) -> dict:
                 "max_abs_error": float(np.max(np.abs(actual - expected))),
                 "size": size, "seed": seed, "iterations": iters, "timings": timings,
                 "artifact_sha256": sha256(path.read_bytes()), "producer": manifest.get("producer"),
-                "consumer": {"host": platform.platform(), "python": platform.python_version(),
+                "consumer": {**snapshot(), "host": platform.platform(), "python": platform.python_version(),
                              "hostname": socket.gethostname(),
                              "numpy": np.__version__, "device": device_info},
                 "compiler_imports": [], "compiler_import_guard": True}

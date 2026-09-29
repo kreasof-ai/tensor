@@ -22,8 +22,11 @@ def snapshot() -> dict:
             return None
 
     files = [ROOT / "pyproject.toml", ROOT / "uv.lock", ROOT / ".python-version"]
-    files += sorted((ROOT / "experiments").rglob("*.py"))
+    files += sorted(path for path in (ROOT / "experiments").rglob("*")
+                    if path.suffix in (".py", ".cpp"))
+    files += sorted((ROOT / "tools").glob("*.py"))
     files += sorted((ROOT / "tools").glob("*.ps1"))
+    files += sorted((ROOT / ".github" / "workflows").glob("*.yml"))
     digest = hashlib.sha256()
     for path in files:
         if path.is_file() and "out" not in path.relative_to(ROOT).parts:
