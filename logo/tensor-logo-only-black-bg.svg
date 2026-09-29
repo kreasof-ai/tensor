@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Tensor symbol on black</title>
+  <desc id="desc">White Tensor nested-cube symbol centered on a black square.</desc>
+  <rect width="1080" height="1080" fill="#000"/>
+  <g transform="translate(540 224) scale(1.9) translate(-320 0)" color="#fff">
+    <g fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M320 14L180 73L180 247L320 318L460 247L460 73ZM320 14L320 95M180 73L253 123L320 95L387 123L460 73M253 123L320 162L387 123M253 123L253 200L320 233L387 200L387 123M320 162L320 233M180 247L253 200M460 247L387 200M320 233L320 318"/>
+    </g>
+    <g fill="currentColor">
+      <circle cx="320" cy="14" r="14"/><circle cx="180" cy="73" r="14"/><circle cx="460" cy="73" r="14"/><circle cx="180" cy="247" r="14"/><circle cx="460" cy="247" r="14"/><circle cx="320" cy="318" r="14"/>
+      <circle cx="320" cy="95" r="7.5"/><circle cx="253" cy="123" r="7.5"/><circle cx="387" cy="123" r="7.5"/><circle cx="320" cy="162" r="13"/><circle cx="253" cy="200" r="8.5"/><circle cx="387" cy="200" r="8.5"/><circle cx="320" cy="233" r="7.5"/>
+    </g>
+  </g>
+</svg>
