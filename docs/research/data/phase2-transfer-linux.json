@@ -1,0 +1,530 @@
+{
+  "status": "passed",
+  "consumer_host": "default",
+  "packages": {
+    "tensor-workspace": "0.1.0",
+    "numpy": "2.5.3"
+  },
+  "compiler_imports": [],
+  "compiler_import_guard": true,
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "records": [
+    {
+      "case": "static_elementwise",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_1_2.5",
+      "shape": [
+        1
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_1_-0.75",
+      "shape": [
+        1
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_127_2.5",
+      "shape": [
+        127
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_127_-0.75",
+      "shape": [
+        127
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_128_2.5",
+      "shape": [
+        128
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_128_-0.75",
+      "shape": [
+        128
+      ],
+      "max_abs_error": 1.1920928955078125e-07
+    },
+    {
+      "case": "dynamic_affine_129_2.5",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_129_-0.75",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_1025_2.5",
+      "shape": [
+        1025
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_1025_-0.75",
+      "shape": [
+        1025
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_gemm_1",
+      "shape": [
+        1,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_gemm_31",
+      "shape": [
+        31,
+        32
+      ],
+      "max_abs_error": 0.0001220703125
+    },
+    {
+      "case": "dynamic_gemm_32",
+      "shape": [
+        32,
+        32
+      ],
+      "max_abs_error": 5.960464477539063e-08
+    },
+    {
+      "case": "dynamic_gemm_33",
+      "shape": [
+        33,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_gemm_65",
+      "shape": [
+        65,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "static_gemm_relu",
+      "shape": [
+        64,
+        64
+      ],
+      "max_abs_error": 5.960464477539063e-08
+    },
+    {
+      "case": "int64_delta_1099511627779",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "int64_delta_-1099511627773",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "gpu_dlpack_versioned_False",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "gpu_dlpack_versioned_True",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    }
+  ],
+  "diagnostics": [
+    {
+      "case": "missing_scalar",
+      "cause": "missing kernel arguments: ['scale']"
+    },
+    {
+      "case": "shape_conflict",
+      "cause": "b: dimension size mismatch; expected 129, received 128"
+    },
+    {
+      "case": "explicit_dimension_conflict",
+      "cause": "a: dimension size mismatch; expected 128, received 129"
+    },
+    {
+      "case": "nonfinite_scalar",
+      "cause": "scale must be finite and fit float32"
+    },
+    {
+      "case": "wrong_dtype",
+      "cause": "a needs shape [{'var': 'size'}] and dtype float32"
+    },
+    {
+      "case": "integer_overflow",
+      "cause": "delta is outside the int64 range"
+    },
+    {
+      "case": "noninteger_scalar",
+      "cause": "delta needs an integer int64"
+    },
+    {
+      "case": "unknown_argument",
+      "cause": "unknown kernel argument other"
+    }
+  ],
+  "legacy_artifact_sha256": null,
+  "first_kernel_seconds_from_script_check_entry": 0.5296662930013554,
+  "benchmark": {
+    "warmup": 10,
+    "iters": 100,
+    "median_launch_and_sync_seconds": 8.881150097295176e-05,
+    "min_launch_and_sync_seconds": 8.709200119483285e-05,
+    "median_host_enqueue_seconds": 8.42909994389629e-05
+  },
+  "cli_first_result_seconds": 0.09645060899856617,
+  "contracts": [
+    {
+      "artifact": "elementwise",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "gemm_relu",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "dynamic_affine",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "dynamic_gemm",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "scalar_offset",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    }
+  ],
+  "event_descriptor": {
+    "resolved": true,
+    "released_handle_rejected": true
+  },
+  "consumer_matches_producer_wheel": true,
+  "two_hosts": true,
+  "producer_platform": "linux",
+  "producer": {
+    "status": "passed",
+    "target": "sm_86",
+    "hostname": "runnervmtr4k5",
+    "isolated": false,
+    "driver_present": false,
+    "available_tools": {
+      "c++": "/usr/bin/c++",
+      "cc": "/usr/bin/cc",
+      "cl": null,
+      "clang": "/usr/bin/clang",
+      "clang++": "/usr/bin/clang++",
+      "g++": "/usr/bin/g++",
+      "gcc": "/usr/bin/gcc",
+      "nvcc": null,
+      "ptxas": null
+    },
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "external_compiler_calls": [],
+    "cache_corruption_recovered": true,
+    "packages": {
+      "tqdm": "4.70.1",
+      "sympy": "1.14.0",
+      "ml_dtypes": "0.6.0",
+      "nvidia-nccl-cu13": "2.30.7",
+      "nvidia-nvshmem-cu13": "3.4.5",
+      "pytest": "9.1.1",
+      "nvidia-cublas": "13.1.1.3",
+      "Jinja2": "3.1.6",
+      "psutil": "7.2.2",
+      "nvidia-cusparse": "12.6.3.3",
+      "networkx": "3.7",
+      "filelock": "4.0.6",
+      "torch": "2.14.0",
+      "triton": "3.8.0",
+      "apache-tvm-ffi": "0.1.12",
+      "cuda-toolkit": "13.0.3.0",
+      "nvidia-nvjitlink": "13.4.92",
+      "nvidia-cudnn-cu13": "9.24.0.43",
+      "nvidia-nvtx": "13.0.85",
+      "nvidia-cuda-nvrtc": "13.0.88",
+      "torch_c_dlpack_ext": "0.1.5",
+      "numpy": "2.5.3",
+      "typing_extensions": "4.16.0",
+      "cloudpickle": "3.1.2",
+      "Pygments": "2.21.0",
+      "z3-solver": "4.15.4.0",
+      "MarkupSafe": "3.0.3",
+      "cuda-bindings": "13.4.3",
+      "iniconfig": "2.3.0",
+      "nvidia-curand": "10.4.0.35",
+      "tensor-workspace": "0.1.0",
+      "nvidia-cusolver": "12.0.4.66",
+      "mpmath": "1.3.0",
+      "nvidia-cuda-runtime": "13.0.96",
+      "fsspec": "2026.9.0",
+      "pluggy": "1.6.0",
+      "nvidia-cufft": "12.0.0.61",
+      "nvidia-cufile": "1.15.1.6",
+      "setuptools": "84.0.0",
+      "tilelang": "0.1.14",
+      "nvidia-cusparselt-cu13": "0.8.1",
+      "cuda-pathfinder": "1.8.2",
+      "nvidia-cuda-cupti": "13.0.85",
+      "packaging": "26.3"
+    },
+    "records": [
+      {
+        "example": "elementwise",
+        "cold_seconds": 0.9944695199999956,
+        "warm_seconds": 0.3833685159999902,
+        "compile_seconds": 0.5146143639999963,
+        "artifact_bytes": 24542,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "libnvrtc-builtins.alt.so.12.9.86": "5246bbfb25da49f7107b6a3ae9bb337fb45bce0178f97a431ce8a88113b2283c",
+            "libnvrtc-builtins.so.12.9.86": "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8",
+            "libnvrtc.alt.so.12.9.86": "19927a35d2a45a72356e665f1170debbdc1f835b8d0dd310d380974073b21dbd",
+            "libnvrtc.so.12.9.86": "c3430e8b6b0d8d3a74f5f839118a85e13e3ad6e4d6203ea1b6a27a0c0b4fe10a"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/src",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include",
+            "--include-path=/home/runner/work/tensor/tensor/build/nvrtc-12.9/include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "gemm_relu",
+        "cold_seconds": 1.266615680000001,
+        "warm_seconds": 0.7268701950000036,
+        "compile_seconds": 0.5605590229999962,
+        "artifact_bytes": 36283,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "libnvrtc-builtins.alt.so.12.9.86": "5246bbfb25da49f7107b6a3ae9bb337fb45bce0178f97a431ce8a88113b2283c",
+            "libnvrtc-builtins.so.12.9.86": "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8",
+            "libnvrtc.alt.so.12.9.86": "19927a35d2a45a72356e665f1170debbdc1f835b8d0dd310d380974073b21dbd",
+            "libnvrtc.so.12.9.86": "c3430e8b6b0d8d3a74f5f839118a85e13e3ad6e4d6203ea1b6a27a0c0b4fe10a"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/src",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include",
+            "--include-path=/home/runner/work/tensor/tensor/build/nvrtc-12.9/include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "dynamic_affine",
+        "cold_seconds": 1.080944696000003,
+        "warm_seconds": 0.49494740100000456,
+        "compile_seconds": 0.4875483720000062,
+        "artifact_bytes": 24917,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace",
+            "scalars",
+            "symbolic_shapes"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "libnvrtc-builtins.alt.so.12.9.86": "5246bbfb25da49f7107b6a3ae9bb337fb45bce0178f97a431ce8a88113b2283c",
+            "libnvrtc-builtins.so.12.9.86": "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8",
+            "libnvrtc.alt.so.12.9.86": "19927a35d2a45a72356e665f1170debbdc1f835b8d0dd310d380974073b21dbd",
+            "libnvrtc.so.12.9.86": "c3430e8b6b0d8d3a74f5f839118a85e13e3ad6e4d6203ea1b6a27a0c0b4fe10a"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/src",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include",
+            "--include-path=/home/runner/work/tensor/tensor/build/nvrtc-12.9/include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "dynamic_gemm",
+        "cold_seconds": 1.2680888130000056,
+        "warm_seconds": 0.6960933720000071,
+        "compile_seconds": 0.578347278999999,
+        "artifact_bytes": 31996,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace",
+            "symbolic_shapes"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "libnvrtc-builtins.alt.so.12.9.86": "5246bbfb25da49f7107b6a3ae9bb337fb45bce0178f97a431ce8a88113b2283c",
+            "libnvrtc-builtins.so.12.9.86": "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8",
+            "libnvrtc.alt.so.12.9.86": "19927a35d2a45a72356e665f1170debbdc1f835b8d0dd310d380974073b21dbd",
+            "libnvrtc.so.12.9.86": "c3430e8b6b0d8d3a74f5f839118a85e13e3ad6e4d6203ea1b6a27a0c0b4fe10a"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/src",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include",
+            "--include-path=/home/runner/work/tensor/tensor/build/nvrtc-12.9/include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "scalar_offset",
+        "cold_seconds": 0.8668527309999945,
+        "warm_seconds": 0.4540007220000035,
+        "compile_seconds": 0.4924203299999874,
+        "artifact_bytes": 24311,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace",
+            "scalars"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "libnvrtc-builtins.alt.so.12.9.86": "5246bbfb25da49f7107b6a3ae9bb337fb45bce0178f97a431ce8a88113b2283c",
+            "libnvrtc-builtins.so.12.9.86": "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8",
+            "libnvrtc.alt.so.12.9.86": "19927a35d2a45a72356e665f1170debbdc1f835b8d0dd310d380974073b21dbd",
+            "libnvrtc.so.12.9.86": "c3430e8b6b0d8d3a74f5f839118a85e13e3ad6e4d6203ea1b6a27a0c0b4fe10a"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/src",
+            "--include-path=/home/runner/work/tensor/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include",
+            "--include-path=/home/runner/work/tensor/tensor/build/nvrtc-12.9/include"
+          ],
+          "version": "12.9"
+        }
+      }
+    ],
+    "artifacts": {
+      "elementwise.tbin": "cb70f911f0c359b45df7dd43716a556ff400342f26e773524f26ad4cfd1988fe",
+      "gemm_relu.tbin": "c13ceaec46c4099a967f1dba23272164fea35f55d2fbabaf7b39e0143864ed2c",
+      "dynamic_affine.tbin": "2b670b05bc43cc62090afeb4768b8019326d4c2d43461abef01bbe7bde07824d",
+      "dynamic_gemm.tbin": "0d0cea2fd06e776a6219adc70bfea18aab45509fc50da62f84c9567dae7f11cc",
+      "scalar_offset.tbin": "5ee1692a02e2d6b45ae65253800f9eeadd8197746a14918a0e18cae7c6be21fa"
+    }
+  },
+  "producer_revision": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "ci_run": "https://github.com/kreasof-ai/tensor/actions/runs/36643849222",
+  "archive": {
+    "id": 11067483952,
+    "name": "tensor-phase2-ubuntu-24.04",
+    "digest": "sha256:8d649514d17da72a75f387b9df024c144fbe22c21e3788e8559a5669ceb0e6f2",
+    "expired": false,
+    "size_in_bytes": 200141
+  },
+  "archive_sha256": "8d649514d17da72a75f387b9df024c144fbe22c21e3788e8559a5669ceb0e6f2",
+  "source_line_endings": {
+    "elementwise": "LF",
+    "gemm_relu": "LF",
+    "dynamic_affine": "LF",
+    "dynamic_gemm": "LF",
+    "scalar_offset": "LF"
+  },
+  "producer_wheel_sha256": "3bbc6c79eae060f4d070d81d6c7beb11be90e5bce18703b3b610bc02f9b9a2ea",
+  "consumer_revision": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "consumer_dirty": false
+}

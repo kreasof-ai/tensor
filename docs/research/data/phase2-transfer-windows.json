@@ -1,0 +1,507 @@
+{
+  "status": "passed",
+  "consumer_host": "default",
+  "packages": {
+    "tensor-workspace": "0.1.0",
+    "numpy": "2.5.3"
+  },
+  "compiler_imports": [],
+  "compiler_import_guard": true,
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "records": [
+    {
+      "case": "static_elementwise",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_1_2.5",
+      "shape": [
+        1
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_1_-0.75",
+      "shape": [
+        1
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_127_2.5",
+      "shape": [
+        127
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_127_-0.75",
+      "shape": [
+        127
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_128_2.5",
+      "shape": [
+        128
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_128_-0.75",
+      "shape": [
+        128
+      ],
+      "max_abs_error": 1.1920928955078125e-07
+    },
+    {
+      "case": "dynamic_affine_129_2.5",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_129_-0.75",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_1025_2.5",
+      "shape": [
+        1025
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_1025_-0.75",
+      "shape": [
+        1025
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_gemm_1",
+      "shape": [
+        1,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_gemm_31",
+      "shape": [
+        31,
+        32
+      ],
+      "max_abs_error": 0.0001220703125
+    },
+    {
+      "case": "dynamic_gemm_32",
+      "shape": [
+        32,
+        32
+      ],
+      "max_abs_error": 5.960464477539063e-08
+    },
+    {
+      "case": "dynamic_gemm_33",
+      "shape": [
+        33,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_gemm_65",
+      "shape": [
+        65,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "static_gemm_relu",
+      "shape": [
+        64,
+        64
+      ],
+      "max_abs_error": 5.960464477539063e-08
+    },
+    {
+      "case": "int64_delta_1099511627779",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "int64_delta_-1099511627773",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "gpu_dlpack_versioned_False",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "gpu_dlpack_versioned_True",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    }
+  ],
+  "diagnostics": [
+    {
+      "case": "missing_scalar",
+      "cause": "missing kernel arguments: ['scale']"
+    },
+    {
+      "case": "shape_conflict",
+      "cause": "b: dimension size mismatch; expected 129, received 128"
+    },
+    {
+      "case": "explicit_dimension_conflict",
+      "cause": "a: dimension size mismatch; expected 128, received 129"
+    },
+    {
+      "case": "nonfinite_scalar",
+      "cause": "scale must be finite and fit float32"
+    },
+    {
+      "case": "wrong_dtype",
+      "cause": "a needs shape [{'var': 'size'}] and dtype float32"
+    },
+    {
+      "case": "integer_overflow",
+      "cause": "delta is outside the int64 range"
+    },
+    {
+      "case": "noninteger_scalar",
+      "cause": "delta needs an integer int64"
+    },
+    {
+      "case": "unknown_argument",
+      "cause": "unknown kernel argument other"
+    }
+  ],
+  "legacy_artifact_sha256": null,
+  "first_kernel_seconds_from_script_check_entry": 0.5345781719988736,
+  "benchmark": {
+    "warmup": 10,
+    "iters": 100,
+    "median_launch_and_sync_seconds": 9.041699922818225e-05,
+    "min_launch_and_sync_seconds": 8.805200195638463e-05,
+    "median_host_enqueue_seconds": 8.54814988997532e-05
+  },
+  "cli_first_result_seconds": 0.09426194499974372,
+  "contracts": [
+    {
+      "artifact": "elementwise",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "gemm_relu",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "dynamic_affine",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "dynamic_gemm",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    },
+    {
+      "artifact": "scalar_offset",
+      "workspace_bytes": 0,
+      "released_handle_rejected": true
+    }
+  ],
+  "event_descriptor": {
+    "resolved": true,
+    "released_handle_rejected": true
+  },
+  "consumer_matches_producer_wheel": true,
+  "two_hosts": true,
+  "producer_platform": "windows",
+  "producer": {
+    "status": "passed",
+    "target": "sm_86",
+    "hostname": "runnervm99s1a",
+    "isolated": false,
+    "driver_present": false,
+    "available_tools": {
+      "c++": "C:\\mingw64\\bin\\c++.EXE",
+      "cc": "C:\\mingw64\\bin\\cc.EXE",
+      "cl": null,
+      "clang": "C:\\Program Files\\LLVM\\bin\\clang.EXE",
+      "clang++": "C:\\Program Files\\LLVM\\bin\\clang++.EXE",
+      "g++": "C:\\mingw64\\bin\\g++.EXE",
+      "gcc": "C:\\mingw64\\bin\\gcc.EXE",
+      "nvcc": null,
+      "ptxas": null
+    },
+    "python": "3.12.10",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "external_compiler_calls": [],
+    "cache_corruption_recovered": true,
+    "packages": {
+      "apache-tvm-ffi": "0.1.12",
+      "cloudpickle": "3.1.2",
+      "colorama": "0.4.6",
+      "filelock": "4.0.6",
+      "fsspec": "2026.9.0",
+      "iniconfig": "2.3.0",
+      "Jinja2": "3.1.6",
+      "MarkupSafe": "3.0.3",
+      "ml_dtypes": "0.6.0",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.5.3",
+      "packaging": "26.3",
+      "pluggy": "1.6.0",
+      "psutil": "7.2.2",
+      "Pygments": "2.21.0",
+      "pytest": "9.1.1",
+      "setuptools": "84.0.0",
+      "sympy": "1.14.0",
+      "tensor-workspace": "0.1.0",
+      "tilelang": "0.1.14",
+      "torch": "2.14.0",
+      "torch_c_dlpack_ext": "0.1.5",
+      "tqdm": "4.70.1",
+      "typing_extensions": "4.16.0",
+      "z3-solver": "4.15.4.0"
+    },
+    "records": [
+      {
+        "example": "elementwise",
+        "cold_seconds": 1.111441099999979,
+        "warm_seconds": 0.4909953000000087,
+        "compile_seconds": 0.5793468999999618,
+        "artifact_bytes": 24465,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "nvrtc-builtins64_129.dll": "c405226b0b394ed8bdc593bb1419b94a989f93248ed2873e8f2e0e27c1688ca1",
+            "nvrtc64_120_0.alt.dll": "ac56a4d3b5a99f294523abec28b8f648b96324a9277622a450ec20ddb9e2c47d",
+            "nvrtc64_120_0.dll": "0cc63349fedffeec1660b30955e8028b6e4e4c26cf1e41c56dc4569fd5eca82c"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\src",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\3rdparty\\cutlass\\include",
+            "--include-path=D:\\a\\tensor\\tensor\\build\\nvrtc-12.9\\include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "gemm_relu",
+        "cold_seconds": 1.607096399999989,
+        "warm_seconds": 1.08811350000002,
+        "compile_seconds": 0.6762705999999525,
+        "artifact_bytes": 36209,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "nvrtc-builtins64_129.dll": "c405226b0b394ed8bdc593bb1419b94a989f93248ed2873e8f2e0e27c1688ca1",
+            "nvrtc64_120_0.alt.dll": "ac56a4d3b5a99f294523abec28b8f648b96324a9277622a450ec20ddb9e2c47d",
+            "nvrtc64_120_0.dll": "0cc63349fedffeec1660b30955e8028b6e4e4c26cf1e41c56dc4569fd5eca82c"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\src",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\3rdparty\\cutlass\\include",
+            "--include-path=D:\\a\\tensor\\tensor\\build\\nvrtc-12.9\\include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "dynamic_affine",
+        "cold_seconds": 1.3030643999999825,
+        "warm_seconds": 0.7196928000000185,
+        "compile_seconds": 0.5855507999999645,
+        "artifact_bytes": 24843,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace",
+            "scalars",
+            "symbolic_shapes"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "nvrtc-builtins64_129.dll": "c405226b0b394ed8bdc593bb1419b94a989f93248ed2873e8f2e0e27c1688ca1",
+            "nvrtc64_120_0.alt.dll": "ac56a4d3b5a99f294523abec28b8f648b96324a9277622a450ec20ddb9e2c47d",
+            "nvrtc64_120_0.dll": "0cc63349fedffeec1660b30955e8028b6e4e4c26cf1e41c56dc4569fd5eca82c"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\src",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\3rdparty\\cutlass\\include",
+            "--include-path=D:\\a\\tensor\\tensor\\build\\nvrtc-12.9\\include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "dynamic_gemm",
+        "cold_seconds": 1.6982739000000038,
+        "warm_seconds": 1.0443595000000414,
+        "compile_seconds": 0.6470031000000063,
+        "artifact_bytes": 31915,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace",
+            "symbolic_shapes"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "nvrtc-builtins64_129.dll": "c405226b0b394ed8bdc593bb1419b94a989f93248ed2873e8f2e0e27c1688ca1",
+            "nvrtc64_120_0.alt.dll": "ac56a4d3b5a99f294523abec28b8f648b96324a9277622a450ec20ddb9e2c47d",
+            "nvrtc64_120_0.dll": "0cc63349fedffeec1660b30955e8028b6e4e4c26cf1e41c56dc4569fd5eca82c"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\src",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\3rdparty\\cutlass\\include",
+            "--include-path=D:\\a\\tensor\\tensor\\build\\nvrtc-12.9\\include"
+          ],
+          "version": "12.9"
+        }
+      },
+      {
+        "example": "scalar_offset",
+        "cold_seconds": 1.1222204000000033,
+        "warm_seconds": 0.4734550000000013,
+        "compile_seconds": 0.6018377999999984,
+        "artifact_bytes": 24241,
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 1,
+          "required_capabilities": [
+            "contiguous",
+            "executable_descriptors",
+            "no_external_workspace",
+            "scalars"
+          ]
+        },
+        "compiler": {
+          "libraries": {
+            "nvrtc-builtins64_129.dll": "c405226b0b394ed8bdc593bb1419b94a989f93248ed2873e8f2e0e27c1688ca1",
+            "nvrtc64_120_0.alt.dll": "ac56a4d3b5a99f294523abec28b8f648b96324a9277622a450ec20ddb9e2c47d",
+            "nvrtc64_120_0.dll": "0cc63349fedffeec1660b30955e8028b6e4e4c26cf1e41c56dc4569fd5eca82c"
+          },
+          "name": "nvrtc",
+          "options": [
+            "--gpu-architecture=sm_86",
+            "--std=c++20",
+            "--device-as-default-execution-space",
+            "--generate-line-info",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\src",
+            "--include-path=D:\\a\\tensor\\tensor\\.venv\\Lib\\site-packages\\tilelang\\3rdparty\\cutlass\\include",
+            "--include-path=D:\\a\\tensor\\tensor\\build\\nvrtc-12.9\\include"
+          ],
+          "version": "12.9"
+        }
+      }
+    ],
+    "artifacts": {
+      "elementwise.tbin": "5464497e50ddcc7195df47e35fa0d4adeb2b26ff4583a7d6ecf5ec14114133f0",
+      "gemm_relu.tbin": "42834b090f38756b628d5142c7cc97029913a43cc61682eff05607e3b8038f68",
+      "dynamic_affine.tbin": "e238b5af9963348275d05e57806f0e4c6933b6d397e310d2daab22f8c025178c",
+      "dynamic_gemm.tbin": "f67d7f0c4409cb8432d349aaa41b0508c5f89ff800d88cc9f32b65ce22878e77",
+      "scalar_offset.tbin": "cdcdba2018868a95b8374f86c3268b83f8240b7779dd711daeaaca8f4c57d4aa"
+    }
+  },
+  "producer_revision": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "ci_run": "https://github.com/kreasof-ai/tensor/actions/runs/36643849222",
+  "archive": {
+    "id": 11067094870,
+    "name": "tensor-phase2-windows-latest",
+    "digest": "sha256:d8f4a40d6a8ed097e32a68b99e357c7b4dc1a6d8b9facbc90dbf9132bf6ec987",
+    "expired": false,
+    "size_in_bytes": 199878
+  },
+  "archive_sha256": "d8f4a40d6a8ed097e32a68b99e357c7b4dc1a6d8b9facbc90dbf9132bf6ec987",
+  "source_line_endings": {
+    "elementwise": "CRLF",
+    "gemm_relu": "CRLF",
+    "dynamic_affine": "CRLF",
+    "dynamic_gemm": "CRLF",
+    "scalar_offset": "CRLF"
+  },
+  "producer_wheel_sha256": "130aa4e280227ff407a23bda6eb7fc9528c0f166a60d89f6410926ffdec83002",
+  "consumer_revision": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "consumer_dirty": false
+}

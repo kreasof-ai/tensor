@@ -5,12 +5,12 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 2 contracts and NVRTC implemented; final exit validation in progress.**
+**Status: Phases 0, 1 and 2 complete within their measured profiles.**
 CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
 or host compiler required. CUDA and a CPU validation provider share call ABI
 1.1, including executable/event identities and zero external workspace,
 independently versioned from the v3 artifact envelope. See the
-[Phase 2 report](docs/research/phase2-validation.md) and
+[Phase 2 exit report](docs/research/phase2-exit.md) and
 [runtime contract](docs/runtime-abi.md). Direct PTX is experimental work after
 Tensor v1. The CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache
 inspection; CUDA supports symbolic shapes, scalar arguments and GPU DLPack.
@@ -166,8 +166,10 @@ artifact runs with only the Tensor wheel, NumPy, and an NVIDIA driver; compiler
 packages and CUDA development headers are absent from the consumer path.
 The product artifact and wheel have also transferred from a GPU-free GitHub
 Actions producer to the A10G consumer with matching hashes and exact results.
-Clean-wheel installation and artifact inspection pass on Ubuntu and Windows
-Actions runners; GPU execution on Windows has not been tested.
+Linux and Windows Actions producers each build all five NVRTC profiles; their
+artifacts and included wheels pass GPU acceptance on the separate Linux A10G
+consumer. The full GPU suite passes 89 tests with zero skips. GPU execution on
+Windows itself has not been tested.
 For a kernel-author Python session:
 
 ```python

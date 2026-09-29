@@ -1,0 +1,211 @@
+{
+  "conclusion": "success",
+  "event": "push",
+  "headSha": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "jobs": [
+    {
+      "completedAt": "2026-09-29T23:13:08Z",
+      "conclusion": "success",
+      "databaseId": 109662133528,
+      "name": "producer (ubuntu-24.04, build/consumer/bin/python)",
+      "startedAt": "2026-09-29T23:11:32Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7.0.1",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@v10.2.0",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned producer and local NVRTC components",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile the five CUDA profiles and audit cache recovery",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build the compiler-free consumer wheel",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install and inspect with only Tensor and NumPy",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7.0.1",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@v10.2.0",
+          "number": 17,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7.0.1",
+          "number": 18,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36643849222/job/109662133528"
+    },
+    {
+      "completedAt": "2026-09-29T23:12:54Z",
+      "conclusion": "success",
+      "databaseId": 109662133824,
+      "name": "producer (windows-latest, build/consumer/Scripts/python.exe)",
+      "startedAt": "2026-09-29T23:11:32Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7.0.1",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@v10.2.0",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned producer and local NVRTC components",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile the five CUDA profiles and audit cache recovery",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build the compiler-free consumer wheel",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install and inspect with only Tensor and NumPy",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7.0.1",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@v10.2.0",
+          "number": 17,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7.0.1",
+          "number": 18,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36643849222/job/109662133824"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/kreasof-ai/tensor/actions/runs/36643849222",
+  "artifacts": [
+    {
+      "id": 11067483952,
+      "name": "tensor-phase2-ubuntu-24.04",
+      "digest": "sha256:8d649514d17da72a75f387b9df024c144fbe22c21e3788e8559a5669ceb0e6f2",
+      "expired": false,
+      "size_in_bytes": 200141
+    },
+    {
+      "id": 11067094870,
+      "name": "tensor-phase2-windows-latest",
+      "digest": "sha256:d8f4a40d6a8ed097e32a68b99e357c7b4dc1a6d8b9facbc90dbf9132bf6ec987",
+      "expired": false,
+      "size_in_bytes": 199878
+    }
+  ],
+  "test_results": {
+    "ubuntu-24.04": {
+      "passed": 73,
+      "skipped": 16,
+      "seconds": 8.77
+    },
+    "windows-latest": {
+      "passed": 66,
+      "skipped": 23,
+      "seconds": 9.86
+    }
+  },
+  "scope": {
+    "nvrtc_compilation": true,
+    "cold_warm_cache": true,
+    "corrupt_cache_recovery": true,
+    "compiler_free_consumer_inspection": true,
+    "gpu_numerics_on_runners": false,
+    "separate_gpu_acceptance": "phase2-transfer-linux.json and phase2-transfer-windows.json"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "date": "2026-09-29",
+  "status": "passed",
+  "commit": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "hostname": "default",
+  "git_dirty_at_acceptance": false,
+  "python": "3.12.14",
+  "platform": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+  "lock_sha256": "92d82865a7064b02cae6ca9f2bc9b0f418c69a442f6eff731d7ec6656e50a4be",
+  "source_hashes": {
+    "src/tensor/__init__.py": "6f224815ebc08b52cbb8610b86c961279eb575538f368c28ac95c9fa3eb95f72",
+    "src/tensor/__main__.py": "2d09a692db904ea8e4b37405e9dfe8321ff80987c6c5000cdfee7be263f21dcb",
+    "src/tensor/abi.py": "604aa75dd48c04262a5332113c9e79166d1e9eda73f3ca08089d2df31c72ff4a",
+    "src/tensor/artifact.py": "822b87921631d75f407ea63f055c84c1b3917a4d3eeace5f494412173e6d379c",
+    "src/tensor/build.py": "90d7991363f846af2ed16f72f58299f5bc9df189080638c67b4bd30eb4fdbe30",
+    "src/tensor/cli.py": "3d162ebe41457a24acc2b9e538779fe6b111c689d6d50c53c1678a8154ff337a",
+    "src/tensor/commands.py": "7759c2f2d1d504412e9c4c3fc8f0c2efb6c09932b02684b1fad325f575a6741a",
+    "src/tensor/compiler.py": "949a23350e0afc238440aa69bfa8fa4a0ca8c162ad623fbe70ff1a9fc4f886ef",
+    "src/tensor/cpu.py": "fbeb118123a94045ccbcf04fba92e483553aaf3b2cf27a4a535680f8c5ebd6aa",
+    "src/tensor/cpu_build.py": "827b1cd4d2e83672686b164e7e33672f901a027ccee635a1140a78ba534a7a09",
+    "src/tensor/cuda.py": "4f8577e5c070c28d939d25b77e12cb04d5daebdd3ad0d5a6a031787b3502c85f",
+    "src/tensor/dlpack.py": "4a91366df53b5bba6ec8c13ac2576796d52c23b05c35a999299be07c862e84ff",
+    "src/tensor/doctor.py": "4ee412dd19df5b9d2ff0329cd91cbc5f5589086758ed8ecfcfd100641ac98b58",
+    "src/tensor/include/tensor/abi.h": "a294df7d079d010c9440729b1bb7d725411b806c034faa2bd3d78c205d23b013",
+    "src/tensor/inspect.py": "4e8b410c38113d99be1ee87b194642c41507053900a23050b52d835db9533c1d",
+    "src/tensor/lowering.py": "515b3ccbb57fc7dfb8c9c45d14156c323dc67ba3b51f9bfe1e8df80ffe996f43",
+    "src/tensor/native/host.cpp": "e0e6c89a71761f128b5850fd1ef5e2f94c279ee3c44614c90f6f368145cd22b0",
+    "src/tensor/native/host.rs": "e0b4c7674146a17c5b67df8c9c36ee34ac57adf745bc02fa81e6fc3439138fd8",
+    "src/tensor/nvrtc.py": "144df78a7c49cddc1e9db2b8a22d8865483587915a6e69edd7591e71c6812d4a",
+    "src/tensor/providers.py": "8296f7a1cf16a5966168c5ae5eeb2197e6056d59f775406d35f8494a82b5a30d",
+    "src/tensor/runtime.py": "dfe94d742eb622e557a430362a828f9d850a468cd95f29bbda7c859f79877b4e",
+    "src/tensor/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559"
+  },
+  "tests": {
+    "passed": 89,
+    "skipped": 0,
+    "seconds": 53.82,
+    "log_sha256": "5abac761644a59412cfcdd8a968dc57d45b5e9734be905f5b6f1ff4d93a7ca1f",
+    "command": "TENSOR_NVRTC_HOME=build/nvrtc-12.9 TENSOR_P0_CUDA=1 TENSOR_P1_CUDA=1 TENSOR_P2_CUDA=1 CUDA_HOME=experiments/p0/out/cuda-12.9 uv run --locked python -m pytest -o addopts= -q"
+  },
+  "native_hosts": [
+    {
+      "status": "passed",
+      "provider": "cpu",
+      "abi": 1,
+      "minor": 1,
+      "workspace_bytes": 0,
+      "elements": 129,
+      "negative_checks": 5,
+      "command": [
+        "build/phase2-native-complete",
+        "cpu",
+        "build/phase2-completion-kernel.so"
+      ],
+      "host_bytes": 41168,
+      "host_sha256": "712d60659b637a394b5fb22ce5750671bdc0bade15fac671690d6b966f9c2630",
+      "image_sha256": "d24fa121b6cf5669392136a34ef9fb85a1e251d618fa27b047e358205bf48d19",
+      "dynamic_dependencies": "\tlinux-vdso.so.1 (0x00007fc65b91c000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fc65b68c000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fc65b65e000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007fc65b44c000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007fc65b363000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fc65b91e000)\n"
+    },
+    {
+      "status": "passed",
+      "provider": "cpu",
+      "abi": 1,
+      "minor": 1,
+      "workspace_bytes": 0,
+      "elements": 129,
+      "negative_checks": 5,
+      "command": [
+        "build/phase2-rust-complete",
+        "build/phase2-completion-kernel.so"
+      ],
+      "host_bytes": 4543248,
+      "host_sha256": "4309ada4391907b85f9d96cd28b512259f96d39ca9366bc649effb74f5a8fc16",
+      "image_sha256": "d24fa121b6cf5669392136a34ef9fb85a1e251d618fa27b047e358205bf48d19",
+      "dynamic_dependencies": "\tlinux-vdso.so.1 (0x00007f000b87e000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f000b7e6000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007f000b5d4000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f000b880000)\n"
+    },
+    {
+      "status": "passed",
+      "provider": "cuda",
+      "abi": 1,
+      "minor": 1,
+      "workspace_bytes": 0,
+      "elements": 129,
+      "negative_checks": 3,
+      "command": [
+        "build/phase2-native-complete",
+        "cuda",
+        "build/phase2-completion-kernel.cubin",
+        "elementwise_kernel"
+      ],
+      "host_bytes": 41168,
+      "host_sha256": "712d60659b637a394b5fb22ce5750671bdc0bade15fac671690d6b966f9c2630",
+      "image_sha256": "4e095046c3123cf94cb00886a75c93ddd55a4465e7cdd0ac59a8a7e2216d21cc",
+      "dynamic_dependencies": "\tlinux-vdso.so.1 (0x00007f9029e27000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f9029b97000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f9029b69000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007f9029957000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007f902986e000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f9029e29000)\n"
+    }
+  ],
+  "ci_run": "https://github.com/kreasof-ai/tensor/actions/runs/36643849222",
+  "transfers": {
+    "linux": {
+      "numerical_interop_cases": 21,
+      "diagnostics": 8,
+      "executable_contracts": 5,
+      "event_descriptor": {
+        "resolved": true,
+        "released_handle_rejected": true
+      },
+      "consumer_matches_producer_wheel": true,
+      "two_hosts": true,
+      "archive_sha256": "8d649514d17da72a75f387b9df024c144fbe22c21e3788e8559a5669ceb0e6f2",
+      "wheel_sha256": "3bbc6c79eae060f4d070d81d6c7beb11be90e5bce18703b3b610bc02f9b9a2ea"
+    },
+    "windows": {
+      "numerical_interop_cases": 21,
+      "diagnostics": 8,
+      "executable_contracts": 5,
+      "event_descriptor": {
+        "resolved": true,
+        "released_handle_rejected": true
+      },
+      "consumer_matches_producer_wheel": true,
+      "two_hosts": true,
+      "archive_sha256": "d8f4a40d6a8ed097e32a68b99e357c7b4dc1a6d8b9facbc90dbf9132bf6ec987",
+      "wheel_sha256": "130aa4e280227ff407a23bda6eb7fc9528c0f166a60d89f6410926ffdec83002"
+    }
+  },
+  "compatibility": {
+    "status": "passed",
+    "compiler_imports": [],
+    "records": [
+      {
+        "artifact": "build/phase1-cache-cold.tbin",
+        "format_version": 1,
+        "runtime_abi": null,
+        "sha256": "baf21e6d2ef8f78c39a5e0216de313cee9a8da9cd2396ef19212c24f99d4cc40",
+        "passed": true
+      },
+      {
+        "artifact": "build/phase1-dynamic-v2.tbin",
+        "format_version": 2,
+        "runtime_abi": null,
+        "sha256": "f6133cea411fc83209c6e13981e37350bc86f069c10d907c26ac661ad887a886",
+        "passed": true
+      },
+      {
+        "artifact": "build/phase2-remote-linux/build/phase2-transfer/elementwise.tbin",
+        "format_version": 3,
+        "runtime_abi": {
+          "major": 1,
+          "minor": 0,
+          "required_capabilities": [
+            "contiguous"
+          ]
+        },
+        "sha256": "011ca34d46f784391df044df054ba9cadc55a42cb6633d21943ac2b39a0402a5",
+        "passed": true
+      },
+      {
+        "case": "clean_cpu_abi_1_1",
+        "passed": true
+      }
+    ]
+  },
+  "isolation_evidence": "Historical phase2-nvrtc-producer.json and phase2-validation.json; NVRTC/source-emission implementation unchanged. New CI validates ABI 1.1 manifests.",
+  "limits": [
+    "CUDA exact-SM cubin, tested A10G sm_86 only",
+    "Zero external workspace only",
+    "CPU validation provider Linux x86-64 only",
+    "Host-owned provider dispatch; no C plugin vtable or native tbin parser",
+    "Python compiler frontend still imports PyTorch; producer bundle not compact",
+    "Direct PTX experimental after Tensor v1"
+  ]
+}

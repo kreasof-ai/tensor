@@ -4,17 +4,18 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phases 0 and 1 complete; Phase 2 implemented and validated
-locally, with Linux/Windows producer CI passing.**
-[ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) accepts call ABI
-1.0, the independent v3 module envelope and NVRTC as the default CUDA compiler.
-CUDA and a CPU validation provider share the workbench; native C++/Rust hosts
-exercise the descriptors without Python or TVM FFI. A driver/toolchain-free
-container builds all five NVRTC profiles, and a Tensor/NumPy consumer executes
-them on A10G. The isolated local transfer uses one physical host. Remote
-Linux/Windows CI also builds all five NVRTC profiles and verifies artifact
-inspection with compiler-free consumers. Details and remaining scope are in
-[the Phase 2 report](../research/phase2-validation.md).
+Current status: **Phases 0, 1 and 2 complete within their measured profiles.**
+[ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) selects NVRTC as the default
+CUDA compiler and the independent v3 module envelope.
+[ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md) completes
+runtime ABI 1.1 with executable/event identities, lifetime rules and zero
+external workspace. CUDA and a CPU validation provider share the workbench;
+native C++/Rust hosts exercise the descriptors without Python or TVM FFI.
+A driver/toolchain-free container builds all five NVRTC profiles. Fresh remote
+Linux and Windows CI artifacts and their wheels each pass GPU execution on a
+separate A10G with only Tensor and NumPy. The full GPU suite passes 89 tests
+with zero skips. Details and limits are in
+[the Phase 2 exit report](../research/phase2-exit.md).
 
 Phase 1 baseline: `doctor`, `build`,
 `inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated
@@ -186,12 +187,16 @@ a gate for this single-device phase.
 
 ---
 
-## Phase 2 — Stable runtime ABI
+## Phase 2 — Stable runtime ABI *(complete)*
 
 **Goal:** separate compiler, runtime, and provider.
 
 Implemented: the [runtime contract](../runtime-abi.md) and packaged C header
-freeze buffer, scalar, resolved-call, stream and error layouts as call ABI 1.0.
+freeze buffer, scalar, resolved-call, stream and error layouts, plus executable,
+event and workspace descriptors, as runtime ABI 1.1. Executable/event tokens
+are session-qualified, never reused and invalidated by release or session close.
+Release waits for outstanding work. External workspace is explicitly zero;
+unsupported requirements fail before loading.
 Shared binding, outputs and lifetime checks serve CUDA and a synchronous CPU
 provider. The module envelope is v3; legacy CUDA v1/v2 envelopes remain readable.
 C++/Rust hosts execute native CPU images, and C++ executes an NVRTC cubin.
@@ -202,8 +207,14 @@ boundary. NVRTC 12.9 is the default executable compiler; nvcc remains explicit.
 The producer needs pinned Python compiler packages plus bundled libraries and
 headers, but no system CUDA toolkit, driver, GPU or host C++ compiler.
 
-Scope: this freezes the call ABI, not a C provider lifecycle/plugin table or
-a native `.tbin` CLI. CPU is a validation implementation on Linux x86-64.
+All six Phase 2 contract areas from proposal §22 are defined for this profile:
+tensor and executable descriptors, streams, events, workspace and capabilities.
+[ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md) and the
+[exit report](../research/phase2-exit.md) record acceptance.
+
+Scope: this freezes descriptor layouts and lifetime rules; provider dispatch
+remains host-owned. A C provider lifecycle/plugin table and native `.tbin` CLI
+remain future interfaces. CPU is a validation implementation on Linux x86-64.
 CUDA remains one exact-SM cubin. Cross-SM images/PTX fallback and optimized
 non-NVIDIA providers need further work. **Direct PTX, including a possible
 tinygrad lowering path, stays experimental until after Tensor v1.**

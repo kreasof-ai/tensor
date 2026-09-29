@@ -1,0 +1,193 @@
+{
+  "status": "passed",
+  "target": "sm_86",
+  "same_host": true,
+  "outputs_equal": true,
+  "metric": "host enqueue and launch-plus-stream-sync",
+  "records": [
+    {
+      "example": "elementwise",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 1.8856659769990074,
+      "warm_build_seconds": 0.7737443869991694,
+      "cold_process_seconds": 4.564190233999398,
+      "warm_process_seconds": 3.432304355999804,
+      "compile_seconds": 1.1140684540005168,
+      "artifact_bytes": 24541,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.183600089570973e-05,
+        "min_launch_and_sync_seconds": 5.900200267205946e-05,
+        "median_host_enqueue_seconds": 5.819100078952033e-05
+      },
+      "artifact_sha256": "3897b93557af81905b761b808207790f82de999c49945f22a3cf9d89f9ff2aa1"
+    },
+    {
+      "example": "elementwise",
+      "compiler": "nvcc",
+      "cold_build_seconds": 1.6690287249984976,
+      "warm_build_seconds": 0.3085990319996199,
+      "cold_process_seconds": 4.350281466999149,
+      "warm_process_seconds": 2.97458991899839,
+      "compile_seconds": 1.3634919630021614,
+      "artifact_bytes": 6979,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.132599992270116e-05,
+        "min_launch_and_sync_seconds": 5.9332000091671944e-05,
+        "median_host_enqueue_seconds": 5.668599987984635e-05
+      },
+      "artifact_sha256": "0dc0b2ac9dd9859c0f3722f2f83a4c67961c4fd16fbfa433361248feee0fdc94"
+    },
+    {
+      "example": "gemm_relu",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 2.5528956830021343,
+      "warm_build_seconds": 1.3781319959998655,
+      "cold_process_seconds": 5.334457871998893,
+      "warm_process_seconds": 3.99970603499969,
+      "compile_seconds": 1.1594780630002788,
+      "artifact_bytes": 36283,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 7.224150067486335e-05,
+        "min_launch_and_sync_seconds": 6.961100007174537e-05,
+        "median_host_enqueue_seconds": 6.470100015576463e-05
+      },
+      "artifact_sha256": "ff1010951bd97811dd17474e460ccfba262ea8fae74ce5738577bbdc4ff6852a"
+    },
+    {
+      "example": "gemm_relu",
+      "compiler": "nvcc",
+      "cold_build_seconds": 2.6414429760006897,
+      "warm_build_seconds": 0.9104337219978333,
+      "cold_process_seconds": 5.317550004001532,
+      "warm_process_seconds": 3.587107138999272,
+      "compile_seconds": 1.732286380000005,
+      "artifact_bytes": 15856,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 7.214149991341401e-05,
+        "min_launch_and_sync_seconds": 6.953100091777742e-05,
+        "median_host_enqueue_seconds": 6.573149767064024e-05
+      },
+      "artifact_sha256": "cefaab9b6c21c4345b811f1c2fde3a7b2b1a40be4f702d93555902e8843df36b"
+    },
+    {
+      "example": "dynamic_affine",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 2.164219252001203,
+      "warm_build_seconds": 1.044374388999131,
+      "cold_process_seconds": 4.842300167998474,
+      "warm_process_seconds": 3.7143772910021653,
+      "compile_seconds": 1.1079684699980135,
+      "artifact_bytes": 24914,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 9.099199814954773e-05,
+        "min_launch_and_sync_seconds": 8.821200026432052e-05,
+        "median_host_enqueue_seconds": 8.509200051776133e-05
+      },
+      "artifact_sha256": "c105fe94b07f928a7919c6617156fe42ebc3e5f25ba56419b4e48fc7fe24b62e"
+    },
+    {
+      "example": "dynamic_affine",
+      "compiler": "nvcc",
+      "cold_build_seconds": 1.9387402410029608,
+      "warm_build_seconds": 0.5821501390018966,
+      "cold_process_seconds": 4.65373287300099,
+      "warm_process_seconds": 3.248447630998271,
+      "compile_seconds": 1.363742508001451,
+      "artifact_bytes": 7346,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 9.113699888985138e-05,
+        "min_launch_and_sync_seconds": 8.936100130085833e-05,
+        "median_host_enqueue_seconds": 8.592650010541547e-05
+      },
+      "artifact_sha256": "47f981a4674b0120687fef9c080587f15d4eb2e9b5f92ca9da5e791a256d393b"
+    },
+    {
+      "example": "dynamic_gemm",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 2.608810865000123,
+      "warm_build_seconds": 1.4285452759977488,
+      "cold_process_seconds": 5.287953058999847,
+      "warm_process_seconds": 4.118825312001718,
+      "compile_seconds": 1.1949815320003836,
+      "artifact_bytes": 31995,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 8.145599895215128e-05,
+        "min_launch_and_sync_seconds": 8.001199967111461e-05,
+        "median_host_enqueue_seconds": 7.635600195499137e-05
+      },
+      "artifact_sha256": "c6ae7ca1018a3bde674bc93a8399b06868ccfef6a454a29beb3165b298de52dc"
+    },
+    {
+      "example": "dynamic_gemm",
+      "compiler": "nvcc",
+      "cold_build_seconds": 2.6356680919998325,
+      "warm_build_seconds": 0.9576489510000101,
+      "cold_process_seconds": 5.2677753229982045,
+      "warm_process_seconds": 3.652894032999029,
+      "compile_seconds": 1.681265164999786,
+      "artifact_bytes": 11706,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 8.374649769393727e-05,
+        "min_launch_and_sync_seconds": 8.154199895216152e-05,
+        "median_host_enqueue_seconds": 7.821650069672614e-05
+      },
+      "artifact_sha256": "83bb896077f55b76520a408e5ad82d2ee7988f371436e473ce35b0d57a52386f"
+    },
+    {
+      "example": "scalar_offset",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 1.9494299610014423,
+      "warm_build_seconds": 0.9025439950019063,
+      "cold_process_seconds": 4.743982955998945,
+      "warm_process_seconds": 3.7300847999977123,
+      "compile_seconds": 1.1472671330011508,
+      "artifact_bytes": 24314,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.099099846323952e-05,
+        "min_launch_and_sync_seconds": 5.8711000747280195e-05,
+        "median_host_enqueue_seconds": 5.630149826174602e-05
+      },
+      "artifact_sha256": "e4b18dd153629aa106baf84c5569509affa4292129b69e05a9f3c7fd53cff607"
+    },
+    {
+      "example": "scalar_offset",
+      "compiler": "nvcc",
+      "cold_build_seconds": 1.657616684002278,
+      "warm_build_seconds": 0.31398958199861227,
+      "cold_process_seconds": 4.3397972590028076,
+      "warm_process_seconds": 2.944991222000681,
+      "compile_seconds": 1.3535846160011715,
+      "artifact_bytes": 6545,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.168099935166538e-05,
+        "min_launch_and_sync_seconds": 5.990099816699512e-05,
+        "median_host_enqueue_seconds": 5.699150096916128e-05
+      },
+      "artifact_sha256": "67e5ca76a6d6234b8421c4f326cb1812e78ee1d5579a58bab679a2e56c279503"
+    }
+  ],
+  "compiler_build_provenance": "Measured in the completion working tree before the final executable/event lifecycle patch; executable compiler and CUDA source emission unchanged.",
+  "runtime_revision": "1a5a904112dcb439fe90ec854cc12aa6748894b3",
+  "runtime_consumer_wheel_sha256": "3bbc6c79eae060f4d070d81d6c7beb11be90e5bce18703b3b610bc02f9b9a2ea",
+  "runtime_artifacts": "Exact retained artifacts from the compiler comparison; remeasured with the final Linux CI consumer wheel."
+}

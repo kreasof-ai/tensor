@@ -1,5 +1,10 @@
 # Phase 2 — runtime call ABI and bundled NVRTC
 
+This is the historical ABI 1.0 implementation report. Phase 2 subsequently
+completed with ABI 1.1 executable/event/workspace contracts and GPU acceptance
+of both remote producer bundles. See the [exit report](phase2-exit.md) for the
+final gates, updated timings and evidence.
+
 Local validation on 2026-09-29, Linux x86-64 and NVIDIA A10G (`sm_86`).
 The initial local run used an uncommitted working tree; its retained reports
 identify the base revision, lock hash, artifact hashes, compiler libraries and
