@@ -11,14 +11,14 @@ The question being answered right now is the one the proposal closes on:
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
 
-The active milestone is now [opaque artifact validation](docs/plan/opaque-artifact-validation.md):
-build a kernel, transfer its executable, load it without compiler imports, check
-NumPy agreement and measure time to first result. The experimental producer and
-consumer are implemented under `experiments/p0/`. **NVIDIA execution now passes
-on an A10G (`sm_86`)**: five opaque artifact sizes load in a NumPy-only process,
-and twelve NumPy-reference cases cover all five workloads. The full opt-in suite
-passes **32 tests with no skips**. Two-host executable transfer remains
-**unverified**; see [the NVIDIA results](docs/research/e14-cuda-execution.md).
+**Two-host executable transfer now passes:** GitHub Actions builds five opaque
+artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
+The remaining validation harness measures caches, CPU execution, a C++ host,
+symbolic dimensions, PyTorch frontends, full compilation, and GPU baselines.
+See [E15 and its raw data](docs/research/e15-phase0-validation.md).
+The full GPU-enabled regression suite passes **40 tests with zero skips**.
+Phase 0 remains open for fusion, new-provider registration, Rust hosting and
+cross-GPU performance; measured failures are recorded explicitly.
 
 ---
 
@@ -101,12 +101,30 @@ compiler wins, then the configured toolkit, then `nvcc` on `PATH`. The separate
 [validation runbook](docs/plan/opaque-artifact-validation.md) covers GPU tests
 and creating a NumPy-only consumer environment.
 
+Run the remaining architecture probes in fresh processes with isolated caches:
+
+```bash
+uv run --locked python -m experiments.p0.validation --out experiments/p0/out/new-validation-run
+```
+
+Use a new directory for each run. On Linux, the pinned CUDA build components
+can be installed locally:
+
+```bash
+uv run --locked python tools/bootstrap_cuda.py --out experiments/p0/out/cuda-12.9
+export CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9"
+```
+
+The native-host probe requires g++. The manual GitHub Actions workflow
+`P0 artifact transfer producer` builds the five executable boundary cases.
+
 ## Where to start reading
 
 | Document | What it gives you |
 |---|---|
 | [`docs/research/phase0-ground-truth.md`](docs/research/phase0-ground-truth.md) | Measured numbers, what already exists, what is blocked |
 | [`docs/research/e14-cuda-execution.md`](docs/research/e14-cuda-execution.md) | NVIDIA correctness, compiled artifacts, and fresh-process startup |
+| [`docs/research/e15-phase0-validation.md`](docs/research/e15-phase0-validation.md) | Remaining validation, two-host transfer, and measured restrictions |
 | [`docs/research/ecosystem-and-precedents.md`](docs/research/ecosystem-and-precedents.md) | Triton / CuTe DSL / tinygrad / Pallas comparison, packaging precedents |
 | [`docs/plan/phase0-experiment-design.md`](docs/plan/phase0-experiment-design.md) | The 12 experiments and which machine runs each |
 | [`docs/plan/roadmap.md`](docs/plan/roadmap.md) | Phases, reordered by what the evidence supports |

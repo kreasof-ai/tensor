@@ -6,9 +6,12 @@ without importing the compiler, compare with NumPy, and record startup time.
 
 **Current state:** CUDA compilation, five opaque artifact sizes, twelve
 NumPy-reference workload cases, and fresh-process compiler-free execution pass
-on an NVIDIA A10G (`sm_86`). The full opt-in suite passes 32 tests. Startup
+on an NVIDIA A10G (`sm_86`). The full opt-in suite now passes 40 tests. Startup
 measurements and reproduction details are in [E14](../research/e14-cuda-execution.md).
-Two-host executable transfer remains **UNVERIFIED**.
+**Two-host executable transfer now passes** from GitHub Actions to A10G:
+five sizes, three fresh NumPy-only processes each, matching clean checkouts.
+The strict provenance audit and remaining validation are in
+[E15](../research/e15-phase0-validation.md).
 
 The first kernel computes `c = maximum(2*a + b, 0)` on contiguous float32
 vectors. It has three pointer arguments, 128 threads per block, explicit tail
@@ -30,6 +33,8 @@ symbolic shapes, streams supplied by another framework, or a second provider.
   first-result timing and warm launch-plus-synchronization timing. Imports of
   TileLang, TVM, TVM FFI and PyTorch are actively blocked.
 - `artifact_check`: launches fresh consumer processes and saves their reports.
+- `transfer_check`: additionally requires different hosts, matching clean
+  revisions/source/lock hashes, absent compiler packages, and all five sizes.
 - `numerics`: twelve NVIDIA-only checks for all five corrected workloads.
 
 Source bundles and executable bundles have different manifest kinds. The
@@ -105,6 +110,7 @@ hosts; the reports record the producer's source and lock hashes. On B:
 ```bash
 experiments/p0/out/runtime-venv/bin/python -m experiments.p0.artifact_run validate experiments/p0/out/elementwise-129.tbin --report experiments/p0/out/first-result.json
 experiments/p0/out/runtime-venv/bin/python -m experiments.p0.artifact_check experiments/p0/out/elementwise-*.tbin --runtime-python experiments/p0/out/runtime-venv/bin/python --runs 3 --report experiments/p0/out/artifact-matrix.json
+experiments/p0/out/runtime-venv/bin/python -m experiments.p0.transfer_check experiments/p0/out/elementwise-*.tbin --runtime-python experiments/p0/out/runtime-venv/bin/python --runs 3 --report experiments/p0/out/transfer-matrix.json
 ```
 
 A passing report must show NumPy agreement, no compiler imports, matching SM,

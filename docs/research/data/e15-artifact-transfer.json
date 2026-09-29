@@ -1,0 +1,1022 @@
+{
+  "status": "passed",
+  "runs_per_artifact": 3,
+  "runtime_python": "/home/sagemaker-user/tensor/experiments/p0/out/review-runtime/bin/python",
+  "summary": {
+    "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1.tbin": {
+      "fresh_process_wall_median_seconds": 0.4563728200000696,
+      "process_entry_to_first_result_median_seconds": 0.24863538799945673
+    },
+    "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1025.tbin": {
+      "fresh_process_wall_median_seconds": 0.46062454100047034,
+      "process_entry_to_first_result_median_seconds": 0.24952695800038782
+    },
+    "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-127.tbin": {
+      "fresh_process_wall_median_seconds": 0.5043173809999644,
+      "process_entry_to_first_result_median_seconds": 0.24791056499998376
+    },
+    "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-128.tbin": {
+      "fresh_process_wall_median_seconds": 0.5623406000004252,
+      "process_entry_to_first_result_median_seconds": 0.25070718099959777
+    },
+    "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-129.tbin": {
+      "fresh_process_wall_median_seconds": 0.550403408999955,
+      "process_entry_to_first_result_median_seconds": 0.24894959600078437
+    }
+  },
+  "records": [
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1.tbin",
+      "run": 0,
+      "process_wall_seconds": 0.5204427250000663,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 1,
+        "seed": 0,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.15145349399972474,
+          "module_load_seconds": 0.00017962399942916818,
+          "allocate_upload_seconds": 0.00027354499979992397,
+          "first_launch_and_sync_seconds": 8.789200001046993e-05,
+          "process_entry_to_first_result_seconds": 0.2547281519991884,
+          "warm_launch_and_sync_median_seconds": 1.5025999800855061e-05
+        },
+        "artifact_sha256": "d60bbcfaeef45bc30c5d135bc237db02369705410123ee4b7df136febdc0538b",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1.tbin",
+      "run": 1,
+      "process_wall_seconds": 0.4518049090002023,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 1,
+        "seed": 1,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.1406075039994903,
+          "module_load_seconds": 0.00012588300069182878,
+          "allocate_upload_seconds": 0.00019856400012940867,
+          "first_launch_and_sync_seconds": 7.526100034738192e-05,
+          "process_entry_to_first_result_seconds": 0.24500844700014568,
+          "warm_launch_and_sync_median_seconds": 1.1880999863933539e-05
+        },
+        "artifact_sha256": "d60bbcfaeef45bc30c5d135bc237db02369705410123ee4b7df136febdc0538b",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1.tbin",
+      "run": 2,
+      "process_wall_seconds": 0.4563728200000696,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 1,
+        "seed": 2,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.14381748899995728,
+          "module_load_seconds": 0.0001215230004163459,
+          "allocate_upload_seconds": 0.00020558400046866154,
+          "first_launch_and_sync_seconds": 7.493199973396258e-05,
+          "process_entry_to_first_result_seconds": 0.24863538799945673,
+          "warm_launch_and_sync_median_seconds": 1.1770000128308311e-05
+        },
+        "artifact_sha256": "d60bbcfaeef45bc30c5d135bc237db02369705410123ee4b7df136febdc0538b",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1025.tbin",
+      "run": 0,
+      "process_wall_seconds": 0.45709597099994426,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 1025,
+        "seed": 0,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.139874571999826,
+          "module_load_seconds": 0.0001309630006289808,
+          "allocate_upload_seconds": 0.0002306240003235871,
+          "first_launch_and_sync_seconds": 7.827199988241773e-05,
+          "process_entry_to_first_result_seconds": 0.25017217100048583,
+          "warm_launch_and_sync_median_seconds": 1.2110000170650892e-05
+        },
+        "artifact_sha256": "d696d89ba1e11f2545cd36174426a224c5a7d669dc6a859669d4d03acd55c197",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1025.tbin",
+      "run": 1,
+      "process_wall_seconds": 0.46062454100047034,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 1025,
+        "seed": 1,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.14427027700003237,
+          "module_load_seconds": 0.0001271029996132711,
+          "allocate_upload_seconds": 0.00021539399949688232,
+          "first_launch_and_sync_seconds": 7.357199956459226e-05,
+          "process_entry_to_first_result_seconds": 0.24952695800038782,
+          "warm_launch_and_sync_median_seconds": 1.2729999980365392e-05
+        },
+        "artifact_sha256": "d696d89ba1e11f2545cd36174426a224c5a7d669dc6a859669d4d03acd55c197",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-1025.tbin",
+      "run": 2,
+      "process_wall_seconds": 0.5022093480001786,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 1025,
+        "seed": 2,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.13878976599971793,
+          "module_load_seconds": 0.00013219300035416381,
+          "allocate_upload_seconds": 0.00022056400030123768,
+          "first_launch_and_sync_seconds": 7.701200047449674e-05,
+          "process_entry_to_first_result_seconds": 0.24347483500059752,
+          "warm_launch_and_sync_median_seconds": 1.1895499937963905e-05
+        },
+        "artifact_sha256": "d696d89ba1e11f2545cd36174426a224c5a7d669dc6a859669d4d03acd55c197",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-127.tbin",
+      "run": 0,
+      "process_wall_seconds": 0.4654260870001963,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 127,
+        "seed": 0,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.14375124599973788,
+          "module_load_seconds": 0.00012667300052271457,
+          "allocate_upload_seconds": 0.00023359500028163893,
+          "first_launch_and_sync_seconds": 7.879100030550035e-05,
+          "process_entry_to_first_result_seconds": 0.25743756700012455,
+          "warm_launch_and_sync_median_seconds": 1.2214999969728524e-05
+        },
+        "artifact_sha256": "75921d3ced6d96a25f6ae49a9fc678e2a4f2ac64c683a834c2117f54c371b9e1",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-127.tbin",
+      "run": 1,
+      "process_wall_seconds": 0.5043699119996745,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 127,
+        "seed": 1,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.14314535399989836,
+          "module_load_seconds": 0.00012643300033232663,
+          "allocate_upload_seconds": 0.00020709399996121647,
+          "first_launch_and_sync_seconds": 7.254100000864128e-05,
+          "process_entry_to_first_result_seconds": 0.24791056499998376,
+          "warm_launch_and_sync_median_seconds": 1.2385499758238439e-05
+        },
+        "artifact_sha256": "75921d3ced6d96a25f6ae49a9fc678e2a4f2ac64c683a834c2117f54c371b9e1",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-127.tbin",
+      "run": 2,
+      "process_wall_seconds": 0.5043173809999644,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 127,
+        "seed": 2,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.14280908700038708,
+          "module_load_seconds": 0.00012484299986681435,
+          "allocate_upload_seconds": 0.00020668400065915193,
+          "first_launch_and_sync_seconds": 7.215099958557403e-05,
+          "process_entry_to_first_result_seconds": 0.24688932499975635,
+          "warm_launch_and_sync_median_seconds": 1.1950499811064219e-05
+        },
+        "artifact_sha256": "75921d3ced6d96a25f6ae49a9fc678e2a4f2ac64c683a834c2117f54c371b9e1",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-128.tbin",
+      "run": 0,
+      "process_wall_seconds": 0.5076349869996193,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 128,
+        "seed": 0,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.1433173870000246,
+          "module_load_seconds": 0.00015044300016597845,
+          "allocate_upload_seconds": 0.0002525949994378607,
+          "first_launch_and_sync_seconds": 8.209200041164877e-05,
+          "process_entry_to_first_result_seconds": 0.25013138899976184,
+          "warm_launch_and_sync_median_seconds": 1.1800500033132266e-05
+        },
+        "artifact_sha256": "f656ef01b41df3d474547bdec36916a354bc4698696decc8e9a8936c21d357b3",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-128.tbin",
+      "run": 1,
+      "process_wall_seconds": 0.5623406000004252,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 128,
+        "seed": 1,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.1433486880005148,
+          "module_load_seconds": 0.0001230630005011335,
+          "allocate_upload_seconds": 0.00020449400017241715,
+          "first_launch_and_sync_seconds": 7.45110000934801e-05,
+          "process_entry_to_first_result_seconds": 0.2551848519997293,
+          "warm_launch_and_sync_median_seconds": 1.1775500297517283e-05
+        },
+        "artifact_sha256": "f656ef01b41df3d474547bdec36916a354bc4698696decc8e9a8936c21d357b3",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-128.tbin",
+      "run": 2,
+      "process_wall_seconds": 0.60750508899946,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 128,
+        "seed": 2,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.14537979800024914,
+          "module_load_seconds": 0.00014055300016480032,
+          "allocate_upload_seconds": 0.00021173400000407128,
+          "first_launch_and_sync_seconds": 7.783199998812051e-05,
+          "process_entry_to_first_result_seconds": 0.25070718099959777,
+          "warm_launch_and_sync_median_seconds": 1.1864999578392599e-05
+        },
+        "artifact_sha256": "f656ef01b41df3d474547bdec36916a354bc4698696decc8e9a8936c21d357b3",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-129.tbin",
+      "run": 0,
+      "process_wall_seconds": 0.550403408999955,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 129,
+        "seed": 0,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.13913476299967442,
+          "module_load_seconds": 0.00012335200062807417,
+          "allocate_upload_seconds": 0.0002094450001095538,
+          "first_launch_and_sync_seconds": 7.238099988171598e-05,
+          "process_entry_to_first_result_seconds": 0.24384182300036628,
+          "warm_launch_and_sync_median_seconds": 1.2195499948575161e-05
+        },
+        "artifact_sha256": "d1c3883b954d61f1145831b695827a25238e41f96698cd5a1f1c77118279c75d",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-129.tbin",
+      "run": 1,
+      "process_wall_seconds": 0.6082344540000122,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 129,
+        "seed": 1,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.141798115999336,
+          "module_load_seconds": 0.0001286630003960454,
+          "allocate_upload_seconds": 0.0002095339996230905,
+          "first_launch_and_sync_seconds": 7.418200038955547e-05,
+          "process_entry_to_first_result_seconds": 0.2506700199992338,
+          "warm_launch_and_sync_median_seconds": 1.2045499261148507e-05
+        },
+        "artifact_sha256": "d1c3883b954d61f1145831b695827a25238e41f96698cd5a1f1c77118279c75d",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    },
+    {
+      "artifact": "/home/sagemaker-user/tensor/experiments/p0/out/actions-transfer-36595583781/elementwise-129.tbin",
+      "run": 2,
+      "process_wall_seconds": 0.5130209949993514,
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "numerics": "numpy_allclose",
+        "rtol": 1e-06,
+        "atol": 1e-06,
+        "max_abs_error": 0.0,
+        "size": 129,
+        "seed": 2,
+        "iterations": 20,
+        "timings": {
+          "driver_context_seconds": 0.1427137450000373,
+          "module_load_seconds": 0.0001350130005448591,
+          "allocate_upload_seconds": 0.00025111500053753844,
+          "first_launch_and_sync_seconds": 7.996099975571269e-05,
+          "process_entry_to_first_result_seconds": 0.24894959600078437,
+          "warm_launch_and_sync_median_seconds": 1.2465500276448438e-05
+        },
+        "artifact_sha256": "d1c3883b954d61f1145831b695827a25238e41f96698cd5a1f1c77118279c75d",
+        "producer": {
+          "git_dirty": false,
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "hostname": "runnervmtr4k5",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "packages": {
+            "apache-tvm-ffi": "0.1.12",
+            "numpy": "2.5.3",
+            "tilelang": "0.1.14",
+            "torch": "2.14.0"
+          },
+          "python": "3.12.3",
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2"
+        },
+        "consumer": {
+          "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+          "git_dirty": false,
+          "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+          "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+          "python": "3.12.14",
+          "hostname": "default",
+          "packages": {
+            "tilelang": null,
+            "apache-tvm-ffi": null,
+            "torch": null,
+            "numpy": "2.5.3"
+          },
+          "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+          "numpy": "2.5.3",
+          "device": {
+            "name": "NVIDIA A10G",
+            "arch": "sm_86",
+            "driver_version": 13020,
+            "ordinal": 0
+          }
+        },
+        "compiler_imports": [],
+        "compiler_import_guard": true
+      }
+    }
+  ],
+  "transfer_verification": {
+    "status": "passed",
+    "two_hosts": true,
+    "clean_matching_checkouts": true,
+    "compiler_packages_absent": true,
+    "sizes": [
+      1,
+      127,
+      128,
+      129,
+      1025
+    ],
+    "executions": 15
+  },
+  "actions_run_url": "https://github.com/kreasof-ai/tensor/actions/runs/36595583781",
+  "build_host": {
+    "producer": {
+      "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+      "git_dirty": false,
+      "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+      "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+      "python": "3.12.3",
+      "hostname": "runnervmtr4k5",
+      "packages": {
+        "tilelang": "0.1.14",
+        "apache-tvm-ffi": "0.1.12",
+        "torch": "2.14.0",
+        "numpy": "2.5.3"
+      }
+    },
+    "host": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "actions_run_id": "36595583781"
+  }
+}

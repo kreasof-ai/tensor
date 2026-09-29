@@ -4,11 +4,12 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phase 0 in progress.** The active next milestone is
-[opaque executable transfer and compiler-free loading](opaque-artifact-validation.md).
-Local and NVIDIA A10G checks pass, including twelve NumPy-reference cases and
-five compiler-free artifact sizes. See [E14](../research/e14-cuda-execution.md).
-Two-host executable transfer remains unverified.
+Current status: **Phase 0 in progress, with the remaining probes implemented.**
+Two-host opaque executable transfer passes from GitHub Actions to an A10G.
+Cache, CPU execution, C++ hosting, symbolic dimensions, frontend contracts,
+full compilation and GPU baselines are measured in
+[E15](../research/e15-phase0-validation.md). Negative results and hardware gaps
+remain explicit; the original Phase 0 scope is not fully validated.
 
 ---
 
@@ -47,22 +48,24 @@ Four findings move work earlier or change its shape:
 | E1 | environment / packaging footprint | local | ✅ |
 | E2 | codegen — source emission per kernel × target | local | ✅ 15/15 |
 | E3 | pass trace — IR at every lowering stage | local | ✅ 5/5 |
-| E4 | artifact shape — serialization and CUDA re-targeting | local | ✅ **positive; fusion untested** |
+| E4 | artifact shape — serialization and CUDA re-targeting | local | frontend positive; post-LowerTileOp re-lowering rejected; fusion unverified |
 | E4a | artifact versioning across TIRx versions | local | ✅ **answered** |
-| E4b | symbolic-shape source signature / serialization | local | ✅ **source-level; execution unverified** |
-| E5 | cache behaviour — what TileLang already does | local | ⬜ |
-| E6 | provider contract — register a second backend | local | ⬜ |
-| E7 | ABI surface — non-Python host feasibility | local | ⬜ |
-| E8 | framework contract — FX vs AOTAutograd | either | ⬜ |
-| E9 | full compile latency (with `nvcc`) | **NVIDIA** | partial: elementwise cubin build measured; full workload compile breakdown pending |
+| E4b | symbolic-shape source signature / serialization | NVIDIA | runtime dimensions pass; symbolic GEMM tile rejected |
+| E5 | cache behaviour — what TileLang already does | local / NVIDIA | measured memory/disk hits, invalidation, corruption recovery, workload differences |
+| E6 | provider contract — register a second backend | local | built-in CPU executes; new manifest claiming CPU target rejected |
+| E7 | ABI surface — non-Python host feasibility | local | C++ CPU execution and IR loading pass; Rust/native compilation unverified |
+| E8 | framework contract — FX vs AOTAutograd | either | FX-to-CPU kernel passes; AOT forward/backward captured and reference-executed |
+| E9 | full compile latency (with `nvcc`) | **NVIDIA** | five workloads × six targets measured; compiler rejections recorded |
 | E10 | numerics validation | **NVIDIA** | ✅ 12 NumPy-reference cases on A10G |
-| E11 | kernel performance | **NVIDIA** | ⬜ |
-| E12 | warm-start / artifact load latency | **NVIDIA** | ✅ five sizes in fresh NumPy-only processes; two-host transfer pending |
+| E11 | kernel performance | **NVIDIA** | five A10G baseline comparisons measured; cross-GPU matrix unavailable |
+| E12 | warm-start / artifact load latency | **NVIDIA** | five sizes × three processes; Actions-to-A10G executable transfer passes |
 
 **E4 came back positive and it changes the shape of the project.** A serialized TIRx module
 round-trips byte-identically, re-targets across architectures, and reloads in a **fresh
-interpreter** — 50 KB of JSON reproduces the same CUDA as the in-memory module. Tensor does
-**not** need to own a portable IR. See [`../research/e4-artifact-shape.md`](../research/e4-artifact-shape.md).
+interpreter** — 50 KB of JSON reproduces the same CUDA as the in-memory module.
+Tensor need not own a new IR for the measured source tier. This does not establish
+fusion. See [`../research/e4-artifact-shape.md`](../research/e4-artifact-shape.md)
+and the post-lowering restriction in [E15](../research/e15-phase0-validation.md).
 
 Three consequences:
 
@@ -76,12 +79,20 @@ Three consequences:
    [`../research/e4a-artifact-versioning.md`](../research/e4a-artifact-versioning.md).
 
 Static shapes are baked at the frontend. E4b observes a runtime dimension
-parameter for a symbolic extent; runtime shape reuse has not been executed.
+parameter for a symbolic extent; E15 executes one compiled elementwise artifact
+at five extents and one static-tile GEMM at five row extents.
 Cache keys must distinguish static specialization from symbolic dimensions.
 
 **Exit criteria:** E4 answered, E6 passed with a non-CUDA backend, E9 measured, and an
 architecture decision record written for each of the four load-bearing choices
 ([`../adr/`](../adr/)).
+
+E9 and the architectural decisions are now recorded, including
+[ADR 0008](../adr/0008-phase0-evidence-boundaries.md). The literal new-provider
+registration test does not pass: executing and re-registering an existing CPU
+manifest is weaker evidence. Fusion/rescheduling, Rust and the cross-GPU
+performance matrix also remain open. Keep the phase in progress rather than
+silently narrowing its original scope.
 
 ---
 
@@ -154,8 +165,8 @@ checks before the load — TileLang version, FFI version, op set.
 
 E13 corrected the source distribution footprint: it needs CUTLASS/CuTe as well
 as `tl_templates`, about 27.2 MB of headers (3.6 MB for the compressed bundle).
-E14 measures the cubin bundle separately. Cross-host transfer still needs its
-own check; source emission and single-host execution do not establish it.
+E14 measures the cubin bundle separately. E15 independently verifies cross-host
+executable transfer with matching clean checkouts and a NumPy-only consumer.
 
 ---
 

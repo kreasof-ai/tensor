@@ -2,6 +2,12 @@
 
 **Status:** Accepted · 2026-09-29
 
+**Validation update:** [E15](../research/e15-phase0-validation.md) confirms
+that full CUDA compilation can run on a separate GitHub Actions host without
+a GPU. Numerics, throughput and executable loading run on A10G. The original
+local/remote split below describes where the first probes were available,
+not a requirement that compilation itself needs NVIDIA hardware.
+
 ## Context
 
 The proposal's Phase 0 assumes a working target environment. The reality is a development

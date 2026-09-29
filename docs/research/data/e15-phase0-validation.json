@@ -1,0 +1,1711 @@
+{
+  "status": "completed_with_limits",
+  "provenance": {
+    "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+    "git_dirty": false,
+    "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+    "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+    "python": "3.12.14",
+    "hostname": "default",
+    "packages": {
+      "tilelang": "0.1.14",
+      "apache-tvm-ffi": "0.1.12",
+      "torch": "2.14.0",
+      "numpy": "2.5.3"
+    }
+  },
+  "records": {
+    "cache_cold": {
+      "status": "passed",
+      "result": {
+        "compile_seconds": 1.911358692000249,
+        "stages": {
+          "lower_calls": 1,
+          "lower_seconds": 1.4334473239996441,
+          "cuda_compile_calls": 1,
+          "cuda_compile_seconds": 1.359997659000328
+        },
+        "identity": {
+          "key": "3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa",
+          "path": "/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/cache/0.1.14/linux-x86_64/kernels/3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa"
+        },
+        "max_abs_error": 0.0,
+        "memory_hit": {
+          "seconds": 0.005205563999879814,
+          "same_object": true,
+          "stages": {
+            "lower_calls": 0,
+            "lower_seconds": 0.0,
+            "cuda_compile_calls": 0,
+            "cuda_compile_seconds": 0.0
+          }
+        },
+        "key_matrix": {
+          "base_key_fields": {
+            "version": "0.1.14"
+          },
+          "baseline": "3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa",
+          "variants": {
+            "function_ir": "90d7a084adce37350f019528ff7e163c69cc97f2f7772a5dcd4f968f383a8582",
+            "target": "34e2be27cfca64fa812f09411afd46b916c235eef8ececba0c84a976cca6c23a",
+            "target_host": "f8e17b4484a76da3332c4284e1ee6b6f4f9baba40f8ae3c026800f0479596c1a",
+            "execution_backend": "521231dfffb08c9c5d98a021c57dcc880824bf804d2fd84f91c12ca4bf4e7139",
+            "out_idx": "d577e78115024790a6ab1464983753a2497dfa050757b55334ca7750d2888f24",
+            "pass_configs": "d6640550c0253414a8247bbcf8adaac32cae8882d3f63a988481169220c6c492",
+            "compile_flags": "c91a3288e3ff01c0f76c26960bbf5e981090536df446cb4e315dbabef5974ca4"
+          }
+        },
+        "shape_invalidation": {
+          "stages": {
+            "lower_calls": 1,
+            "lower_seconds": 1.4305704680000417,
+            "cuda_compile_calls": 1,
+            "cuda_compile_seconds": 1.3628972739998062
+          },
+          "max_abs_error": 0.0
+        }
+      },
+      "mode": "cache_cold",
+      "seconds": 6.536132845999418,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "cache_disk": {
+      "status": "passed",
+      "result": {
+        "compile_seconds": 0.0058418150001671165,
+        "stages": {
+          "lower_calls": 0,
+          "lower_seconds": 0.0,
+          "cuda_compile_calls": 0,
+          "cuda_compile_seconds": 0.0
+        },
+        "identity": {
+          "key": "3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa",
+          "path": "/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/cache/0.1.14/linux-x86_64/kernels/3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa"
+        },
+        "max_abs_error": 0.0
+      },
+      "mode": "cache_disk",
+      "seconds": 2.763981647000037,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "cache_corrupt": {
+      "status": "passed",
+      "result": {
+        "compile_seconds": 0.542198212000585,
+        "stages": {
+          "lower_calls": 1,
+          "lower_seconds": 0.06667377400026453,
+          "cuda_compile_calls": 0,
+          "cuda_compile_seconds": 0.0
+        },
+        "identity": {
+          "key": "3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa",
+          "path": "/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/cache/0.1.14/linux-x86_64/kernels/3ed431de800c8d9b4a8bd1502ee46e1c4723f87f7e11933c700c6250ae58c1aa"
+        },
+        "max_abs_error": 0.0
+      },
+      "mode": "cache_corrupt",
+      "seconds": 3.284601031999955,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "provider": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "size": 1,
+            "seconds": 1.239227402999859,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 127,
+            "seconds": 0.5827942860005351,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 128,
+            "seconds": 0.5654379500001596,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 129,
+            "seconds": 0.5957658030001767,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1025,
+            "seconds": 0.5913280009999653,
+            "max_abs_error": 0.0
+          }
+        ],
+        "registration": {
+          "manifest_reregistration": true,
+          "duplicate_target_error": "Backends sharing target kind 'c' must define supports_target predicates"
+        },
+        "cpu_tvm_ffi_error": "Device codegen 'c' for target 'c' does not support lowering with compilation",
+        "default_vectorization_error": "RuntimeError: Compilation Failed! ['/usr/bin/g++', '-std=c++17', '-fPIC', '-shared', '/tmp/tmpa3a5war3.cpp', '-I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src', '-I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src', '-o', '/tmp/tmpa3a5war3.so']\n\n// tilelang target: {\"kind\":\"c\",\"tag\":\"\",\"keys\":[\"cpu\"],\"host\":{\"kind\":\"c\",\"tag\":\"\",\"keys\":[\"cpu\"]}}\n#include <tl_templates/cpp/common.h>\n\n#ifdef __cplusplus\nextern \"C\"\n#endif\nint32_t elementwise_kernel(float* a, float* b, float* c);\n#ifdef __cplusplus\nextern \"C\"\n#endif\nint32_t elementwise_kernel(float* a, float* b, float* c) {\n  for (int32_t i = 0; i < 32; ++i) {\n    float broadcast_var = 2.000000e+00f;\n    float broadcast_var_1 = 0.000000e+00f;\n    float4 v_ = (*(float4*)(a + (i * 4)) * ((float4)(broadcast_var, broadcast_var, broadcast_var, broadcast_var))) + *(float4*)(b + (i * 4));\n    float4 v__1 = (float4)(broadcast_var_1, broadcast_var_1, broadcast_var_1, broadcast_var_1);\n    *(float4*)(c + (i * 4)) = ((v_) > (v__1) ? (v_) : (v__1));\n  }\n  return 0;\n}\n\n\n#ifdef _WIN32\n#define TL_EXPORT __declspec(dllexport)\n#else\n#define TL_EXPORT\n#endif\n\n#define ERROR_BUF_SIZE 1024\nstatic char error_buf[ERROR_BUF_SIZE];\n\nextern \"C\" TL_EXPORT const char* get_last_error() {\n    return error_buf;\n}\n\nextern \"C\" TL_EXPORT int init() {\n    error_buf[0] = '\\0';\n    \n    return 0;\n}\n\n#ifdef __cplusplus\nextern \"C\"\n#endif\nint32_t call(float* a, float* b, float* c) {\n  return elementwise_kernel(a, b, c);\n}\n",
+        "pass_configs": {
+          "tirx.disable_vectorize": true
+        },
+        "llvm_enabled": false,
+        "execution_backend": "cython",
+        "native_library": "/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/provider/libp0_cpu.so"
+      },
+      "mode": "provider",
+      "seconds": 6.131427146000533,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "symbolic": {
+      "status": "passed",
+      "result": {
+        "elementwise": [
+          {
+            "size": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 127,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 128,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 129,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1025,
+            "max_abs_error": 0.0
+          }
+        ],
+        "elementwise_compile": {
+          "lower_calls": 1,
+          "lower_seconds": 1.7054320300003383,
+          "cuda_compile_calls": 1,
+          "cuda_compile_seconds": 1.3615609680000489
+        },
+        "static_tile_dynamic_gemm": [
+          {
+            "rows": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "rows": 31,
+            "max_abs_error": 0.0
+          },
+          {
+            "rows": 32,
+            "max_abs_error": 0.0
+          },
+          {
+            "rows": 33,
+            "max_abs_error": 0.0
+          },
+          {
+            "rows": 65,
+            "max_abs_error": 0.0
+          }
+        ],
+        "gemm_compile": {
+          "lower_calls": 1,
+          "lower_seconds": 2.357077233000382,
+          "cuda_compile_calls": 1,
+          "cuda_compile_seconds": 1.6595771680003963
+        },
+        "dynamic_tile_error": "ValueError: T.gemm requires static tile dimensions, but M is symbolic: tile"
+      },
+      "mode": "symbolic",
+      "seconds": 7.462261017999481,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "abi": {
+      "status": "passed",
+      "result": {
+        "cpu_run": {
+          "status": "passed",
+          "size": 129,
+          "max_abs_error": 0,
+          "wrong_dtype_rejected": true
+        },
+        "native_ir": {
+          "status": "passed",
+          "byte_identical": true,
+          "ir_bytes": 23995
+        },
+        "commands": [
+          [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "-I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/include",
+            "-fPIC",
+            "-shared",
+            "/home/sagemaker-user/tensor/experiments/p0/out/validation-37fd520/experiments/p0/native_module.cpp",
+            "-L/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/abi",
+            "-lp0_cpu",
+            "-L/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-ltvm_ffi",
+            "-Wl,-rpath,$ORIGIN",
+            "-Wl,-rpath,/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-o",
+            "/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/abi/libp0_ffi.so"
+          ],
+          [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "-I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/include",
+            "/home/sagemaker-user/tensor/experiments/p0/out/validation-37fd520/experiments/p0/native_host.cpp",
+            "-L/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-ltvm_ffi",
+            "-ldl",
+            "-Wl,-rpath,/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-o",
+            "/home/sagemaker-user/tensor/experiments/p0/out/phase0-clean-37fd520/abi/native_host"
+          ]
+        ],
+        "host_dependencies": "\tlinux-vdso.so.1 (0x00007f4cda2d0000)\n\tlibtvm_ffi.so => /home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib/libtvm_ffi.so (0x00007f4cda105000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f4cd9e84000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f4cd9e56000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007f4cd9c44000)\n\tlibdl.so.2 => /usr/lib/x86_64-linux-gnu/libdl.so.2 (0x00007f4cd9c3f000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007f4cd9b54000)\n\tlibpthread.so.0 => /usr/lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f4cd9b4f000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f4cda2d2000)\n",
+        "rust": "unverified: Rust toolchain not installed",
+        "native_compilation_pipeline": "unverified; IR loading is not end-to-end native compilation",
+        "abi_inventory": {
+          "function_call": "TVM FFI Function + typed DLL exports; exercised",
+          "buffers": "borrowed DLTensor/TensorView; caller owns storage; exercised on CPU",
+          "errors": "wrong dtype rejected and propagated to C++; exercised",
+          "gpu_load_launch_copy": "CUDA Driver API; exercised by opaque artifact consumer",
+          "streams": "driver consumer owns its stream; foreign-stream interop unverified",
+          "events": "PyTorch CUDA events measured; provider-neutral event ABI unverified",
+          "async_signals_memory_ordering": "no stable Tensor contract yet; unverified"
+        }
+      },
+      "mode": "abi",
+      "seconds": 4.7086152939991734,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "framework": {
+      "status": "passed",
+      "result": {
+        "graphs": {
+          "fx": [
+            {
+              "code": "\n\n\ndef forward(self, L_a_ : torch.Tensor, L_b_ : torch.Tensor):\n    l_a_ = L_a_\n    l_b_ = L_b_\n    mul = l_a_ * 2;  l_a_ = None\n    add = mul + l_b_;  mul = l_b_ = None\n    relu = torch.relu(add);  add = None\n    return (relu,)\n    ",
+              "operators": [
+                "<built-in function mul>",
+                "<built-in function add>",
+                "<built-in method relu of type object at 0x7efcae2a5640>"
+              ],
+              "input_types": [
+                "Tensor",
+                "Tensor"
+              ]
+            },
+            {
+              "code": "\n\n\ndef forward(self, L_a_ : torch.Tensor, L_b_ : torch.Tensor):\n    l_a_ = L_a_\n    l_b_ = L_b_\n    mul = l_a_ * 2;  l_a_ = None\n    add = mul + l_b_;  mul = l_b_ = None\n    relu = torch.relu(add);  add = None\n    return (relu,)\n    ",
+              "operators": [
+                "<built-in function mul>",
+                "<built-in function add>",
+                "<built-in method relu of type object at 0x7efcae2a5640>"
+              ],
+              "input_types": [
+                "Tensor",
+                "Tensor"
+              ]
+            }
+          ],
+          "aot_forward": [
+            {
+              "code": "\n\n\ndef forward(self, primals_1, primals_2, primals_3):\n    mul = torch.ops.aten.mul.Tensor(primals_2, 2);  primals_2 = None\n    add_2 = torch.ops.aten.add.Tensor(mul, primals_3);  mul = primals_3 = None\n    relu = torch.ops.aten.relu.default(add_2);  add_2 = None\n    detach = torch.ops.aten.detach.default(relu)\n    return (relu, detach, primals_1)\n    ",
+              "operators": [
+                "aten.mul.Tensor",
+                "aten.add.Tensor",
+                "aten.relu.default",
+                "aten.detach.default"
+              ],
+              "input_types": [
+                "SymInt",
+                "FakeTensor",
+                "FakeTensor"
+              ]
+            }
+          ],
+          "aot_backward": [
+            {
+              "code": "\n\n\ndef forward(self, primals_1, detach, tangents_1):\n    detach_1 = torch.ops.aten.detach.default(detach);  detach = None\n    threshold_backward = torch.ops.aten.threshold_backward.default(tangents_1, detach_1, 0);  tangents_1 = detach_1 = None\n    mul_5 = torch.ops.aten.mul.Tensor(threshold_backward, 2)\n    return (None, mul_5, threshold_backward)\n    ",
+              "operators": [
+                "aten.detach.default",
+                "aten.threshold_backward.default",
+                "aten.mul.Tensor"
+              ],
+              "input_types": [
+                "SymInt",
+                "FakeTensor",
+                "FakeTensor"
+              ]
+            }
+          ],
+          "breaks": [
+            {
+              "code": "\n\n\ndef forward(self, L_a_ : torch.Tensor, L_b_ : torch.Tensor):\n    l_a_ = L_a_\n    l_b_ = L_b_\n    mul = l_a_ * 2;  l_a_ = None\n    add = mul + l_b_;  mul = l_b_ = None\n    out = torch.relu(add);  add = None\n    return (out,)\n    ",
+              "operators": [
+                "<built-in function mul>",
+                "<built-in function add>",
+                "<built-in method relu of type object at 0x7efcae2a5640>"
+              ],
+              "input_types": [
+                "Tensor",
+                "Tensor"
+              ]
+            },
+            {
+              "code": "\n\n\ndef forward(self, L_out_ : torch.Tensor):\n    l_out_ = L_out_\n    add = l_out_ + 1;  l_out_ = None\n    return (add,)\n    ",
+              "operators": [
+                "<built-in function add>"
+              ],
+              "input_types": [
+                "Tensor"
+              ]
+            }
+          ]
+        },
+        "tilelang_lowered_extents": [
+          129,
+          130
+        ],
+        "aot_execution": "boxed FX eager reference; not TileLang training",
+        "graph_break_fragments": 2
+      },
+      "mode": "framework",
+      "seconds": 5.704311935999613,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "fusion": {
+      "status": "passed",
+      "result": {
+        "post_lower_tile_op_bytes": 222661,
+        "re_lowering": {
+          "status": "rejected",
+          "error": "InternalError: bad optional access"
+        },
+        "public_names_containing_fus": {
+          "tilelang": [],
+          "transform": []
+        },
+        "fusion": "unverified: this probe does not compose or reschedule two artifacts",
+        "decision": "keep frontend IR as a pinned source tier; ship opaque executables first; defer fusion"
+      },
+      "mode": "fusion",
+      "seconds": 2.429386978000366,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "compile-sm_80": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "arch": "sm_80",
+            "status": "compiled",
+            "frontend_seconds": 0.007512577999477799,
+            "full_compile_seconds": 1.9621930639996208,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4602402199998323,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3795666289997826
+            },
+            "warm_seconds": 0.0019040080005652271,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "ir_sha256_after": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "fresh_frontend_warm_seconds": 0.007889857000009215,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gemm_relu",
+            "arch": "sm_80",
+            "status": "compiled",
+            "frontend_seconds": 0.011113290000139386,
+            "full_compile_seconds": 3.6256763060000594,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.915983277000123,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.8701009179994799
+            },
+            "warm_seconds": 1.729835467999692,
+            "warm_stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.0229758649993528,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": false,
+            "ir_sha256_before": "f664f5e4c3164632e364bddb3cabc64b32606b6ff3a3deb3f65284992385bae9",
+            "ir_sha256_after": "886bbe7d7ce106b86cf0dce6c6e98566e8c90c5f577c78b8cfbbf14dda42d612",
+            "fresh_frontend_warm_seconds": 0.013901086000259966,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "row_sum",
+            "arch": "sm_80",
+            "status": "compiled",
+            "frontend_seconds": 0.0189874060006332,
+            "full_compile_seconds": 1.9129582470004607,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4264536489999955,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3665083710002364
+            },
+            "warm_seconds": 0.0024541279999539256,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "ir_sha256_after": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "fresh_frontend_warm_seconds": 0.021165889000258176,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gather_rows",
+            "arch": "sm_80",
+            "status": "compiled",
+            "frontend_seconds": 0.0068581860004997,
+            "full_compile_seconds": 1.9119791070006613,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4338609050000741,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3616084539999065
+            },
+            "warm_seconds": 0.0019078679997619474,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "ir_sha256_after": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "fresh_frontend_warm_seconds": 0.009081571000024269,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "flash_attention",
+            "arch": "sm_80",
+            "status": "compiled",
+            "frontend_seconds": 0.053314486000090255,
+            "full_compile_seconds": 5.09012182799961,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 4.341768342999785,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.8891539749993171
+            },
+            "warm_seconds": 5.085148678999758,
+            "warm_stages": {
+              "lower_calls": 1,
+              "lower_seconds": 4.324239347999537,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.871640153000044
+            },
+            "warm_same_object": false,
+            "ir_sha256_before": "cf2c6fabc296eb3c68bc72790c6068a43a8193159981597b00d16365245661a2",
+            "ir_sha256_after": "1831c4ecfc92a8b143c11f644cbe2a863a1b606159590139c8d4b3406dba805e",
+            "fresh_frontend_warm_seconds": 0.05773785499968653,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          }
+        ],
+        "timing_boundary": "imports excluded; lazy host FFI JIT included",
+        "stage_relationship": "CUDA compilation is nested within lowering; do not add stage times",
+        "gpu_execution": "not performed by this compilation probe"
+      },
+      "mode": "compile",
+      "seconds": 23.55544541800009,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "compile-sm_86": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "arch": "sm_86",
+            "status": "compiled",
+            "frontend_seconds": 0.007616520999363274,
+            "full_compile_seconds": 1.9620871750003062,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4576502330000949,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3759339139996882
+            },
+            "warm_seconds": 0.0019387679994906648,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "ir_sha256_after": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "fresh_frontend_warm_seconds": 0.007872866999605321,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gemm_relu",
+            "arch": "sm_86",
+            "status": "compiled",
+            "frontend_seconds": 0.01244134600074176,
+            "full_compile_seconds": 3.662982935999935,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.951495053999679,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.8897346619996824
+            },
+            "warm_seconds": 1.7500854760000948,
+            "warm_stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.0399091190001855,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": false,
+            "ir_sha256_before": "f664f5e4c3164632e364bddb3cabc64b32606b6ff3a3deb3f65284992385bae9",
+            "ir_sha256_after": "886bbe7d7ce106b86cf0dce6c6e98566e8c90c5f577c78b8cfbbf14dda42d612",
+            "fresh_frontend_warm_seconds": 0.014200221999999485,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "row_sum",
+            "arch": "sm_86",
+            "status": "compiled",
+            "frontend_seconds": 0.01956963700013148,
+            "full_compile_seconds": 1.9297762650003278,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4470957339999586,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3889575419998437
+            },
+            "warm_seconds": 0.0020073599998795544,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "ir_sha256_after": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "fresh_frontend_warm_seconds": 0.02080057199964358,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gather_rows",
+            "arch": "sm_86",
+            "status": "compiled",
+            "frontend_seconds": 0.006968968000364839,
+            "full_compile_seconds": 1.9038016069998775,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4238682230006816,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3537060239996208
+            },
+            "warm_seconds": 0.001963089000128093,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "ir_sha256_after": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "fresh_frontend_warm_seconds": 0.009426440999959596,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "flash_attention",
+            "arch": "sm_86",
+            "status": "compiled",
+            "frontend_seconds": 0.05497643400030938,
+            "full_compile_seconds": 5.112801928000408,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 4.361369919999561,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.876738965000186
+            },
+            "warm_seconds": 5.1170997509998415,
+            "warm_stages": {
+              "lower_calls": 1,
+              "lower_seconds": 4.3568448249998255,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.8916817419994914
+            },
+            "warm_same_object": false,
+            "ir_sha256_before": "cf2c6fabc296eb3c68bc72790c6068a43a8193159981597b00d16365245661a2",
+            "ir_sha256_after": "1831c4ecfc92a8b143c11f644cbe2a863a1b606159590139c8d4b3406dba805e",
+            "fresh_frontend_warm_seconds": 0.05810775700047088,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          }
+        ],
+        "timing_boundary": "imports excluded; lazy host FFI JIT included",
+        "stage_relationship": "CUDA compilation is nested within lowering; do not add stage times",
+        "gpu_execution": "not performed by this compilation probe"
+      },
+      "mode": "compile",
+      "seconds": 23.685961950999626,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "compile-sm_90": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "arch": "sm_90",
+            "status": "compiled",
+            "frontend_seconds": 0.0077062219997969805,
+            "full_compile_seconds": 1.9522946950000915,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4467575939997914,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.366956799000036
+            },
+            "warm_seconds": 0.0019903930005966686,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "ir_sha256_after": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "fresh_frontend_warm_seconds": 0.007865123000556196,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gemm_relu",
+            "arch": "sm_90",
+            "status": "compiler_rejected",
+            "frontend_seconds": 0.011066741999457008,
+            "full_compile_seconds": 3.6651811829997314,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 3.6629587139996147,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.9760382800004663
+            },
+            "error": " 0; ki < 2; ++ki) {\n          tl::wgmma_ss<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 64, 16, false, true, 1, 1>(uint64_t(desc_a + ((ki * 32) >> 4)), uint64_t(desc_b + ((ki * 2048) >> 4)), ((uint32_t*)(C_local + 0)), 1);\n        }\n        tl::warpgroup_commit_batch();\n        tl::warpgroup_wait<0>();\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(C_local + 0), 32);\n      }\n      mbarrier[((k_1 % 3) + 3)].arrive();\n    }\n    #pragma unroll\n    for (int i_1 = 0; i_1 < 16; ++i_1) {\n      half_t bias_local_cast[2];\n      *(uint1*)(bias_local_cast + 0) = *(uint1*)(bias + (((((int)blockIdx.x) * 64) + ((i_1 >> 1) * 8)) + ((((int)threadIdx.x) & 3) * 2)));\n      float broadcast_var_1 = 0x0p+0f/*0.000000e+00*/;\n      float2 __1;\n        float2 __2;\n          float2 v_ = *(float2*)(C_local + (i_1 * 2));\n          float2 __3;\n          uint1 v__1 = *(uint1*)(bias_local_cast + 0);\n          ((float2*)(&__3))[0] = __half22float2(((half2*)(&v__1))[0]);\n          __2.x = (v_.x+__3.x);\n          __2.y = (v_.y+__3.y);\n        float2 v__2 = make_float2(broadcast_var_1, broadcast_var_1);\n        __1.x = max(__2.x, v__2.x);\n        __1.y = max(__2.y, v__2.y);\n      *(float2*)(C_local + (i_1 * 2)) = __1;\n    }\n    #pragma unroll\n    for (int i_2 = 0; i_2 < 16; ++i_2) {\n      half_t C_local_cast_1[2];\n      uint1 __4;\n      float2 v__3 = *(float2*)(C_local + (i_2 * 2));\n      ((half2*)(&__4))[0] = __float22half2_rn(((float2*)(&v__3))[0]);\n      *(uint1*)(C_local_cast_1 + 0) = __4;\n      *(uint1*)(C + ((((((((((int)blockIdx.y) * 65536) + ((((int)threadIdx.x) >> 5) * 16384)) + ((i_2 & 1) * 8192)) + (((((int)threadIdx.x) & 31) >> 2) * 1024)) + (((int)blockIdx.x) * 64)) + ((i_2 >> 1) * 8)) + ((((int)threadIdx.x) & 3) * 2)) - 65536)) = *(uint1*)(C_local_cast_1 + 0);\n    }\n  }\n}\n\n\nCompilation error:\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __device__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __host__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __device__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __host__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __device__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __host__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(184): error: static assertion failed with \"tl::warpgroup_reg_dealloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_dealloc<RegCount,kDependentFalse>() [with RegCount=24U, kDependentFalse=false]\" at line 44 of /tmp/tmpu07ivzmn/tvm_kernels.cu\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(173): error: static assertion failed with \"tl::warpgroup_reg_alloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_alloc<RegCount,kDependentFalse>() [with RegCount=240U, kDependentFalse=false]\" at line 55 of /tmp/tmpu07ivzmn/tvm_kernels.cu\n\n2 errors detected in the compilation of \"/tmp/tmpu07ivzmn/tvm_kernels.cu\".\n\nCommand: /home/sagemaker-user/tensor/experiments/p0/out/cuda-12.9/bin/nvcc -ccbin=/usr/bin/g++ --cubin -O3 -lineinfo -arch=sm_90 -std=c++20 -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include -o /tmp/tmpu07ivzmn/tvm_kernels.cubin /tmp/tmpu07ivzmn/tvm_kernels.cu\n"
+          },
+          {
+            "name": "row_sum",
+            "arch": "sm_90",
+            "status": "compiled",
+            "frontend_seconds": 0.01962422999986302,
+            "full_compile_seconds": 1.9135487829998965,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.426446876999762,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3694552810002278
+            },
+            "warm_seconds": 0.0018038099997284007,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "ir_sha256_after": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "fresh_frontend_warm_seconds": 0.021037380000052508,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gather_rows",
+            "arch": "sm_90",
+            "status": "compiled",
+            "frontend_seconds": 0.008005175999642233,
+            "full_compile_seconds": 1.9174117769998702,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4389787199997954,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3673261940002703
+            },
+            "warm_seconds": 0.0019230319994676393,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "ir_sha256_after": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "fresh_frontend_warm_seconds": 0.009472007999647758,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "flash_attention",
+            "arch": "sm_90",
+            "status": "compiler_rejected",
+            "frontend_seconds": 0.05460311300066678,
+            "full_compile_seconds": 2.638269506999677,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.6350730070007558,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.6848191669996595
+            },
+            "error": "> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 3) >> 1) + i_9) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))])), (&(B_local_1[(i_9 * 8)])));\n          }\n          for (int j_1 = 0; j_1 < 2; ++j_1) {\n            tl::mma_sync<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 16, 8, 16, false, true>(reinterpret_cast<float*>(result + (j_1 * 8)), reinterpret_cast<const unsigned*>(A_local_1 + 0), reinterpret_cast<const unsigned*>(B_local_1 + (j_1 * 8)));\n            tl::mma_sync<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 16, 8, 16, false, true>(reinterpret_cast<float*>(result + ((j_1 * 8) + 4)), reinterpret_cast<const unsigned*>(A_local_1 + 0), reinterpret_cast<const unsigned*>(B_local_1 + ((j_1 * 8) + 4)));\n          }\n        }\n      }\n      mbarrier[3].arrive();\n    }\n    #pragma unroll\n    for (int i_10 = 0; i_10 < 8; ++i_10) {\n      float2 __10;\n        float2 v__13 = *(float2*)(result + (i_10 * 2));\n        float2 v__14 = make_float2(normalizer[(i_10 & 1)], normalizer[(i_10 & 1)]);\n        __10.x = (v__13.x/v__14.x);\n        __10.y = (v__13.y/v__14.y);\n      *(float2*)(result + (i_10 * 2)) = __10;\n    }\n    #pragma unroll\n    for (int i_11 = 0; i_11 < 8; ++i_11) {\n      half_t O_local_cast[2];\n      uint1 __11;\n      float2 v__15 = *(float2*)(result + (i_11 * 2));\n      ((half2*)(&__11))[0] = __float22half2_rn(((float2*)(&v__15))[0]);\n      *(uint1*)(O_local_cast + 0) = __11;\n      *(uint1*)(O + (((((((((((int)blockIdx.y) * 8192) + (((int)blockIdx.x) * 2048)) + (((((int)threadIdx.x) & 63) >> 5) * 1024)) + ((i_11 & 1) * 512)) + (((((int)threadIdx.x) & 31) >> 2) * 64)) + ((((int)threadIdx.x) >> 6) * 32)) + ((i_11 >> 1) * 8)) + ((((int)threadIdx.x) & 3) * 2)) - 64)) = *(uint1*)(O_local_cast + 0);\n    }\n  }\n}\n\n\nCompilation error:\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __device__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __host__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __device__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __host__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __device__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __host__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(184): error: static assertion failed with \"tl::warpgroup_reg_dealloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_dealloc<RegCount,kDependentFalse>() [with RegCount=24U, kDependentFalse=false]\" at line 60 of /tmp/tmpqnmensqf/tvm_kernels.cu\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(173): error: static assertion failed with \"tl::warpgroup_reg_alloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_alloc<RegCount,kDependentFalse>() [with RegCount=240U, kDependentFalse=false]\" at line 74 of /tmp/tmpqnmensqf/tvm_kernels.cu\n\n2 errors detected in the compilation of \"/tmp/tmpqnmensqf/tvm_kernels.cu\".\n\nCommand: /home/sagemaker-user/tensor/experiments/p0/out/cuda-12.9/bin/nvcc -ccbin=/usr/bin/g++ --cubin -O3 -lineinfo -arch=sm_90 -std=c++20 -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include -o /tmp/tmpqnmensqf/tvm_kernels.cubin /tmp/tmpqnmensqf/tvm_kernels.cu\n"
+          }
+        ],
+        "timing_boundary": "imports excluded; lazy host FFI JIT included",
+        "stage_relationship": "CUDA compilation is nested within lowering; do not add stage times",
+        "gpu_execution": "not performed by this compilation probe"
+      },
+      "mode": "compile",
+      "seconds": 14.25135293800031,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "compile-sm_100": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "arch": "sm_100",
+            "status": "compiled",
+            "frontend_seconds": 0.007489923999855819,
+            "full_compile_seconds": 2.0570079110002553,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.5263468619996274,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.4489832080007545
+            },
+            "warm_seconds": 0.002003433000027144,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "ir_sha256_after": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "fresh_frontend_warm_seconds": 0.008006435999959649,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gemm_relu",
+            "arch": "sm_100",
+            "status": "compiler_rejected",
+            "frontend_seconds": 0.01163465400077257,
+            "full_compile_seconds": 3.4374275050004144,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 3.435031304000404,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.6960614119998354
+            },
+            "error": "e::kFloat32, 16, 8, 16, false, true>(reinterpret_cast<float*>(C_local + (((i_3 * 16) + (j * 8)) + 4)), reinterpret_cast<const unsigned*>(A_local + (i_3 * 8)), reinterpret_cast<const unsigned*>(B_local + ((j * 8) + 4)));\n            }\n          }\n        }\n      }\n      mbarrier[((k_1 % 3) + 3)].arrive();\n    }\n    #pragma unroll\n    for (int i_4 = 0; i_4 < 16; ++i_4) {\n      half_t bias_local_cast[2];\n      *(uint1*)(bias_local_cast + 0) = *(uint1*)(bias + (((((((int)blockIdx.x) * 64) + ((((int)threadIdx.x) >> 6) * 32)) + (((i_4 & 7) >> 1) * 8)) + ((((int)threadIdx.x) & 3) * 2)) - 64));\n      float broadcast_var_1 = 0x0p+0f/*0.000000e+00*/;\n      float2 __1;\n        float2 __2;\n          float2 v_ = *(float2*)(C_local + (i_4 * 2));\n          float2 __3;\n          uint1 v__1 = *(uint1*)(bias_local_cast + 0);\n          ((float2*)(&__3))[0] = __half22float2(((half2*)(&v__1))[0]);\n          *(float2*)(&(__2.x)) = tl::add2(*(float2*)(&(v_.x)), *(float2*)(&(__3.x)));\n        float2 v__2 = make_float2(broadcast_var_1, broadcast_var_1);\n        *(float2*)(&(__1.x)) = tl::max2(*(float2*)(&(__2.x)), *(float2*)(&(v__2.x)));\n      *(float2*)(C_local + (i_4 * 2)) = __1;\n    }\n    #pragma unroll\n    for (int i_5 = 0; i_5 < 16; ++i_5) {\n      half_t C_local_cast_1[2];\n      uint1 __4;\n      float2 v__3 = *(float2*)(C_local + (i_5 * 2));\n      ((half2*)(&__4))[0] = __float22half2_rn(((float2*)(&v__3))[0]);\n      *(uint1*)(C_local_cast_1 + 0) = __4;\n      *(uint1*)(C + ((((((((((((int)blockIdx.y) * 65536) + (((((int)threadIdx.x) & 63) >> 5) * 32768)) + ((i_5 >> 3) * 16384)) + ((i_5 & 1) * 8192)) + (((((int)threadIdx.x) & 31) >> 2) * 1024)) + (((int)blockIdx.x) * 64)) + ((((int)threadIdx.x) >> 6) * 32)) + (((i_5 & 7) >> 1) * 8)) + ((((int)threadIdx.x) & 3) * 2)) - 64)) = *(uint1*)(C_local_cast_1 + 0);\n    }\n  }\n}\n\n\nCompilation error:\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __device__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __host__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __device__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __host__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __device__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __host__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(184): error: static assertion failed with \"tl::warpgroup_reg_dealloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_dealloc<RegCount,kDependentFalse>() [with RegCount=24U, kDependentFalse=false]\" at line 44 of /tmp/tmpp95f7lp7/tvm_kernels.cu\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(173): error: static assertion failed with \"tl::warpgroup_reg_alloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_alloc<RegCount,kDependentFalse>() [with RegCount=240U, kDependentFalse=false]\" at line 55 of /tmp/tmpp95f7lp7/tvm_kernels.cu\n\n2 errors detected in the compilation of \"/tmp/tmpp95f7lp7/tvm_kernels.cu\".\n\nCommand: /home/sagemaker-user/tensor/experiments/p0/out/cuda-12.9/bin/nvcc -ccbin=/usr/bin/g++ --cubin -O3 -lineinfo -arch=sm_100 -std=c++20 -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include -o /tmp/tmpp95f7lp7/tvm_kernels.cubin /tmp/tmpp95f7lp7/tvm_kernels.cu\n"
+          },
+          {
+            "name": "row_sum",
+            "arch": "sm_100",
+            "status": "compiled",
+            "frontend_seconds": 0.019632221999927424,
+            "full_compile_seconds": 1.992869269000039,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4859205720003956,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.432375492000574
+            },
+            "warm_seconds": 0.0019294180001452332,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "ir_sha256_after": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "fresh_frontend_warm_seconds": 0.021409185000266007,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gather_rows",
+            "arch": "sm_100",
+            "status": "compiler_rejected",
+            "frontend_seconds": 0.006827152999903774,
+            "full_compile_seconds": 1.340888676000759,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.3388232850002169,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.281102103000194
+            },
+            "error": ", broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                               ^\n\n/tmp/tmpjlkh_2o_/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                              ^\n\n/tmp/tmpjlkh_2o_/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                 ^\n\n/tmp/tmpjlkh_2o_/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                                ^\n\n/tmp/tmpjlkh_2o_/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n\n/tmp/tmpjlkh_2o_/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                                                              ^\n\n16 errors detected in the compilation of \"/tmp/tmpjlkh_2o_/tvm_kernels.cu\".\n\nCommand: /home/sagemaker-user/tensor/experiments/p0/out/cuda-12.9/bin/nvcc -ccbin=/usr/bin/g++ --cubin -O3 -lineinfo -arch=sm_100 -std=c++20 -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include -o /tmp/tmpjlkh_2o_/tvm_kernels.cubin /tmp/tmpjlkh_2o_/tvm_kernels.cu\n"
+          },
+          {
+            "name": "flash_attention",
+            "arch": "sm_100",
+            "status": "compiler_rejected",
+            "frontend_seconds": 0.05448526899999706,
+            "full_compile_seconds": 2.6505453629997646,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.647525364000103,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.6994402599993919
+            },
+            "error": ") >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 3) >> 1) + i_9) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))])), (&(B_local_1[(i_9 * 8)])));\n          }\n          for (int j_1 = 0; j_1 < 2; ++j_1) {\n            tl::mma_sync<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 16, 8, 16, false, true>(reinterpret_cast<float*>(result + (j_1 * 8)), reinterpret_cast<const unsigned*>(A_local_1 + 0), reinterpret_cast<const unsigned*>(B_local_1 + (j_1 * 8)));\n            tl::mma_sync<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 16, 8, 16, false, true>(reinterpret_cast<float*>(result + ((j_1 * 8) + 4)), reinterpret_cast<const unsigned*>(A_local_1 + 0), reinterpret_cast<const unsigned*>(B_local_1 + ((j_1 * 8) + 4)));\n          }\n        }\n      }\n      mbarrier[3].arrive();\n    }\n    #pragma unroll\n    for (int i_10 = 0; i_10 < 8; ++i_10) {\n      float2 __9;\n        float2 v__13 = *(float2*)(result + (i_10 * 2));\n        float2 v__14 = make_float2(normalizer[(i_10 & 1)], normalizer[(i_10 & 1)]);\n        __9.x = (v__13.x/v__14.x);\n        __9.y = (v__13.y/v__14.y);\n      *(float2*)(result + (i_10 * 2)) = __9;\n    }\n    #pragma unroll\n    for (int i_11 = 0; i_11 < 8; ++i_11) {\n      half_t O_local_cast[2];\n      uint1 __10;\n      float2 v__15 = *(float2*)(result + (i_11 * 2));\n      ((half2*)(&__10))[0] = __float22half2_rn(((float2*)(&v__15))[0]);\n      *(uint1*)(O_local_cast + 0) = __10;\n      *(uint1*)(O + (((((((((((int)blockIdx.y) * 8192) + (((int)blockIdx.x) * 2048)) + (((((int)threadIdx.x) & 63) >> 5) * 1024)) + ((i_11 & 1) * 512)) + (((((int)threadIdx.x) & 31) >> 2) * 64)) + ((((int)threadIdx.x) >> 6) * 32)) + ((i_11 >> 1) * 8)) + ((((int)threadIdx.x) & 3) * 2)) - 64)) = *(uint1*)(O_local_cast + 0);\n    }\n  }\n}\n\n\nCompilation error:\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __device__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(932): warning #20012-D: __host__ annotation is ignored on a function(\"float_e4m3_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __device__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(949): warning #20012-D: __host__ annotation is ignored on a function(\"float_e5m2_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __device__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                             ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/instruction/../common.h(966): warning #20012-D: __host__ annotation is ignored on a function(\"tfloat32_t\") that is explicitly defaulted on its first declaration\n    __inline__ __attribute__((always_inline)) __attribute__((device)) __attribute__((host))\n                                                                                     ^\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(184): error: static assertion failed with \"tl::warpgroup_reg_dealloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_dealloc<RegCount,kDependentFalse>() [with RegCount=24U, kDependentFalse=false]\" at line 60 of /tmp/tmpjuotachu/tvm_kernels.cu\n\n/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src/tl_templates/cuda/intrin.h(173): error: static assertion failed with \"tl::warpgroup_reg_alloc requires a target with CTA register reconfiguration, such as sm_90a\"\n    static_assert(kDependentFalse,\n    ^\n          detected during instantiation of \"void tl::warpgroup_reg_alloc<RegCount,kDependentFalse>() [with RegCount=240U, kDependentFalse=false]\" at line 74 of /tmp/tmpjuotachu/tvm_kernels.cu\n\n2 errors detected in the compilation of \"/tmp/tmpjuotachu/tvm_kernels.cu\".\n\nCommand: /home/sagemaker-user/tensor/experiments/p0/out/cuda-12.9/bin/nvcc -ccbin=/usr/bin/g++ --cubin -O3 -lineinfo -arch=sm_100 -std=c++20 -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include -o /tmp/tmpjuotachu/tvm_kernels.cubin /tmp/tmpjuotachu/tvm_kernels.cu\n"
+          }
+        ],
+        "timing_boundary": "imports excluded; lazy host FFI JIT included",
+        "stage_relationship": "CUDA compilation is nested within lowering; do not add stage times",
+        "gpu_execution": "not performed by this compilation probe"
+      },
+      "mode": "compile",
+      "seconds": 13.638201343999754,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "compile-sm_90a": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "arch": "sm_90a",
+            "status": "compiled",
+            "frontend_seconds": 0.007760249999591906,
+            "full_compile_seconds": 1.940687066999999,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4336276670001098,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3533014470003764
+            },
+            "warm_seconds": 0.002012279000155104,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "ir_sha256_after": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "fresh_frontend_warm_seconds": 0.009519933999399655,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gemm_relu",
+            "arch": "sm_90a",
+            "status": "compiled",
+            "frontend_seconds": 0.01450218100035272,
+            "full_compile_seconds": 3.4320506019994355,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.666009694999957,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 2.4099674509998295
+            },
+            "warm_seconds": 0.0021969029994579614,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f664f5e4c3164632e364bddb3cabc64b32606b6ff3a3deb3f65284992385bae9",
+            "ir_sha256_after": "f664f5e4c3164632e364bddb3cabc64b32606b6ff3a3deb3f65284992385bae9",
+            "fresh_frontend_warm_seconds": 0.013717068000005384,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "row_sum",
+            "arch": "sm_90a",
+            "status": "compiled",
+            "frontend_seconds": 0.019326928000737098,
+            "full_compile_seconds": 1.8925049559993568,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4069843779998337,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.348106624999673
+            },
+            "warm_seconds": 0.0018417759993099025,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "ir_sha256_after": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "fresh_frontend_warm_seconds": 0.021048831999905815,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gather_rows",
+            "arch": "sm_90a",
+            "status": "compiled",
+            "frontend_seconds": 0.0073352730005353806,
+            "full_compile_seconds": 1.9196133479999844,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.4402712390001398,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3699874630001432
+            },
+            "warm_seconds": 0.0018727959995885612,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "ir_sha256_after": "4bd9c1393a58ba6ba03ff55779d10e1dfad154b76157ba1e867527a2b437dbd6",
+            "fresh_frontend_warm_seconds": 0.009191100000862207,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "flash_attention",
+            "arch": "sm_90a",
+            "status": "compiled",
+            "frontend_seconds": 0.0530220869995901,
+            "full_compile_seconds": 3.753697011999975,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 3.0401072410004417,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 2.0682164559993907
+            },
+            "warm_seconds": 0.0026344810003138264,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "cf2c6fabc296eb3c68bc72790c6068a43a8193159981597b00d16365245661a2",
+            "ir_sha256_after": "cf2c6fabc296eb3c68bc72790c6068a43a8193159981597b00d16365245661a2",
+            "fresh_frontend_warm_seconds": 0.05632347299979301,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          }
+        ],
+        "timing_boundary": "imports excluded; lazy host FFI JIT included",
+        "stage_relationship": "CUDA compilation is nested within lowering; do not add stage times",
+        "gpu_execution": "not performed by this compilation probe"
+      },
+      "mode": "compile",
+      "seconds": 15.209874578000381,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "compile-sm_100a": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "arch": "sm_100a",
+            "status": "compiled",
+            "frontend_seconds": 0.007816573000127391,
+            "full_compile_seconds": 2.061512154000411,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.5310491849995742,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.4545512980002968
+            },
+            "warm_seconds": 0.0019769690006796736,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "ir_sha256_after": "bddac13581fcbbeb20dac416adfb63435cc5e91a4136b0f080830f3ae30ea72f",
+            "fresh_frontend_warm_seconds": 0.008114067999485997,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gemm_relu",
+            "arch": "sm_100a",
+            "status": "compiled",
+            "frontend_seconds": 0.011612116999458522,
+            "full_compile_seconds": 3.175953556999957,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.3318625420006356,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 2.0361603190003734
+            },
+            "warm_seconds": 0.002285044000018388,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f664f5e4c3164632e364bddb3cabc64b32606b6ff3a3deb3f65284992385bae9",
+            "ir_sha256_after": "f664f5e4c3164632e364bddb3cabc64b32606b6ff3a3deb3f65284992385bae9",
+            "fresh_frontend_warm_seconds": 0.013658138000209874,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "row_sum",
+            "arch": "sm_100a",
+            "status": "compiled",
+            "frontend_seconds": 0.01933079800073756,
+            "full_compile_seconds": 2.0233159130002605,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 1.5140258800001902,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.459167375999641
+            },
+            "warm_seconds": 0.001972578999811958,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "ir_sha256_after": "f029d76ad6e3d3b9eb399bd1b4911ab224893fb6abd825ae33fc792c78e73136",
+            "fresh_frontend_warm_seconds": 0.020739374999720894,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          },
+          {
+            "name": "gather_rows",
+            "arch": "sm_100a",
+            "status": "compiler_rejected",
+            "frontend_seconds": 0.007039756999802194,
+            "full_compile_seconds": 2.810881301000336,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 2.808715547999782,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.2935024239995982
+            },
+            "error": " broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                               ^\n\n/tmp/tmpuc4gjyxi/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                              ^\n\n/tmp/tmpuc4gjyxi/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                 ^\n\n/tmp/tmpuc4gjyxi/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                                ^\n\n/tmp/tmpuc4gjyxi/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n\n/tmp/tmpuc4gjyxi/tvm_kernels.cu(26): error: no suitable user-defined conversion from \"cutlass::half_t\" to \"half\" (aka \"__half\") exists\n      tl::store_global_256(&(*(ulonglong4*)(out + ((((int)blockIdx.x) * 2048) + (((int)threadIdx.x) * 16)))), make_ulonglong4(tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var), tl::pack_float16x4(broadcast_var, broadcast_var, broadcast_var, broadcast_var)));\n                                                                                                                                                                                                                                                                                                                                                                                                                                              ^\n\n16 errors detected in the compilation of \"/tmp/tmpuc4gjyxi/tvm_kernels.cu\".\n\nCommand: /home/sagemaker-user/tensor/experiments/p0/out/cuda-12.9/bin/nvcc -ccbin=/usr/bin/g++ --cubin -O3 -lineinfo -arch=sm_100a -std=c++20 -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/../src -I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tilelang/3rdparty/cutlass/include -o /tmp/tmpuc4gjyxi/tvm_kernels.cubin /tmp/tmpuc4gjyxi/tvm_kernels.cu\n"
+          },
+          {
+            "name": "flash_attention",
+            "arch": "sm_100a",
+            "status": "compiled",
+            "frontend_seconds": 0.054069388000243634,
+            "full_compile_seconds": 3.823528940999495,
+            "stages": {
+              "lower_calls": 1,
+              "lower_seconds": 3.0491810110006554,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 2.089223392999884
+            },
+            "warm_seconds": 0.0027269440006421064,
+            "warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "warm_same_object": true,
+            "ir_sha256_before": "cf2c6fabc296eb3c68bc72790c6068a43a8193159981597b00d16365245661a2",
+            "ir_sha256_after": "cf2c6fabc296eb3c68bc72790c6068a43a8193159981597b00d16365245661a2",
+            "fresh_frontend_warm_seconds": 0.05604088500058424,
+            "fresh_frontend_warm_stages": {
+              "lower_calls": 0,
+              "lower_seconds": 0.0,
+              "cuda_compile_calls": 0,
+              "cuda_compile_seconds": 0.0
+            },
+            "fresh_frontend_same_object": true
+          }
+        ],
+        "timing_boundary": "imports excluded; lazy host FFI JIT included",
+        "stage_relationship": "CUDA compilation is nested within lowering; do not add stage times",
+        "gpu_execution": "not performed by this compilation probe"
+      },
+      "mode": "compile",
+      "seconds": 16.129159763000644,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "perf": {
+      "status": "passed",
+      "result": {
+        "device": {
+          "name": "NVIDIA A10G",
+          "arch": "sm_86",
+          "driver_version": 13020,
+          "ordinal": 0
+        },
+        "rows": [
+          {
+            "name": "fused_elementwise",
+            "shape": [
+              1024,
+              1024
+            ],
+            "dtype": "torch.float16",
+            "max_abs_error": 0.0,
+            "rtol": 0.01,
+            "atol": 0.01,
+            "candidate": {
+              "microseconds": 5.058559775352478,
+              "samples_microseconds": [
+                5.36575973033905,
+                5.058559775352478,
+                5.038080215454102,
+                5.047680139541626,
+                5.06879985332489
+              ]
+            },
+            "baseline": {
+              "microseconds": 4.177919924259186,
+              "samples_microseconds": [
+                4.761599898338318,
+                4.19840008020401,
+                4.177919924259186,
+                4.177919924259186,
+                4.126720130443573
+              ]
+            },
+            "baseline_implementation": "TorchInductor fused pointwise",
+            "speedup": 0.8259109528794825
+          },
+          {
+            "name": "gemm_relu",
+            "shape": [
+              1024,
+              1024
+            ],
+            "dtype": "torch.float16",
+            "max_abs_error": 0.0625,
+            "rtol": 0.02,
+            "atol": 0.05,
+            "candidate": {
+              "microseconds": 43.69376182556152,
+              "samples_microseconds": [
+                43.88864040374756,
+                43.69376182556152,
+                43.714561462402344,
+                43.65312099456787,
+                43.673601150512695
+              ]
+            },
+            "baseline": {
+              "microseconds": 46.13120079040527,
+              "samples_microseconds": [
+                46.55104160308838,
+                46.141438484191895,
+                46.13120079040527,
+                46.12095832824707,
+                46.12095832824707
+              ]
+            },
+            "baseline_implementation": "TorchInductor GEMM+epilogue (vendor mm selection)",
+            "speedup": 1.0557845986018493
+          },
+          {
+            "name": "row_sum",
+            "shape": [
+              256
+            ],
+            "dtype": "torch.float32",
+            "max_abs_error": 1.52587890625e-05,
+            "rtol": 0.0001,
+            "atol": 0.0001,
+            "candidate": {
+              "microseconds": 1.8943999707698822,
+              "samples_microseconds": [
+                2.1299199759960175,
+                1.9046400487422943,
+                1.8943999707698822,
+                1.8943999707698822,
+                1.884160041809082
+              ]
+            },
+            "baseline": {
+              "microseconds": 3.6659198999404907,
+              "samples_microseconds": [
+                3.9526399970054626,
+                3.6659198999404907,
+                3.6556801199913025,
+                3.6556801199913025,
+                3.686400055885315
+              ]
+            },
+            "baseline_implementation": "PyTorch CUDA sum",
+            "speedup": 1.93513511217521
+          },
+          {
+            "name": "gather_rows",
+            "shape": [
+              1024,
+              128
+            ],
+            "dtype": "torch.float16",
+            "max_abs_error": 0.0,
+            "rtol": 0,
+            "atol": 0,
+            "candidate": {
+              "microseconds": 1.59743994474411,
+              "samples_microseconds": [
+                1.8636800348758698,
+                1.6179199516773224,
+                1.59743994474411,
+                1.59743994474411,
+                1.58720001578331
+              ]
+            },
+            "baseline": {
+              "microseconds": 2.109439969062805,
+              "samples_microseconds": [
+                2.314240038394928,
+                2.1503999829292297,
+                2.109439969062805,
+                2.099200040102005,
+                2.088959962129593
+              ]
+            },
+            "baseline_implementation": "PyTorch CUDA index_select; all indices valid",
+            "speedup": 1.3205128468229903
+          },
+          {
+            "name": "flash_attention",
+            "shape": [
+              8,
+              128,
+              64
+            ],
+            "dtype": "torch.float16",
+            "max_abs_error": 0.00048828125,
+            "rtol": 0.01,
+            "atol": 0.01,
+            "candidate": {
+              "microseconds": 4.935680031776428,
+              "samples_microseconds": [
+                5.212159752845764,
+                4.935680031776428,
+                4.925439953804016,
+                4.925439953804016,
+                4.986880123615265
+              ]
+            },
+            "baseline": {
+              "microseconds": 8.622080087661743,
+              "samples_microseconds": [
+                8.847360014915466,
+                8.632320165634155,
+                8.622080087661743,
+                8.601599931716919,
+                8.611840009689331
+              ]
+            },
+            "baseline_implementation": "PyTorch SDPA forced FLASH_ATTENTION",
+            "speedup": 1.7468879733191542
+          }
+        ],
+        "warmup": 20,
+        "captured_iterations": 100,
+        "repetitions": 5,
+        "method": "CUDA events around CUDA graph replay; median per operation",
+        "allocation_policy": "candidate output reused; baseline tensor lifetimes captured in graph",
+        "other_gpu_architectures": "unverified: only sm_86 hardware is available"
+      },
+      "mode": "perf",
+      "seconds": 20.61567272799948,
+      "provenance": {
+        "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+        "git_dirty": false,
+        "source_sha256": "608e30c2c2e7e345cf2158e92ace6a4869f094bbefdfa869ae74a3539b158cc2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    }
+  },
+  "limits": [
+    "fusion and rescheduling remain unverified; post-LowerTileOp re-lowering is rejected",
+    "new provider claiming built-in CPU target is rejected",
+    "Rust hosting and native end-to-end compilation remain unverified",
+    "cross-GPU throughput unverified; available hardware is sm_86",
+    "foreign stream, event, signal, and memory ordering contracts remain unverified"
+  ],
+  "measurement_policy": "workers run sequentially; imports excluded from compile timing; fresh isolated caches",
+  "regression_suite": {
+    "passed": 40,
+    "skipped": 0,
+    "seconds": 54.31,
+    "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+    "command": "CUDA_HOME=<cuda-12.9> TILELANG_DISABLE_CACHE=1 TENSOR_P0_CUDA=1 TENSOR_P0_RUNTIME_PYTHON=<numpy-only-python> python -m pytest"
+  },
+  "compile_summary": {
+    "attempted": 30,
+    "compiled": 24,
+    "compiler_rejected": 6
+  }
+}

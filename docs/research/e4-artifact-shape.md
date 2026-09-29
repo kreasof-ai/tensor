@@ -4,6 +4,10 @@
 **Run:** 2026-09-29 · 9/9 measurements ok · no GPU, no CUDA toolkit
 **Artifact produced:** `experiments/p0/out/artifact_frontend_mod.json` (53.4 KB on disk)
 
+**Follow-up:** [E15](e15-phase0-validation.md) executes symbolic dimensions on
+GPU and measures a post-`LowerTileOp` re-lowering rejection. The frontend
+serialization result below does not establish fusion.
+
 This was the experiment the whole roadmap was waiting on. It asks whether Tensor can ship
 a **portable, re-specializable compiled module** — or needs its own portable IR.
 
@@ -84,7 +88,8 @@ frontend, not re-lowering stored IR.
 > statically-shaped kernel. TileLang's `T.dynamic` turns an extent into a runtime kernel
 > parameter instead (`dyn_add_kernel(..., int M)`, with predication). The source
 > signature and serialization demonstrate how runtime shape reuse could work.
-> Reusing that artifact at several runtime extents remains unverified on a device.
+> E15 now executes a serialized/reloaded dynamic elementwise artifact at five
+> extents and a static-tile GEMM at five runtime row extents on A10G.
 
 Two consequences that must land in the design:
 
@@ -93,7 +98,7 @@ Two consequences that must land in the design:
    wrong for symbolic ones — it would miss every reuse.
 2. **Symbolic extents are a frontend feature.** TileLang exposes `T.symbolic`
    (a deprecated alias) and `T.dynamic`. E4b confirms a runtime extent in emitted
-   source and its serialization, not successful multi-shape device execution.
+   source and its serialization; E15 adds successful multi-shape device execution.
 
 ---
 

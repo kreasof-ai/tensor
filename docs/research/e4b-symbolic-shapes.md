@@ -7,7 +7,10 @@
 512 columns, reducing the three float16 shared buffers from 384 KiB to 96 KiB.
 It checks the runtime parameter and byte-identical symbolic serialization
 round-trip. The numbers below describe the original source-emission probe;
-neither version has been launched on a GPU.
+neither original version was launched on a GPU. [E15](e15-phase0-validation.md)
+adds five executed extents for a serialized/reloaded dynamic elementwise
+function and five row extents for GEMM with static tiles. A dynamic GEMM tile
+is explicitly rejected during frontend construction.
 
 Follows [`e4-artifact-shape.md`](e4-artifact-shape.md), which concluded that shapes are
 baked at the frontend. **That conclusion was right about the default kernel and wrong as a
@@ -18,7 +21,8 @@ general statement.** TileLang has a second, better mode.
 ## Verdict
 
 > **A `T.dynamic` extent becomes a runtime kernel parameter. One artifact serves every
-> shape of that dimension. E4's "not re-shapeable" qualifier holds only for static shapes.**
+> tested extent of that dimension in E15. E4's "not re-shapeable" qualifier
+> holds only for static shapes; symbolic tiles remain constrained.**
 
 ---
 
@@ -62,7 +66,7 @@ Substituting a concrete value into the serialized symbolic artifact and re-lower
 Identical output does not establish that a substitution took effect or that a
 kernel executes correctly at these shapes. The harness now replaces this
 probe with `roundtrip_runtime_extent`, comparing original and reloaded source
-and checking that `int M` survives. Runtime shape reuse remains unverified.
+and checking that `int M` survives. E15 supplies the separate execution evidence.
 
 ## The contrast that makes it meaningful
 
@@ -105,15 +109,12 @@ other artifact (E4a). So it participates in the same version gate.
 
 ## What it does not settle
 
-- **No numerics.** Nothing was executed. A predicated dynamic-shape kernel is exactly the
-  kind of thing that is subtly wrong at a boundary (e.g. `M = 127`, `M = 129`) and E10 must
-  cover non-multiple-of-tile sizes.
+- **Original probe had no numerics.** E15 now exercises extents 1/127/128/129/1025
+  and static-tile GEMM row extents 1/31/32/33/65 with zero measured error.
 - **No performance data.** Predication and an extra register are not free. E11 must compare
   static vs symbolic on the same kernel. Until then, do not claim symbolic is free.
-- **Grid computation is asserted, not verified.** The generated code uses `blockIdx.x * 128`
-  and `< M`; that the *launch* passes `ceildiv(M, 128)` is inferred from the source, not
-  observed. Verify on the NVIDIA box.
-- **Interaction with tiling is untested.** `T.gemm` requires static tile dimensions — the
-  compiler explicitly errors on symbolic ones. So a symbolic extent is fine for elementwise
-  and reductions, and probably not for tiled GEMM. **Where the boundary lies is the natural
-  next question**, and it directly affects what a user can write symbolically.
+- **Grid computation was inferred in the original probe.** E15 executes partial
+  blocks, so those tested launches now have numerical evidence.
+- **The GEMM tiling boundary is measured in E15.** Runtime row counts work
+  with static tiles; symbolic matrix tile dimensions fail. This does not
+  establish support for every possible symbolic operation or layout.

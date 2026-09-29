@@ -2,6 +2,10 @@
 
 **Status:** Accepted · 2026-09-29
 
+**Validation update:** [E15](../research/e15-phase0-validation.md) now verifies
+Actions-to-A10G executable transfer with fifteen fresh NumPy-only executions.
+Symbolic dimensions also execute in a separate probe; fusion remains unverified.
+
 ## Context
 
 E4 demonstrates frontend IR serialization and re-targeting within CUDA. It

@@ -7,7 +7,9 @@ Current state: the original measurements are in
 [`../research/phase0-ground-truth.md`](../research/phase0-ground-truth.md).
 The workload corrections and active compiler-free execution milestone are
 tracked in [opaque artifact validation](opaque-artifact-validation.md).
-GPU numerics and startup latency remain unverified until NVIDIA hardware is available.
+GPU numerics and startup latency now pass on an A10G. The remaining probes,
+their measured restrictions, and Actions-to-A10G executable transfer are
+reported in [E15](../research/e15-phase0-validation.md).
 
 ---
 
@@ -108,9 +110,10 @@ is only needed to load and execute.
 
 Explicitly test the fusible/opaque split: serialize the post-`LowerTileOp` TIRx and confirm
 it can be re-scheduled and re-lowered. If yes, Tensor's portable artifact can be a thin,
-versioned envelope around TIRx serialization, and §12 costs almost nothing. **If no, Tensor
-needs its own portable IR, which is a different project.** This one experiment decides
-between "product layer" and "compiler project" and should be run early.
+versioned envelope around TIRx serialization. If it fails, determine whether
+pinned frontend IR plus opaque execution is sufficient before considering a
+new IR. E15 measured a post-`LowerTileOp` re-lowering rejection; this does not
+establish that a new IR is necessary.
 
 **E5 — `cache_behaviour`.** TileLang has `enable_cache`/`disable_cache` and
 `is_cache_enabled`, and its JIT caches. Measure: cold compile, warm compile, cache hit
@@ -137,7 +140,10 @@ is a warning sign, not a detail.
 integration point. The real question from §25: FX directly, AOTAutograd, or something
 normalized? Cheap to probe, and it constrains the compiler interface early.
 
-### Remotely (NVIDIA host only)
+### Full CUDA toolkit and NVIDIA execution
+
+E9 needs a complete CUDA build toolkit, not a GPU. The Actions producer
+demonstrates that separation. E10/E11 and the E12 consumer need NVIDIA hardware.
 
 **E9 — `full_compile`.** Compile latency with `nvcc` included, cold and warm, per kernel and
 target. §25's compile-latency question, properly answered. Local numbers are a floor only.
@@ -159,8 +165,8 @@ TileLang's cache warm and cold. The §23 number that constrains the whole `tenso
 > after them. Doing it in that order means the runtime ABI gets validated against real use
 > before Phase 2 tries to freeze it, and E10/E11 are never blocked on building a harness.
 >
-> These four need a real NVIDIA device, so until that box is available the surface has no
-> user and should not be built speculatively — its correctness is unmeasurable here.
+> Numerics, throughput and loading need a real NVIDIA device; compilation alone
+> does not. The A10G now provides that execution evidence in E14/E15.
 
 ---
 
@@ -204,8 +210,9 @@ Named so they do not get smuggled in:
    now with evidence behind it.
 2. **TileLang has no published stability policy** (UNVERIFIED that one is absent). Its
    v0.1.13 notes "removes several legacy APIs." Treat every internal import as private.
-3. **The workload set is compile-coverage, not validated.** E10 exists to fix this and
-   should not be skipped because everything compiles.
+3. **Source emission is weaker than full compilation and numerics.** E10 now
+   validates twelve cases on A10G; E15 finds actual nvcc failures on several
+   other targets despite successful source emission.
 4. **Version drift between proposal and reality.** The proposal already contains one stale
    claim (TileLang/TIRx relationship timing). Re-verify against installed packages at the
    start of each phase, not from memory or blogs.
