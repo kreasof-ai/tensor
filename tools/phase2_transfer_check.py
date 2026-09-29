@@ -49,6 +49,9 @@ def check(archive: Path, ci_record: Path, platform: str):
     with tempfile.TemporaryDirectory(prefix="tensor-phase2-transfer-") as directory:
         root = Path(directory)
         with zipfile.ZipFile(archive) as bundle:
+            module_members = {"build/phase3-transfer/ops.tpack", "build/phase3-transfer/phase3-producer.json"}
+            if set(bundle.namelist()) & module_members:
+                members |= module_members
             if (set(bundle.namelist()) != members or len(bundle.infolist()) != len(members)
                     or sum(item.file_size for item in bundle.infolist()) > 5 * 1024 * 1024):
                 raise ValueError("unexpected CI archive contents or size")

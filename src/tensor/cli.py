@@ -9,13 +9,25 @@ import json
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tensor", description="Tensor kernel tooling")
     commands = parser.add_subparsers(dest="command", required=True)
+    add = commands.add_parser("add", help="add a local module directory or .tpack and pin its dependency graph")
+    add.add_argument("source")
+    install = commands.add_parser("install", help="install the project's pinned local module graph")
+    install.add_argument("--frozen", action="store_true", help="require an unchanged tensor.lock")
+    pack = commands.add_parser("pack", help="create a deterministic .tpack including dependencies")
+    pack.add_argument("source", nargs="?", default=".")
+    pack.add_argument("--out", required=True)
+    resolve = commands.add_parser("resolve", help="select an installed module-name::export_name")
+    resolve.add_argument("reference")
+    resolve.add_argument("--target")
+    resolve.add_argument("--nvcc", help="explicit compiler used by --compile")
+    resolve.add_argument("--cache-dir", help="compiler cache used by explicit compilation")
     doctor = commands.add_parser("doctor", help="check the CUDA build and device environment")
     doctor.add_argument("--target", help="explicit CUDA target, e.g. sm_86; permits a GPU-free build host")
     doctor.add_argument("--device", type=int, default=0, help="CUDA device ordinal (default: 0)")
     doctor.add_argument("--nvcc", help="explicit path to the CUDA compiler")
     doctor.add_argument("--json", action="store_true", help="print a machine-readable report")
-    build = commands.add_parser("build", help="compile a TileLang source file to a CUDA artifact")
-    build.add_argument("source", help="Python source exporting tensor_export()")
+    build = commands.add_parser("build", help="build source, portable TIRx or a module export")
+    build.add_argument("source", help="Python source, portable .tbin or module-name::export_name")
     build.add_argument("--target", help="exact CUDA target, e.g. sm_86 (detected from device 0 by default)")
     build.add_argument("--nvcc", help="explicit path to the CUDA compiler")
     build.add_argument("--cache-dir", help="override the content-addressed build cache")
@@ -27,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     inspect.add_argument("--stage", choices=("manifest", "tirx", "target", "passes"),
                          default="manifest")
     inspect.add_argument("--target", help="CUDA target for source lowering")
+    inspect.add_argument("--nvcc", help="explicit compiler used by --compile")
     inspect.add_argument("--out", help="new directory for pass trace files")
     run = commands.add_parser("run", help="execute a cubin artifact with .npy inputs")
     run.add_argument("artifact")
@@ -47,14 +60,41 @@ def main(argv: list[str] | None = None) -> int:
     benchmark.add_argument("--target", help="target used when the input is Python source")
     benchmark.add_argument("--nvcc", help="CUDA compiler used when the input is Python source")
     benchmark.add_argument("--cache-dir", help="cache used when the input is Python source")
-    for command in (doctor, build, run, benchmark):
+    for command in (doctor, build, run, benchmark, resolve, inspect):
         command.add_argument("--compiler", choices=("nvrtc", "nvcc") if command is doctor else ("nvrtc", "nvcc", "native"),
                              help="executable compiler (default: nvrtc; --nvcc selects nvcc)")
         command.add_argument("--nvrtc-home", help="NVRTC library/header bundle (or TENSOR_NVRTC_HOME)")
-    for command in (build, run, benchmark):
+    for command in (build, run, benchmark, resolve, inspect):
         command.add_argument("--provider", choices=("cuda", "cpu"),
                              help="provider (default: cuda for source; inferred for artifacts)")
+    for command in (add, install, build, run, benchmark, resolve, inspect):
+        command.add_argument("--project", default=".", help="directory containing tensor.json and tensor.lock")
+    for command in (add, install, pack, build, run, benchmark, resolve, inspect, cache):
+        command.add_argument("--module-cache", help="module cache root (or TENSOR_MODULE_CACHE)")
+    for command in (run, benchmark, resolve, inspect):
+        command.add_argument("--compile", action="store_true", help="allow source/TIRx compilation when no exact-target artifact exists")
     args = parser.parse_args(argv)
+
+    if args.command in ("add", "install", "pack", "resolve"):
+        from tensor.modules import ModuleError, add as add_module, install as install_modules, pack as pack_module, resolve_reference
+        from tensor.build import BuildError
+        from tensor.artifact import ArtifactError
+        try:
+            if args.command == "add":
+                result = add_module(args.source, args.project, cache_dir=args.module_cache)
+            elif args.command == "install":
+                result = install_modules(args.project, cache_dir=args.module_cache, frozen=args.frozen)
+            elif args.command == "pack":
+                result = pack_module(args.source, args.out, cache_dir=args.module_cache)
+            else:
+                result = resolve_reference(args.reference, project=args.project, module_cache=args.module_cache,
+                    provider=args.provider or "cuda", target=args.target, compile=args.compile,
+                    compiler=args.compiler, nvcc=args.nvcc, nvrtc_home=args.nvrtc_home,
+                    cache_dir=args.cache_dir)
+        except (ModuleError, BuildError, ArtifactError, OSError, ValueError) as exc:
+            parser.exit(1, f"tensor {args.command}: {exc}\n")
+        print(json.dumps(result, indent=2))
+        return 0
 
     if args.command == "doctor":
         from tensor.doctor import diagnose, render
@@ -68,10 +108,32 @@ def main(argv: list[str] | None = None) -> int:
         from tensor.build import BuildError, build_artifact
 
         try:
-            report = build_artifact(Path(args.source), Path(args.out), target=args.target, nvcc=args.nvcc,
-                                    cache_dir=Path(args.cache_dir) if args.cache_dir else None,
-                                    compiler=args.compiler, nvrtc_home=args.nvrtc_home,
-                                    provider=args.provider or "cuda")
+            if "::" in args.source:
+                from tensor.modules import resolve_reference
+                output = Path(args.out)
+                if output.exists():
+                    raise BuildError(f"output already exists: {output}")
+                resolved = resolve_reference(args.source, project=args.project, module_cache=args.module_cache,
+                    provider=args.provider or "cuda", target=args.target, compile=True,
+                    compiler=args.compiler, nvcc=args.nvcc, nvrtc_home=args.nvrtc_home,
+                    cache_dir=Path(args.cache_dir) if args.cache_dir else None)
+                output.parent.mkdir(parents=True, exist_ok=True)
+                contents = Path(resolved["path"]).read_bytes()
+                created = False
+                try:
+                    with output.open("xb") as stream:
+                        created = True
+                        stream.write(contents)
+                except BaseException:
+                    if created:
+                        output.unlink(missing_ok=True)
+                    raise
+                report = {**resolved,"status":"built","path":str(output.resolve()),"bytes":output.stat().st_size}
+            else:
+                report = build_artifact(Path(args.source), Path(args.out), target=args.target, nvcc=args.nvcc,
+                                        cache_dir=Path(args.cache_dir) if args.cache_dir else None,
+                                        compiler=args.compiler, nvrtc_home=args.nvrtc_home,
+                                        provider=args.provider or "cuda")
         except (BuildError, OSError, ValueError) as exc:
             parser.exit(1, f"tensor build: {exc}\n")
         print(json.dumps(report, indent=2))
@@ -79,8 +141,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "cache":
         from pathlib import Path
         from tensor.build import cache_info
+        from tensor.modules import cache_info as module_cache_info
 
-        print(json.dumps(cache_info(Path(args.cache_dir) if args.cache_dir else None), indent=2))
+        print(json.dumps({**cache_info(Path(args.cache_dir) if args.cache_dir else None),
+                          "modules": module_cache_info(args.module_cache)}, indent=2))
         return 0
     if args.command == "inspect":
         from pathlib import Path
@@ -90,7 +154,19 @@ def main(argv: list[str] | None = None) -> int:
 
         try:
             path = Path(args.path)
-            if path.suffix == ".py":
+            if "::" in args.path:
+                from tensor.modules import resolve_reference
+                resolved = resolve_reference(args.path, project=args.project, module_cache=args.module_cache,
+                    provider=args.provider or "cuda", target=args.target, compile=args.compile,
+                    compiler=args.compiler, nvcc=args.nvcc, nvrtc_home=args.nvrtc_home)
+                result = inspect_artifact(Path(resolved["path"]), args.stage)
+            elif path.is_dir() or path.name == "tensor.json":
+                from tensor.modules import _directory
+                result = json.dumps(_directory(path if path.is_dir() else path.parent).manifest, indent=2)
+            elif path.suffix == ".tpack":
+                from tensor.modules import _archive
+                result = json.dumps(_archive(path)[0], indent=2)
+            elif path.suffix == ".py":
                 result = inspect_source(path, stage=args.stage, target=args.target,
                                         trace_dir=Path(args.out) if args.out else None)
             else:
@@ -113,7 +189,20 @@ def main(argv: list[str] | None = None) -> int:
             source = Path(args.artifact)
             with tempfile.TemporaryDirectory(prefix="tensor-cli-") as directory:
                 artifact = source
-                if source.suffix == ".py":
+                resolution = None
+                if "::" in args.artifact:
+                    from tensor.modules import resolve_reference
+                    provider = args.provider or "cuda"
+                    detected = check_device(args.device) if provider == "cuda" else {"status":"ok","arch":"cpu-linux-x86_64"}
+                    if detected["status"] != "ok":
+                        raise CudaError(detected["detail"])
+                    if args.target and args.target != detected["arch"]:
+                        raise ValueError("module execution target must match the selected device")
+                    resolution = resolve_reference(args.artifact, project=args.project, module_cache=args.module_cache,
+                        provider=provider, target=detected["arch"], compile=args.compile, compiler=args.compiler,
+                        nvcc=args.nvcc, nvrtc_home=args.nvrtc_home, cache_dir=args.cache_dir)
+                    artifact = Path(resolution["path"])
+                elif source.suffix == ".py":
                     provider = args.provider or "cuda"
                     detected = check_device(args.device) if provider == "cuda" else {"status": "ok", "arch": "cpu-linux-x86_64"}
                     if detected["status"] != "ok":
@@ -133,6 +222,8 @@ def main(argv: list[str] | None = None) -> int:
                 if source.suffix == ".py":
                     result.pop("artifact")
                     result["source"] = str(source.resolve())
+                if resolution:
+                    result["module"] = {k:v for k,v in resolution.items() if k not in ("path", "build")}
         except (ArtifactError, BuildError, CudaError, TensorRuntimeError, OSError, ValueError, TypeError) as exc:
             parser.exit(1, f"tensor {args.command}: {exc}\n")
         print(json.dumps(result, indent=2))

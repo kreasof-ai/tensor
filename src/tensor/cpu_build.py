@@ -11,7 +11,6 @@ import hashlib
 import json
 from pathlib import Path
 import platform
-import runpy
 import shutil
 import subprocess
 import tempfile
@@ -106,8 +105,10 @@ def build_cpu(source_path, output_path, *, target=None, cache_dir=None, compiler
         raise BuildError("CPU profile currently supports Linux x86-64")
     if target not in (None, "cpu-linux-x86_64") or compiler not in (None, "native") or nvcc or nvrtc_home:
         raise BuildError("CPU builds use --compiler native and target cpu-linux-x86_64")
-    if output_path.exists() or not source_path.is_file() or source_path.suffix != ".py":
-        raise BuildError("source needs an existing .py file and output must not exist")
+    if output_path.exists() or not source_path.is_file() or source_path.suffix not in (".py", ".tbin"):
+        raise BuildError("source needs an existing .py or portable .tbin file and output must not exist")
+    from tensor.portable import export_spec, preflight
+    checked = preflight(source_path) if source_path.suffix == ".tbin" else None
     packages = check_packages()
     if packages["status"] != "ok":
         raise BuildError(packages["detail"])
@@ -121,7 +122,7 @@ def build_cpu(source_path, output_path, *, target=None, cache_dir=None, compiler
     from tilelang.engine.lower import get_device_call, device_codegen_without_compile
     from tensor.lowering import frontend_arguments
     try:
-        spec = runpy.run_path(str(source_path.resolve()))["tensor_export"]()
+        spec = export_spec(source_path, checked)
         if not isinstance(spec, dict) or "kernel" not in spec or set(spec) - {"kernel", "outputs"}:
             raise BuildError("CPU export needs kernel and optional outputs")
         kernel = spec["kernel"]
@@ -163,9 +164,11 @@ def build_cpu(source_path, output_path, *, target=None, cache_dir=None, compiler
         "workspace": workspace_requirement(),
         "symbols": symbols, "outputs": spec.get("outputs", []),
         "launch": {"grid": [1,1,1], "block": [1,1,1], "shared_memory_bytes": 0},
-        "source_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+        "source_sha256": checked[0]["source_sha256"] if checked else hashlib.sha256(source_path.read_bytes()).hexdigest(),
         "tilelang_version": version("tilelang"), "tvm_ffi_version": version("apache-tvm-ffi"), "op_set": _op_set(ir),
         "files": {"kernel.so": "0"*64, "kernel.tirx.json": "0"*64}}
+    if checked:
+        manifest["frontend_artifact_sha256"] = hashlib.sha256(source_path.read_bytes()).hexdigest()
     validate_manifest(manifest)
     key = hashlib.sha256(json.dumps({"manifest": manifest, "code": code, "headers": _header_hash(includes)}, sort_keys=True).encode()).hexdigest()
     cache = _cache_root(cache_dir)

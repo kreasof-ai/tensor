@@ -1,0 +1,14 @@
+{
+  "formatVersion": 1,
+  "name": "tensor-examples",
+  "version": "0.1.0",
+  "tensorAbi": 1,
+  "exports": {
+    "elementwise": "elementwise.py",
+    "gemm_relu": "gemm_relu.py",
+    "dynamic_affine": "dynamic_affine.py",
+    "dynamic_gemm": "dynamic_gemm.py",
+    "scalar_offset": "scalar_offset.py"
+  },
+  "capabilities": ["contiguous", "scalars", "symbolic_shapes"]
+}

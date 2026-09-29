@@ -19,6 +19,13 @@ Phase 0 answered the question the proposal closes on:
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
 
+Phase 3's offline module system is implemented and undergoing exit validation.
+`tensor.json` names exports, `tensor.lock` pins dependency content, and `tensor
+pack` bundles the complete closure. `add`, `install`, `resolve`, and
+`module-name::export_name` references work with compiler-free packaged binaries;
+missing targets compile through bundled TIRx/source only when explicitly
+requested. See the [module guide](docs/modules.md).
+
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
 The validation harness measures caches, independent CPU provider execution,

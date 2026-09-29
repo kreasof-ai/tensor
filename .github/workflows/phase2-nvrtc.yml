@@ -1,10 +1,10 @@
-name: Phase 2 NVRTC and runtime ABI
+name: NVRTC runtime and module transfer
 
 on:
   push:
-    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
   pull_request:
-    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
   workflow_dispatch:
 
 permissions:
@@ -39,6 +39,8 @@ jobs:
         run: uv run --locked python -m pytest -o addopts='' -q
       - name: Compile the five CUDA profiles and audit cache recovery
         run: uv run --locked python tools/phase2_producer.py --out build/phase2-transfer --target sm_86
+      - name: Package a deterministic module and its pinned dependency
+        run: uv run --locked python tools/phase3_producer.py --artifacts build/phase2-transfer --out build/phase3-transfer
       - name: Build the compiler-free consumer wheel
         run: uv build --wheel
       - name: Install and inspect with only Tensor and NumPy
@@ -57,12 +59,24 @@ jobs:
                       raise ImportError('compiler import prohibited: '+fullname)
           sys.meta_path.insert(0,Guard())
           from tensor.artifact import read_artifact
+          from tensor.modules import Project, add, install
           for artifact in pathlib.Path('build/phase2-transfer').glob('*.tbin'):
               manifest,_=read_artifact(artifact)
               assert manifest['format_version']==3
               assert manifest['runtime_abi']['major']==1
               assert manifest['runtime_abi']['minor']==1
               assert manifest['workspace']=={'bytes':0,'alignment':1}
+          project=pathlib.Path('build/module-consumer')
+          project.mkdir()
+          import json
+          (project/'tensor.json').write_text(json.dumps({'formatVersion':1,'name':'consumer','version':'0.1.0','tensorAbi':1,'exports':{}}))
+          cache=pathlib.Path('build/module-consumer-cache')
+          add('build/phase3-transfer/ops.tpack',project,cache_dir=cache)
+          install(project,cache_dir=cache,frozen=True)
+          installed=Project(project,cache_dir=cache)
+          for name in ('elementwise','gemm_relu','dynamic_affine','dynamic_gemm','scalar_offset'):
+              module=installed.module('tensor-base' if name=='elementwise' else 'tensor-ops')
+              assert module.resolve(name,target='sm_86')['selection']=='packaged'
           assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
           PY
       - uses: actions/upload-artifact@v7.0.1
@@ -72,6 +86,8 @@ jobs:
             build/phase2-transfer/*.tbin
             build/phase2-transfer/nvrtc-producer.json
             build/nvrtc-12.9/bootstrap.json
+            build/phase3-transfer/ops.tpack
+            build/phase3-transfer/phase3-producer.json
             dist/*.whl
           if-no-files-found: error
           retention-days: 30

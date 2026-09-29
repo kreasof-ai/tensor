@@ -6,7 +6,6 @@ import hashlib
 import json
 import os
 import re
-import runpy
 import tempfile
 import time
 import zipfile
@@ -151,8 +150,10 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
     if provider != "cuda":
         raise BuildError(f"unsupported compiler provider {provider!r}")
     source_path, output_path = Path(source_path), Path(output_path)
-    if not source_path.is_file() or source_path.suffix != ".py":
-        raise BuildError("source must be an existing Python file")
+    if not source_path.is_file() or source_path.suffix not in (".py", ".tbin"):
+        raise BuildError("source must be an existing Python file or portable .tbin")
+    from tensor.portable import export_spec, preflight
+    checked = preflight(source_path) if source_path.suffix == ".tbin" else None
     if output_path.exists():
         raise BuildError(f"output already exists: {output_path}")
     if target is not None and not TARGET.fullmatch(target):
@@ -175,16 +176,9 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
     started = time.perf_counter()
     # A source file is executable Python by design, exactly like a Python build script.
     try:
-        namespace = runpy.run_path(str(source_path.resolve()))
+        spec = export_spec(source_path, checked)
     except Exception as exc:
         raise BuildError(f"source execution failed: {type(exc).__name__}: {exc}") from exc
-    export = namespace.get("tensor_export")
-    if not callable(export):
-        raise BuildError("source must define tensor_export() returning {'kernel': ..., 'outputs': [...]}")
-    try:
-        spec = export()
-    except Exception as exc:
-        raise BuildError(f"tensor_export() failed: {type(exc).__name__}: {exc}") from exc
     if not isinstance(spec, dict) or "kernel" not in spec or set(spec) - {"kernel", "launch", "outputs"}:
         raise BuildError("tensor_export() needs 'kernel'; optional 'outputs' names the result buffers")
 
@@ -232,7 +226,7 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
     compiler_identity = backend.identity(target, includes)
     hashed_includes = (*includes, backend.root / "include") if compiler_identity["name"] == "nvrtc" else includes
     cache_identity = {
-        "source_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+        "source_sha256": checked[0]["source_sha256"] if checked else hashlib.sha256(source_path.read_bytes()).hexdigest(),
         "frontend_sha256": hashlib.sha256(ir.encode()).hexdigest(),
         "headers_sha256": _header_hash(hashed_includes),
         "target": target, "compiler": compiler_identity,
@@ -268,6 +262,8 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         "tvm_ffi_version": version("apache-tvm-ffi"), "op_set": _op_set(ir),
         "files": {name: hashlib.sha256(data).hexdigest() for name, data in files.items()},
     }
+    if checked:
+        manifest["frontend_artifact_sha256"] = hashlib.sha256(source_path.read_bytes()).hexdigest()
     validate_manifest(manifest)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     created = False

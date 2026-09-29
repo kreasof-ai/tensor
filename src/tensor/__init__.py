@@ -2,6 +2,7 @@
 
 from tensor.runtime import Buffer, Executable, Event, bench, TensorRuntimeError
 from tensor.providers import Device
+from tensor.modules import Project, Module, ModuleError
 # Load the lightweight producer entry point before defining build, so importing
 # its submodule on the first call cannot replace this public function.
 from tensor.build import build_artifact as _build_artifact
@@ -34,4 +35,4 @@ def cache_info(cache_dir=None) -> dict:
 
 __version__ = "0.1.0"
 
-__all__ = ["TensorRuntimeError", "Buffer", "Device", "Executable", "Event", "assert_close", "bench", "build", "cache_info"]
+__all__ = ["TensorRuntimeError", "Buffer", "Device", "Executable", "Event", "Project", "Module", "ModuleError", "assert_close", "bench", "build", "cache_info"]
