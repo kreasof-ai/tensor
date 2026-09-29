@@ -17,7 +17,7 @@ come from live PyPI JSON and upstream sources. Claims that could not be verified
 | x86_64 wheel | 248 MB | 92 MB (libs) | 2.8 MB (pure Python) | jaxlib 90 MB | tilelang 45 MB |
 | **Windows wheel** | **none in 3.8.0** | yes (76 MB) | yes (trivially) | yes | **yes** (27 MB) |
 | Compile stages | **5** (TTIR→TTGIR→GLIR→LLVM IR→PTX→CUBIN) | UNVERIFIED | **2** | Jaxpr→Triton/MGPU IR→PTX | **~63 passes** (measured) |
-| Artifact | Python `CompiledKernel` only | Python only | **none** | Python only | source emission; no AOT export |
+| Artifact | AOT C source with embedded cubin | AOT object/header export, C/C++ and TVM FFI integration | **none** | Python only | source emission; P0 adds an experimental cubin envelope |
 | New backend | `BaseBackend` + `add_stages` | UNVERIFIED | drop `ops_<x>.py` | lowering-rule namespace | `register_backend(BackendModule)` |
 | New memory space | dialect-level, needs C++ | UNVERIFIED | tied to device | explicit `plgpu.SMEM` scratch | `target.attrs["keys"]` / `register_tag` |
 
@@ -35,8 +35,13 @@ come from live PyPI JSON and upstream sources. Claims that could not be verified
 
 ### Who has actually solved "wrap a kernel compiler behind a friendly binary"?
 
-**Nobody — and that is the finding, not a gap in the survey.** The three closest, and what
-each one actually solved:
+Several systems solve parts of this workflow. The initial survey missed Triton
+and CuTe DSL's AOT paths; compiled artifact export is not an unoccupied gap.
+
+- **CuTe DSL** exports object files and C headers, supports C/C++ loading, and
+  offers a TVM FFI ABI. See NVIDIA's [AOT guide](https://docs.nvidia.com/cutlass/4.5.2/media/docs/pythonDSL/cute_dsl_general/dsl_ahead_of_time_compilation.html).
+- **Triton** has an AOT tool emitting C source with embedded cubin data and
+  load/unload/launch utilities. See the upstream [compiler tool](https://github.com/triton-lang/triton/blob/main/python/triton/tools/compile.py).
 
 - **`uv` / `ruff`** solved *distribution*. `ruff` ships a 10.6 MB `py3-none-any` wheel with
   `requires_dist: null` — one static binary, zero Python. But it works only because there is
@@ -49,9 +54,10 @@ each one actually solved:
   real versioned compiler-plugin interface, and `get_cache_key(src, backend, options, env)`
   gives correct invalidation for free. It is a wheel, not an executable.
 
-**The gap Tensor occupies is real and specifically shaped: one executable wrapping a
-Python-dependent compiler.** No incumbent does it, which is both the opportunity and a
-warning that it is hard.
+**Tensor's hypothesis is an integrated developer workflow:** consistent setup,
+diagnostics, build/run commands, cache behavior and independently loadable
+artifacts. It needs comparison against these existing AOT workflows. A binary
+export path or one CLI alone does not establish a differentiated product.
 
 ---
 

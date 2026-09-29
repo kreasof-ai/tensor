@@ -10,7 +10,6 @@ import argparse
 import json
 import platform
 import re
-import shutil
 import subprocess
 import tempfile
 import time
@@ -18,6 +17,7 @@ from importlib.metadata import distribution, version
 from pathlib import Path
 
 from experiments.p0.artifact_format import ArtifactError, read_bundle, write_bundle
+from experiments.p0.cuda_toolchain import compile_cubin, doctor, resolve_nvcc
 from experiments.p0.provenance import snapshot
 
 
@@ -80,15 +80,12 @@ def prepare(path: Path, *, size: int, arch: str) -> dict:
             "seconds": time.perf_counter() - started, "gpu_execution": "unverified"}
 
 
-def compile_bundle(source_path: Path, output: Path, *, nvcc: str = "nvcc") -> dict:
+def compile_bundle(source_path: Path, output: Path, *, nvcc: str | None = None) -> dict:
     manifest, files = read_bundle(source_path, kind="source")
-    compiler = shutil.which(nvcc)
-    if compiler is None:
-        raise ArtifactError("nvcc is unavailable; install a CUDA toolkit on the build host. Source bundles are not executables.")
+    compiler = resolve_nvcc(nvcc)
     if output.exists():
         raise FileExistsError(output)
     started = time.perf_counter()
-    ver = subprocess.run([compiler, "--version"], capture_output=True, text=True, timeout=30, check=True)
     with tempfile.TemporaryDirectory(prefix="tensor-p0-build-") as directory:
         root = Path(directory)
         for name, data in files.items():
@@ -96,21 +93,11 @@ def compile_bundle(source_path: Path, output: Path, *, nvcc: str = "nvcc") -> di
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(data)
         binary = root / "kernel.cubin"
-        command = [compiler, "--cubin", "-std=c++20", "-O3", "-lineinfo",
-                   f"-arch={manifest['arch']}", "-I", str(root / "include"),
-                   str(root / "kernel.cu"), "-o", str(binary)]
-        if platform.system() == "Windows":
-            command += ["-Xcompiler", "/Zc:preprocessor /Zc:__cplusplus"]
-        proc = subprocess.run(command, capture_output=True, text=True, timeout=300)
-        if proc.returncode:
-            raise ArtifactError(f"nvcc failed ({proc.returncode}):\n{proc.stdout}\n{proc.stderr}")
+        compiler_info = compile_cubin(root / "kernel.cu", binary, arch=manifest["arch"],
+                                      include_dirs=(root / "include",), nvcc=compiler)
         cubin = binary.read_bytes()
-        if not cubin.startswith(b"\x7fELF"):
-            raise ArtifactError("nvcc did not produce an ELF cubin")
     manifest = {**manifest, "kind": "cubin",
-                "compiler": {"nvcc": ver.stdout.strip(), "host": platform.platform(),
-                             "options": ["--cubin", "-std=c++20", "-O3", "-lineinfo", f"-arch={manifest['arch']}"],
-                             "seconds": time.perf_counter() - started}}
+                "compiler": compiler_info}
     write_bundle(output, manifest, {"kernel.cubin": cubin,
                                     **{name: data for name, data in files.items() if name.startswith("licenses/")}})
     return {"status": "executable_built", "path": str(output.resolve()), "bytes": output.stat().st_size,
@@ -120,30 +107,34 @@ def compile_bundle(source_path: Path, output: Path, *, nvcc: str = "nvcc") -> di
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+    cmd = sub.add_parser("doctor", help="compile a CUDA probe; no GPU or TileLang needed")
+    cmd.add_argument("--nvcc")
+    cmd.add_argument("--arch", default="sm_80")
     for name in ("prepare", "build"):
         cmd = sub.add_parser(name)
         cmd.add_argument("--size", type=int, default=129)
         cmd.add_argument("--arch", default="sm_80")
         cmd.add_argument("--out", type=Path, required=True)
         if name == "build":
-            cmd.add_argument("--nvcc", default="nvcc")
+            cmd.add_argument("--nvcc")
     cmd = sub.add_parser("compile")
     cmd.add_argument("source", type=Path)
     cmd.add_argument("--out", type=Path, required=True)
-    cmd.add_argument("--nvcc", default="nvcc")
+    cmd.add_argument("--nvcc")
     args = parser.parse_args()
     try:
-        if args.command == "prepare":
+        if args.command == "doctor":
+            result = doctor(nvcc=args.nvcc, arch=args.arch)
+        elif args.command == "prepare":
             result = prepare(args.out, size=args.size, arch=args.arch)
         elif args.command == "compile":
             result = compile_bundle(args.source, args.out, nvcc=args.nvcc)
         else:
-            if shutil.which(args.nvcc) is None:
-                raise ArtifactError("nvcc is unavailable; use prepare for the local source-only experiment")
+            compiler = resolve_nvcc(args.nvcc)
             with tempfile.TemporaryDirectory(prefix="tensor-p0-source-") as directory:
                 source = Path(directory) / "source.zip"
                 prepare(source, size=args.size, arch=args.arch)
-                result = compile_bundle(source, args.out, nvcc=args.nvcc)
+                result = compile_bundle(source, args.out, nvcc=compiler)
         print(json.dumps(result, indent=2))
         return 0
     except (ArtifactError, OSError, subprocess.SubprocessError) as exc:

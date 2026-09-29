@@ -4,9 +4,11 @@ This is a Phase 0 experiment, not a public Tensor API. The milestone is:
 build a correct kernel on host A, transfer the executable to host B, launch it
 without importing the compiler, compare with NumPy, and record startup time.
 
-**Current state:** source generation, bundle reload, compiler isolation and
-host-side driver contracts pass locally. CUDA compilation, real GPU numerics,
-startup latency and two-host executable transfer remain **UNVERIFIED**.
+**Current state:** CUDA compilation, five opaque artifact sizes, twelve
+NumPy-reference workload cases, and fresh-process compiler-free execution pass
+on an NVIDIA A10G (`sm_86`). The full opt-in suite passes 32 tests. Startup
+measurements and reproduction details are in [E14](../research/e14-cuda-execution.md).
+Two-host executable transfer remains **UNVERIFIED**.
 
 The first kernel computes `c = maximum(2*a + b, 0)` on contiguous float32
 vectors. It has three pointer arguments, 128 threads per block, explicit tail
@@ -17,6 +19,8 @@ symbolic shapes, streams supplied by another framework, or a second provider.
 
 - `artifact_build prepare`: TileLang to a transferable source ZIP, including
   TileLang and CUTLASS/CuTe headers and redistribution notices. No GPU/toolkit.
+- `artifact_build doctor`: compile a small cubin to check the complete CUDA
+  build toolchain. No GPU, NumPy or compiler Python packages are needed.
 - `artifact_build compile`: source ZIP to a precompiled cubin bundle with
   `nvcc`. Only stdlib Python and the CUDA build toolchain are needed.
 - `artifact_build build`: both stages on one host. No GPU is needed to build.
@@ -47,15 +51,31 @@ uv run --locked python -m experiments.p0.artifact_run inspect experiments/p0/out
 
 Outputs are created exclusively: choose a new filename for another build.
 `uv run --locked python -m experiments.p0.artifact_run doctor` reports a skip
-on the current Windows/AMD host. Direct Python CLI exit codes are 0 for a
+on the original Windows/AMD host. Direct Python CLI exit codes are 0 for a
 successful check, 1 for a failure, and 2 for unavailable hardware.
 
 ## Full two-host executable milestone
 
 Host A needs the locked Python environment, `nvcc`, and the host C++ compiler
-required by the CUDA toolkit. It does not need an NVIDIA GPU. Host B needs
+required by the **full CUDA toolkit**, including runtime and CCCL development
+headers. An `nvcc --version` success alone is insufficient. It does not need
+an NVIDIA GPU. Host B needs
 64-bit Python 3.12, NumPy and an NVIDIA driver. Use Linux for the initial GPU
 check; on Windows run builds from a configured MSVC developer shell.
+
+Select and verify the toolkit on **A** before building. For example, in Bash:
+
+```bash
+export CUDA_HOME=/path/to/full/cuda-toolkit
+uv run --locked python -m experiments.p0.artifact_build doctor --arch sm_86
+```
+
+Use B's reported SM instead of `sm_86`. `CUDA_HOME` takes precedence over
+`CUDA_PATH`, then the compiler on `PATH`; an explicit `--nvcc` overrides both.
+An invalid configured toolkit fails rather than silently using another one.
+The doctor command invokes the compiler and checks its ELF cubin output. If
+headers are missing, install the matching toolkit development components;
+mixing headers from a different CUDA major version is not the tested setup.
 
 On **B**, clone or copy this repository and create a consumer environment
 containing only NumPy. Example commands for a Linux host:
@@ -104,8 +124,8 @@ driver caches. Record machine state before comparing timings.
 
 ## First GPU check with the existing source bundle
 
-The local host has no `nvcc`. As an interim check, transfer its source ZIP to
-the future NVIDIA host and compile there using the clean consumer interpreter:
+The original Windows host has no `nvcc`. As an interim check, transfer its
+source ZIP to an NVIDIA host and compile there using the clean consumer interpreter:
 
 ```bash
 experiments/p0/out/runtime-venv/bin/python -m experiments.p0.artifact_build compile experiments/p0/out/source-129.zip --out experiments/p0/out/elementwise-129.tbin

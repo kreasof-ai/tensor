@@ -3,6 +3,11 @@
 **Host:** Windows 11, RX 6700 XT, no NVIDIA driver, no `nvcc`.
 **Date:** 2026-09-29. **Status:** local checks passed; GPU checks unverified.
 
+This records the initial Windows-only prototype. The subsequent
+[E14 NVIDIA run](e14-cuda-execution.md) validates compilation, opaque execution,
+workload numerics and startup on an A10G. Two-host executable transfer is still
+unverified.
+
 ## Findings
 
 The experiment now has a producer, an independent compiler-free consumer,

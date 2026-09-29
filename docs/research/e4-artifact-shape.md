@@ -11,8 +11,9 @@ a **portable, re-specializable compiled module** — or needs its own portable I
 
 ## Verdict
 
-> **The portable tier exists. A serialized TIRx module survives serialization, re-targets,
-> and reloads in a fresh interpreter. Tensor does not need to own a portable IR for MVP.**
+> **A frontend IR artifact candidate exists. Serialized TIRx survives
+> serialization, re-targets within CUDA, and reloads in a fresh interpreter
+> with the pinned toolchain. Fusion and cross-provider portability are untested.**
 
 With one important qualifier, stated plainly below: the tier is **re-targetable, not
 re-shapeable**.
@@ -55,7 +56,8 @@ so a source-only artifact does not compile without them.
 | **retargetable** | **YES** — re-targeting changes output (207 vs 133 lines) |
 
 The serialized artifact round-trips **byte-identically** and still produces genuinely
-different, target-appropriate code per arch. That is the definition of a portable tier.
+different, target-appropriate code per CUDA arch. This establishes the measured
+serialization and CUDA re-lowering path, rather than general hardware portability.
 
 ### Cross-process reload — the test that actually matters
 
@@ -80,18 +82,18 @@ frontend, not re-lowering stored IR.
 
 > **Corrected by [E4b](e4b-symbolic-shapes.md).** This holds for the *default*,
 > statically-shaped kernel. TileLang's `T.dynamic` turns an extent into a runtime kernel
-> parameter instead, and one artifact then serves every shape of that dimension
-> (`dyn_add_kernel(..., int M)`, with predication). The statement above is accurate about
-> static shapes and is not accurate in general.
+> parameter instead (`dyn_add_kernel(..., int M)`, with predication). The source
+> signature and serialization demonstrate how runtime shape reuse could work.
+> Reusing that artifact at several runtime extents remains unverified on a device.
 
 Two consequences that must land in the design:
 
 1. **The cache key must record the symbolic/static choice per dimension**, not just the
    concrete shapes. A key of `(source, target, shape)` is right for static kernels and badly
    wrong for symbolic ones — it would miss every reuse.
-2. **Shape polymorphism is a frontend concern, and it already works.** TileLang exposes
-   `T.symbolic` (a deprecated alias) and `T.dynamic`. E4b confirms a symbolic artifact
-   re-lowers to any shape of that dimension without recompiling.
+2. **Symbolic extents are a frontend feature.** TileLang exposes `T.symbolic`
+   (a deprecated alias) and `T.dynamic`. E4b confirms a runtime extent in emitted
+   source and its serialization, not successful multi-shape device execution.
 
 ---
 

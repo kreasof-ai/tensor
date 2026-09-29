@@ -14,8 +14,11 @@ The question being answered right now is the one the proposal closes on:
 The active milestone is now [opaque artifact validation](docs/plan/opaque-artifact-validation.md):
 build a kernel, transfer its executable, load it without compiler imports, check
 NumPy agreement and measure time to first result. The experimental producer and
-consumer are implemented under `experiments/p0/`. GPU execution and two-host
-executable transfer remain **unverified** until an NVIDIA host is available.
+consumer are implemented under `experiments/p0/`. **NVIDIA execution now passes
+on an A10G (`sm_86`)**: five opaque artifact sizes load in a NumPy-only process,
+and twelve NumPy-reference cases cover all five workloads. The full opt-in suite
+passes **32 tests with no skips**. Two-host executable transfer remains
+**unverified**; see [the NVIDIA results](docs/research/e14-cuda-execution.md).
 
 ---
 
@@ -84,15 +87,30 @@ Reports now record Git revision, dirty state, source hash, lock hash and install
 package versions. Python 3.12, TileLang 0.1.14 and TVM FFI 0.1.12 are pinned;
 `uv.lock` records the complete resolution and bootstrap uses it.
 
+On a CUDA build host, check the **full compiler installation** before building:
+
+```bash
+uv run --locked python -m experiments.p0.artifact_build doctor --arch sm_86
+```
+
+This compiles a small CUDA probe without a GPU or TileLang imports. It checks
+runtime/CCCL headers and the host compiler as well as `nvcc`. Set `CUDA_HOME` or
+`CUDA_PATH` to the toolkit root, or pass `--nvcc /path/to/nvcc`. An explicit
+compiler wins, then the configured toolkit, then `nvcc` on `PATH`. The separate
+`artifact_run doctor` checks the NVIDIA device/driver. The
+[validation runbook](docs/plan/opaque-artifact-validation.md) covers GPU tests
+and creating a NumPy-only consumer environment.
+
 ## Where to start reading
 
 | Document | What it gives you |
 |---|---|
 | [`docs/research/phase0-ground-truth.md`](docs/research/phase0-ground-truth.md) | Measured numbers, what already exists, what is blocked |
+| [`docs/research/e14-cuda-execution.md`](docs/research/e14-cuda-execution.md) | NVIDIA correctness, compiled artifacts, and fresh-process startup |
 | [`docs/research/ecosystem-and-precedents.md`](docs/research/ecosystem-and-precedents.md) | Triton / CuTe DSL / tinygrad / Pallas comparison, packaging precedents |
 | [`docs/plan/phase0-experiment-design.md`](docs/plan/phase0-experiment-design.md) | The 12 experiments and which machine runs each |
 | [`docs/plan/roadmap.md`](docs/plan/roadmap.md) | Phases, reordered by what the evidence supports |
-| [`docs/adr/`](docs/adr/) | The six decisions taken so far, each with its evidence |
+| [`docs/adr/`](docs/adr/) | Architecture decisions, each with its evidence |
 
 ## Ground rules
 

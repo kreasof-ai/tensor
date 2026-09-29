@@ -10,18 +10,17 @@ from __future__ import annotations
 import argparse
 import json
 import platform
-import shutil
 import time
 from pathlib import Path
 
 from experiments.p0.cuda_driver import CudaUnavailable, Driver
+from experiments.p0.cuda_toolchain import doctor
 from experiments.p0.provenance import snapshot
 
 
 def run() -> dict:
     _, device = Driver().device_info()
-    if not shutil.which("nvcc"):
-        raise RuntimeError("numerics requires nvcc on the NVIDIA host")
+    toolchain = doctor(arch=device["arch"])
     import numpy as np
     import torch
     import tilelang
@@ -74,7 +73,8 @@ def run() -> dict:
         expected = (weights @ v.astype(np.float32)).astype(np.float16)
         check(f"attention_N{n}", K.flash_attention(n, 2, 64), [q, k, v], expected)
     return {"status": "passed", "device": device, "provenance": snapshot(),
-            "host": platform.platform(), "seed": 0, "results": rows}
+            "host": platform.platform(), "compiler": toolchain["compiler"],
+            "seed": 0, "results": rows}
 
 
 def main():

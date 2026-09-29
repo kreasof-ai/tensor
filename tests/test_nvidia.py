@@ -34,3 +34,21 @@ def test_corrected_workload_numerics():
     result = run()
     assert result["status"] == "passed"
     assert len(result["results"]) == 12
+
+
+def test_compiler_doctor_without_compiler_imports():
+    consumer_python = os.environ.get("TENSOR_P0_RUNTIME_PYTHON", sys.executable)
+    code = """
+import json, sys
+from experiments.p0.artifact_run import NoCompilerImports, assert_no_compiler_imports
+sys.meta_path.insert(0, NoCompilerImports())
+from experiments.p0.cuda_toolchain import doctor
+result = doctor()
+assert_no_compiler_imports()
+print(json.dumps(result))
+"""
+    proc = subprocess.run([consumer_python, "-c", code], capture_output=True, text=True, timeout=120)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    result = json.loads(proc.stdout)
+    assert result["status"] == "available"
+    assert result["check"] == "cuda_cubin_compilation"

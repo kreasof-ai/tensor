@@ -6,13 +6,15 @@ being explicit about which work is blocked on hardware.
 
 Current status: **Phase 0 in progress.** The active next milestone is
 [opaque executable transfer and compiler-free loading](opaque-artifact-validation.md).
-Local checks pass; CUDA compilation, GPU numerics and two-host execution are unverified.
+Local and NVIDIA A10G checks pass, including twelve NumPy-reference cases and
+five compiler-free artifact sizes. See [E14](../research/e14-cuda-execution.md).
+Two-host executable transfer remains unverified.
 
 ---
 
 ## What Phase 0 has already changed about the plan
 
-Three findings move work earlier or change its shape:
+Four findings move work earlier or change its shape:
 
 1. **Codegen research is not blocked on the GPU.** Source emission, IR inspection, pass
    counting, diagnostics, and packaging all run on a no-GPU machine. The proposal assumed
@@ -24,14 +26,15 @@ Three findings move work earlier or change its shape:
    `cutedsl` backend means CuTe DSL is reachable from TileLang. *Effect: do not build a
    competing IR dumper or a competing backend registry. Build the product surface over them.*
 
-3. **E4 answered positively** — the portable tier exists. The open questions shifted from
-   "does a portable artifact exist?" to "how is it versioned, and what does a cache key
-   contain?"
+3. **E4 demonstrated re-lowerable frontend IR** within a pinned toolchain and
+   across CUDA architectures. Versioning and cache identity can now be designed
+   against a real artifact. Fusion and cross-provider portability remain open.
 
-4. **A torch-free compiler is feasible.** `tvm_compiler.dll` and `tvm_runtime.dll` have *no*
+4. **A torch-free compiler is a candidate.** `tvm_compiler.dll` and `tvm_runtime.dll` have *no*
    torch in their PE import tables — the dependency is entirely Python-layer, and traces to
    one `import torch  # preload torch to avoid dlopen errors` line. PyTorch support therefore
-   ships as a client-side adapter (ADR 0005), not as a compiler dependency.
+   ships as a client-side adapter (ADR 0005). The current producer still imports
+   PyTorch; the opaque executable consumer has now run without it on NVIDIA.
 
 ---
 
@@ -51,10 +54,10 @@ Three findings move work earlier or change its shape:
 | E6 | provider contract — register a second backend | local | ⬜ |
 | E7 | ABI surface — non-Python host feasibility | local | ⬜ |
 | E8 | framework contract — FX vs AOTAutograd | either | ⬜ |
-| E9 | full compile latency (with `nvcc`) | **NVIDIA** | ⬜ |
-| E10 | numerics validation | **NVIDIA** | ⬜ |
+| E9 | full compile latency (with `nvcc`) | **NVIDIA** | partial: elementwise cubin build measured; full workload compile breakdown pending |
+| E10 | numerics validation | **NVIDIA** | ✅ 12 NumPy-reference cases on A10G |
 | E11 | kernel performance | **NVIDIA** | ⬜ |
-| E12 | warm-start / artifact load latency | **NVIDIA** | ⬜ |
+| E12 | warm-start / artifact load latency | **NVIDIA** | ✅ five sizes in fresh NumPy-only processes; two-host transfer pending |
 
 **E4 came back positive and it changes the shape of the project.** A serialized TIRx module
 round-trips byte-identically, re-targets across architectures, and reloads in a **fresh
@@ -118,7 +121,8 @@ Sequence:
 - Do not import the compiler eagerly in the CLI. 4.2 s per invocation is not acceptable for
   a tool whose main verb is `run`.
 - Handle "no device present" gracefully. `determine_target()` currently raises.
-- Ship the `tl_templates` header tree with any artifact. Generated code is not self-contained.
+- Source bundles need both `tl_templates` and CUTLASS/CuTe headers. Cubin bundles
+  contain the executable and notices, without compiler headers.
 - Pin TileLang exactly. API drift inside a single 0.1.x release is already observed.
 
 ---
@@ -148,9 +152,10 @@ concrete manifest spec: `format_version`, exact `tilelang_version`, exact `tvm_f
 the extracted `op_set`, target specialization, and a content hash. The gate is three cheap
 checks before the load — TileLang version, FFI version, op set.
 
-Also still open from E4: a source-based artifact needs the 896.7 KB `tl_templates` header
-tree to compile, so "portable across hosts" is a layered answer — either ship headers, ship
-pre-compiled code, or accept that codegen happens where the compiler lives.
+E13 corrected the source distribution footprint: it needs CUTLASS/CuTe as well
+as `tl_templates`, about 27.2 MB of headers (3.6 MB for the compressed bundle).
+E14 measures the cubin bundle separately. Cross-host transfer still needs its
+own check; source emission and single-host execution do not establish it.
 
 ---
 
