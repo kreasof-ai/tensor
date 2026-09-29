@@ -5,23 +5,28 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phases 0 and 1 complete; Phase 2 is next.** The CUDA CLI supports
-symbolic shapes, scalar arguments and GPU DLPack. The product
-CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection.
+**Status: Phase 2 runtime call ABI and NVRTC implementation validated locally.**
+CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
+or host compiler required. CUDA and a CPU validation provider share call ABI
+1.0, independently versioned from the v3 artifact envelope. See the
+[Phase 2 report](docs/research/phase2-validation.md) and
+[runtime contract](docs/runtime-abi.md). Direct PTX is experimental work after
+Tensor v1. The CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache
+inspection; CUDA supports symbolic shapes, scalar arguments and GPU DLPack.
 Phase 0 answered the question the proposal closes on:
 
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
 
-**Two-host executable transfer now passes:** GitHub Actions builds five opaque
+**Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
 The validation harness measures caches, independent CPU provider execution,
 C++ and Rust hosts, bounded composition, symbolic dimensions, PyTorch
 frontends, full compilation, GPU baselines and foreign CUDA stream ordering.
 See [E15](docs/research/e15-phase0-validation.md) and the
 [Phase 0 exit report](docs/research/e16-phase0-exit.md).
-The full GPU-enabled regression suite passes **40 tests with zero skips**.
-All scoped exit gates pass. General fusion and cross-GPU benchmarking remain
+The Phase 0 GPU-enabled regression suite passed **40 tests with zero skips**.
+Its scoped exit gates passed. General fusion and cross-GPU benchmarking remain
 future work; Phase 0 performance evidence uses the available A10G.
 
 ---
@@ -64,27 +69,32 @@ docs/
   adr/                   architecture decision records
 experiments/
   p0/                    the retained Phase 0 experiment harness
-src/tensor/              Phase 1 product CLI
+src/tensor/              product CLI, compiler adapters and runtime providers
 ```
 
 The product package is separate from the experiment code. [ADR 0009](docs/adr/0009-complete-phase0-with-scoped-provider-and-composition.md)
 opened Phase 1 product work after the exit gates passed.
 
-## Phase 1 CLI
+## Product CLI
 
-After `uv sync --locked`, run:
+Install the pinned compiler environment and NVRTC libraries/headers:
 
 ```bash
+uv sync --locked
+uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
+export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
 uv run --locked tensor doctor
 uv run --locked tensor doctor --json
 ```
 
 Doctor detects the NVIDIA device and uses its exact SM target. It checks the
 pinned TileLang and TVM FFI versions, the registered CUDA backend, the driver,
-and a real `nvcc` cubin compilation that includes runtime and CCCL headers.
+and a real NVRTC cubin compilation with explicitly bundled headers.
 On a GPU-free build host, supply an explicit target such as `--target sm_86`.
-Select a full CUDA toolkit with `CUDA_HOME`/`CUDA_PATH` or `--nvcc` if the
-compiler on `PATH` lacks development headers. Exit code 0 means the host can
+Use `--nvrtc-home` instead of the environment variable if preferred. NVRTC
+is a separate local compiler bundle; it is not part of the consumer wheel.
+To use a full CUDA toolkit instead, select `--compiler nvcc` with
+`CUDA_HOME`/`CUDA_PATH`, or supply `--nvcc /path/to/nvcc`. Exit code 0 means the host can
 build for the target, run artifacts on the detected device, or both; the
 summary distinguishes `build ready`, `run ready`, and `ready`. Code 1 means
 neither path is ready.
@@ -92,8 +102,7 @@ neither path is ready.
 Build a standalone TileLang kernel:
 
 ```bash
-CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9" \
-  uv run --locked tensor build examples/elementwise.py --out build/elementwise.tbin
+uv run --locked tensor build examples/elementwise.py --out build/elementwise.tbin
 ```
 
 The source must define `tensor_export()` returning `{"kernel": PrimFunc,
@@ -107,12 +116,19 @@ int64 scalar examples execute on the A10G.
 `--target sm_XX` permits a GPU-free build host; without it, build targets device
 0. Outputs are created exclusively. The `.tbin` contains a cubin, serialized
 frontend TIRx, exact compiler versions, source and payload hashes, and notices.
-New artifacts use envelope version 2, which records the lowered argument order,
-integer launch expressions and pointer alignment. The consumer also reads
-existing version 1 static artifacts. The provider-neutral ABI is Phase 2 work.
+New artifacts use `tensor.module` envelope version 3, which declares the runtime
+provider, call ABI, capabilities and compiler provenance, as well as lowered
+argument order, launch expressions and pointer alignment. The consumer also
+reads existing CUDA envelope versions 1 and 2. CUDA images still require the
+exact SM used at build time; NVRTC does not add cross-GPU portability.
+
+On Linux x86-64, `tensor build ... --provider cpu` creates a native image with
+the host C++ compiler. `tensor run` and `bench` infer its provider from the
+artifact. This CPU implementation validates the shared runtime contract;
+it supports contiguous buffers, typed scalars and direct symbolic extents.
 
 The build cache is keyed by source, frontend IR, exact compiler versions and
-target, CUDA compiler identity, and bundled compiler headers. `tensor build`
+target, executable compiler identity, and bundled compiler headers. `tensor build`
 reports `cache_hit`, and `tensor cache` reports the entry count and bytes.
 Override the cache with `--cache-dir` or `TENSOR_CACHE_DIR`.
 

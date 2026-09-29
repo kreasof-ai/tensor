@@ -7,7 +7,8 @@ import time
 from pathlib import Path
 
 from tensor.artifact import ArtifactError, read_artifact
-from tensor.cuda import Device, bench
+from tensor.providers import Device
+from tensor.runtime import bench
 from tensor.signature import buffer_argument
 
 
@@ -65,11 +66,12 @@ def _prepare(device: Device, artifact: Path, input_values: list[str], scalar_val
 
 
 def run(artifact: Path, input_values: list[str], out_dir: Path, *, ordinal: int = 0,
-        scalar_values: list[str] | None = None) -> dict:
+        scalar_values: list[str] | None = None, provider: str | None = None) -> dict:
     started = time.perf_counter()
     import numpy as np
 
-    with Device(ordinal) as device:
+    manifest, _ = read_artifact(artifact)
+    with Device(ordinal, provider=provider or manifest.get("provider", "cuda")) as device:
         device_ready = time.perf_counter()
         executable, buffers, dimensions, outputs = _prepare(device, artifact, input_values, scalar_values or [])
         prepared = time.perf_counter()
@@ -97,8 +99,10 @@ def run(artifact: Path, input_values: list[str], out_dir: Path, *, ordinal: int 
 
 
 def benchmark(artifact: Path, input_values: list[str], *, ordinal: int = 0,
-              warmup: int = 10, iters: int = 100, scalar_values: list[str] | None = None) -> dict:
-    with Device(ordinal) as device:
+              warmup: int = 10, iters: int = 100, scalar_values: list[str] | None = None,
+              provider: str | None = None) -> dict:
+    manifest, _ = read_artifact(artifact)
+    with Device(ordinal, provider=provider or manifest.get("provider", "cuda")) as device:
         executable, buffers, dimensions, _ = _prepare(device, artifact, input_values, scalar_values or [])
         result = bench(executable, buffers, warmup=warmup, iters=iters, **dimensions)
         return {"status": "passed", "artifact": str(artifact.resolve()),

@@ -1,0 +1,242 @@
+{
+  "status": "passed",
+  "producer": {
+    "commit": "0f9e2d540f5559d15fec1d32a19d4618c4c03f73",
+    "git_dirty": true,
+    "lock_sha256": "92d82865a7064b02cae6ca9f2bc9b0f418c69a442f6eff731d7ec6656e50a4be",
+    "host": "default",
+    "topology": "GPU-free container on the consumer physical host",
+    "target": "sm_86",
+    "artifacts": {
+      "elementwise.tbin": "9d9b87826ac2c6d22e954aa258a19381f48bcb6132b17633f40d3699bb385941",
+      "gemm_relu.tbin": "6a0049f48775203726c23cc1d40301572ba8e8c35a25e7ebf46a60a2a6f19261",
+      "dynamic_affine.tbin": "8ab68fc92929b25565a9bd3a25543706d1567696012351f356afdeabef79cede",
+      "dynamic_gemm.tbin": "a17d44dd707d45bc373d2d7dacbab6ce2c5d392b7f37043dfc41a0b1f05edd6e",
+      "scalar_offset.tbin": "8f16ba5985ae9af8c6aa7a8531a028b29a5b9752ae9bdaffc12ee7802153e5c2"
+    },
+    "wheel": "tensor_workspace-0.1.0-py3-none-any.whl",
+    "wheel_sha256": "170957b71ebf3d3e6cfb1aa7a81d90bfe5d01a602d7f580910267ec6d027c60b"
+  },
+  "consumer_host": "default",
+  "commit": "0f9e2d540f5559d15fec1d32a19d4618c4c03f73",
+  "two_hosts": false,
+  "packages": {
+    "numpy": "2.5.3",
+    "tensor-workspace": "0.1.0"
+  },
+  "compiler_imports": [],
+  "compiler_import_guard": true,
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "records": [
+    {
+      "case": "static_elementwise",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_1_2.5",
+      "shape": [
+        1
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_1_-0.75",
+      "shape": [
+        1
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_affine_127_2.5",
+      "shape": [
+        127
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_127_-0.75",
+      "shape": [
+        127
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_128_2.5",
+      "shape": [
+        128
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_128_-0.75",
+      "shape": [
+        128
+      ],
+      "max_abs_error": 1.1920928955078125e-07
+    },
+    {
+      "case": "dynamic_affine_129_2.5",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_129_-0.75",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 2.384185791015625e-07
+    },
+    {
+      "case": "dynamic_affine_1025_2.5",
+      "shape": [
+        1025
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_affine_1025_-0.75",
+      "shape": [
+        1025
+      ],
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "case": "dynamic_gemm_1",
+      "shape": [
+        1,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_gemm_31",
+      "shape": [
+        31,
+        32
+      ],
+      "max_abs_error": 0.0001220703125
+    },
+    {
+      "case": "dynamic_gemm_32",
+      "shape": [
+        32,
+        32
+      ],
+      "max_abs_error": 5.960464477539063e-08
+    },
+    {
+      "case": "dynamic_gemm_33",
+      "shape": [
+        33,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "dynamic_gemm_65",
+      "shape": [
+        65,
+        32
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "static_gemm_relu",
+      "shape": [
+        64,
+        64
+      ],
+      "max_abs_error": 5.960464477539063e-08
+    },
+    {
+      "case": "int64_delta_1099511627779",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "int64_delta_-1099511627773",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "gpu_dlpack_versioned_False",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "gpu_dlpack_versioned_True",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    },
+    {
+      "case": "v1_artifact_compatibility",
+      "shape": [
+        129
+      ],
+      "max_abs_error": 0.0
+    }
+  ],
+  "diagnostics": [
+    {
+      "case": "missing_scalar",
+      "cause": "missing kernel arguments: ['scale']"
+    },
+    {
+      "case": "shape_conflict",
+      "cause": "b: dimension size mismatch; expected 129, received 128"
+    },
+    {
+      "case": "explicit_dimension_conflict",
+      "cause": "a: dimension size mismatch; expected 128, received 129"
+    },
+    {
+      "case": "nonfinite_scalar",
+      "cause": "scale must be finite and fit float32"
+    },
+    {
+      "case": "wrong_dtype",
+      "cause": "a needs shape [{'var': 'size'}] and dtype float32"
+    },
+    {
+      "case": "integer_overflow",
+      "cause": "delta is outside the int64 range"
+    },
+    {
+      "case": "noninteger_scalar",
+      "cause": "delta needs an integer int64"
+    },
+    {
+      "case": "unknown_argument",
+      "cause": "unknown kernel argument other"
+    }
+  ],
+  "clean_matching_checkouts": false,
+  "legacy_artifact_sha256": "baf21e6d2ef8f78c39a5e0216de313cee9a8da9cd2396ef19212c24f99d4cc40",
+  "first_kernel_seconds_from_script_check_entry": 0.26951646499946946,
+  "benchmark": {
+    "warmup": 10,
+    "iters": 100,
+    "median_launch_and_sync_seconds": 0.00010251250023429748,
+    "min_launch_and_sync_seconds": 0.000100662000477314,
+    "median_host_enqueue_seconds": 9.937700269802008e-05
+  },
+  "cli_first_result_seconds": 0.0936725360006676
+}

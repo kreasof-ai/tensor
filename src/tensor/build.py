@@ -7,7 +7,6 @@ import json
 import os
 import re
 import runpy
-import subprocess
 import tempfile
 import time
 import zipfile
@@ -15,7 +14,9 @@ from importlib.metadata import distribution, version
 from pathlib import Path
 
 from tensor.artifact import FORMAT_VERSION, validate_manifest
-from tensor.doctor import TARGET, _resolve_nvcc, check_device, check_packages, check_provider
+from tensor.doctor import TARGET, check_device, check_packages, check_provider
+from tensor.compiler import select_compiler
+from tensor.abi import runtime_requirement
 
 
 class BuildError(ValueError):
@@ -96,7 +97,7 @@ def _cache_root(override: Path | None = None) -> Path:
 
 def cache_info(cache_dir: Path | None = None) -> dict:
     root = _cache_root(cache_dir)
-    entries = list(root.glob("*.cubin")) if root.is_dir() else []
+    entries = [*root.glob("*.cubin"), *root.glob("*.so")] if root.is_dir() else []
     return {"path": str(root.resolve()), "entries": len(entries),
             "bytes": sum(path.stat().st_size for path in entries)}
 
@@ -112,8 +113,8 @@ def _header_hash(includes: tuple[Path, ...]) -> str:
     return digest.hexdigest()
 
 
-def _cached_cubin(root: Path, key: str) -> bytes | None:
-    binary, metadata = root / f"{key}.cubin", root / f"{key}.json"
+def _cached_image(root: Path, key: str, extension: str = "cubin") -> bytes | None:
+    binary, metadata = root / f"{key}.{extension}", root / f"{key}.json"
     try:
         record = json.loads(metadata.read_text(encoding="utf-8"))
         data = binary.read_bytes()
@@ -126,9 +127,9 @@ def _cached_cubin(root: Path, key: str) -> bytes | None:
     return None
 
 
-def _write_cache(root: Path, key: str, data: bytes) -> None:
+def _write_cache(root: Path, key: str, data: bytes, extension: str = "cubin") -> None:
     root.mkdir(parents=True, exist_ok=True)
-    for suffix, content in ((".cubin", data),
+    for suffix, content in ((f".{extension}", data),
                             (".json", json.dumps({"key": key, "sha256": hashlib.sha256(data).hexdigest()}).encode())):
         with tempfile.NamedTemporaryFile(dir=root, prefix=f".{key}-", delete=False) as stream:
             temporary = Path(stream.name)
@@ -140,7 +141,15 @@ def _write_cache(root: Path, key: str, data: bytes) -> None:
 
 
 def build_artifact(source_path: Path, output_path: Path, *, target: str | None = None,
-                   nvcc: str | None = None, cache_dir: Path | None = None) -> dict:
+                   nvcc: str | None = None, cache_dir: Path | None = None,
+                   compiler: str | None = None, nvrtc_home: str | Path | None = None,
+                   provider: str = "cuda") -> dict:
+    if provider == "cpu":
+        from tensor.cpu_build import build_cpu
+        return build_cpu(source_path, output_path, target=target, cache_dir=cache_dir,
+                         compiler=compiler, nvcc=nvcc, nvrtc_home=nvrtc_home)
+    if provider != "cuda":
+        raise BuildError(f"unsupported compiler provider {provider!r}")
     source_path, output_path = Path(source_path), Path(output_path)
     if not source_path.is_file() or source_path.suffix != ".py":
         raise BuildError("source must be an existing Python file")
@@ -156,10 +165,13 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
     packages = check_packages()
     if packages["status"] != "ok":
         raise BuildError(packages["detail"])
-    provider = check_provider()
-    if provider["status"] != "ok":
-        raise BuildError(provider["detail"])
-    compiler = _resolve_nvcc(nvcc)
+    provider_check = check_provider()
+    if provider_check["status"] != "ok":
+        raise BuildError(provider_check["detail"])
+    try:
+        backend = select_compiler(compiler, nvcc=nvcc, nvrtc_home=nvrtc_home)
+    except ValueError as exc:
+        raise BuildError(str(exc)) from exc
     started = time.perf_counter()
     # A source file is executable Python by design, exactly like a Python build script.
     try:
@@ -217,54 +229,38 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
     for path in includes:
         if not path.is_dir():
             raise BuildError(f"required TileLang headers missing: {path}")
-    try:
-        nvcc_version = subprocess.run([compiler, "--version"], capture_output=True, text=True,
-                                      check=True, timeout=30).stdout.strip()
-    except (OSError, subprocess.SubprocessError) as exc:
-        raise BuildError(f"CUDA compiler version check failed: {exc}") from exc
+    compiler_identity = backend.identity(target, includes)
+    hashed_includes = (*includes, backend.root / "include") if compiler_identity["name"] == "nvrtc" else includes
     cache_identity = {
         "source_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
         "frontend_sha256": hashlib.sha256(ir.encode()).hexdigest(),
-        "headers_sha256": _header_hash(includes),
-        "target": target, "compiler": compiler, "nvcc_version": nvcc_version,
+        "headers_sha256": _header_hash(hashed_includes),
+        "target": target, "compiler": compiler_identity,
         "tilelang_version": version("tilelang"), "tvm_ffi_version": version("apache-tvm-ffi"),
-        "options": ["--cubin", "-std=c++20", "-O3", "-lineinfo"],
         "cuda_sha256": hashlib.sha256(cuda.encode()).hexdigest(),
     }
     key = hashlib.sha256(json.dumps(cache_identity, sort_keys=True).encode()).hexdigest()
     root = _cache_root(cache_dir)
-    cubin = _cached_cubin(root, key)
+    cubin = _cached_image(root, key)
     hit = cubin is not None
-    nvcc_seconds = 0.0
+    compile_seconds = 0.0
     if cubin is None:
         compile_started = time.perf_counter()
-        with tempfile.TemporaryDirectory(prefix="tensor-build-") as directory:
-            temporary_root = Path(directory)
-            cuda_path, cubin_path = temporary_root / "kernel.cu", temporary_root / "kernel.cubin"
-            cuda_path.write_text(cuda, encoding="utf-8")
-            command = [compiler, "--cubin", "-std=c++20", "-O3", "-lineinfo", f"-arch={target}"]
-            if os.name == "nt":
-                command += ["-Xcompiler", "/Zc:preprocessor /Zc:__cplusplus"]
-            command += ["-I", str(includes[0]), "-I", str(includes[1]),
-                        str(cuda_path), "-o", str(cubin_path)]
-            try:
-                compiled = subprocess.run(command, capture_output=True, text=True, timeout=300)
-            except (OSError, subprocess.SubprocessError) as exc:
-                raise BuildError(f"nvcc failed to start or timed out: {exc}") from exc
-            if compiled.returncode:
-                raise BuildError(f"nvcc failed ({compiled.returncode}):\n{compiled.stderr or compiled.stdout}")
-            cubin = cubin_path.read_bytes() if cubin_path.is_file() else b""
-            if not cubin.startswith(b"\x7fELF"):
-                raise BuildError("nvcc did not produce an ELF cubin")
-        nvcc_seconds = time.perf_counter() - compile_started
+        try:
+            cubin = backend.compile(cuda, target, includes)
+        except ValueError as exc:
+            raise BuildError(str(exc)) from exc
+        compile_seconds = time.perf_counter() - compile_started
         try:
             _write_cache(root, key, cubin)
         except OSError:
             pass  # An unwritable cache does not prevent a successful build.
     files = {"kernel.cubin": cubin, "kernel.tirx.json": ir.encode(), **_notices(tilelang_root)}
     manifest = {
-        "format": "tensor.cuda", "format_version": FORMAT_VERSION, "kind": "cubin",
+        "format": "tensor.module", "format_version": FORMAT_VERSION, "kind": "cubin",
         "target": target, "entrypoint": entrypoint, "launch": launch,
+        "compiler": compiler_identity,
+        "provider": "cuda", "runtime_abi": runtime_requirement(arguments, symbols),
         "arguments": arguments, "outputs": outputs, "symbols": symbols, "abi": abi,
         "source_sha256": cache_identity["source_sha256"],
         "tilelang_version": version("tilelang"),
@@ -287,5 +283,7 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         raise
     return {"status": "built", "path": str(output_path.resolve()), "bytes": output_path.stat().st_size,
             "target": target, "entrypoint": entrypoint, "arguments": arguments,
-            "seconds": time.perf_counter() - started, "nvcc_seconds": nvcc_seconds,
+            "seconds": time.perf_counter() - started, "compile_seconds": compile_seconds,
+            "compiler": compiler_identity["name"],
+            "nvcc_seconds": compile_seconds if compiler_identity["name"] == "nvcc" else 0.0,
             "cache_hit": hit, "cache_key": key, "gpu_execution": "unverified"}

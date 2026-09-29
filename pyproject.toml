@@ -19,6 +19,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+tensor = ["include/tensor/*.h", "native/*.cpp", "native/*.rs"]
+
 # Phase 0 depends on TileLang and its TIRx substrate. Nothing here is product code:
 # these are the tools the architecture-validation experiments run against.
 [dependency-groups]

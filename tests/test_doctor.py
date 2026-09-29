@@ -11,7 +11,7 @@ def test_explicit_target_allows_gpu_free_build_host(monkeypatch):
     monkeypatch.setattr(doctor, "check_device", lambda ordinal: {"status": "unavailable"})
     monkeypatch.setattr(doctor, "check_toolchain", lambda target, nvcc: {"status": "ok", "target": target})
 
-    report = doctor.diagnose(target="sm_86")
+    report = doctor.diagnose(target="sm_86", compiler="nvcc")
 
     assert report["status"] == "build_ready"
     assert report["checks"]["toolchain"]["target"] == "sm_86"

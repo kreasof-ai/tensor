@@ -1,6 +1,10 @@
 """Tensor's CUDA kernel workbench. Compiler imports are deferred until build."""
 
-from tensor.cuda import Buffer, Device, Executable, bench
+from tensor.runtime import Buffer, Executable, Event, bench, TensorRuntimeError
+from tensor.providers import Device
+# Load the lightweight producer entry point before defining build, so importing
+# its submodule on the first call cannot replace this public function.
+from tensor.build import build_artifact as _build_artifact
 
 
 def assert_close(actual, expected, *, rtol=1e-5, atol=1e-8) -> None:
@@ -14,12 +18,12 @@ def assert_close(actual, expected, *, rtol=1e-5, atol=1e-8) -> None:
     np.testing.assert_allclose(actual, expected, rtol=rtol, atol=atol)
 
 
-def build(source, out, *, target=None, nvcc=None, cache_dir=None) -> dict:
+def build(source, out, *, target=None, nvcc=None, cache_dir=None, compiler=None, nvrtc_home=None,
+          provider="cuda") -> dict:
     """Build a TileLang source file through the same path as `tensor build`."""
     from pathlib import Path
-    from tensor.build import build_artifact
-
-    return build_artifact(Path(source), Path(out), target=target, nvcc=nvcc, cache_dir=cache_dir)
+    return _build_artifact(Path(source), Path(out), target=target, nvcc=nvcc, cache_dir=cache_dir,
+                          compiler=compiler, nvrtc_home=nvrtc_home, provider=provider)
 
 
 def cache_info(cache_dir=None) -> dict:
@@ -30,4 +34,4 @@ def cache_info(cache_dir=None) -> dict:
 
 __version__ = "0.1.0"
 
-__all__ = ["Buffer", "Device", "Executable", "assert_close", "bench", "build", "cache_info"]
+__all__ = ["TensorRuntimeError", "Buffer", "Device", "Executable", "Event", "assert_close", "bench", "build", "cache_info"]

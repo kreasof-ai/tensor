@@ -163,7 +163,24 @@ def check_toolchain(target: str | None, nvcc: str | None) -> dict:
                       hint="Install a full CUDA toolkit and set CUDA_HOME, or pass --nvcc.")
 
 
-def diagnose(*, target: str | None = None, device: int = 0, nvcc: str | None = None) -> dict:
+def check_nvrtc(target: str | None, home: str | Path | None = None) -> dict:
+    if target is None:
+        return _check("skipped", "no CUDA target selected", hint="Supply --target sm_XX.")
+    try:
+        from tensor.nvrtc import NvrtcCompiler
+        compiler = NvrtcCompiler(home)
+        # Check real code generation, not just loading a library or reading its version.
+        compiler.compile('extern "C" __global__ void probe(float* out) { out[threadIdx.x] = 1; }',
+                         target, ())
+        return _check("ok", f"NVRTC {compiler.version} compiled a cubin for {target}",
+                      compiler="nvrtc", root=str(compiler.root), target=target)
+    except (OSError, ValueError) as exc:
+        return _check("error", str(exc), hint="Install the pinned bundle with tools/bootstrap_nvrtc.py "
+                      "and set TENSOR_NVRTC_HOME; --compiler nvcc selects the offline compiler.")
+
+
+def diagnose(*, target: str | None = None, device: int = 0, nvcc: str | None = None,
+             compiler: str | None = None, nvrtc_home: str | Path | None = None) -> dict:
     if target is not None and not TARGET.fullmatch(target):
         return {"status": "needs_setup", "target": target,
                 "checks": {"target": _check("error", "target must be an exact CUDA SM, e.g. sm_86")}}
@@ -176,7 +193,15 @@ def diagnose(*, target: str | None = None, device: int = 0, nvcc: str | None = N
         "skipped", "compiler packages must be fixed before checking providers")
     detected = check_device(device)
     selected = target or detected.get("arch")
-    toolchain = check_toolchain(selected, nvcc)
+    chosen = compiler or ("nvcc" if nvcc else "nvrtc")
+    if chosen == "nvrtc" and nvcc or chosen == "nvcc" and nvrtc_home:
+        toolchain = _check("error", "compiler selection conflicts with --nvcc or --nvrtc-home")
+    elif chosen == "nvrtc":
+        toolchain = check_nvrtc(selected, nvrtc_home)
+    elif chosen == "nvcc":
+        toolchain = check_toolchain(selected, nvcc)
+    else:
+        toolchain = _check("error", "compiler must be nvrtc or nvcc")
     build_ready = all(check["status"] == "ok" for check in (runtime, packages, provider, toolchain))
     device_ready = detected["status"] == "ok" and runtime["status"] == "ok"
     if build_ready and device_ready and selected == detected["arch"]:

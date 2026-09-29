@@ -1,0 +1,74 @@
+name: Phase 2 NVRTC and runtime ABI
+
+on:
+  push:
+    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+  pull_request:
+    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  producer:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            python: build/consumer/bin/python
+          - os: windows-latest
+            python: build/consumer/Scripts/python.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      TENSOR_NVRTC_HOME: ${{ github.workspace }}/build/nvrtc-12.9
+      CUDA_HOME: ${{ github.workspace }}/build/no-system-toolkit
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: "0.12.9"
+      - name: Install the pinned producer and local NVRTC components
+        run: |
+          uv sync --locked
+          uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
+          uv run --locked tensor doctor --target sm_86 --compiler nvrtc --json
+      - name: Check shared descriptors, diagnostics, CPU provider and native C++ hosting
+        run: uv run --locked python -m pytest -o addopts='' -q
+      - name: Compile the five CUDA profiles and audit cache recovery
+        run: uv run --locked python tools/phase2_producer.py --out build/phase2-transfer --target sm_86
+      - name: Build the compiler-free consumer wheel
+        run: uv build --wheel
+      - name: Install and inspect with only Tensor and NumPy
+        shell: bash
+        run: |
+          uv venv --python 3.12 build/consumer
+          uv pip install --python "${{ matrix.python }}" dist/tensor_workspace-0.1.0-py3-none-any.whl
+          "${{ matrix.python }}" - <<'PY'
+          import importlib.abc
+          import importlib.metadata as metadata
+          import pathlib
+          import sys
+          class Guard(importlib.abc.MetaPathFinder):
+              def find_spec(self, fullname, path=None, target=None):
+                  if fullname.split('.')[0] in {'tilelang','tvm','tvm_ffi','torch'}:
+                      raise ImportError('compiler import prohibited: '+fullname)
+          sys.meta_path.insert(0,Guard())
+          from tensor.artifact import read_artifact
+          for artifact in pathlib.Path('build/phase2-transfer').glob('*.tbin'):
+              manifest,_=read_artifact(artifact)
+              assert manifest['format_version']==3
+              assert manifest['runtime_abi']['major']==1
+          assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
+          PY
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-phase2-${{ matrix.os }}
+          path: |
+            build/phase2-transfer/*.tbin
+            build/phase2-transfer/nvrtc-producer.json
+            build/nvrtc-12.9/bootstrap.json
+            dist/*.whl
+          if-no-files-found: error
+          retention-days: 30

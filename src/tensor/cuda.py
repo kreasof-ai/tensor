@@ -4,16 +4,14 @@ from __future__ import annotations
 
 import ctypes as c
 import os
-import statistics
-import time
 from pathlib import Path
 
 from tensor.artifact import ArtifactError, read_artifact
-from tensor.signature import (SCALAR_TYPES, bind_shapes, buffer_argument,
-                              evaluate, resolve_launch, resolve_shape, scalar_value)
+from tensor.runtime import Buffer, Executable, TensorRuntimeError, bench
+from tensor.abi import CAPABILITIES, StreamDescriptor, check_requirement
 
 
-class CudaError(RuntimeError):
+class CudaError(TensorRuntimeError):
     pass
 
 
@@ -89,167 +87,13 @@ class _Driver:
                               "arch": f"sm_{major.value}{minor.value}"}
 
 
-class Buffer:
-    """Contiguous owned or DLPack-borrowed allocation, valid within its session."""
-
-    def __init__(self, device: Device, pointer: int, shape: tuple[int, ...], dtype: object, *, owner=None):
-        self.device, self.pointer, self.shape, self.dtype = device, pointer, shape, dtype
-        self._owner = owner
-        self.owned = owner is None
-        self.nbytes = self.dtype.itemsize
-        for extent in shape:
-            self.nbytes *= extent
-        self.strides = []
-        stride = self.dtype.itemsize
-        for extent in reversed(shape):
-            self.strides.insert(0, stride)
-            stride *= extent
-        self.strides = tuple(self.strides)
-        self._released = False
-
-    def _check(self) -> None:
-        self.device._check()
-        if self._released:
-            raise CudaError("buffer has been released")
-
-    def to_numpy(self):
-        import numpy as np
-
-        self._check()
-        result = np.empty(self.shape, dtype=self.dtype)
-        self.device.synchronize()
-        self.device.driver.call("cuMemcpyDtoH_v2", c.c_void_p(result.ctypes.data),
-                                self.pointer, self.nbytes)
-        return result
-
-    def to_bytes(self) -> bytes:
-        """Return a host-side byte snapshot of this device buffer."""
-        return self.to_numpy().tobytes()
-
-    def release(self) -> None:
-        if not self._released:
-            self._check()
-            self.device.synchronize()
-            self._dispose()
-
-    def _dispose(self) -> None:
-        if self._released:
-            return
-        if self._owner is not None:
-            self._owner.release()
-            self._owner = None
-        else:
-            self.device.driver.call("cuMemFree_v2", self.pointer)
-        self._released = True
-        self.device._buffers.remove(self)
-
-
-class Executable:
-    def __init__(self, device: Device, manifest: dict, module: c.c_void_p,
-                 function: c.c_void_p, image: c.Array):
-        self.device, self.manifest, self.module, self.function, self._image = (
-            device, manifest, module, function, image)
-        self._shared_limit = 0
-
-    def _bind(self, args: tuple, kwargs: dict, *, include_outputs: bool):
-        descriptors = [item for item in self.manifest["arguments"]
-                       if include_outputs or item["name"] not in self.manifest.get("outputs", [])]
-        if len(args) > len(descriptors):
-            raise ValueError(f"kernel expects at most {len(descriptors)} arguments, received {len(args)}")
-        values = dict(zip((item["name"] for item in descriptors), args))
-        names = {item["name"] for item in descriptors}
-        dimensions = {}
-        for name, value in kwargs.items():
-            if name in values:
-                raise ValueError(f"argument {name} supplied twice")
-            if name in names:
-                values[name] = value
-            elif name in self.manifest.get("symbols", {}):
-                dimensions[name] = value
-            else:
-                raise ValueError(f"unknown kernel argument {name}")
-        missing = names - values.keys()
-        if missing:
-            raise ValueError(f"missing kernel arguments: {sorted(missing)}")
-        for descriptor in descriptors:
-            if buffer_argument(descriptor):
-                value = values[descriptor["name"]]
-                if not isinstance(value, Buffer):
-                    raise TypeError(f"{descriptor['name']} must be a Tensor Buffer")
-                value._check()
-                if value.device is not self.device:
-                    raise ValueError(f"{descriptor['name']} belongs to a different CUDA device session")
-                # V1 omitted alignment metadata; retain CUDA allocation alignment there.
-                alignment = descriptor.get("alignment", 256)
-                if value.pointer % alignment:
-                    raise ValueError(f"{descriptor['name']} needs {alignment}-byte pointer alignment")
-        symbols, values = bind_shapes(self.manifest, values, dimensions)
-        launch = resolve_launch(self.manifest["launch"], symbols)
-        for field in ("grid", "block"):
-            if any(value > limit for value, limit in zip(launch[field], self.device.limits[field])):
-                raise ValueError(f"launch {field} exceeds this device's limits")
-        return values, symbols, launch
-
-    def launch(self, *arguments, **bindings) -> None:
-        """Launch with all frontend arguments; symbolic dimensions are inferred."""
-        self.device._check()
-        values, symbols, launch = self._bind(arguments, bindings, include_outputs=True)
-        abi = self.manifest.get("abi", [dict(item, kind="buffer") for item in self.manifest["arguments"]])
-        holders = []
-        for descriptor in abi:
-            name = descriptor["name"]
-            if buffer_argument(descriptor):
-                holders.append(c.c_uint64(values[name].pointer))
-            else:
-                value = values[name] if name in values else evaluate({"var": name}, symbols)
-                holders.append(SCALAR_TYPES[descriptor["dtype"]](scalar_value(value, descriptor["dtype"], name)))
-        params = (c.c_void_p * len(holders))(*(c.addressof(item) for item in holders))
-        shared = launch["shared_memory_bytes"]
-        if shared > self._shared_limit:
-            # CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES = 8.
-            self.device.driver.call("cuFuncSetAttribute", self.function, 8, shared)
-            self._shared_limit = shared
-        self.device.driver.call("cuLaunchKernel", self.function,
-                                *launch["grid"], *launch["block"], shared,
-                                self.device.stream, params, None)
-
-    def prepare(self, *inputs, **bindings):
-        """Allocate declared outputs without launching, for repeated benchmarks."""
-        self.device._check()
-        outputs = self.manifest.get("outputs", [])
-        if not outputs:
-            raise ValueError("artifact has no declared outputs; call launch with every buffer")
-        supplied, symbols, _ = self._bind(inputs, bindings, include_outputs=False)
-        generated = {}
-        try:
-            for item in self.manifest["arguments"]:
-                if item["name"] in outputs:
-                    generated[item["name"]] = self.device.empty(resolve_shape(item["shape"], symbols), item["dtype"])
-        except BaseException:
-            for buffer in generated.values():
-                buffer.release()
-            raise
-        supplied.update(generated)
-        ordered = tuple(supplied[item["name"]] for item in self.manifest["arguments"])
-        # Explicit scalars are already present in ordered; only inferred symbols go in kwargs.
-        implicit = {name: value for name, value in symbols.items() if name not in supplied}
-        return ordered, implicit, generated
-
-    def __call__(self, *inputs, **bindings):
-        """Allocate declared outputs, launch, and return one Buffer or a tuple."""
-        ordered, dimensions, generated = self.prepare(*inputs, **bindings)
-        try:
-            self.launch(*ordered, **dimensions)
-        except BaseException:
-            for buffer in generated.values():
-                buffer.release()
-            raise
-        outputs = self.manifest["outputs"]
-        result = tuple(generated[name] for name in outputs)
-        return result[0] if len(result) == 1 else result
 
 
 class Device:
+    device_type = 2
+    error = CudaError
+    capabilities = CAPABILITIES | {"events", "async_launch", "external_streams", "gpu_dlpack"}
+
     """Retain the CUDA primary context and own or borrow a stream for the session."""
 
     def __init__(self, ordinal: int = 0, *, stream: int | None = None):
@@ -260,6 +104,7 @@ class Device:
         self.driver = _Driver()
         self.ordinal = ordinal
         self.device, self.info = self.driver.device_info(ordinal)
+        self.info["provider"] = "cuda"
         self.limits = {}
         for field, attributes in (("block", (2, 3, 4)), ("grid", (5, 6, 7))):
             self.limits[field] = []
@@ -271,6 +116,8 @@ class Device:
         self._buffers: set[Buffer] = set()
         self._modules: list[c.c_void_p] = []
         self._consumers: set[int] = set()
+        self._events = set()
+        self._generation = 0
         self._open = False
         self._stream_active = False
 
@@ -286,6 +133,7 @@ class Device:
             else:
                 self.stream = self._foreign_stream(self._external_stream)
             self._stream_active = True
+            self._generation += 1
             self._open = True
             return self
         except BaseException:
@@ -333,6 +181,55 @@ class Device:
         self._check()
         self._order_streams(self.stream, self._foreign_stream(consumer_stream))
         self._consumers.add(consumer_stream)
+
+    def record_event(self):
+        from tensor.runtime import Event
+        self._check()
+        handle = c.c_void_p()
+        self.driver.call("cuEventCreate", c.byref(handle), 2)
+        try:
+            self.driver.call("cuEventRecord", handle, self.stream)
+        except BaseException:
+            self.driver.call("cuEventDestroy_v2", handle)
+            raise
+        event = Event(self, handle)
+        self._events.add(event)
+        return event
+
+    def wait(self, event):
+        self._check()
+        event._check(self)
+        self._check()  # event validation can activate the producer's context.
+        self.driver.call("cuStreamWaitEvent", self.stream, event.handle, 0)
+
+    def _dispose_event(self, event):
+        self.driver.call("cuEventDestroy_v2", event.handle)
+
+    def stream_descriptor(self):
+        return StreamDescriptor(self.device_type, self.ordinal, self.stream.value or 0)
+
+    def _download(self, buffer):
+        import numpy as np
+        result = np.empty(buffer.shape, dtype=buffer.dtype)
+        self.driver.call("cuMemcpyDtoH_v2", c.c_void_p(result.ctypes.data), buffer.pointer, buffer.nbytes)
+        return result
+
+    def _dispose_buffer(self, buffer):
+        if buffer._owner is not None:
+            buffer._owner.release()
+            buffer._owner = None
+        else:
+            self.driver.call("cuMemFree_v2", buffer.pointer)
+
+    def _launch(self, executable, call):
+        descriptor = call.descriptor
+        shared = descriptor.shared_memory_bytes
+        if shared > executable._shared_limit:
+            self.driver.call("cuFuncSetAttribute", executable.function, 8, shared)
+            executable._shared_limit = shared
+        self.driver.call("cuLaunchKernel", executable.function,
+                         *descriptor.grid, *descriptor.block, shared,
+                         c.c_void_p(descriptor.stream.handle), call.cuda_parameters(), None)
 
     def empty(self, shape, dtype="float32") -> Buffer:
         import numpy as np
@@ -423,6 +320,10 @@ class Device:
     def load(self, artifact: str | Path) -> Executable:
         self._check()
         manifest, files = read_artifact(artifact)
+        if manifest.get("provider", "cuda") != "cuda":
+            raise ArtifactError("artifact requires a different runtime provider")
+        if "runtime_abi" in manifest:
+            check_requirement(manifest["runtime_abi"], self.capabilities)
         if manifest["target"] != self.info["arch"]:
             raise ArtifactError(f"artifact target {manifest['target']} does not match device {self.info['arch']}")
         module, function = c.c_void_p(), c.c_void_p()
@@ -452,6 +353,11 @@ class Device:
             call("cuStreamSynchronize", self.stream)
         for handle in self._consumers:
             call("cuStreamSynchronize", c.c_void_p(handle))
+        for event in list(self._events):
+            try:
+                event.release()
+            except CudaError as exc:
+                errors.append(exc)
         for buffer in list(self._buffers):
             try:
                 call("cuCtxSetCurrent", self.context)
@@ -471,6 +377,7 @@ class Device:
         self._buffers.clear()
         self._modules.clear()
         self._consumers.clear()
+        self._events.clear()
         self.stream, self.context = c.c_void_p(), c.c_void_p()
         if errors:
             raise errors[0]
@@ -481,30 +388,3 @@ class Device:
         except CudaError:
             if exc_type is None:
                 raise
-
-
-def bench(executable: Executable, buffers: tuple, *, warmup: int = 10,
-          iters: int = 100, **bindings) -> dict:
-    """Measure host launch plus stream synchronization, with preallocated buffers."""
-    if type(warmup) is not int or warmup < 0 or type(iters) is not int or iters < 1:
-        raise ValueError("warmup must be non-negative and iters must be positive")
-    device = executable.device
-    for _ in range(warmup):
-        executable.launch(*buffers, **bindings)
-        device.synchronize()
-    samples = []
-    for _ in range(iters):
-        start = time.perf_counter()
-        executable.launch(*buffers, **bindings)
-        device.synchronize()
-        samples.append(time.perf_counter() - start)
-    enqueue = []
-    for _ in range(iters):
-        start = time.perf_counter()
-        executable.launch(*buffers, **bindings)
-        enqueue.append(time.perf_counter() - start)
-    device.synchronize()
-    return {"warmup": warmup, "iters": iters,
-            "median_launch_and_sync_seconds": statistics.median(samples),
-            "min_launch_and_sync_seconds": min(samples),
-            "median_host_enqueue_seconds": statistics.median(enqueue)}

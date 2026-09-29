@@ -48,7 +48,7 @@ def measure(runtime_python: Path, *, target: str | None = None, runs: int = 3,
         root = Path(temporary)
         cache, cold, warm = root / "cache", root / "cold.tbin", root / "warm.tbin"
         source = ROOT / "examples" / "elementwise.py"
-        common = ["--cache-dir", str(cache)]
+        common = ["--compiler", "nvcc", "--cache-dir", str(cache)]
         if target:
             common += ["--target", target]
         build_command = [sys.executable, "-m", "tensor", "build", str(source)]

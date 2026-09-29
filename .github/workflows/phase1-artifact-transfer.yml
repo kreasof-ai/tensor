@@ -28,7 +28,7 @@ jobs:
         run: |
           uv sync --locked
           uv run --locked python tools/bootstrap_cuda.py --out "$CUDA_HOME"
-          uv run --locked tensor doctor --target "$TENSOR_TARGET"
+          uv run --locked tensor doctor --target "$TENSOR_TARGET" --compiler nvcc
       - name: Run the product signature, ownership and diagnostic guards
         run: |
           uv run --locked python -m pytest -o addopts='' -q \
@@ -38,7 +38,7 @@ jobs:
         run: |
           for example in elementwise gemm_relu dynamic_affine dynamic_gemm scalar_offset; do
             uv run --locked tensor build "examples/$example.py" \
-              --target "$TENSOR_TARGET" --out "build/transfer/$example.tbin"
+              --target "$TENSOR_TARGET" --compiler nvcc --out "build/transfer/$example.tbin"
           done
           uv build --wheel
           uv run --locked python - <<'PY'
@@ -114,7 +114,7 @@ jobs:
               assert hashlib.sha256(artifact.read_bytes()).hexdigest() == digest
               manifest, _ = read_artifact(artifact)
               assert manifest["target"] == report["target"]
-              assert manifest["format_version"] == 2
+              assert manifest["format_version"] in (2, 3)
           installed = {item.metadata["Name"].lower() for item in metadata.distributions()}
           assert installed == {"numpy", "tensor-workspace"}, installed
           assert not {"tilelang", "tvm", "torch"} & sys.modules.keys()

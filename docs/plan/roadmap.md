@@ -4,7 +4,17 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phases 0 and 1 complete; Phase 2 is next.** `doctor`, `build`,
+Current status: **Phases 0 and 1 complete; Phase 2 implemented and validated
+locally.** [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) accepts call ABI
+1.0, the independent v3 module envelope and NVRTC as the default CUDA compiler.
+CUDA and a CPU validation provider share the workbench; native C++/Rust hosts
+exercise the descriptors without Python or TVM FFI. A driver/toolchain-free
+container builds all five NVRTC profiles, and a Tensor/NumPy consumer executes
+them on A10G. This Phase 2 transfer uses one physical host; the new Linux/Windows
+CI workflow has not yet been run remotely. Details and remaining scope are in
+[the Phase 2 report](../research/phase2-validation.md).
+
+Phase 1 baseline: `doctor`, `build`,
 `inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated
 on the A10G. Product v2 artifacts support typed scalar arguments and symbolic
 dimensions. CPU/GPU DLPack imports and foreign CUDA stream ordering work, with
@@ -178,16 +188,23 @@ a gate for this single-device phase.
 
 **Goal:** separate compiler, runtime, and provider.
 
-Phase 1 now provides a concrete CUDA runtime against which this contract can
-be stabilized. Its typed artifact bindings, primary-context ownership and
-stream handoff are CUDA-specific implementation contracts; they do not freeze
-a provider-neutral ABI or make frontend TIRx the public runtime representation.
-Phase 0 already measured C++/Rust hosting and a second CPU provider, so use
-those boundaries when separating compiler, runtime and provider.
+Implemented: the [runtime contract](../runtime-abi.md) and packaged C header
+freeze buffer, scalar, resolved-call, stream and error layouts as call ABI 1.0.
+Shared binding, outputs and lifetime checks serve CUDA and a synchronous CPU
+provider. The module envelope is v3; legacy CUDA v1/v2 envelopes remain readable.
+C++/Rust hosts execute native CPU images, and C++ executes an NVRTC cubin.
 
-Evaluate `apache-tvm-ffi` against the measured compiler-free consumer rather
-than designing an FFI without a working host. Independently version the module
-and runtime contracts so the frontend representation can change later (§3.4).
+[ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) evaluates TVM FFI and
+retains it inside the compiler, choosing Tensor descriptors for the runtime
+boundary. NVRTC 12.9 is the default executable compiler; nvcc remains explicit.
+The producer needs pinned Python compiler packages plus bundled libraries and
+headers, but no system CUDA toolkit, driver, GPU or host C++ compiler.
+
+Scope: this freezes the call ABI, not a C provider lifecycle/plugin table or
+a native `.tbin` CLI. CPU is a validation implementation on Linux x86-64.
+CUDA remains one exact-SM cubin. Cross-SM images/PTX fallback and optimized
+non-NVIDIA providers need further work. **Direct PTX, including a possible
+tinygrad lowering path, stays experimental until after Tensor v1.**
 
 ---
 
@@ -199,8 +216,11 @@ established that the portable tier is a serialized TIRx module.
 
 The work that actually matters here is done in design and waiting on E4b. E4a produced a
 concrete manifest spec: `format_version`, exact `tilelang_version`, exact `tvm_ffi_version`,
-the extracted `op_set`, target specialization, and a content hash. The gate is three cheap
-checks before the load — TileLang version, FFI version, op set.
+the extracted `op_set`, target specialization, and a content hash. The portable
+source tier needs three checks before compiler loading: TileLang version,
+FFI version and operator set. Executable images instead negotiate the runtime
+ABI/capabilities and provider target; compiler versions are provenance, not
+consumer equality requirements.
 
 E13 corrected the source distribution footprint: it needs CUTLASS/CuTe as well
 as `tl_templates`, about 27.2 MB of headers (3.6 MB for the compressed bundle).

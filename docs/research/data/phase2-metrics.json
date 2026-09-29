@@ -1,0 +1,179 @@
+{
+  "status": "passed",
+  "target": "sm_86",
+  "same_host": true,
+  "outputs_equal": true,
+  "metric": "host enqueue and launch-plus-stream-sync",
+  "records": [
+    {
+      "example": "elementwise",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 1.882673235002585,
+      "warm_build_seconds": 0.7705872810001893,
+      "cold_process_seconds": 4.651603804999468,
+      "warm_process_seconds": 3.4168090550010675,
+      "compile_seconds": 1.106099936998362,
+      "artifact_bytes": 24497,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.830150232417509e-05,
+        "min_launch_and_sync_seconds": 6.678199861198664e-05,
+        "median_host_enqueue_seconds": 6.4362000557594e-05
+      }
+    },
+    {
+      "example": "elementwise",
+      "compiler": "nvcc",
+      "cold_build_seconds": 1.6789321719988948,
+      "warm_build_seconds": 0.2944954440026777,
+      "cold_process_seconds": 4.330260574999556,
+      "warm_process_seconds": 2.9556184940011008,
+      "compile_seconds": 1.372673820998898,
+      "artifact_bytes": 6936,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.911150012456346e-05,
+        "min_launch_and_sync_seconds": 6.758100062143058e-05,
+        "median_host_enqueue_seconds": 6.485599988081958e-05
+      }
+    },
+    {
+      "example": "gemm_relu",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 2.5424615230003837,
+      "warm_build_seconds": 1.3842771679992438,
+      "cold_process_seconds": 5.2641916909997235,
+      "warm_process_seconds": 4.07900193399837,
+      "compile_seconds": 1.1680950970003323,
+      "artifact_bytes": 36238,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 8.294700091937557e-05,
+        "min_launch_and_sync_seconds": 8.057200102484785e-05,
+        "median_host_enqueue_seconds": 7.723649832769297e-05
+      }
+    },
+    {
+      "example": "gemm_relu",
+      "compiler": "nvcc",
+      "cold_build_seconds": 2.6269267999996373,
+      "warm_build_seconds": 0.9024556980002671,
+      "cold_process_seconds": 5.259985534001316,
+      "warm_process_seconds": 3.5830289690020436,
+      "compile_seconds": 1.7253437420004047,
+      "artifact_bytes": 15805,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 8.427700231550261e-05,
+        "min_launch_and_sync_seconds": 7.94120023783762e-05,
+        "median_host_enqueue_seconds": 7.581099998787977e-05
+      }
+    },
+    {
+      "example": "dynamic_affine",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 2.151098247999471,
+      "warm_build_seconds": 1.0541727910022018,
+      "cold_process_seconds": 4.827045415000612,
+      "warm_process_seconds": 3.671628325999336,
+      "compile_seconds": 1.0991085469977406,
+      "artifact_bytes": 24872,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 0.00010129249858437106,
+        "min_launch_and_sync_seconds": 9.855199823505245e-05,
+        "median_host_enqueue_seconds": 9.704200056148693e-05
+      }
+    },
+    {
+      "example": "dynamic_affine",
+      "compiler": "nvcc",
+      "cold_build_seconds": 1.9450862060002692,
+      "warm_build_seconds": 0.5727426599987666,
+      "cold_process_seconds": 4.6257079299975885,
+      "warm_process_seconds": 3.2370845440018456,
+      "compile_seconds": 1.3607707110022602,
+      "artifact_bytes": 7297,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 0.00010171199937758502,
+        "min_launch_and_sync_seconds": 9.872199734672904e-05,
+        "median_host_enqueue_seconds": 9.609199878468644e-05
+      }
+    },
+    {
+      "example": "dynamic_gemm",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 2.601717785000801,
+      "warm_build_seconds": 1.417301695997594,
+      "cold_process_seconds": 5.276102973002708,
+      "warm_process_seconds": 4.083013757997833,
+      "compile_seconds": 1.17608767099955,
+      "artifact_bytes": 31950,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 9.387200043420307e-05,
+        "min_launch_and_sync_seconds": 9.129200043389574e-05,
+        "median_host_enqueue_seconds": 8.935149890021421e-05
+      }
+    },
+    {
+      "example": "dynamic_gemm",
+      "compiler": "nvcc",
+      "cold_build_seconds": 2.646353090000048,
+      "warm_build_seconds": 0.9559364350025135,
+      "cold_process_seconds": 5.270311515996582,
+      "warm_process_seconds": 3.6330330679993494,
+      "compile_seconds": 1.6914638499983994,
+      "artifact_bytes": 11654,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 9.188200056087226e-05,
+        "min_launch_and_sync_seconds": 8.899200111045502e-05,
+        "median_host_enqueue_seconds": 8.80919997143792e-05
+      }
+    },
+    {
+      "example": "scalar_offset",
+      "compiler": "nvrtc",
+      "cold_build_seconds": 1.8921726629996556,
+      "warm_build_seconds": 0.7806980249988555,
+      "cold_process_seconds": 4.583529306000855,
+      "warm_process_seconds": 3.4717887509978027,
+      "compile_seconds": 1.1192659139996977,
+      "artifact_bytes": 24271,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 6.969700189074501e-05,
+        "min_launch_and_sync_seconds": 6.789100007154047e-05,
+        "median_host_enqueue_seconds": 6.550599937327206e-05
+      }
+    },
+    {
+      "example": "scalar_offset",
+      "compiler": "nvcc",
+      "cold_build_seconds": 1.6571435299993027,
+      "warm_build_seconds": 0.30111364599724766,
+      "cold_process_seconds": 4.300398071998643,
+      "warm_process_seconds": 3.0074492869971436,
+      "compile_seconds": 1.355298780999874,
+      "artifact_bytes": 6502,
+      "timing": {
+        "warmup": 10,
+        "iters": 100,
+        "median_launch_and_sync_seconds": 7.105600161594339e-05,
+        "min_launch_and_sync_seconds": 6.895099795656279e-05,
+        "median_host_enqueue_seconds": 6.655150173173752e-05
+      }
+    }
+  ]
+}

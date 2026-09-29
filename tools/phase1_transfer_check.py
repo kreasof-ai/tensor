@@ -95,7 +95,7 @@ def check(bundle: Path, *, require_two_hosts: bool = True, legacy_artifact: Path
         if hashlib.sha256(artifact.read_bytes()).hexdigest() != digest:
             raise ValueError(f"artifact hash mismatch: {name}")
         manifest, _ = read_artifact(artifact)
-        if manifest["format_version"] != 2 or manifest["target"] != producer["target"]:
+        if manifest["format_version"] not in (2, 3) or manifest["target"] != producer["target"]:
             raise ValueError(f"artifact metadata mismatch: {name}")
         if manifest["source_sha256"] != hashlib.sha256((checkout / "examples" / f"{artifact.stem}.py").read_bytes()).hexdigest():
             raise ValueError(f"producer and consumer source hashes differ: {name}")

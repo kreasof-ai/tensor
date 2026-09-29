@@ -1,0 +1,163 @@
+{
+  "date": "2026-09-29",
+  "status": "passed",
+  "commit": "0f9e2d540f5559d15fec1d32a19d4618c4c03f73",
+  "git_dirty": true,
+  "lock_sha256": "92d82865a7064b02cae6ca9f2bc9b0f418c69a442f6eff731d7ec6656e50a4be",
+  "python": "3.12.14",
+  "platform": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+  "source_hashes": {
+    "src/tensor/__init__.py": "6f224815ebc08b52cbb8610b86c961279eb575538f368c28ac95c9fa3eb95f72",
+    "src/tensor/__main__.py": "2d09a692db904ea8e4b37405e9dfe8321ff80987c6c5000cdfee7be263f21dcb",
+    "src/tensor/abi.py": "a917fe2e0a062c41dd9c6d2df63de7bf51d014aa16ef0df1e51332f99aed99d4",
+    "src/tensor/artifact.py": "628439f73756876a9d3f0609509241b7ecbdd3d33fa6dde3fb87111ebb735317",
+    "src/tensor/build.py": "9ec1e1e7b64a256496bc083f52be8b2073f569796fa400733dfea1be1a396b1f",
+    "src/tensor/cli.py": "3d162ebe41457a24acc2b9e538779fe6b111c689d6d50c53c1678a8154ff337a",
+    "src/tensor/commands.py": "7759c2f2d1d504412e9c4c3fc8f0c2efb6c09932b02684b1fad325f575a6741a",
+    "src/tensor/compiler.py": "949a23350e0afc238440aa69bfa8fa4a0ca8c162ad623fbe70ff1a9fc4f886ef",
+    "src/tensor/cpu.py": "cc54579ff906aed61dcc22c0411b577ad6cd2d411f9ed7f7d037a7f1d4d8c987",
+    "src/tensor/cpu_build.py": "a8624ea5a2c0a339d5e5cee126b19da2c8622153b0e5533a2356728e83c8d32e",
+    "src/tensor/cuda.py": "0f1bef6b947bb6ca30359ce73d91414aed14be84ad1da4ca848c36474bb8ce99",
+    "src/tensor/dlpack.py": "4a91366df53b5bba6ec8c13ac2576796d52c23b05c35a999299be07c862e84ff",
+    "src/tensor/doctor.py": "4ee412dd19df5b9d2ff0329cd91cbc5f5589086758ed8ecfcfd100641ac98b58",
+    "src/tensor/include/tensor/abi.h": "27ba64756334692e5a2f0d444b3805a6686ea3543a3e081f0023078a0e3a681c",
+    "src/tensor/inspect.py": "4e8b410c38113d99be1ee87b194642c41507053900a23050b52d835db9533c1d",
+    "src/tensor/lowering.py": "515b3ccbb57fc7dfb8c9c45d14156c323dc67ba3b51f9bfe1e8df80ffe996f43",
+    "src/tensor/native/host.cpp": "0f2a74aa0240d5c674fe04d22405b9a377d328d8b4c31a9516a57a2b3edc6aed",
+    "src/tensor/native/host.rs": "1095d333122e4a414ededb1734216b9d1a0a068ad7c45bb62480f28e534a5678",
+    "src/tensor/nvrtc.py": "144df78a7c49cddc1e9db2b8a22d8865483587915a6e69edd7591e71c6812d4a",
+    "src/tensor/providers.py": "8296f7a1cf16a5966168c5ae5eeb2197e6056d59f775406d35f8494a82b5a30d",
+    "src/tensor/runtime.py": "612f0b18d2e6118af0b4f0543a474280e10e629990908f555b066e7de1794ca9",
+    "src/tensor/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559"
+  },
+  "tests": {
+    "command": "TENSOR_P0_CUDA=1 TENSOR_P1_CUDA=1 TENSOR_P2_CUDA=1 CUDA_HOME=experiments/p0/out/cuda-12.9 TENSOR_NVRTC_HOME=build/nvrtc-12.9 uv run --locked python -m pytest -o addopts= -q",
+    "passed": 82,
+    "skipped": 0,
+    "seconds": 52.83
+  },
+  "native_hosts": [
+    {
+      "status": "passed",
+      "provider": "cpu",
+      "abi": 1,
+      "elements": 129,
+      "negative_checks": 2,
+      "command": [
+        "build/phase2-probe/native-host",
+        "cpu",
+        "build/phase2-probe/native-elementwise.so"
+      ],
+      "host_bytes": 36800,
+      "host_sha256": "1cc210e938b2bdd6fbe1927ee05fc8eea2fa65f1fa20e04ebe28961d1fd39e89",
+      "image_sha256": "d24fa121b6cf5669392136a34ef9fb85a1e251d618fa27b047e358205bf48d19"
+    },
+    {
+      "status": "passed",
+      "provider": "cpu",
+      "abi": 1,
+      "elements": 129,
+      "negative_checks": 2,
+      "command": [
+        "build/phase2-probe/rust-host",
+        "build/phase2-probe/native-elementwise.so"
+      ],
+      "host_bytes": 4543032,
+      "host_sha256": "9fe48a50ce80a1c2ef8a9ea76faf747660cfc1fe1775720cdd7297d8f8a441a2",
+      "image_sha256": "d24fa121b6cf5669392136a34ef9fb85a1e251d618fa27b047e358205bf48d19"
+    },
+    {
+      "status": "passed",
+      "provider": "cuda",
+      "abi": 1,
+      "elements": 129,
+      "negative_checks": 0,
+      "command": [
+        "build/phase2-probe/native-host",
+        "cuda",
+        "build/phase2-probe/native-elementwise.cubin",
+        "elementwise_kernel"
+      ],
+      "host_bytes": 36800,
+      "host_sha256": "1cc210e938b2bdd6fbe1927ee05fc8eea2fa65f1fa20e04ebe28961d1fd39e89",
+      "image_sha256": "6113746ab8ce202c382535fc2f9ae447c2516df8ea4cb68357763513d453b682"
+    }
+  ],
+  "nvrtc_bundle": {
+    "root": "/home/sagemaker-user/tensor/build/nvrtc-12.9",
+    "cuda_version": "12.9",
+    "components": [
+      {
+        "component": "cuda_nvrtc",
+        "version": "12.9.86",
+        "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_nvrtc/linux-x86_64/cuda_nvrtc-linux-x86_64-12.9.86-archive.tar.xz",
+        "sha256": "82913658363892dbc0f2638b070476234476e06e084fed60db861cb7e161a6af",
+        "download_bytes": 114231976,
+        "installed": "headers and NVRTC libraries"
+      },
+      {
+        "component": "cuda_cudart",
+        "version": "12.9.79",
+        "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_cudart/linux-x86_64/cuda_cudart-linux-x86_64-12.9.79-archive.tar.xz",
+        "sha256": "1f6ad42d4f530b24bfa35894ccf6b7209d2354f59101fd62ec4a6192a184ce99",
+        "download_bytes": 1514676,
+        "installed": "headers only"
+      },
+      {
+        "component": "cuda_cccl",
+        "version": "12.9.27",
+        "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_cccl/linux-x86_64/cuda_cccl-linux-x86_64-12.9.27-archive.tar.xz",
+        "sha256": "8b1a5095669e94f2f9afd7715533314d418179e9452be61e2fde4c82a3e542aa",
+        "download_bytes": 997888,
+        "installed": "headers only"
+      },
+      {
+        "component": "cuda_nvcc",
+        "version": "12.9.86",
+        "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_nvcc/linux-x86_64/cuda_nvcc-linux-x86_64-12.9.86-archive.tar.xz",
+        "sha256": "7a1a5b652e5ef85c82b721d10672fc9a2dbaab44e9bd3c65a69517bf53998c35",
+        "download_bytes": 81100244,
+        "installed": "headers only"
+      }
+    ],
+    "installed_bytes": 245936741,
+    "files": 1807,
+    "toolkit_executables": []
+  },
+  "two_physical_hosts": false,
+  "remote_ci_executed": false,
+  "clean_consumer_extra": {
+    "compiler_import_guard": true,
+    "records": [
+      {
+        "case": "legacy_cuda_v2",
+        "passed": true
+      },
+      {
+        "case": "clean_cpu_dynamic",
+        "size": 1,
+        "passed": true
+      },
+      {
+        "case": "clean_cpu_dynamic",
+        "size": 127,
+        "passed": true
+      },
+      {
+        "case": "clean_cpu_dynamic",
+        "size": 128,
+        "passed": true
+      },
+      {
+        "case": "clean_cpu_dynamic",
+        "size": 129,
+        "passed": true
+      },
+      {
+        "case": "clean_cpu_dynamic",
+        "size": 1025,
+        "passed": true
+      }
+    ]
+  }
+}

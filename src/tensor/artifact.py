@@ -1,4 +1,4 @@
-"""Read and validate Tensor's executable CUDA bundle without compiler imports."""
+"""Read and validate Tensor executable bundles without compiler imports."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ from pathlib import Path
 
 from tensor.signature import INTEGER_TYPES, SCALAR_TYPES, validate_expression
 
-FORMAT = "tensor.cuda"
-FORMAT_VERSION = 2
+FORMAT = "tensor.module"
+FORMAT_VERSION = 3
 MAX_UNCOMPRESSED = 128 * 1024 * 1024
 MAX_MANIFEST = 2 * 1024 * 1024
 TARGET = re.compile(r"sm_[0-9]{2,3}\Z")
@@ -34,16 +34,32 @@ def validate_manifest(manifest: object) -> dict:
     if not isinstance(manifest, dict):
         raise ArtifactError("manifest must be an object")
     revision = manifest.get("format_version")
-    if manifest.get("format") != FORMAT or type(revision) is not int or revision not in (1, FORMAT_VERSION):
+    if (type(revision) is not int or revision not in (1, 2, FORMAT_VERSION)
+            or manifest.get("format") != (FORMAT if revision >= 3 else "tensor.cuda")):
         raise ArtifactError("unsupported Tensor artifact format/version")
-    if manifest.get("kind") != "cubin":
-        raise ArtifactError("the runtime requires a cubin executable")
+    provider = manifest.get("provider", "cuda") if revision >= 3 else "cuda"
+    if provider not in ("cuda", "cpu"):
+        raise ArtifactError("unsupported runtime provider")
+    if manifest.get("kind") != ("cubin" if provider == "cuda" else "native"):
+        raise ArtifactError("invalid executable kind for provider")
     target = manifest.get("target")
-    if not isinstance(target, str) or not TARGET.fullmatch(target):
-        raise ArtifactError("invalid CUDA target")
+    if (not isinstance(target, str) or
+            (not TARGET.fullmatch(target) if provider == "cuda" else target != "cpu-linux-x86_64")):
+        raise ArtifactError("invalid provider target")
+    if revision >= 3:
+        from tensor.abi import check_requirement
+        try:
+            check_requirement(manifest.get("runtime_abi"))
+        except ValueError as exc:
+            raise ArtifactError(str(exc)) from exc
+        if "provider" not in manifest:
+            raise ArtifactError("missing runtime provider")
+        compiler = manifest.get("compiler")
+        if not isinstance(compiler, dict) or not isinstance(compiler.get("name"), str) or not isinstance(compiler.get("version"), str):
+            raise ArtifactError("missing compiler provenance")
     entrypoint = manifest.get("entrypoint")
     if not isinstance(entrypoint, str) or not NAME.fullmatch(entrypoint):
-        raise ArtifactError("invalid CUDA entrypoint")
+        raise ArtifactError("invalid executable entrypoint")
     symbols = manifest.get("symbols", {})
     if (not isinstance(symbols, dict) or len(symbols) > 128
             or any(not isinstance(name, str) or not NAME.fullmatch(name)
@@ -90,7 +106,7 @@ def validate_manifest(manifest: object) -> dict:
             raise ArtifactError("invalid argument name")
         if not isinstance(dtype, str) or not dtype:
             raise ArtifactError("invalid argument dtype")
-        if revision == 2 and dtype not in {*SCALAR_TYPES, "float16"}:
+        if dtype not in {*SCALAR_TYPES, "float16"}:
             raise ArtifactError(f"unsupported argument dtype {dtype}")
         if kind == "scalar":
             if dtype not in SCALAR_TYPES or (name in symbols and symbols[name] != dtype):
@@ -106,7 +122,7 @@ def validate_manifest(manifest: object) -> dict:
                 _expression(extent, symbols)
                 if (type(extent) is int and extent < 1) or (revision == 1 and type(extent) is not int):
                     raise ArtifactError("invalid buffer shape")
-            if revision == 2:
+            if revision >= 2:
                 alignment = argument["alignment"]
                 if type(alignment) is not int or not 1 <= alignment <= 4096 or alignment & (alignment-1):
                     raise ArtifactError("invalid buffer alignment")
@@ -119,27 +135,27 @@ def validate_manifest(manifest: object) -> dict:
     if (not isinstance(outputs, list) or any(not isinstance(name, str) or name not in buffers for name in outputs)
             or len(outputs) != len(set(outputs))):
         raise ArtifactError("invalid output names")
-    if revision == 2:
+    if revision >= 2:
         abi = manifest.get("abi")
         if not isinstance(abi, list) or not abi or len(abi) > 256:
-            raise ArtifactError("missing or invalid CUDA ABI")
+            raise ArtifactError("missing or invalid kernel ABI")
         frontend = {item["name"]: item for item in arguments}
         abi_names = []
         for item in abi:
             if not isinstance(item, dict) or set(item) != {"kind", "name", "dtype"}:
-                raise ArtifactError("invalid CUDA ABI argument")
+                raise ArtifactError("invalid kernel ABI argument")
             name, kind, dtype = item["name"], item["kind"], item["dtype"]
             if not isinstance(name, str) or kind not in ("scalar", "buffer") or not isinstance(dtype, str):
-                raise ArtifactError("invalid CUDA ABI argument")
+                raise ArtifactError("invalid kernel ABI argument")
             original = frontend.get(name)
             if original is not None:
                 if kind != original["kind"] or dtype != original["dtype"]:
-                    raise ArtifactError("CUDA ABI does not match frontend argument")
+                    raise ArtifactError("kernel ABI does not match frontend argument")
             elif kind != "scalar" or symbols.get(name) != dtype:
-                raise ArtifactError(f"unmapped CUDA ABI argument {name}")
+                raise ArtifactError(f"unmapped kernel ABI argument {name}")
             abi_names.append(name)
         if len(abi_names) != len(set(abi_names)) or buffers - set(abi_names):
-            raise ArtifactError("duplicate or missing CUDA buffer ABI argument")
+            raise ArtifactError("duplicate or missing kernel buffer ABI argument")
     for field in ("source_sha256",):
         value = manifest.get(field)
         if not isinstance(value, str) or not HASH.fullmatch(value):
@@ -152,10 +168,11 @@ def validate_manifest(manifest: object) -> dict:
     ):
         raise ArtifactError("invalid frontend operator set")
     files = manifest.get("files")
-    if not isinstance(files, dict) or {"kernel.cubin", "kernel.tirx.json"} - files.keys():
+    image = "kernel.cubin" if provider == "cuda" else "kernel.so"
+    if not isinstance(files, dict) or {image, "kernel.tirx.json"} - files.keys():
         raise ArtifactError("missing executable or frontend IR")
     for name, digest in files.items():
-        if (not isinstance(name, str) or not (name in ("kernel.cubin", "kernel.tirx.json")
+        if (not isinstance(name, str) or not (name in (image, "kernel.tirx.json")
             or re.fullmatch(r"licenses/[A-Za-z0-9_.-]+", name))):
             raise ArtifactError(f"invalid payload name: {name}")
         if not isinstance(digest, str) or not HASH.fullmatch(digest):
@@ -184,8 +201,9 @@ def read_artifact(path: str | Path) -> tuple[dict, dict[str, bytes]]:
     for name, content in files.items():
         if hashlib.sha256(content).hexdigest() != manifest["files"][name]:
             raise ArtifactError(f"payload hash mismatch: {name}")
-    if not files["kernel.cubin"].startswith(b"\x7fELF"):
-        raise ArtifactError("kernel.cubin is not an ELF CUDA binary")
+    image = "kernel.cubin" if manifest.get("provider", "cuda") == "cuda" else "kernel.so"
+    if not files[image].startswith(b"\x7fELF"):
+        raise ArtifactError(f"{image} is not an ELF executable")
     try:
         ir = json.loads(files["kernel.tirx.json"])
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:

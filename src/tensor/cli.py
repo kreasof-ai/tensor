@@ -47,12 +47,20 @@ def main(argv: list[str] | None = None) -> int:
     benchmark.add_argument("--target", help="target used when the input is Python source")
     benchmark.add_argument("--nvcc", help="CUDA compiler used when the input is Python source")
     benchmark.add_argument("--cache-dir", help="cache used when the input is Python source")
+    for command in (doctor, build, run, benchmark):
+        command.add_argument("--compiler", choices=("nvrtc", "nvcc") if command is doctor else ("nvrtc", "nvcc", "native"),
+                             help="executable compiler (default: nvrtc; --nvcc selects nvcc)")
+        command.add_argument("--nvrtc-home", help="NVRTC library/header bundle (or TENSOR_NVRTC_HOME)")
+    for command in (build, run, benchmark):
+        command.add_argument("--provider", choices=("cuda", "cpu"),
+                             help="provider (default: cuda for source; inferred for artifacts)")
     args = parser.parse_args(argv)
 
     if args.command == "doctor":
         from tensor.doctor import diagnose, render
 
-        report = diagnose(target=args.target, device=args.device, nvcc=args.nvcc)
+        report = diagnose(target=args.target, device=args.device, nvcc=args.nvcc,
+                          compiler=args.compiler, nvrtc_home=args.nvrtc_home)
         print(json.dumps(report, indent=2) if args.json else render(report))
         return 0 if report["status"] in ("ready", "build_ready", "run_ready") else 1
     if args.command == "build":
@@ -61,7 +69,9 @@ def main(argv: list[str] | None = None) -> int:
 
         try:
             report = build_artifact(Path(args.source), Path(args.out), target=args.target, nvcc=args.nvcc,
-                                    cache_dir=Path(args.cache_dir) if args.cache_dir else None)
+                                    cache_dir=Path(args.cache_dir) if args.cache_dir else None,
+                                    compiler=args.compiler, nvrtc_home=args.nvrtc_home,
+                                    provider=args.provider or "cuda")
         except (BuildError, OSError, ValueError) as exc:
             parser.exit(1, f"tensor build: {exc}\n")
         print(json.dumps(report, indent=2))
@@ -96,6 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         from tensor.build import BuildError, build_artifact
         from tensor.commands import benchmark, run
         from tensor.cuda import CudaError
+        from tensor.runtime import TensorRuntimeError
         from tensor.doctor import check_device
 
         try:
@@ -103,22 +114,26 @@ def main(argv: list[str] | None = None) -> int:
             with tempfile.TemporaryDirectory(prefix="tensor-cli-") as directory:
                 artifact = source
                 if source.suffix == ".py":
-                    detected = check_device(args.device)
+                    provider = args.provider or "cuda"
+                    detected = check_device(args.device) if provider == "cuda" else {"status": "ok", "arch": "cpu-linux-x86_64"}
                     if detected["status"] != "ok":
                         raise CudaError(detected["detail"])
                     artifact = Path(directory) / "kernel.tbin"
                     build_artifact(source, artifact, target=args.target or detected["arch"], nvcc=args.nvcc,
-                                   cache_dir=Path(args.cache_dir) if args.cache_dir else None)
+                                   cache_dir=Path(args.cache_dir) if args.cache_dir else None,
+                                    compiler=args.compiler, nvrtc_home=args.nvrtc_home,
+                                    provider=provider)
                 if args.command == "run":
                     result = run(artifact, args.input, Path(args.out_dir), ordinal=args.device,
-                                 scalar_values=args.scalar)
+                                 scalar_values=args.scalar, provider=args.provider)
                 else:
                     result = benchmark(artifact, args.input, ordinal=args.device,
-                                       warmup=args.warmup, iters=args.iters, scalar_values=args.scalar)
+                                       warmup=args.warmup, iters=args.iters, scalar_values=args.scalar,
+                                       provider=args.provider)
                 if source.suffix == ".py":
                     result.pop("artifact")
                     result["source"] = str(source.resolve())
-        except (ArtifactError, BuildError, CudaError, OSError, ValueError, TypeError) as exc:
+        except (ArtifactError, BuildError, CudaError, TensorRuntimeError, OSError, ValueError, TypeError) as exc:
             parser.exit(1, f"tensor {args.command}: {exc}\n")
         print(json.dumps(result, indent=2))
         return 0
