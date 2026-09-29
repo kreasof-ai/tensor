@@ -1,0 +1,30 @@
+[project]
+name = "tensor-workspace"
+version = "0.0.0"
+description = "Development workspace for the Tensor tensor-program runtime and compiler product layer"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+# Phase 0 depends on TileLang and its TIRx substrate. Nothing here is product code:
+# these are the tools the architecture-validation experiments run against.
+[dependency-groups]
+p0 = [
+    "tilelang==0.1.14",
+    "apache-tvm-ffi==0.1.12",
+    "numpy==2.5.3",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.uv]
+# TileLang's transitive dependencies are recorded in uv.lock. The compiler-free
+# consumer is tested in a separate environment containing only NumPy.
+package = false
+default-groups = ["p0", "dev"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]
