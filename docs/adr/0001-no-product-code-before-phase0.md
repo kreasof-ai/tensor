@@ -1,6 +1,6 @@
 # ADR 0001 — Do not build product packages before Phase 0 concludes
 
-**Status:** Accepted · 2026-09-29
+**Status:** Satisfied by [ADR 0009](0009-complete-phase0-with-scoped-provider-and-composition.md) · 2026-09-29
 
 ## Context
 

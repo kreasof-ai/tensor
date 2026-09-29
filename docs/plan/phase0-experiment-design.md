@@ -7,9 +7,10 @@ Current state: the original measurements are in
 [`../research/phase0-ground-truth.md`](../research/phase0-ground-truth.md).
 The workload corrections and active compiler-free execution milestone are
 tracked in [opaque artifact validation](opaque-artifact-validation.md).
-GPU numerics and startup latency now pass on an A10G. The remaining probes,
-their measured restrictions, and Actions-to-A10G executable transfer are
-reported in [E15](../research/e15-phase0-validation.md).
+GPU numerics and startup latency pass on an A10G. The broad validation and
+Actions-to-A10G executable transfer are reported in
+[E15](../research/e15-phase0-validation.md); the final exit gates and scoped
+completion decision are reported in [E16](../research/e16-phase0-exit.md).
 
 ---
 
@@ -153,7 +154,7 @@ what makes the kernels real rather than plausible-looking. Until this runs, the 
 is structurally correct and semantically unproven.
 
 **E11 — `perf`.** Kernel throughput vs a tuned baseline on the available A10G,
-plus the remaining static-versus-symbolic comparison. §23's runtime metrics.
+including the completed static-versus-symbolic comparison. §23's runtime metrics.
 At the user's request on 2026-09-29, cross-GPU `sm_80`/`sm_90`/`sm_100`
 benchmarking is deferred and is not a Phase 0 exit requirement. That future
 comparison can test whether TMA-vs-cp.async lowering differences pay off on

@@ -9,9 +9,10 @@ sequential execution. Raw results are retained in
 [transfer data](data/e15-artifact-transfer.json).
 
 The bounded probes are complete, with both successful and negative results.
-**This does not establish every Phase 0 claim.** Fusion, a newly registered
-provider replacing a built-in target, Rust hosting, and performance on other
-GPU architectures remain unverified. No product package has been scaffolded.
+This report was the penultimate evidence set: the provider, composition, Rust,
+stream and static/symbolic gaps were subsequently closed within scoped
+contracts in [E16](e16-phase0-exit.md). No product package was scaffolded in
+either experiment.
 **Scope update — 2026-09-29:** the user deferred cross-GPU benchmarking, so
 it no longer blocks Phase 0 completion. The measurements below are unchanged.
 

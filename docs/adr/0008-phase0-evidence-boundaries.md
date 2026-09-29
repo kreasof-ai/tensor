@@ -1,6 +1,6 @@
 # ADR 0008 — Bound the product contract by measured Phase 0 behavior
 
-**Status:** Accepted · 2026-09-29
+**Status:** Accepted, amended by [ADR 0009](0009-complete-phase0-with-scoped-provider-and-composition.md) · 2026-09-29
 **Evidence:** [E15](../research/e15-phase0-validation.md), exact experiment
 commit `37fd520ab7d03cc2476aec73a658783d18ee0335`.
 

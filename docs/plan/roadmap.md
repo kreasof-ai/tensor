@@ -4,12 +4,14 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phase 0 in progress, with the remaining probes implemented.**
-Two-host opaque executable transfer passes from GitHub Actions to an A10G.
-Cache, CPU execution, C++ hosting, symbolic dimensions, frontend contracts,
-full compilation and GPU baselines are measured in
-[E15](../research/e15-phase0-validation.md). Negative results and hardware gaps
-remain explicit; the original Phase 0 scope is not fully validated.
+Current status: **Phase 0 complete; Phase 1 is ready to begin.** Two-host opaque
+executable transfer passes from GitHub Actions to an A10G. Cache behavior,
+independent CPU provider execution, C++/Rust hosting, bounded composition,
+symbolic dimensions, frontend contracts, foreign CUDA stream ordering, full
+compilation and A10G baselines are measured in
+[E15](../research/e15-phase0-validation.md) and
+[E16](../research/e16-phase0-exit.md). Negative results and deferred hardware
+scope remain explicit.
 
 ---
 
@@ -39,7 +41,7 @@ Four findings move work earlier or change its shape:
 
 ---
 
-## Phase 0 — Architecture validation *(in progress)*
+## Phase 0 — Architecture validation *(complete)*
 
 **Goal:** answer §28's question — how much of `tensorc` already exists, and what layer is missing?
 
@@ -48,16 +50,16 @@ Four findings move work earlier or change its shape:
 | E1 | environment / packaging footprint | local | ✅ |
 | E2 | codegen — source emission per kernel × target | local | ✅ 15/15 |
 | E3 | pass trace — IR at every lowering stage | local | ✅ 5/5 |
-| E4 | artifact shape — serialization and CUDA re-targeting | local | frontend positive; post-LowerTileOp re-lowering rejected; fusion unverified |
+| E4 | artifact shape — serialization and CUDA re-targeting | local / NVIDIA | ✅ frontend reuse and bounded pointwise composition; general fusion deferred |
 | E4a | artifact versioning across TIRx versions | local | ✅ **answered** |
 | E4b | symbolic-shape source signature / serialization | NVIDIA | runtime dimensions pass; symbolic GEMM tile rejected |
 | E5 | cache behaviour — what TileLang already does | local / NVIDIA | measured memory/disk hits, invalidation, corruption recovery, workload differences |
-| E6 | provider contract — register a second backend | local | built-in CPU executes; new manifest claiming CPU target rejected |
-| E7 | ABI surface — non-Python host feasibility | local | C++ CPU execution and IR loading pass; Rust/native compilation unverified |
+| E6 | provider contract — register a second backend | local | ✅ independent `p0_cpu` manifest compiles and executes on CPU |
+| E7 | ABI surface — non-Python host feasibility | local / NVIDIA | ✅ C++/Rust hosting and CUDA foreign-stream ordering; native compiler packaging deferred |
 | E8 | framework contract — FX vs AOTAutograd | either | FX-to-CPU kernel passes; AOT forward/backward captured and reference-executed |
 | E9 | full compile latency (with `nvcc`) | **NVIDIA** | five workloads × six targets measured; compiler rejections recorded |
 | E10 | numerics validation | **NVIDIA** | ✅ 12 NumPy-reference cases on A10G |
-| E11 | kernel performance | **NVIDIA** | five A10G baseline comparisons measured; static/symbolic comparison pending; cross-GPU matrix deferred |
+| E11 | kernel performance | **NVIDIA** | ✅ five baselines and matched static/symbolic comparisons on A10G; cross-GPU matrix deferred |
 | E12 | warm-start / artifact load latency | **NVIDIA** | five sizes × three processes; Actions-to-A10G executable transfer passes |
 
 **E4 came back positive and it changes the shape of the project.** A serialized TIRx module
@@ -69,8 +71,9 @@ and the post-lowering restriction in [E15](../research/e15-phase0-validation.md)
 
 Three consequences:
 
-1. **Frontend IR storage can reuse TIRx serialization.** Composition, fusion and
-   re-scheduling were not tested and remain separate work in Phase 3.
+1. **Frontend IR storage can reuse TIRx serialization.** E16 demonstrates
+   bounded pointwise composition and consumer re-scheduling. General fusion
+   remains separate work in Phase 3.
 2. **Phase 1's `tensor build` is implementable now**, not speculative.
 3. **The new sharpest risk is versioning, not representation** — and E4a has now measured
    it. Artifacts do not cross a TileLang version boundary in either direction, and carry no
@@ -87,15 +90,16 @@ Cache keys must distinguish static specialization from symbolic dimensions.
 architecture decision record written for each of the four load-bearing choices
 ([`../adr/`](../adr/)).
 
-E9 and the architectural decisions are now recorded, including
-[ADR 0008](../adr/0008-phase0-evidence-boundaries.md). The literal new-provider
-registration test does not pass: executing and re-registering an existing CPU
-manifest is weaker evidence. Fusion/rescheduling and remaining native/ABI
-checks also remain open. Keep the phase in progress for those gaps.
+E9 and the architectural decisions are recorded in
+[ADR 0008](../adr/0008-phase0-evidence-boundaries.md). E16 then registers an
+independent CPU manifest, composes serialized frontend stages, exercises Rust
+and foreign CUDA streams, and measures static-versus-symbolic throughput.
+[ADR 0009](../adr/0009-complete-phase0-with-scoped-provider-and-composition.md)
+accepts those scoped contracts and closes the phase.
 
 **Scope update — 2026-09-29:** at the user's request, cross-GPU benchmarking
 is deferred and does not block Phase 0 completion. Performance validation uses
-the available A10G, including the remaining static-versus-symbolic comparison.
+the available A10G, including the completed static-versus-symbolic comparison.
 Source emission and full compilation across targets remain measured evidence;
 they do not establish execution or performance on those other GPUs. Revisit
 cross-GPU benchmarking before making performance claims across architectures.

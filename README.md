@@ -5,21 +5,22 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 0 — Architecture Validation.** No product code is written yet, by design.
-The question being answered right now is the one the proposal closes on:
+**Status: Phase 0 complete; Phase 1 is ready to begin.** No product code has
+been written yet. Phase 0 answered the question the proposal closes on:
 
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
 
 **Two-host executable transfer now passes:** GitHub Actions builds five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
-The remaining validation harness measures caches, CPU execution, a C++ host,
-symbolic dimensions, PyTorch frontends, full compilation, and GPU baselines.
-See [E15 and its raw data](docs/research/e15-phase0-validation.md).
+The validation harness measures caches, independent CPU provider execution,
+C++ and Rust hosts, bounded composition, symbolic dimensions, PyTorch
+frontends, full compilation, GPU baselines and foreign CUDA stream ordering.
+See [E15](docs/research/e15-phase0-validation.md) and the
+[Phase 0 exit report](docs/research/e16-phase0-exit.md).
 The full GPU-enabled regression suite passes **40 tests with zero skips**.
-Phase 0 remains open for fusion, new-provider registration and remaining
-native/ABI checks; measured failures are recorded explicitly. Cross-GPU
-benchmarking is deferred. Phase 0 performance evidence uses the available A10G.
+All scoped exit gates pass. General fusion and cross-GPU benchmarking remain
+future work; Phase 0 performance evidence uses the available A10G.
 
 ---
 
@@ -61,11 +62,12 @@ docs/
   adr/                   architecture decision records
 experiments/
   p0/                    the Phase 0 experiment harness (this is the active work)
-src/                     product code — intentionally not created yet
+src/                     product code — created during Phase 1
 ```
 
-`src/` does not exist yet on purpose (ADR 0001). Creating product packages before Phase 0
-concludes would freeze structural decisions the experiments are meant to inform.
+`src/` does not exist yet because this repository has just completed Phase 0.
+[ADR 0009](docs/adr/0009-complete-phase0-with-scoped-provider-and-composition.md)
+now permits Phase 1 product packages.
 
 ## Development environment
 
@@ -102,7 +104,7 @@ compiler wins, then the configured toolkit, then `nvcc` on `PATH`. The separate
 [validation runbook](docs/plan/opaque-artifact-validation.md) covers GPU tests
 and creating a NumPy-only consumer environment.
 
-Run the remaining architecture probes in fresh processes with isolated caches:
+Run the retained Phase 0 validation suite in fresh processes with isolated caches:
 
 ```bash
 uv run --locked python -m experiments.p0.validation --out experiments/p0/out/new-validation-run
@@ -118,6 +120,14 @@ export CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9"
 
 The native-host probe requires g++. The manual GitHub Actions workflow
 `P0 artifact transfer producer` builds the five executable boundary cases.
+The final exit suite additionally installs a pinned local Rust compiler and
+runs the scoped completion gates:
+
+```bash
+uv run --locked python tools/bootstrap_rust.py --out experiments/p0/out/rust-1.98.1
+export TENSOR_P0_RUSTC="$PWD/experiments/p0/out/rust-1.98.1/bin/rustc"
+uv run --locked python -m experiments.p0.phase0_exit --out experiments/p0/out/new-phase0-exit
+```
 
 ## Where to start reading
 
@@ -126,6 +136,7 @@ The native-host probe requires g++. The manual GitHub Actions workflow
 | [`docs/research/phase0-ground-truth.md`](docs/research/phase0-ground-truth.md) | Measured numbers, what already exists, what is blocked |
 | [`docs/research/e14-cuda-execution.md`](docs/research/e14-cuda-execution.md) | NVIDIA correctness, compiled artifacts, and fresh-process startup |
 | [`docs/research/e15-phase0-validation.md`](docs/research/e15-phase0-validation.md) | Remaining validation, two-host transfer, and measured restrictions |
+| [`docs/research/e16-phase0-exit.md`](docs/research/e16-phase0-exit.md) | Final provider, composition, Rust, stream and static/symbolic gates |
 | [`docs/research/ecosystem-and-precedents.md`](docs/research/ecosystem-and-precedents.md) | Triton / CuTe DSL / tinygrad / Pallas comparison, packaging precedents |
 | [`docs/plan/phase0-experiment-design.md`](docs/plan/phase0-experiment-design.md) | The 12 experiments and which machine runs each |
 | [`docs/plan/roadmap.md`](docs/plan/roadmap.md) | Phases, reordered by what the evidence supports |

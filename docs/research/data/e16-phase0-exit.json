@@ -1,0 +1,822 @@
+{
+  "status": "passed",
+  "provenance": {
+    "git_revision": "157ae365605eda3c4c9ca4aa739fb7f033b406e8",
+    "git_dirty": false,
+    "source_sha256": "d838ae8c0b6823e820caf9116ff70e22fb17e504b56f938684281c85aa8a13c2",
+    "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+    "python": "3.12.14",
+    "hostname": "default",
+    "packages": {
+      "tilelang": "0.1.14",
+      "apache-tvm-ffi": "0.1.12",
+      "torch": "2.14.0",
+      "numpy": "2.5.3"
+    }
+  },
+  "records": {
+    "cpu_provider": {
+      "status": "passed",
+      "result": {
+        "provider": "p0_cpu",
+        "target_kind": "test",
+        "physical_device": "CPU",
+        "builtin_cpu_preserved": true,
+        "registration": "public BackendModule API; no registry patch",
+        "compiler_components": "delegated to existing CPU manifest with C target",
+        "execution": "provider-owned g++ shared library + borrowed NumPy pointers",
+        "jit_adapter": "p0_native is not supported by tilelang.compile; context path exercised",
+        "calls": {
+          "lower": 5,
+          "codegen": 5,
+          "compile": 5
+        },
+        "rows": [
+          {
+            "size": 1,
+            "seed": 0,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1,
+            "seed": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1,
+            "seed": 2,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 127,
+            "seed": 0,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 127,
+            "seed": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 127,
+            "seed": 2,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 128,
+            "seed": 0,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 128,
+            "seed": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 128,
+            "seed": 2,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 129,
+            "seed": 0,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 129,
+            "seed": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 129,
+            "seed": 2,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1025,
+            "seed": 0,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1025,
+            "seed": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "size": 1025,
+            "seed": 2,
+            "max_abs_error": 0.0
+          }
+        ]
+      },
+      "mode": "cpu_provider",
+      "seconds": 5.007909992999885,
+      "provenance": {
+        "git_revision": "157ae365605eda3c4c9ca4aa739fb7f033b406e8",
+        "git_dirty": false,
+        "source_sha256": "d838ae8c0b6823e820caf9116ff70e22fb17e504b56f938684281c85aa8a13c2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "composition": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "size": 1,
+            "consumer_tile": 64,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22149
+          },
+          {
+            "size": 1,
+            "consumer_tile": 128,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22152
+          },
+          {
+            "size": 127,
+            "consumer_tile": 64,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22163
+          },
+          {
+            "size": 127,
+            "consumer_tile": 128,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22166
+          },
+          {
+            "size": 128,
+            "consumer_tile": 64,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22163
+          },
+          {
+            "size": 128,
+            "consumer_tile": 128,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22166
+          },
+          {
+            "size": 129,
+            "consumer_tile": 64,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22163
+          },
+          {
+            "size": 129,
+            "consumer_tile": 128,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22166
+          },
+          {
+            "size": 1025,
+            "consumer_tile": 64,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22171
+          },
+          {
+            "size": 1025,
+            "consumer_tile": 128,
+            "kernel_definitions": 1,
+            "max_abs_error": 0.0,
+            "ir_bytes": 22173
+          }
+        ],
+        "representation": "serialized frontend TIRx; no new IR",
+        "negative_shape_case": "P0 composition requires equal one-dimensional shapes",
+        "scope": "one identity-indexed pointwise producer/consumer; not general fusion",
+        "schedule_variants": "consumer tile/thread count 64 and 128; producer artifact reused",
+        "post_lower_tile_op": "earlier re-lowering rejection remains; frontend capture required"
+      },
+      "mode": "composition",
+      "seconds": 19.506263705000492,
+      "provenance": {
+        "git_revision": "157ae365605eda3c4c9ca4aa739fb7f033b406e8",
+        "git_dirty": false,
+        "source_sha256": "d838ae8c0b6823e820caf9116ff70e22fb17e504b56f938684281c85aa8a13c2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "rust_host": {
+      "status": "passed",
+      "result": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+        "cpu_run": {
+          "status": "passed",
+          "size": 129,
+          "max_abs_error": 0,
+          "wrong_dtype_rejected": true,
+          "ffi_version": "0.1.12",
+          "any_bytes": 16,
+          "dltensor_bytes": 48
+        },
+        "native_ir": {
+          "status": "passed",
+          "byte_identical": true,
+          "ir_bytes": 23995
+        },
+        "host_dependencies": "\tlinux-vdso.so.1 (0x00007f3497433000)\n\tlibtvm_ffi.so => /home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib/libtvm_ffi.so (0x00007f3497215000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f34971e4000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007f3496fd2000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f3497435000)\n\tlibdl.so.2 => /usr/lib/x86_64-linux-gnu/libdl.so.2 (0x00007f3496fcd000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f3496d4f000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007f3496c64000)\n\tlibpthread.so.0 => /usr/lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f3496c5f000)\n",
+        "commands": [
+          [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "-fPIC",
+            "-shared",
+            "-I/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/include",
+            "/home/sagemaker-user/tensor/experiments/p0/out/validation-157ae36/experiments/p0/native_module.cpp",
+            "-L/home/sagemaker-user/tensor/experiments/p0/out/phase0-exit-157ae36/rust_host",
+            "-l:kernel.so",
+            "-L/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-ltvm_ffi",
+            "-Wl,-rpath,$ORIGIN",
+            "-Wl,-rpath,/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-o",
+            "/home/sagemaker-user/tensor/experiments/p0/out/phase0-exit-157ae36/rust_host/libp0_ffi.so"
+          ],
+          [
+            "/home/sagemaker-user/tensor/experiments/p0/out/rust-1.98.1/bin/rustc",
+            "--edition=2021",
+            "-C",
+            "opt-level=2",
+            "-L",
+            "native=/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "-C",
+            "link-arg=-Wl,-rpath,/home/sagemaker-user/tensor/.venv/lib/python3.12/site-packages/tvm_ffi/lib",
+            "/home/sagemaker-user/tensor/experiments/p0/out/validation-157ae36/experiments/p0/native_host.rs",
+            "-o",
+            "/home/sagemaker-user/tensor/experiments/p0/out/phase0-exit-157ae36/rust_host/native_host"
+          ]
+        ],
+        "native_compilation_pipeline": "not exercised; native IR load and executable call only",
+        "ownership": "Rust owns FFI object refs and CPU Vec storage; module borrows DLTensor views"
+      },
+      "mode": "rust_host",
+      "seconds": 3.6377822040003593,
+      "provenance": {
+        "git_revision": "157ae365605eda3c4c9ca4aa739fb7f033b406e8",
+        "git_dirty": false,
+        "source_sha256": "d838ae8c0b6823e820caf9116ff70e22fb17e504b56f938684281c85aa8a13c2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "foreign_stream": {
+      "status": "passed",
+      "result": {
+        "rows": [
+          {
+            "seed": 0,
+            "size": 129,
+            "max_abs_error": 0.0,
+            "borrowed_buffer_addresses_stable": true
+          },
+          {
+            "seed": 1,
+            "size": 129,
+            "max_abs_error": 0.0,
+            "borrowed_buffer_addresses_stable": true
+          },
+          {
+            "seed": 2,
+            "size": 129,
+            "max_abs_error": 0.0,
+            "borrowed_buffer_addresses_stable": true
+          }
+        ],
+        "device": {
+          "name": "NVIDIA A10G",
+          "arch": "sm_86",
+          "driver_version": 13020,
+          "ordinal": 0
+        },
+        "artifact_sha256": "9fbd6df9fb4b782081c495bc6b951258f923ba76c40d0983864c64751952906d",
+        "context_preserved": true,
+        "borrowed_stream_survived_cleanup": true,
+        "ordering": "producer event -> consumer wait/launch -> completion event -> default stream wait",
+        "ownership": "Torch streams and tensors borrowed; CUDA module and events owned by probe",
+        "limit": "CUDA-specific same-device interop, not a provider-neutral event ABI or distributed signal contract"
+      },
+      "mode": "foreign_stream",
+      "seconds": 5.1102822940001715,
+      "provenance": {
+        "git_revision": "157ae365605eda3c4c9ca4aa739fb7f033b406e8",
+        "git_dirty": false,
+        "source_sha256": "d838ae8c0b6823e820caf9116ff70e22fb17e504b56f938684281c85aa8a13c2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    },
+    "static_symbolic": {
+      "status": "passed",
+      "result": {
+        "device": {
+          "name": "NVIDIA A10G",
+          "arch": "sm_86",
+          "driver_version": 13020,
+          "ordinal": 0
+        },
+        "measurements": [
+          {
+            "name": "elementwise",
+            "dynamic_compile": {
+              "lower_calls": 1,
+              "lower_seconds": 1.7009791359996598,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.3596994190002079
+            },
+            "rows": [
+              {
+                "size": 1,
+                "static": {
+                  "microseconds": 1.0956799983978271,
+                  "samples_microseconds": [
+                    1.372160017490387,
+                    1.1264000087976456,
+                    1.0956799983978271,
+                    1.085439994931221,
+                    1.085439994931221
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.1055999994277954,
+                  "samples_microseconds": [
+                    1.3107199966907501,
+                    1.1055999994277954,
+                    1.0956799983978271,
+                    1.0956799983978271,
+                    1.1059200018644333
+                  ]
+                },
+                "symbolic_over_static": 1.0090537392710224,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.3839009610001085,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.3541333400007716
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 127,
+                "static": {
+                  "microseconds": 1.1468800157308578,
+                  "samples_microseconds": [
+                    1.3926400244235992,
+                    1.1161600053310394,
+                    1.1257600039243698,
+                    1.1468800157308578,
+                    1.1468800157308578
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.1161600053310394,
+                  "samples_microseconds": [
+                    1.3619199395179749,
+                    1.136000007390976,
+                    1.1161600053310394,
+                    1.1161600053310394,
+                    1.1161600053310394
+                  ]
+                },
+                "symbolic_over_static": 0.9732142770137625,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.404340797000259,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.3642177390001962
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 128,
+                "static": {
+                  "microseconds": 1.085439994931221,
+                  "samples_microseconds": [
+                    1.372160017490387,
+                    1.0956799983978271,
+                    1.0751999914646149,
+                    1.085439994931221,
+                    1.085439994931221
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.1264000087976456,
+                  "samples_microseconds": [
+                    1.3516800105571747,
+                    1.1264000087976456,
+                    1.1366400122642517,
+                    1.1161600053310394,
+                    1.1059200018644333
+                  ]
+                },
+                "symbolic_over_static": 1.0377358620077566,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.3890121459999136,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.3654573470003015
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 129,
+                "static": {
+                  "microseconds": 1.0956799983978271,
+                  "samples_microseconds": [
+                    1.4025600254535675,
+                    1.1155200004577637,
+                    1.0956799983978271,
+                    1.0956799983978271,
+                    1.0956799983978271
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.1155200004577637,
+                  "samples_microseconds": [
+                    1.3414399325847626,
+                    1.1264000087976456,
+                    1.1059200018644333,
+                    1.1155200004577637,
+                    1.1059200018644333
+                  ]
+                },
+                "symbolic_over_static": 1.018107478542045,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.4445510280002054,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.3484424890002629
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 1025,
+                "static": {
+                  "microseconds": 1.1264000087976456,
+                  "samples_microseconds": [
+                    1.3926400244235992,
+                    1.1264000087976456,
+                    1.1155200004577637,
+                    1.1161600053310394,
+                    1.1468800157308578
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.1264000087976456,
+                  "samples_microseconds": [
+                    1.3312000036239624,
+                    1.1264000087976456,
+                    1.1161600053310394,
+                    1.1264000087976456,
+                    1.1161600053310394
+                  ]
+                },
+                "symbolic_over_static": 1.0,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.4478994150003928,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.3516726940006265
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 1048576,
+                "static": {
+                  "microseconds": 24.535040855407715,
+                  "samples_microseconds": [
+                    24.770560264587402,
+                    24.473600387573242,
+                    24.432640075683594,
+                    24.637439250946045,
+                    24.535040855407715
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 24.50432062149048,
+                  "samples_microseconds": [
+                    24.750080108642578,
+                    24.483840465545654,
+                    24.494080543518066,
+                    24.50432062149048,
+                    24.50432062149048
+                  ]
+                },
+                "symbolic_over_static": 0.998747903698295,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.3963283609991777,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.3698796050002784
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              }
+            ]
+          },
+          {
+            "name": "gemm_static_tile32",
+            "dynamic_compile": {
+              "lower_calls": 1,
+              "lower_seconds": 2.397233693999624,
+              "cuda_compile_calls": 1,
+              "cuda_compile_seconds": 1.69067644200004
+            },
+            "rows": [
+              {
+                "size": 1,
+                "static": {
+                  "microseconds": 1.3209599256515503,
+                  "samples_microseconds": [
+                    1.6582399606704712,
+                    1.3209599256515503,
+                    1.3107199966907501,
+                    1.3209599256515503,
+                    1.3209599256515503
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.3414399325847626,
+                  "samples_microseconds": [
+                    1.5462400019168854,
+                    1.3414399325847626,
+                    1.3414399325847626,
+                    1.3414399325847626,
+                    1.3312000036239624
+                  ]
+                },
+                "symbolic_over_static": 1.0155038820902236,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 2.0100372369997785,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.7377385459994912
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 31,
+                "static": {
+                  "microseconds": 1.2902399897575378,
+                  "samples_microseconds": [
+                    1.5564799308776855,
+                    1.2902399897575378,
+                    1.30048006772995,
+                    1.2902399897575378,
+                    1.2902399897575378
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.4336000382900238,
+                  "samples_microseconds": [
+                    1.6383999586105347,
+                    1.443839967250824,
+                    1.4336000382900238,
+                    1.4336000382900238,
+                    1.4336000382900238
+                  ]
+                },
+                "symbolic_over_static": 1.1111111496082418,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.9786495640000794,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.689102570000614
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 32,
+                "static": {
+                  "microseconds": 1.2800000607967377,
+                  "samples_microseconds": [
+                    1.5564799308776855,
+                    1.30048006772995,
+                    1.2800000607967377,
+                    1.2800000607967377,
+                    1.2800000607967377
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.4233599603176117,
+                  "samples_microseconds": [
+                    1.6281600296497345,
+                    1.4336000382900238,
+                    1.4233599603176117,
+                    1.4233599603176117,
+                    1.4131200313568115
+                  ]
+                },
+                "symbolic_over_static": 1.1119999161809722,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.9244782839996333,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.6895261939998818
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 33,
+                "static": {
+                  "microseconds": 1.3414399325847626,
+                  "samples_microseconds": [
+                    1.59743994474411,
+                    1.3414399325847626,
+                    1.3411200046539307,
+                    1.3414399325847626,
+                    1.3312000036239624
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.4233599603176117,
+                  "samples_microseconds": [
+                    1.6486400365829468,
+                    1.4233599603176117,
+                    1.4233599603176117,
+                    1.4336000382900238,
+                    1.4233599603176117
+                  ]
+                },
+                "symbolic_over_static": 1.0610687260330778,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.9926980279997224,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.7038189650002096
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 65,
+                "static": {
+                  "microseconds": 1.372160017490387,
+                  "samples_microseconds": [
+                    1.6076800227165222,
+                    1.3619199395179749,
+                    1.372160017490387,
+                    1.361600011587143,
+                    1.372160017490387
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.443839967250824,
+                  "samples_microseconds": [
+                    1.6486400365829468,
+                    1.454080045223236,
+                    1.443839967250824,
+                    1.443839967250824,
+                    1.443839967250824
+                  ]
+                },
+                "symbolic_over_static": 1.0522387686907946,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 2.008195395999792,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.6998318460000519
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              },
+              {
+                "size": 1024,
+                "static": {
+                  "microseconds": 1.59743994474411,
+                  "samples_microseconds": [
+                    1.8329599499702454,
+                    1.59743994474411,
+                    1.58720001578331,
+                    1.6076800227165222,
+                    1.586879938840866
+                  ]
+                },
+                "symbolic": {
+                  "microseconds": 1.6998399794101715,
+                  "samples_microseconds": [
+                    1.8943999707698822,
+                    1.6998399794101715,
+                    1.6998399794101715,
+                    1.6896000504493713,
+                    1.6896000504493713
+                  ]
+                },
+                "symbolic_over_static": 1.0641025880209003,
+                "static_compile": {
+                  "lower_calls": 1,
+                  "lower_seconds": 1.9204240330000175,
+                  "cuda_compile_calls": 1,
+                  "cuda_compile_seconds": 1.6744929430005868
+                },
+                "static_max_abs_error": 0.0,
+                "symbolic_max_abs_error": 0.0
+              }
+            ]
+          }
+        ],
+        "warmup": 20,
+        "captured_iterations": 100,
+        "repetitions": 5,
+        "method": "CUDA events around graph replay; median microseconds per operation",
+        "comparison": "same workload, dtype, inputs, output reuse and static tile; one dynamic binary per workload",
+        "limit": "single A10G; no cross-GPU throughput claim"
+      },
+      "mode": "static_symbolic",
+      "seconds": 30.942177768000874,
+      "provenance": {
+        "git_revision": "157ae365605eda3c4c9ca4aa739fb7f033b406e8",
+        "git_dirty": false,
+        "source_sha256": "d838ae8c0b6823e820caf9116ff70e22fb17e504b56f938684281c85aa8a13c2",
+        "lock_sha256": "697267d8b0ef5d1a90ac2666f2a3bc67878e40d0dc826f82856a29ed965c5f6d",
+        "python": "3.12.14",
+        "hostname": "default",
+        "packages": {
+          "tilelang": "0.1.14",
+          "apache-tvm-ffi": "0.1.12",
+          "torch": "2.14.0",
+          "numpy": "2.5.3"
+        }
+      }
+    }
+  },
+  "prior_e15": {
+    "experiment_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+    "validation_status": "completed_with_limits",
+    "gpu_regression_suite": {
+      "passed": 40,
+      "skipped": 0,
+      "seconds": 54.31,
+      "git_revision": "37fd520ab7d03cc2476aec73a658783d18ee0335",
+      "command": "CUDA_HOME=<cuda-12.9> TILELANG_DISABLE_CACHE=1 TENSOR_P0_CUDA=1 TENSOR_P0_RUNTIME_PYTHON=<numpy-only-python> python -m pytest"
+    },
+    "two_host_transfer_status": "passed",
+    "two_host_actions_run_url": "https://github.com/kreasof-ai/tensor/actions/runs/36595583781"
+  },
+  "exit_gates": {
+    "E4_frontend_representation_and_bounded_composition": true,
+    "E6_independent_non_cuda_cpu_provider": true,
+    "E9_full_compile_measured": true,
+    "E11_a10g_static_symbolic_measured": true,
+    "E12_two_host_executable_transfer": true,
+    "E7_rust_c_abi_and_foreign_cuda_streams": true
+  },
+  "limits": [
+    "cross-GPU throughput deferred by user; only A10G measured",
+    "composition supports one fixed pointwise producer/consumer pattern, not general fusion",
+    "P0 CPU provider uses public context routing on the unclaimed test target; custom tilelang.compile JIT adapter unsupported",
+    "Rust hosts executable calls and IR loading; a Python-free native compiler pipeline was not established",
+    "foreign stream/event ordering is CUDA-specific; no provider-neutral or distributed signal ABI is frozen",
+    "GPU compile failures for some architecture/workload pairs remain measured restrictions"
+  ]
+}
