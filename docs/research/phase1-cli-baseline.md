@@ -67,5 +67,35 @@ passed a NumPy comparison on the A10G, with maximum absolute error
 `5.96e-8` for the tested inputs. Artifacts require an exact SM match.
 The wheel can execute without TileLang, TVM FFI, PyTorch or
 CUDA development headers; a build still needs the pinned compiler packages
-and a full CUDA toolkit. GPU DLPack borrowing, cross-host product transfer,
-and broader symbolic/scalar exports remain separate validation work.
+and a full CUDA toolkit. GPU DLPack borrowing and broader symbolic/scalar
+exports remain separate validation work.
+
+## Two-host product artifact transfer
+
+[GitHub Actions run 36616282091](https://github.com/kreasof-ai/tensor/actions/runs/36616282091)
+built the product `.tbin` and wheel on the GPU-free Ubuntu producer
+`runnervmtr4k5` at commit `4cfb607d0445997a206f15c28237ba578846294a`.
+The consumer host was `default`, an NVIDIA A10G (`sm_86`). The downloaded
+artifact and wheel SHA-256 values matched `producer.json`:
+
+| File | SHA-256 |
+|---|---|
+| `elementwise.tbin` | `dfb86bc484641086e8f59bb4ee71993eac76bff34c6cf336a78007706273fd98` |
+| `tensor_workspace-0.1.0-py3-none-any.whl` | `54485c8d6830ba3fc6a0a6ab9b25d5354fabe1c8c00624d8aecbf177c6d7f865` |
+
+A new Python 3.12 virtual environment installed that downloaded wheel with
+only `numpy==2.5.3` and `tensor-workspace==0.1.0`. Its `tensor doctor` reported
+`run_ready` despite missing compiler packages and CUDA development headers.
+`tensor run` consumed the downloaded cubin and produced all 129 values with
+maximum absolute error `0.0` against NumPy. A fresh in-process consumer check
+confirmed no `tilelang`, `tvm`, or `torch` imports after execution. The CLI
+reported 0.191 s from command entry to first result on this run. A 100-launch
+benchmark reported 23.6 µs median host enqueue and 29.1 µs median launch plus
+stream synchronization. These are one-host consumer measurements of a
+two-host transfer, not a cross-GPU performance claim.
+
+To repeat the transfer check, run the workflow with `arch=sm_86`, download its
+`tensor-cuda-sm_86` artifact, compare `producer.json` against both downloaded
+files and the local commit/hostname, install its wheel into a clean Python 3.12
+environment, then run its `.tbin` with `a.npy` and `b.npy` float32 arrays of
+shape `(129,)`. Check `c.npy` against `maximum(2*a+b, 0)`.

@@ -6,10 +6,11 @@ being explicit about which work is blocked on hardware.
 
 Current status: **Phase 0 complete; Phase 1 CLI baseline implemented and under
 validation.** `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection
-work on the A10G. A NumPy-only consumer runs the product wheel. The remaining
-Phase 1 gates are product artifact transfer across hosts, broader export
-signatures, and installation validation beyond the measured A10G setup.
-The initial Phase 1 latency and diagnostic measurements are in
+work on the A10G. A NumPy-only consumer runs the product wheel. Product
+artifact transfer from a GPU-free GitHub Actions host to the A10G now passes.
+The remaining Phase 1 gates are broader export signatures and installation
+validation beyond the measured A10G setup. Phase 1 latency, diagnostics, and
+two-host product transfer are recorded in
 [the CLI baseline](../research/phase1-cli-baseline.md). Two-host Phase 0 opaque
 executable transfer passes from GitHub Actions to an A10G. Cache behavior,
 independent CPU provider execution, C++/Rust hosting, bounded composition,
@@ -125,8 +126,8 @@ Sequence:
 2. `tensor build` **initial static CUDA profile implemented** — the artifact layer that
    does not exist yet in TileLang (§3 of ground truth: no `export_library` equivalent).
    It produces a cubin and versioned TIRx envelope from one explicit export,
-   with a content-addressed cubin cache. Broader source signatures and
-   cross-host product validation remain.
+   with a content-addressed cubin cache. Product artifact transfer across
+   hosts passes; broader source signatures remain.
 3. **The prototyping surface (ADR 0006), initial CUDA implementation** — device buffers, launch, `assert_close`, `bench`,
    NumPy/DLPack interop. Pulled forward out of Phase 6 because it needs only *opaque*
    executables, so it is **not gated on E4**, and because it is the harness E9–E12 run on.

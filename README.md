@@ -135,6 +135,8 @@ uv run --locked tensor inspect examples/elementwise.py --stage passes --target s
 `run` and `bench` also accept a `.py` source and compile it first. A built
 artifact runs with only the Tensor wheel, NumPy, and an NVIDIA driver; compiler
 packages and CUDA development headers are absent from the consumer path.
+The product artifact and wheel have also transferred from a GPU-free GitHub
+Actions producer to the A10G consumer with matching hashes and exact results.
 For a kernel-author Python session:
 
 ```python
