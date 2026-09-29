@@ -99,3 +99,25 @@ To repeat the transfer check, run the workflow with `arch=sm_86`, download its
 files and the local commit/hostname, install its wheel into a clean Python 3.12
 environment, then run its `.tbin` with `a.npy` and `b.npy` float32 arrays of
 shape `(129,)`. Check `c.npy` against `maximum(2*a+b, 0)`.
+
+## Clean-install smoke beyond the A10G host
+
+[GitHub Actions run 36616925428](https://github.com/kreasof-ai/tensor/actions/runs/36616925428)
+passed a second GPU-free product build followed by clean-wheel installs on
+Ubuntu 24.04 and Windows runners. Each consumer job installed only NumPy and
+Tensor, verified both downloaded payload hashes and the `sm_86` manifest, and
+confirmed no compiler imports. This establishes cross-platform installation
+and inspection of the pure-Python wheel, **not** CUDA execution on Windows or
+another GPU. CUDA execution evidence remains the transferred A10G run above.
+
+## Broader export boundary
+
+The current v1 artifact deliberately has only static buffer shapes and pointer
+arguments. A TileLang `T.dynamic` elementwise kernel lowers successfully, but
+its CUDA signature adds an `int size` parameter and its grid extent is the
+runtime expression `(size + 127) // 128`. The current product rejects that
+signature and symbolic grid instead of silently launching it with static
+metadata. Supporting it requires a typed scalar argument descriptor, a binding
+between buffer shape and that scalar, and a runtime launch-expression contract.
+That is ABI work, not a safe relaxation of the static parser. A compiler-free
+symbolic/scalar consumer is therefore still open.

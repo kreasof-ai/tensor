@@ -5,7 +5,7 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 0 complete; Phase 1 CLI baseline running on the A10G.** The product
+**Status: Phase 0 complete; Phase 1 static CUDA CLI baseline validated on the A10G.** The product
 CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection.
 Phase 0 answered the question the proposal closes on:
 
@@ -137,6 +137,8 @@ artifact runs with only the Tensor wheel, NumPy, and an NVIDIA driver; compiler
 packages and CUDA development headers are absent from the consumer path.
 The product artifact and wheel have also transferred from a GPU-free GitHub
 Actions producer to the A10G consumer with matching hashes and exact results.
+Clean-wheel installation and artifact inspection pass on Ubuntu and Windows
+Actions runners; GPU execution on Windows has not been tested.
 For a kernel-author Python session:
 
 ```python
