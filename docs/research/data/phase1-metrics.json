@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "host": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86"
+  },
+  "source": "examples/elementwise.py",
+  "size": 129,
+  "producer": {
+    "cold_build_seconds": 1.6588191280025057,
+    "warm_build_seconds": 0.30812151600184734,
+    "cold_process_wall_seconds": 4.295222371998534,
+    "warm_process_wall_seconds": 2.9753199349979695,
+    "cold_nvcc_seconds": 1.352042876998894,
+    "cache_key": "ef1caee3a8c40c7c51f161be36a4cf8663ea36a468b0090e7148cee4d439c697"
+  },
+  "consumer_packages": [
+    [
+      "numpy",
+      "2.5.3"
+    ],
+    [
+      "tensor-workspace",
+      "0.1.0"
+    ]
+  ],
+  "fresh_process_runs": [
+    {
+      "process_wall_seconds": 0.7331967190002615,
+      "first_result_seconds": 0.4326771949999966,
+      "max_abs_error": 0.0
+    },
+    {
+      "process_wall_seconds": 0.4135030180004833,
+      "first_result_seconds": 0.18822673300019233,
+      "max_abs_error": 0.0
+    },
+    {
+      "process_wall_seconds": 0.4138580239996372,
+      "first_result_seconds": 0.18892004799999995,
+      "max_abs_error": 0.0
+    }
+  ],
+  "benchmark": {
+    "process_wall_seconds": 0.4782448369987833,
+    "median_host_enqueue_seconds": 4.9420999857829884e-05,
+    "median_launch_and_sync_seconds": 5.474099816638045e-05,
+    "iters": 100
+  },
+  "same_host": true
+}

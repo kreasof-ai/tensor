@@ -196,31 +196,43 @@ def test_gpu_dlpack_orders_foreign_streams_and_preserves_ownership(tmp_path):
         target = device.info["arch"]
     build_artifact(root / "examples/dynamic_affine.py", artifact, target=target, cache_dir=tmp_path / "cache")
     for borrowed_stream in (False, True):
-        with torch.cuda.stream(producer):
-            # The sleep makes missing producer/consumer ordering observable.
-            torch.cuda._sleep(5_000_000)
-            a = torch.arange(1025, dtype=torch.float32, device="cuda")
-            b = torch.ones_like(a)
-            output = torch.full_like(a, float("nan"))
         with tx.Device(stream=consumer.cuda_stream if borrowed_stream else None) as device:
             before = ctypes.c_void_p()
             device.driver.call("cuCtxGetCurrent", ctypes.byref(before))
-            with torch.cuda.stream(producer):
-                da, db, dc = (device.from_dlpack(value) for value in (a, b, output))
-            assert [da.pointer, db.pointer, dc.pointer] == [a.data_ptr(), b.data_ptr(), output.data_ptr()]
-            assert not any(value.owned for value in (da, db, dc))
-            with torch.cuda.stream(producer):
-                torch.cuda._sleep(5_000_000)
-                a.add_(2)
-            device.wait_for(producer.cuda_stream)
             kernel = device.load(artifact)
-            kernel.launch(da, db, dc, scale=2.5)
-            device.handoff(consumer.cuda_stream)
-            with torch.cuda.stream(consumer):
-                error = (output-(2.5*a+b)).abs().max()
-            # No Tensor synchronization precedes this foreign consumer operation.
-            consumer.synchronize()
-            assert error.item() == 0
+            a = torch.arange(1025, dtype=torch.float32, device="cuda")
+            b = torch.ones_like(a)
+            output = torch.full_like(a, float("nan"))
+            expected = [2.5*(a+2)+b, 2.5*(a+4)+b]
+            scratch, error = torch.empty_like(a), torch.empty((), device="cuda")
+            # Allocate and load modules before the ordering probe, avoiding
+            # allocator/module-load synchronizations that could hide missing waits.
+            torch.sub(output, expected[0], out=scratch)
+            torch.abs(scratch, out=scratch)
+            torch.amax(scratch, dim=0, out=error)
+            torch.cuda.synchronize()
+            for stage in range(2):
+                with torch.cuda.stream(producer):
+                    torch.cuda._sleep(5_000_000)
+                    a.add_(2)
+                if stage == 0:
+                    # This launch relies on DLPack's stream handshake alone.
+                    with torch.cuda.stream(producer):
+                        da, db, dc = (device.from_dlpack(value) for value in (a, b, output))
+                    assert [da.pointer, db.pointer, dc.pointer] == [a.data_ptr(), b.data_ptr(), output.data_ptr()]
+                    assert not any(value.owned for value in (da, db, dc))
+                else:
+                    # A later mutation requires an explicit producer wait.
+                    device.wait_for(producer.cuda_stream)
+                kernel.launch(da, db, dc, scale=2.5)
+                device.handoff(consumer.cuda_stream)
+                with torch.cuda.stream(consumer):
+                    torch.sub(output, expected[stage], out=scratch)
+                    torch.abs(scratch, out=scratch)
+                    torch.amax(scratch, dim=0, out=error)
+                # No Tensor synchronization precedes these foreign operations.
+                consumer.synchronize()
+                assert error.item() == 0
             with pytest.raises(BufferError, match="contiguous"):
                 device.from_dlpack(a[::2])
         after = ctypes.c_void_p()

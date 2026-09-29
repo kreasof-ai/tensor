@@ -5,7 +5,8 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 0 complete; Phase 1 CUDA CLI supports symbolic shapes and GPU DLPack.** The product
+**Status: Phases 0 and 1 complete; Phase 2 is next.** The CUDA CLI supports
+symbolic shapes, scalar arguments and GPU DLPack. The product
 CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection.
 Phase 0 answered the question the proposal closes on:
 
@@ -182,8 +183,8 @@ managed tensors exactly once, and restores the previous context.
 
 The current CUDA profile requires positive extents, an exact SM match,
 contiguous storage, and the artifact's pointer alignment. GPU execution is
-measured on A10G. [Phase 1 measurements](docs/research/phase1-cli-baseline.md)
-record latency, diagnostics and transfer evidence.
+measured on A10G. [The Phase 1 exit report](docs/research/phase1-exit.md)
+records acceptance checks, installation counts, latency, diagnostics and transfer evidence.
 
 ## Development environment
 

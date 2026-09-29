@@ -1,5 +1,10 @@
 # Phase 1 CLI baseline — A10G
 
+**Historical v1 baseline.** Phase 1 is now complete with typed scalar arguments,
+symbolic shapes and GPU DLPack/stream interoperability. The final acceptance
+checks and current measurements are in [the exit report](phase1-exit.md).
+The earlier measurements below are retained as the initial static baseline.
+
 **Run:** 2026-09-29, Linux, Python 3.12.14, NVIDIA A10G (`sm_86`), pinned
 TileLang 0.1.14 and TVM FFI 0.1.12 producer. The consumer virtual environment
 contained only `tensor-workspace==0.1.0` and `numpy==2.5.3` (confirmed by
@@ -58,7 +63,7 @@ an example SM target, expected shape/dtype, expected input names, and the
 corrupt member respectively. This is a 5/5 cause-identification check, not a
 user study or a claim that all compiler diagnostics are clear.
 
-## Current boundary
+## Initial v1 boundary
 
 The first product export profile accepts one static kernel with pointer-only
 buffer arguments. Grid, block and dynamic shared memory are extracted from
@@ -68,7 +73,7 @@ passed a NumPy comparison on the A10G, with maximum absolute error
 The wheel can execute without TileLang, TVM FFI, PyTorch or
 CUDA development headers; a build still needs the pinned compiler packages
 and a full CUDA toolkit. GPU DLPack borrowing and broader symbolic/scalar
-exports remain separate validation work.
+exports were still open at this baseline; the exit report records their completion.
 
 ## Two-host product artifact transfer
 
@@ -110,14 +115,14 @@ confirmed no compiler imports. This establishes cross-platform installation
 and inspection of the pure-Python wheel, **not** CUDA execution on Windows or
 another GPU. CUDA execution evidence remains the transferred A10G run above.
 
-## Broader export boundary
+## Broader export boundary at the initial baseline
 
-The current v1 artifact deliberately has only static buffer shapes and pointer
+The initial v1 artifact deliberately had only static buffer shapes and pointer
 arguments. A TileLang `T.dynamic` elementwise kernel lowers successfully, but
 its CUDA signature adds an `int size` parameter and its grid extent is the
-runtime expression `(size + 127) // 128`. The current product rejects that
+runtime expression `(size + 127) // 128`. The v1 product rejected that
 signature and symbolic grid instead of silently launching it with static
 metadata. Supporting it requires a typed scalar argument descriptor, a binding
 between buffer shape and that scalar, and a runtime launch-expression contract.
-That is ABI work, not a safe relaxation of the static parser. A compiler-free
-symbolic/scalar consumer is therefore still open.
+The v2 artifact and runtime now implement that binding contract; see
+[the Phase 1 exit report](phase1-exit.md).

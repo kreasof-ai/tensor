@@ -4,16 +4,18 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phase 0 complete; Phase 1 static CUDA CLI baseline validated
-on the A10G.** `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection
-work on the A10G. A NumPy-only consumer runs the product wheel. Product
-artifact transfer from a GPU-free GitHub Actions host to the A10G now passes.
-Clean-wheel installation and artifact inspection pass on GPU-free Ubuntu and
-Windows runners. The remaining technical boundary is broader symbolic/scalar
-exports: they need a typed runtime argument and launch-expression ABI, so
-are not yet in the v1 static profile. GPU execution beyond A10G is untested.
-Phase 1 latency, diagnostics, two-host product transfer and installation are recorded in
-[the CLI baseline](../research/phase1-cli-baseline.md). Two-host Phase 0 opaque
+Current status: **Phases 0 and 1 complete; Phase 2 is next.** `doctor`, `build`,
+`inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated
+on the A10G. Product v2 artifacts support typed scalar arguments and symbolic
+dimensions. CPU/GPU DLPack imports and foreign CUDA stream ordering work, with
+primary-context and resource ownership preserved. A NumPy-only consumer passes
+22 numerical/compatibility cases with transferred product artifacts from a
+GPU-free GitHub Actions host. Installation and inspection pass on Ubuntu and
+Windows runners. The full GPU-enabled suite passes 72 tests with zero skips.
+Phase 1 scope, installation counts, latency, diagnostics and transfer evidence
+are recorded in [the exit report](../research/phase1-exit.md) and accepted by
+[ADR 0010](../adr/0010-complete-phase1-cuda-cli.md). GPU execution beyond A10G
+remains outside the measured single-device scope. Two-host Phase 0 opaque
 executable transfer passes from GitHub Actions to an A10G. Cache behavior,
 independent CPU provider execution, C++/Rust hosting, bounded composition,
 symbolic dimensions, frontend contracts, foreign CUDA stream ordering, full
@@ -115,7 +117,7 @@ cross-GPU benchmarking before making performance claims across architectures.
 
 ---
 
-## Phase 1 — Single-device CLI
+## Phase 1 — Single-device CLI *(complete)*
 
 **Goal:** the §5 executable, on the hardware that exists.
 
@@ -125,34 +127,41 @@ Sequence:
    later command depends on the same environment/registry/target-detection logic it needs.
    It is also the command most likely to be run by a confused user, so it is the right
    thing to get right early.
-2. `tensor build` **initial static CUDA profile implemented** — the artifact layer that
+2. `tensor build` **typed CUDA profile implemented** — the artifact layer that
    does not exist yet in TileLang (§3 of ground truth: no `export_library` equivalent).
    It produces a cubin and versioned TIRx envelope from one explicit export,
-   with a content-addressed cubin cache. Product artifact transfer across
-   hosts passes; broader source signatures remain for the typed runtime ABI.
-3. **The prototyping surface (ADR 0006), initial CUDA implementation** — device buffers, launch, `assert_close`, `bench`,
+   with typed scalar arguments, symbolic dimensions, launch expressions,
+   pointer alignment and a content-addressed cubin cache. Product artifact
+   transfer across hosts passes for five workload profiles.
+3. **The prototyping surface (ADR 0006), CUDA implementation** — device buffers, launch, `assert_close`, `bench`,
    NumPy/DLPack interop. Pulled forward out of Phase 6 because it needs only *opaque*
    executables, so it is **not gated on E4**, and because it is the harness E9–E12 run on.
-   The current device owns its context, buffers and stream; CPU DLPack upload
-   works. GPU DLPack borrowing and foreign-stream handoff need a later adapter.
+   Sessions retain the primary context and own or borrow their stream. CPU
+   DLPack upload, GPU DLPack borrowing, managed-tensor lifetime and foreign
+   stream waits/handoffs are implemented and tested.
 4. `tensor inspect` **implemented** — frontend TIRx, target CUDA source and
    per-pass traces use existing TileLang hooks; artifact manifests are checked
    without compiler imports.
-5. `tensor run` and `tensor bench` **implemented for static CUDA artifacts** —
-   named `.npy` inputs, declared outputs, and a compiler-free consumer.
+5. `tensor run` and `tensor bench` **implemented for typed CUDA artifacts** —
+   named `.npy` inputs, `--scalar` values, runtime dimension bindings, declared
+   outputs, and a compiler-free consumer. Existing v1 static artifacts pass.
 
-**Metrics (§23), all of which need a number, not a vibe:**
+**Measured exit criteria (§23):**
 
-- steps from download to first kernel
-- manually installed dependencies
-- cold compile latency, warm compile latency
-- warm-start latency — compare the measured product consumer with the Phase 0
-  compiler-import and first-run costs, rather than treating those older costs
-  as the product baseline
-- diagnostic quality (scored against a set of deliberately broken kernels)
-- artifact portability across hosts
-- **launch overhead** — newly load-bearing, because the prototyping surface is the thing
-  that exposes it
+| Metric | Evidence |
+|---|---|
+| Downloaded payloads to first kernel | Four commands, including input generation; five with artifact download |
+| Application installation | Tensor wheel selected once; NumPy automatic; two installed distributions |
+| Cold/warm compilation | 1.659 / 0.308 s inside command; 4.295 / 2.975 s whole process |
+| Fresh consumer first result | 0.433 / 0.188 / 0.189 s after command entry |
+| Diagnostics | Eight expected typed-runtime failures identify their cause; five initial CLI probes also recorded |
+| Product portability | Five v2 artifacts transfer between clean matching hosts; NumPy-only consumer passes 22 cases plus CLI execution |
+| Host launch overhead | Static 49.4 µs enqueue / 54.7 µs launch plus sync; dynamic 69.6 / 74.8 µs |
+| Installation beyond the execution host | Clean-wheel installation and inspection pass on Ubuntu and Windows |
+
+Timing boundaries, prerequisites and accepted profile limits are explicit in
+[the exit report](../research/phase1-exit.md). Cross-GPU benchmarking is not
+a gate for this single-device phase.
 
 **Design constraints discovered so far:**
 
@@ -169,13 +178,16 @@ Sequence:
 
 **Goal:** separate compiler, runtime, and provider.
 
-Deferred deliberately. §3.4 argues the module contract must be independently versioned so
-TIRx can be replaced later, and E4 will tell us how much of the portable representation is
-TIRx. Designing the ABI before E4 risks freezing TIRx's shape into Tensor's public contract —
-which is precisely the coupling §3.4 and Risk 4 warn against.
+Phase 1 now provides a concrete CUDA runtime against which this contract can
+be stabilized. Its typed artifact bindings, primary-context ownership and
+stream handoff are CUDA-specific implementation contracts; they do not freeze
+a provider-neutral ABI or make frontend TIRx the public runtime representation.
+Phase 0 already measured C++/Rust hosting and a second CPU provider, so use
+those boundaries when separating compiler, runtime and provider.
 
-Start from `apache-tvm-ffi` (3.4 MB) rather than inventing an FFI. Spike the C++/Rust claim
-before designing around it.
+Evaluate `apache-tvm-ffi` against the measured compiler-free consumer rather
+than designing an FFI without a working host. Independently version the module
+and runtime contracts so the frontend representation can change later (§3.4).
 
 ---
 
