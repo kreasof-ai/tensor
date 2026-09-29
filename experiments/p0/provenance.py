@@ -23,7 +23,7 @@ def snapshot() -> dict:
 
     files = [ROOT / "pyproject.toml", ROOT / "uv.lock", ROOT / ".python-version"]
     files += sorted(path for path in (ROOT / "experiments").rglob("*")
-                    if path.suffix in (".py", ".cpp"))
+                    if path.suffix in (".py", ".cpp", ".rs"))
     files += sorted((ROOT / "tools").glob("*.py"))
     files += sorted((ROOT / "tools").glob("*.ps1"))
     files += sorted((ROOT / ".github" / "workflows").glob("*.yml"))

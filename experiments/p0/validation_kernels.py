@@ -3,6 +3,26 @@
 import tilelang.language as T
 
 
+def composition_stage(size, tile=128, activation=False):
+    if activation:
+        @T.prim_func
+        def activate(x:T.Tensor((size,),"float32"), out:T.Tensor((size,),"float32")):
+            with T.Kernel(T.ceildiv(size,tile),threads=tile) as block:
+                for lane in T.Parallel(tile):
+                    i=block*tile+lane
+                    if i<size:
+                        out[i]=T.max(x[i],0.0)
+        return activate
+    @T.prim_func
+    def affine(a:T.Tensor((size,),"float32"), b:T.Tensor((size,),"float32"), out:T.Tensor((size,),"float32")):
+        with T.Kernel(T.ceildiv(size,tile),threads=tile) as block:
+            for lane in T.Parallel(tile):
+                i=block*tile+lane
+                if i<size:
+                    out[i]=2.0*a[i]+b[i]
+    return affine
+
+
 def dynamic_elementwise():
     size = T.dynamic("size")
 
@@ -19,8 +39,8 @@ def dynamic_elementwise():
     return elementwise
 
 
-def dynamic_gemm(dynamic_tile=False):
-    rows = T.dynamic("rows")
+def dynamic_gemm(dynamic_tile=False, static_rows=None):
+    rows = T.dynamic("rows") if static_rows is None else static_rows
     tile = T.dynamic("tile") if dynamic_tile else 32
 
     @T.prim_func

@@ -308,7 +308,7 @@ def fusion_probe(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=["cache_cold", "cache_disk", "cache_corrupt", "provider", "symbolic", "framework", "abi", "fusion", "compile", "perf"])
+    parser.add_argument("mode", choices=["cache_cold", "cache_disk", "cache_corrupt", "provider", "symbolic", "framework", "abi", "fusion", "compile", "perf", "cpu_provider", "composition", "rust_host", "foreign_stream", "static_symbolic"])
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--arch", default="sm_86")
@@ -324,6 +324,21 @@ def main():
         elif args.mode == "perf":
             from experiments.p0.measure import performance
             result = performance(args.root)
+        elif args.mode == "cpu_provider":
+            from experiments.p0.cpu_provider import probe
+            result = probe(args.root)
+        elif args.mode == "composition":
+            from experiments.p0.composition import probe
+            result = probe(args.root)
+        elif args.mode == "rust_host":
+            from experiments.p0.rust_host import probe
+            result = probe(args.root)
+        elif args.mode == "foreign_stream":
+            from experiments.p0.foreign_stream import probe
+            result = probe(args.root)
+        elif args.mode == "static_symbolic":
+            from experiments.p0.static_symbolic import probe
+            result = probe(args.root)
         else:
             result = {"provider": provider_probe, "symbolic": symbolic_probe,
                       "framework": framework_probe, "abi": abi_probe,
