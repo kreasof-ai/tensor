@@ -1,0 +1,217 @@
+{
+  "conclusion": "success",
+  "event": "push",
+  "headSha": "b90c70b0ecd8b4433e426a6c1f6a5f771cc07ac8",
+  "jobs": [
+    {
+      "completedAt": "2026-09-29T22:36:31Z",
+      "conclusion": "success",
+      "databaseId": 109651088856,
+      "name": "producer (ubuntu-24.04, build/consumer/bin/python)",
+      "startedAt": "2026-09-29T22:34:56Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7.0.1",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@v10.2.0",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned producer and local NVRTC components",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile the five CUDA profiles and audit cache recovery",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build the compiler-free consumer wheel",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install and inspect with only Tensor and NumPy",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7.0.1",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@v10.2.0",
+          "number": 17,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7.0.1",
+          "number": 18,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36640410723/job/109651088856"
+    },
+    {
+      "completedAt": "2026-09-29T22:36:54Z",
+      "conclusion": "success",
+      "databaseId": 109651089180,
+      "name": "producer (windows-latest, build/consumer/Scripts/python.exe)",
+      "startedAt": "2026-09-29T22:34:57Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7.0.1",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@v10.2.0",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned producer and local NVRTC components",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile the five CUDA profiles and audit cache recovery",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build the compiler-free consumer wheel",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install and inspect with only Tensor and NumPy",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7.0.1",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@v10.2.0",
+          "number": 17,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7.0.1",
+          "number": 18,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36640410723/job/109651089180"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/kreasof-ai/tensor/actions/runs/36640410723",
+  "artifacts": [
+    {
+      "digest": "sha256:6e6d2e1fcb12a3f0129a8f8a67e2f790486d5b666c85595d905bd80f293879f0",
+      "expired": false,
+      "id": 11066068360,
+      "name": "tensor-phase2-windows-latest",
+      "size_in_bytes": 196020
+    },
+    {
+      "digest": "sha256:fc99585fa92a7aa2d86e8f4ada5615d8ef5e99a5fb5d3a44b22ac6e55b6420d6",
+      "expired": false,
+      "id": 11065733627,
+      "name": "tensor-phase2-ubuntu-24.04",
+      "size_in_bytes": 196347
+    }
+  ],
+  "test_results": {
+    "ubuntu-24.04": {
+      "passed": 69,
+      "skipped": 15,
+      "seconds": 8.22
+    },
+    "windows-latest": {
+      "passed": 65,
+      "skipped": 19,
+      "seconds": 13.26
+    }
+  },
+  "examples": [
+    "elementwise",
+    "gemm_relu",
+    "dynamic_affine",
+    "dynamic_gemm",
+    "scalar_offset"
+  ],
+  "scope": {
+    "nvrtc_compilation": true,
+    "cold_warm_cache": true,
+    "corrupt_cache_recovery": true,
+    "compiler_free_consumer_inspection": true,
+    "gpu_numerics": false
+  }
+}

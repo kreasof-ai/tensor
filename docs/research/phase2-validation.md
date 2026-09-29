@@ -1,8 +1,9 @@
 # Phase 2 — runtime call ABI and bundled NVRTC
 
 Local validation on 2026-09-29, Linux x86-64 and NVIDIA A10G (`sm_86`).
-The working tree is uncommitted; the retained reports identify the base
-revision, lock hash, artifact hashes, compiler libraries and consumer wheel.
+The initial local run used an uncommitted working tree; its retained reports
+identify the base revision, lock hash, artifact hashes, compiler libraries and
+consumer wheel. Subsequent remote CI results are recorded below.
 [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) records the decision and
 [the runtime contract](../runtime-abi.md) specifies the supported profile.
 
@@ -46,11 +47,27 @@ the image, not a fresh install of those packages. The consumer environment
 contained exactly `tensor-workspace==0.1.0` and `numpy==2.5.3`.
 This is environment isolation and artifact transfer, not a new two-host result.
 The previous Phase 1 two-host evidence remains in its historical report.
-The new Linux/Windows CI workflow is configured but has not run remotely.
+The subsequent [Linux/Windows CI run](https://github.com/kreasof-ai/tensor/actions/runs/36640410723)
+passed on commit `b90c70b`: Linux had 69 tests passed and 15 skipped;
+Windows had 65 passed and 19 skipped. GPU tests skip on these GPU-free runners,
+and the scoped native CPU profile also skips on Windows. Both jobs compiled
+all five NVRTC profiles, verified cold/warm cache and corruption recovery,
+built the wheel, and inspected the artifacts in fresh Tensor/NumPy consumers
+with compiler imports prohibited. This is cross-platform producer and consumer
+inspection evidence; GPU numerical execution remains the local A10G result.
+
+The first Windows run exposed a case-sensitive test assertion (`nvcc.EXE`
+versus `nvcc.exe`). After correcting it, the producer exposed an incompatible
+audit that replaced `subprocess.Popen` with a function before Windows asyncio
+subclassed it. The audit now observes process creation with a scoped Python
+audit hook, preserving the Popen class and blocking compiler calls. Regression
+tests cover class inheritance and quoted Windows executable names. Matrix
+jobs finish independently when another platform fails.
 
 Raw evidence: [producer](data/phase2-nvrtc-producer.json),
 [consumer](data/phase2-consumer.json), [compiler comparison](data/phase2-metrics.json),
-and [local validation](data/phase2-validation.json). The producer report records
+and [local validation](data/phase2-validation.json), plus
+[remote CI evidence](data/phase2-ci.json). The producer report records
 the file-trace digest and accepted header roots; the full trace is retained
 under `build/phase2-isolated/` rather than committed.
 

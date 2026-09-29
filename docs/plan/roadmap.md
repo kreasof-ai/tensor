@@ -5,13 +5,15 @@ The proposal's phase list is sound; the changes below are about *sequencing* and
 being explicit about which work is blocked on hardware.
 
 Current status: **Phases 0 and 1 complete; Phase 2 implemented and validated
-locally.** [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) accepts call ABI
+locally, with Linux/Windows producer CI passing.**
+[ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) accepts call ABI
 1.0, the independent v3 module envelope and NVRTC as the default CUDA compiler.
 CUDA and a CPU validation provider share the workbench; native C++/Rust hosts
 exercise the descriptors without Python or TVM FFI. A driver/toolchain-free
 container builds all five NVRTC profiles, and a Tensor/NumPy consumer executes
-them on A10G. This Phase 2 transfer uses one physical host; the new Linux/Windows
-CI workflow has not yet been run remotely. Details and remaining scope are in
+them on A10G. The isolated local transfer uses one physical host. Remote
+Linux/Windows CI also builds all five NVRTC profiles and verifies artifact
+inspection with compiler-free consumers. Details and remaining scope are in
 [the Phase 2 report](../research/phase2-validation.md).
 
 Phase 1 baseline: `doctor`, `build`,
