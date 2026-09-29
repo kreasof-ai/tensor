@@ -4,7 +4,8 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phase 0 complete; Phase 1 is ready to begin.** Two-host opaque
+Current status: **Phase 0 complete; Phase 1 underway.** `tensor doctor` and the
+initial static CUDA `tensor build` path are implemented. Two-host opaque
 executable transfer passes from GitHub Actions to an A10G. Cache behavior,
 independent CPU provider execution, C++/Rust hosting, bounded composition,
 symbolic dimensions, frontend contracts, foreign CUDA stream ordering, full
@@ -112,13 +113,14 @@ cross-GPU benchmarking before making performance claims across architectures.
 
 Sequence:
 
-1. `tensor doctor` first. It is the cheapest honest probe of the packaging story, and every
+1. `tensor doctor` **implemented**. It is the cheapest honest probe of the packaging story, and every
    later command depends on the same environment/registry/target-detection logic it needs.
    It is also the command most likely to be run by a confused user, so it is the right
    thing to get right early.
-2. `tensor build` — the artifact layer that does not exist yet in TileLang (§3 of ground
-   truth: no `export_library` equivalent). This is the first genuinely Tensor-owned
-   component and the first real engineering risk after Phase 0.
+2. `tensor build` **initial static CUDA profile implemented** — the artifact layer that
+   does not exist yet in TileLang (§3 of ground truth: no `export_library` equivalent).
+   It produces a cubin and versioned TIRx envelope from one explicit export. Broader
+   source signatures, runtime loading and cross-host product validation follow.
 3. **The prototyping surface (ADR 0006)** — device buffers, launch, `assert_close`, `bench`,
    NumPy/DLPack interop. Pulled forward out of Phase 6 because it needs only *opaque*
    executables, so it is **not gated on E4**, and because it is the harness E9–E12 run on.

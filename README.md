@@ -5,8 +5,9 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 0 complete; Phase 1 is ready to begin.** No product code has
-been written yet. Phase 0 answered the question the proposal closes on:
+**Status: Phase 0 complete; Phase 1 underway.** The product CLI now has
+`tensor doctor` and an initial `tensor build` path for static CUDA kernels.
+Phase 0 answered the question the proposal closes on:
 
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
@@ -61,13 +62,45 @@ docs/
   plan/                  experiment designs and the roadmap
   adr/                   architecture decision records
 experiments/
-  p0/                    the Phase 0 experiment harness (this is the active work)
-src/                     product code — created during Phase 1
+  p0/                    the retained Phase 0 experiment harness
+src/tensor/              Phase 1 product CLI
 ```
 
-`src/` does not exist yet because this repository has just completed Phase 0.
-[ADR 0009](docs/adr/0009-complete-phase0-with-scoped-provider-and-composition.md)
-now permits Phase 1 product packages.
+The product package is separate from the experiment code. [ADR 0009](docs/adr/0009-complete-phase0-with-scoped-provider-and-composition.md)
+opened Phase 1 product work after the exit gates passed.
+
+## Phase 1 CLI
+
+After `uv sync --locked`, run:
+
+```bash
+uv run --locked tensor doctor
+uv run --locked tensor doctor --json
+```
+
+Doctor detects the NVIDIA device and uses its exact SM target. It checks the
+pinned TileLang and TVM FFI versions, the registered CUDA backend, the driver,
+and a real `nvcc` cubin compilation that includes runtime and CCCL headers.
+On a GPU-free build host, supply an explicit target such as `--target sm_86`.
+Select a full CUDA toolkit with `CUDA_HOME`/`CUDA_PATH` or `--nvcc` if the
+compiler on `PATH` lacks development headers. Exit code 0 means the selected
+target is build-ready; code 1 means setup is incomplete.
+
+Build a standalone TileLang kernel with an explicit launch description:
+
+```bash
+CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9" \
+  uv run --locked tensor build examples/elementwise.py --out build/elementwise.tbin
+```
+
+The source must define `tensor_export()` returning `{"kernel": PrimFunc,
+"launch": {"grid": [x,y,z], "block": [x,y,z], "shared_memory_bytes": n}}`.
+The first profile accepts one static CUDA kernel with buffer pointer arguments.
+`--target sm_XX` permits a GPU-free build host; without it, build targets device
+0. Outputs are created exclusively. The `.tbin` contains a cubin, serialized
+frontend TIRx, exact compiler versions, source and payload hashes, and notices.
+This artifact envelope is version 1 and still subject to change during Phase 1.
+The `run`, `bench`, and `inspect` commands remain Phase 1 work.
 
 ## Development environment
 
