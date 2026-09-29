@@ -36,7 +36,8 @@ def test_provider_event_orders_work_between_cuda_sessions(tmp_path):
         a=producer.arange(129); b=producer.ones((129,))
         out=kernel(a,b)
         event=producer.record_event()
-        consumer.wait(event)
+        assert event.descriptor.flags == 0
+        consumer.wait(producer.get_event(event.descriptor))
         consumer.synchronize()
         tx.assert_close(out,2*a.to_numpy()+1)
         event.release()
@@ -45,3 +46,23 @@ def test_provider_event_orders_work_between_cuda_sessions(tmp_path):
             with pytest.raises(RuntimeError,match="different provider"):
                 cpu.wait(event)
             event.release()
+
+
+def test_cuda_executable_release_completes_queued_work(tmp_path):
+    path=tmp_path / "elementwise.tbin"
+    build_artifact(ROOT / "examples/elementwise.py",path,compiler="nvrtc")
+    with tx.Device() as device:
+        kernel=device.load(path)
+        descriptor=kernel.descriptor
+        assert descriptor.flags == 1 and descriptor.workspace.byte_size == 0
+        out=kernel(device.arange(129),device.ones((129,)))
+        kernel.release()
+        kernel.release()
+        tx.assert_close(out,2*np.arange(129,dtype='float32')+1)
+        with pytest.raises(RuntimeError,match="released"):
+            device.get_executable(descriptor)
+        with pytest.raises(RuntimeError,match="released"):
+            kernel(device.arange(129),device.ones((129,)))
+        with device.load(path) as replacement:
+            assert replacement.descriptor.handle != descriptor.handle
+            assert device.get_executable(replacement.descriptor) is replacement

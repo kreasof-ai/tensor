@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 from tensor.artifact import ArtifactError, read_artifact
-from tensor.runtime import Buffer, Executable, TensorRuntimeError, bench
+from tensor.runtime import Buffer, Executable, Session, TensorRuntimeError, bench
 from tensor.abi import CAPABILITIES, StreamDescriptor, check_requirement
 
 
@@ -89,7 +89,7 @@ class _Driver:
 
 
 
-class Device:
+class Device(Session):
     device_type = 2
     error = CudaError
     capabilities = CAPABILITIES | {"events", "async_launch", "external_streams", "gpu_dlpack"}
@@ -134,6 +134,7 @@ class Device:
                 self.stream = self._foreign_stream(self._external_stream)
             self._stream_active = True
             self._generation += 1
+            self._start_session()
             self._open = True
             return self
         except BaseException:
@@ -222,6 +223,9 @@ class Device:
             self.driver.call("cuMemFree_v2", buffer.pointer)
 
     def _launch(self, executable, call):
+        # Bind on the host first; activate the provider context once immediately
+        # before submission, including after user-defined scalar conversions.
+        self._check()
         descriptor = call.descriptor
         shared = descriptor.shared_memory_bytes
         if shared > executable._shared_limit:
@@ -338,6 +342,10 @@ class Device:
         self._modules.append(module)
         return Executable(self, manifest, module, function, image)
 
+    def _unload_executable(self, executable):
+        self.driver.call("cuModuleUnload", executable.module)
+        self._modules.remove(executable.module)
+
     def _cleanup(self) -> None:
         errors = []
 
@@ -364,9 +372,12 @@ class Device:
                 buffer._dispose()
             except (CudaError, RuntimeError) as exc:
                 errors.append(exc)
-        for module in reversed(self._modules):
-            call("cuCtxSetCurrent", self.context)
-            call("cuModuleUnload", module)
+        for executable in list(getattr(self, "_executables", {}).values()):
+            try:
+                call("cuCtxSetCurrent", self.context)
+                executable._dispose()
+            except CudaError as exc:
+                errors.append(exc)
         if self._stream_active and self.owns_stream:
             call("cuStreamDestroy_v2", self.stream)
         if self.context.value:

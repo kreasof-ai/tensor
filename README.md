@@ -5,10 +5,11 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 2 runtime call ABI and NVRTC implementation validated locally.**
+**Status: Phase 2 contracts and NVRTC implemented; final exit validation in progress.**
 CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
 or host compiler required. CUDA and a CPU validation provider share call ABI
-1.0, independently versioned from the v3 artifact envelope. See the
+1.1, including executable/event identities and zero external workspace,
+independently versioned from the v3 artifact envelope. See the
 [Phase 2 report](docs/research/phase2-validation.md) and
 [runtime contract](docs/runtime-abi.md). Direct PTX is experimental work after
 Tensor v1. The CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache
@@ -184,6 +185,10 @@ The workbench exposes owned and borrowed device buffers, shape/dtype/strides,
 byte snapshots, NumPy upload/download, CPU DLPack upload, GPU DLPack borrowing,
 `zeros`, `ones`, `full`, `randn`, `arange`, numerical checks, and timing.
 `bench` reports host enqueue and launch-plus-stream-synchronization times.
+Buffer address, shape, dtype and strides are immutable. Loaded kernels expose
+`descriptor` and `workspace_requirements()`; `release()` waits for submitted
+work and unloads the image. Sessions resolve descriptor snapshots with
+`get_executable()` and `get_event()`, rejecting stale or foreign identities.
 
 `device.from_dlpack(gpu_tensor)` borrows a contiguous writable tensor without a
 copy or framework import. It retains the producer's managed tensor until

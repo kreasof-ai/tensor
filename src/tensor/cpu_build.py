@@ -18,7 +18,7 @@ import tempfile
 import time
 import zipfile
 
-from tensor.abi import DTYPES, runtime_requirement
+from tensor.abi import DTYPES, runtime_requirement, workspace_requirement
 from tensor.artifact import FORMAT, FORMAT_VERSION, validate_manifest
 from tensor.build import BuildError, _cached_image, _cache_root, _header_hash, _notices, _op_set, _write_cache
 from tensor.doctor import check_packages
@@ -160,6 +160,7 @@ def build_cpu(source_path, output_path, *, target=None, cache_dir=None, compiler
     manifest = {"format": FORMAT, "format_version": FORMAT_VERSION, "provider": "cpu", "kind": "native",
         "target": "cpu-linux-x86_64", "entrypoint": "tensor_kernel_v1", "compiler": identity,
         "runtime_abi": runtime_requirement(arguments, symbols), "arguments": arguments, "abi": abi,
+        "workspace": workspace_requirement(),
         "symbols": symbols, "outputs": spec.get("outputs", []),
         "launch": {"grid": [1,1,1], "block": [1,1,1], "shared_memory_bytes": 0},
         "source_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),

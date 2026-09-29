@@ -47,9 +47,13 @@ def validate_manifest(manifest: object) -> dict:
             (not TARGET.fullmatch(target) if provider == "cuda" else target != "cpu-linux-x86_64")):
         raise ArtifactError("invalid provider target")
     if revision >= 3:
-        from tensor.abi import check_requirement
+        from tensor.abi import check_requirement, check_workspace
         try:
             check_requirement(manifest.get("runtime_abi"))
+            if manifest["runtime_abi"]["minor"] >= 1 or "workspace" in manifest:
+                check_workspace(manifest.get("workspace"))
+            if manifest["runtime_abi"]["minor"] >= 1 and not {"executable_descriptors", "no_external_workspace"} <= set(manifest["runtime_abi"]["required_capabilities"]):
+                raise ValueError("runtime ABI 1.1 requires executable and workspace capabilities")
         except ValueError as exc:
             raise ArtifactError(str(exc)) from exc
         if "provider" not in manifest:

@@ -61,6 +61,8 @@ jobs:
               manifest,_=read_artifact(artifact)
               assert manifest['format_version']==3
               assert manifest['runtime_abi']['major']==1
+              assert manifest['runtime_abi']['minor']==1
+              assert manifest['workspace']=={'bytes':0,'alignment':1}
           assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
           PY
       - uses: actions/upload-artifact@v7.0.1

@@ -1,4 +1,4 @@
-/* Tensor runtime call ABI 1.0. Compiler IR is never part of this contract. */
+/* Tensor runtime ABI 1.1. ABI 1.0 call layouts are preserved. */
 #ifndef TENSOR_ABI_H
 #define TENSOR_ABI_H
 #include <stdint.h>
@@ -8,6 +8,9 @@ extern "C" {
 #endif
 
 #define TENSOR_ABI_VERSION 1u
+#define TENSOR_ABI_MINOR 1u
+#define TENSOR_EXEC_ASYNC 1u
+#define TENSOR_EVENT_KNOWN_COMPLETE 1u
 #define TENSOR_DEVICE_CPU 1u
 #define TENSOR_DEVICE_CUDA 2u
 #define TENSOR_ARG_BUFFER 1u
@@ -69,6 +72,54 @@ typedef struct TensorErrorV1 {
   char message[508]; /* UTF-8, always NUL terminated */
 } TensorErrorV1;
 
+/* External, caller-supplied scratch requirements. ABI 1.1 supports zero bytes,
+ * alignment 1, flags/reserved 0. Placement follows the executable's provider.
+ * CUDA dynamic shared memory is separate and remains in TensorCallV1.
+ */
+typedef struct TensorWorkspaceRequirementsV1 {
+  uint64_t byte_size;
+  uint32_t alignment;
+  uint32_t device_type;
+  uint32_t flags;
+  uint32_t reserved;
+} TensorWorkspaceRequirementsV1;
+
+/* Snapshot of a loaded executable, never serialized into an artifact.
+ * Session/handle are opaque, nonzero provider-owned tokens. A token is valid
+ * only with its originating live session; never reinterpret it as a function
+ * address. Argument count is the lowered parameter count. Only ASYNC is valid.
+ * Release waits for submitted work and invalidates every snapshot of this
+ * handle. Session close releases remaining handles. IDs must not be reused
+ * while stale snapshots could exist. Hosts own lookup/loading/dispatch.
+ */
+typedef struct TensorExecutableV1 {
+  uint32_t abi_version;
+  uint32_t struct_size;
+  uint32_t device_type;
+  int32_t device_ordinal;
+  uint64_t session;
+  uint64_t handle;
+  uint32_t argument_count;
+  uint32_t flags;
+  TensorWorkspaceRequirementsV1 workspace;
+} TensorExecutableV1;
+
+/* Event identity is resolved in the originating session, then may be waited
+ * on by another live session on the same provider/device. A CPU event is
+ * known complete; CUDA flags 0 requires provider ordering, not host polling.
+ * Release/owner session close invalidates all snapshots. Reserved is zero.
+ */
+typedef struct TensorEventV1 {
+  uint32_t abi_version;
+  uint32_t struct_size;
+  uint32_t device_type;
+  int32_t device_ordinal;
+  uint64_t session;
+  uint64_t handle;
+  uint32_t flags;
+  uint32_t reserved;
+} TensorEventV1;
+
 /* CPU images export this function as tensor_kernel_v1. A CUDA provider consumes
  * the identical call descriptor and binds arguments to the image's CUDA ABI.
  * Calls borrow all descriptors and buffers. Descriptor arrays live through
@@ -84,5 +135,8 @@ static_assert(sizeof(TensorArgumentV1) == 64, "Tensor argument layout");
 static_assert(sizeof(TensorStreamV1) == 16, "Tensor stream layout");
 static_assert(sizeof(TensorCallV1) == 72, "Tensor call layout");
 static_assert(sizeof(TensorErrorV1) == 512, "Tensor error layout");
+static_assert(sizeof(TensorWorkspaceRequirementsV1) == 24, "Tensor workspace layout");
+static_assert(sizeof(TensorExecutableV1) == 64, "Tensor executable layout");
+static_assert(sizeof(TensorEventV1) == 40, "Tensor event layout");
 #endif
 #endif

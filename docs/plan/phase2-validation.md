@@ -68,10 +68,30 @@ checkouts and omit `--allow-same-host`. The new
 `.github/workflows/phase2-nvrtc.yml` builds on Linux/Windows and checks wheel
 inspection in a fresh Tensor/NumPy environment; GPU execution is separate.
 
+For Linux/Windows Actions archives, use `tools/phase2_transfer_check.py` instead
+of manufacturing a Phase 1 provenance manifest. Save `gh run view RUN_ID --json
+conclusion,event,headSha,jobs,status,url` and the run's Actions artifact API
+records into one JSON document with an `artifacts` array. Download each archive
+with `gh api repos/kreasof-ai/tensor/actions/artifacts/ARTIFACT_ID/zip > build/ci.zip`.
+Install its included wheel in a fresh consumer environment, then run:
+
+```bash
+build/phase2-consumer/bin/python tools/phase2_transfer_check.py build/ci.zip \
+  --ci-record build/ci.json --platform linux --out build/ci-gpu.json
+```
+
+Use `--platform windows` for the Windows producer. The check verifies archive
+digests, exact producer source revision and LF/CRLF checkout hashes, distinct
+physical hosts, five artifact hashes, 21 numerical/interop cases, eight
+diagnostics, executable/workspace/event lifetime checks and CLI execution.
+It reports whether the installed consumer package matches the included wheel;
+a newer compatible consumer is allowed and identified explicitly.
+
 ## Runtime ABI and native hosts
 
-The default tests exercise version/capability rejection, 64-bit scalar
-payloads, shared CPU binding, native descriptor rejection and C++ CPU hosting:
+The default tests exercise ABI 1.1 version/capability rejection, 64-bit scalar
+payloads, shared CPU binding, failed loads, executable/event identity,
+zero-workspace validation, native descriptor rejection and C++ CPU hosting:
 
 ```bash
 uv run --locked python -m pytest -o addopts='' -q

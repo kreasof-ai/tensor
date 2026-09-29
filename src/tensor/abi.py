@@ -1,4 +1,4 @@
-"""Independently versioned, provider-neutral runtime descriptors (C ABI 1.0)."""
+"""Independently versioned, provider-neutral runtime descriptors (C ABI 1.1)."""
 
 from __future__ import annotations
 
@@ -8,10 +8,10 @@ import sys
 from tensor.signature import SCALAR_TYPES, buffer_argument, evaluate, scalar_value
 
 ABI_MAJOR = 1
-ABI_MINOR = 0
+ABI_MINOR = 1
 DTYPES = {name: index for index, name in enumerate(("bool", "int8", "uint8", "int16", "uint16",
           "int32", "uint32", "int64", "uint64", "float16", "float32", "float64"), 1)}
-CAPABILITIES = frozenset({"contiguous", "scalars", "symbolic_shapes"})
+CAPABILITIES = frozenset({"contiguous", "scalars", "symbolic_shapes", "executable_descriptors", "no_external_workspace"})
 
 
 class BufferDescriptor(c.Structure):
@@ -41,8 +41,41 @@ class ErrorDescriptor(c.Structure):
     _fields_ = [("code", c.c_int32), ("message", c.c_char * 508)]
 
 
+class WorkspaceRequirements(c.Structure):
+    _fields_ = [("byte_size", c.c_uint64), ("alignment", c.c_uint32),
+                ("device_type", c.c_uint32), ("flags", c.c_uint32), ("reserved", c.c_uint32)]
+
+
+class ExecutableDescriptor(c.Structure):
+    _fields_ = [("abi_version", c.c_uint32), ("struct_size", c.c_uint32),
+                ("device_type", c.c_uint32), ("device_ordinal", c.c_int32),
+                ("session", c.c_uint64), ("handle", c.c_uint64),
+                ("argument_count", c.c_uint32), ("flags", c.c_uint32),
+                ("workspace", WorkspaceRequirements)]
+
+
+class EventDescriptor(c.Structure):
+    _fields_ = [("abi_version", c.c_uint32), ("struct_size", c.c_uint32),
+                ("device_type", c.c_uint32), ("device_ordinal", c.c_int32),
+                ("session", c.c_uint64), ("handle", c.c_uint64),
+                ("flags", c.c_uint32), ("reserved", c.c_uint32)]
+
+
+def workspace_requirement() -> dict:
+    # This single-kernel profile has no caller-supplied global scratch buffer.
+    # CUDA shared memory remains a per-launch resource, not external workspace.
+    return {"bytes": 0, "alignment": 1}
+
+
+def check_workspace(requirement) -> None:
+    if (not isinstance(requirement, dict) or set(requirement) != {"bytes", "alignment"}
+            or type(requirement["bytes"]) is not int or requirement["bytes"] != 0
+            or type(requirement["alignment"]) is not int or requirement["alignment"] != 1):
+        raise ValueError("this runtime profile requires zero external workspace with alignment 1")
+
+
 def runtime_requirement(arguments: list[dict], symbols: dict) -> dict:
-    required = ["contiguous"]
+    required = ["contiguous", "executable_descriptors", "no_external_workspace"]
     if any(not buffer_argument(item) for item in arguments):
         required.append("scalars")
     if symbols:
@@ -66,7 +99,7 @@ def check_requirement(requirement: dict, capabilities=CAPABILITIES) -> None:
 class BoundCall:
     """Own descriptor backing storage while providers consume a borrowed call."""
 
-    def __init__(self, device, manifest, values, symbols, launch):
+    def __init__(self, device, manifest, values, symbols, launch, *, validated=False):
         if c.sizeof(c.c_void_p) != 8 or sys.byteorder != "little":
             raise ValueError("Tensor ABI 1 requires a 64-bit little-endian host")
         abi = manifest.get("abi", [dict(item, kind="buffer") for item in manifest["arguments"]])
@@ -77,15 +110,12 @@ class BoundCall:
             argument.dtype = DTYPES[dtype]
             if buffer_argument(descriptor):
                 value = values[name]
-                shape = (c.c_int64 * len(value.shape))(*value.shape)
-                strides = (c.c_int64 * len(value.strides))(*value.strides)
-                self.storage.extend((value, shape, strides))
+                self.storage.append(value)
                 argument.kind = 1
-                argument.buffer = BufferDescriptor(value.pointer, value.nbytes, shape, strides,
-                                                    len(value.shape), DTYPES[dtype], device.device_type, device.ordinal)
+                argument.buffer = value._descriptor
             else:
                 value = values[name] if name in values else evaluate({"var": name}, symbols)
-                scalar = SCALAR_TYPES[dtype](scalar_value(value, dtype, name))
+                scalar = SCALAR_TYPES[dtype](value if validated else scalar_value(value, dtype, name))
                 argument.kind = 2
                 c.memmove(c.addressof(argument) + Argument.scalar.offset, c.byref(scalar), c.sizeof(scalar))
         self.descriptor = CallDescriptor(ABI_MAJOR, c.sizeof(CallDescriptor), self.arguments, len(abi), 0,

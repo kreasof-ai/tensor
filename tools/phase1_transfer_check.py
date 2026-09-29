@@ -109,6 +109,23 @@ def check(bundle: Path, *, require_two_hosts: bool = True, legacy_artifact: Path
     two_hosts = producer["host"] != socket.gethostname()
     if require_two_hosts and not two_hosts:
         raise ValueError("producer and consumer must be different hosts")
+    runtime = exercise(artifacts, legacy_artifact=legacy_artifact, started=started)
+    return {**runtime, "producer": producer, "commit": revision, "two_hosts": two_hosts,
+            "clean_matching_checkouts": not dirty and producer["git_dirty"] is False}
+
+
+def exercise(artifacts: dict, *, legacy_artifact: Path | None = None, started: float | None = None):
+    """Shared numerical/interop acceptance; callers validate transfer provenance."""
+    started = time.perf_counter() if started is None else started
+    sys.meta_path.insert(0, NoCompilerImports())
+    import numpy as np
+    import tensor as tx
+    from tensor.artifact import read_artifact
+    from tensor.cli import main as cli
+
+    packages = {item.metadata["Name"].lower(): item.version for item in metadata.distributions()}
+    if packages != {"numpy": "2.5.3", "tensor-workspace": "0.1.0"}:
+        raise ValueError(f"use a clean Tensor/NumPy consumer environment: {packages}")
     rng = np.random.default_rng(2026)
     records, diagnostics = [], []
 
@@ -190,10 +207,9 @@ def check(bundle: Path, *, require_two_hosts: bool = True, legacy_artifact: Path
         np.testing.assert_array_equal(np.load(root / "out/c.npy"), 3.5*a)
     imports = sorted({name.split(".")[0] for name in sys.modules} & {"tilelang", "tvm", "tvm_ffi", "torch"})
     assert not imports
-    return {"status": "passed", "producer": producer, "consumer_host": socket.gethostname(),
-            "commit": revision, "two_hosts": two_hosts, "packages": packages, "compiler_imports": imports,
+    return {"status": "passed", "consumer_host": socket.gethostname(),
+            "packages": packages, "compiler_imports": imports,
             "compiler_import_guard": True, "device": device_info, "records": records, "diagnostics": diagnostics,
-            "clean_matching_checkouts": not dirty and producer["git_dirty"] is False,
             "legacy_artifact_sha256": hashlib.sha256(legacy_artifact.read_bytes()).hexdigest() if legacy_artifact else None,
             "first_kernel_seconds_from_script_check_entry": first_kernel,
             "benchmark": benchmark, "cli_first_result_seconds": cli_report["timings"]["first_result_seconds"]}

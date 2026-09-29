@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import ctypes as c
+from itertools import count
 from pathlib import Path
 import platform
 import tempfile
 
 from tensor.abi import CAPABILITIES, ErrorDescriptor, StreamDescriptor, check_requirement
 from tensor.artifact import ArtifactError, read_artifact
-from tensor.runtime import Buffer, Executable, TensorRuntimeError
+from tensor.runtime import Buffer, Executable, Session, TensorRuntimeError
 
 
-class Device:
+class Device(Session):
     device_type = 1
     error = TensorRuntimeError
     capabilities = CAPABILITIES | {"events"}
@@ -33,7 +34,9 @@ class Device:
         if self._open:
             raise self.error("device session is already open")
         self._directory = tempfile.TemporaryDirectory(prefix="tensor-cpu-runtime-")
+        self._module_ids = count()
         self._generation += 1
+        self._start_session()
         self._open = True
         return self
 
@@ -115,15 +118,30 @@ class Device:
         if platform.system() != "Linux" or platform.machine() != "x86_64":
             raise ArtifactError("CPU native artifacts require Linux x86-64")
         check_requirement(manifest["runtime_abi"], self.capabilities)
-        path = Path(self._directory.name) / f"kernel-{len(self._modules)}.so"
+        path = Path(self._directory.name) / f"kernel-{next(self._module_ids)}.so"
         path.write_bytes(files["kernel.so"])
-        library = c.CDLL(str(path))
-        function = getattr(library, manifest["entrypoint"])
+        try:
+            library = c.CDLL(str(path))
+        except OSError as exc:
+            path.unlink()
+            raise ArtifactError(f"CPU executable image unavailable: {exc}") from exc
+        try:
+            function = getattr(library, manifest["entrypoint"])
+        except AttributeError as exc:
+            from _ctypes import dlclose
+            dlclose(library._handle)
+            path.unlink()
+            raise ArtifactError(f"CPU executable entrypoint unavailable: {manifest['entrypoint']}") from exc
         from tensor.abi import CallDescriptor
         function.argtypes = [c.POINTER(CallDescriptor), c.POINTER(ErrorDescriptor)]
         function.restype = c.c_int32
         self._modules.append(library)
         return Executable(self, manifest, library, function, None)
+
+    def _unload_executable(self, executable):
+        from _ctypes import dlclose
+        dlclose(executable.module._handle)
+        self._modules.remove(executable.module)
 
     def _launch(self, executable, call):
         error = ErrorDescriptor()
@@ -146,6 +164,8 @@ class Device:
         pass
 
     def __exit__(self, exc_type, exc, tb):
+        for executable in list(self._executables.values()):
+            executable._dispose()
         for event in list(self._events):
             event.release()
         for buffer in list(self._buffers):

@@ -16,7 +16,7 @@ from pathlib import Path
 from tensor.artifact import FORMAT_VERSION, validate_manifest
 from tensor.doctor import TARGET, check_device, check_packages, check_provider
 from tensor.compiler import select_compiler
-from tensor.abi import runtime_requirement
+from tensor.abi import runtime_requirement, workspace_requirement
 
 
 class BuildError(ValueError):
@@ -261,6 +261,7 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         "target": target, "entrypoint": entrypoint, "launch": launch,
         "compiler": compiler_identity,
         "provider": "cuda", "runtime_abi": runtime_requirement(arguments, symbols),
+        "workspace": workspace_requirement(),
         "arguments": arguments, "outputs": outputs, "symbols": symbols, "abi": abi,
         "source_sha256": cache_identity["source_sha256"],
         "tilelang_version": version("tilelang"),
