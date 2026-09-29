@@ -7,19 +7,57 @@ NVRTC bundle. Numerical execution happens separately in a compiler-free host.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import ctypes
 import hashlib
 import importlib.metadata as metadata
 import json
+import ntpath
+import os
 from pathlib import Path
+import re
 import shutil
 import platform
 import socket
-import subprocess
+import sys
 import time
 
 EXAMPLES = ("elementwise", "gemm_relu", "dynamic_affine", "dynamic_gemm", "scalar_offset")
 TOOLS = {"nvcc", "ptxas", "gcc", "g++", "cc", "c++", "cl", "clang", "clang++"}
+
+
+@contextmanager
+def compiler_audit():
+    """Reject external compilation without replacing subprocess.Popen's class.
+
+    Windows asyncio subclasses Popen during import. A process audit hook also
+    catches calls through such subclasses. Hooks cannot be removed, so disable
+    this hook when the scoped producer check ends.
+    """
+    active = True
+    calls = []
+
+    def observe(event, arguments):
+        if active and event == "subprocess.Popen":
+            executable, command = arguments[:2]
+            # Windows can pass executable=None after converting argv to a
+            # quoted command line. POSIX usually supplies the executable.
+            if executable is None:
+                if isinstance(command, (list, tuple)):
+                    executable = command[0]
+                else:
+                    match = re.match(r'^(?:"([^"]+)"|(\S+))', os.fsdecode(command).lstrip())
+                    executable = (match.group(1) or match.group(2)) if match else ""
+            executable = ntpath.basename(os.fsdecode(executable)).lower()
+            if executable.removesuffix(".exe") in TOOLS:
+                calls.append(str(arguments[1]))
+                raise RuntimeError(f"external compilation prohibited: {arguments[1]}")
+
+    sys.addaudithook(observe)
+    try:
+        yield calls
+    finally:
+        active = False
 
 
 def produce(source_root: Path, out: Path, target: str, isolated: bool = False, identity: dict | None = None):
@@ -32,16 +70,7 @@ def produce(source_root: Path, out: Path, target: str, isolated: bool = False, i
     if isolated and (driver_present or any(available.values())):
         raise RuntimeError(f"producer must have no CUDA driver or compiler tools: {available}")
     # Audit and reject external compilation, even when the host has those tools.
-    original = subprocess.Popen
-    tool_calls = []
-    def guarded(command, *args, **kwargs):
-        executable = Path(command[0] if isinstance(command, (list,tuple)) else command.split()[0]).name
-        if executable.removesuffix(".exe") in TOOLS:
-            tool_calls.append(str(command))
-            raise RuntimeError(f"external compilation prohibited: {command}")
-        return original(command,*args,**kwargs)
-    subprocess.Popen = guarded
-    try:
+    with compiler_audit() as tool_calls:
         from tensor.build import build_artifact
         from tensor.artifact import read_artifact
         out.mkdir(parents=True, exist_ok=True)
@@ -78,8 +107,6 @@ def produce(source_root: Path, out: Path, target: str, isolated: bool = False, i
             report["checkout"] = identity
         (out / "nvrtc-producer.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
         return report
-    finally:
-        subprocess.Popen = original
 
 
 if __name__ == "__main__":
