@@ -5,8 +5,8 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 0 complete; Phase 1 underway.** The product CLI now has
-`tensor doctor` and an initial `tensor build` path for static CUDA kernels.
+**Status: Phase 0 complete; Phase 1 CLI baseline running on the A10G.** The product
+CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection.
 Phase 0 answered the question the proposal closes on:
 
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
@@ -83,10 +83,12 @@ pinned TileLang and TVM FFI versions, the registered CUDA backend, the driver,
 and a real `nvcc` cubin compilation that includes runtime and CCCL headers.
 On a GPU-free build host, supply an explicit target such as `--target sm_86`.
 Select a full CUDA toolkit with `CUDA_HOME`/`CUDA_PATH` or `--nvcc` if the
-compiler on `PATH` lacks development headers. Exit code 0 means the selected
-target is build-ready; code 1 means setup is incomplete.
+compiler on `PATH` lacks development headers. Exit code 0 means the host can
+build for the target, run artifacts on the detected device, or both; the
+summary distinguishes `build ready`, `run ready`, and `ready`. Code 1 means
+neither path is ready.
 
-Build a standalone TileLang kernel with an explicit launch description:
+Build a standalone TileLang kernel:
 
 ```bash
 CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9" \
@@ -94,13 +96,64 @@ CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9" \
 ```
 
 The source must define `tensor_export()` returning `{"kernel": PrimFunc,
-"launch": {"grid": [x,y,z], "block": [x,y,z], "shared_memory_bytes": n}}`.
+"outputs": ["result_name"]}`. Tensor reads grid, block and dynamic shared
+memory from the lowered kernel. An optional explicit `launch` description is
+checked against those values. Declare outputs to use `tensor run` and the
+Python call API.
 The first profile accepts one static CUDA kernel with buffer pointer arguments.
+The included elementwise and float16 GEMM examples execute on the A10G.
 `--target sm_XX` permits a GPU-free build host; without it, build targets device
 0. Outputs are created exclusively. The `.tbin` contains a cubin, serialized
 frontend TIRx, exact compiler versions, source and payload hashes, and notices.
 This artifact envelope is version 1 and still subject to change during Phase 1.
-The `run`, `bench`, and `inspect` commands remain Phase 1 work.
+
+The build cache is keyed by source, frontend IR, exact compiler versions and
+target, CUDA compiler identity, and bundled compiler headers. `tensor build`
+reports `cache_hit`, and `tensor cache` reports the entry count and bytes.
+Override the cache with `--cache-dir` or `TENSOR_CACHE_DIR`.
+
+Run and time an artifact with NumPy `.npy` inputs:
+
+```bash
+uv run --locked python - <<'PY'
+import numpy as np
+from pathlib import Path
+Path("build/inputs").mkdir(parents=True, exist_ok=True)
+for name in ("a", "b"):
+    np.save(f"build/inputs/{name}.npy", np.arange(129, dtype="float32"))
+PY
+uv run --locked tensor run build/elementwise.tbin \
+  --input a=build/inputs/a.npy --input b=build/inputs/b.npy \
+  --out-dir build/results
+uv run --locked tensor bench build/elementwise.tbin \
+  --input a=build/inputs/a.npy --input b=build/inputs/b.npy
+uv run --locked tensor inspect build/elementwise.tbin --stage manifest
+uv run --locked tensor inspect examples/elementwise.py --stage passes --target sm_86 \
+  --out build/trace
+```
+
+`run` and `bench` also accept a `.py` source and compile it first. A built
+artifact runs with only the Tensor wheel, NumPy, and an NVIDIA driver; compiler
+packages and CUDA development headers are absent from the consumer path.
+For a kernel-author Python session:
+
+```python
+import tensor as tx
+with tx.Device() as device:
+    kernel = device.load("build/elementwise.tbin")
+    a = device.arange(129)
+    b = device.ones((129,))
+    c = kernel(a, b)
+    tx.assert_close(c, 2 * a.to_numpy() + b.to_numpy())
+    print(tx.bench(kernel, (a, b, c)))
+```
+
+The workbench exposes owned device buffers, shape/dtype/strides, byte snapshots,
+NumPy upload/download, CPU DLPack upload, `zeros`, `ones`, `full`, `randn`,
+`arange`, numerical checks, and timing. GPU DLPack borrowing and foreign stream
+ownership need their own adapter. The current CLI requires an exact SM match and
+static pointer-only kernels. [Phase 1 measurements](docs/research/phase1-cli-baseline.md)
+record the present latency and diagnostic limits.
 
 ## Development environment
 

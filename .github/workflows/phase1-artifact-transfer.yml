@@ -1,0 +1,59 @@
+name: Phase 1 Tensor artifact producer
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: Exact SM reported by the consumer
+        required: true
+        default: sm_86
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CUDA_HOME: ${{ github.workspace }}/build/cuda-12.9
+      TENSOR_TARGET: ${{ inputs.arch }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: "0.12.9"
+          enable-cache: false
+      - name: Install the producer and CUDA build components
+        run: |
+          uv sync --locked
+          uv run --locked python tools/bootstrap_cuda.py --out "$CUDA_HOME"
+          uv run --locked tensor doctor --target "$TENSOR_TARGET"
+      - name: Build the product artifact and consumer wheel without a GPU
+        run: |
+          uv run --locked tensor build examples/elementwise.py \
+            --target "$TENSOR_TARGET" --out build/transfer/elementwise.tbin
+          uv build --wheel
+          uv run --locked python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          artifact = pathlib.Path("build/transfer/elementwise.tbin")
+          wheel = next(pathlib.Path("dist").glob("*.whl"))
+          report = {
+              "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "host": os.uname().nodename,
+              "target": os.environ["TENSOR_TARGET"],
+              "artifact_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+              "wheel_sha256": hashlib.sha256(wheel.read_bytes()).hexdigest(),
+              "wheel": wheel.name,
+          }
+          artifact.with_name("producer.json").write_text(json.dumps(report, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-cuda-${{ inputs.arch }}
+          path: |
+            build/transfer/elementwise.tbin
+            build/transfer/producer.json
+            dist/*.whl
+          if-no-files-found: error
+          retention-days: 30

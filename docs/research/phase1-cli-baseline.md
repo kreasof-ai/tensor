@@ -1,0 +1,71 @@
+# Phase 1 CLI baseline — A10G
+
+**Run:** 2026-09-29, Linux, Python 3.12.14, NVIDIA A10G (`sm_86`), pinned
+TileLang 0.1.14 and TVM FFI 0.1.12 producer. The consumer virtual environment
+contained only `tensor-workspace==0.1.0` and `numpy==2.5.3` (confirmed by
+`uv pip list`). The local CUDA 12.9 build components were selected with
+`CUDA_HOME`. These measurements use the 129-element float32 example in
+`examples/elementwise.py`; they do not predict other workload sizes.
+
+## Reproduction
+
+```bash
+uv sync --locked
+uv run --locked python tools/bootstrap_cuda.py --out build/cuda-12.9
+export CUDA_HOME="$PWD/build/cuda-12.9"
+uv build --wheel
+uv venv --python 3.12 build/consumer-venv
+uv pip install --python build/consumer-venv/bin/python dist/tensor_workspace-0.1.0-py3-none-any.whl
+uv run --locked python tools/phase1_measure.py \
+  --runtime-python build/consumer-venv/bin/python --out build/phase1-metrics.json
+```
+
+The report script uses an isolated cache for a cold and a warm build, runs the
+wheel in three fresh consumer processes, verifies all 129 values against NumPy,
+and benchmarks 100 launches after 10 warmups. It times the same host in this
+report; the separate GitHub Actions producer is the two-host check.
+
+| Measurement | Result |
+|---|---:|
+| Cold build, inside command | 1.670 s |
+| Warm build, inside command | 0.304 s |
+| Cold build, whole process | 4.264 s |
+| Warm build, whole process | 2.832 s |
+| Cold `nvcc` stage | 1.354 s |
+| Consumer process wall, three runs | 0.734 / 0.412 / 0.466 s |
+| First result after Python module entry, three runs | 0.439 / 0.187 / 0.190 s |
+| Median host enqueue | 24.0 µs |
+| Median host launch plus stream sync | 29.2 µs |
+| Maximum absolute error | 0.0 |
+
+The warm build skips `nvcc`; it still imports TileLang and lowers the frontend
+to validate the cache key. The consumer process wall includes interpreter
+startup, NumPy import, artifact verification, context creation, execution,
+output serialization and cleanup. First-result time starts inside the `run`
+command, so it excludes interpreter startup. Enqueue timing includes Python
+argument validation and CUDA Driver API launch; it is not GPU kernel duration.
+The first fresh consumer process was slower than the next two; filesystem and
+driver caches were not reset. These are single-run A10G observations, not
+throughput guarantees. The build cache key for this run was
+`544021380da14ae80e5f86a4bd061af56e5d513b51869b83504b3fbb72f0bdb2`.
+
+## Diagnostic probes
+
+Five deliberate failures all exited 1 with a named cause and no Python
+traceback: missing `tensor_export()`, invalid target, wrong input shape, missing
+input, and corrupt cubin hash. Their messages identified the required export,
+an example SM target, expected shape/dtype, expected input names, and the
+corrupt member respectively. This is a 5/5 cause-identification check, not a
+user study or a claim that all compiler diagnostics are clear.
+
+## Current boundary
+
+The first product export profile accepts one static kernel with pointer-only
+buffer arguments. Grid, block and dynamic shared memory are extracted from
+lowered TileLang metadata. A 64×64 float16 GEMM plus bias/ReLU artifact also
+passed a NumPy comparison on the A10G, with maximum absolute error
+`5.96e-8` for the tested inputs. Artifacts require an exact SM match.
+The wheel can execute without TileLang, TVM FFI, PyTorch or
+CUDA development headers; a build still needs the pinned compiler packages
+and a full CUDA toolkit. GPU DLPack borrowing, cross-host product transfer,
+and broader symbolic/scalar exports remain separate validation work.

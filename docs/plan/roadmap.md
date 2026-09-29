@@ -4,8 +4,13 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phase 0 complete; Phase 1 underway.** `tensor doctor` and the
-initial static CUDA `tensor build` path are implemented. Two-host opaque
+Current status: **Phase 0 complete; Phase 1 CLI baseline implemented and under
+validation.** `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection
+work on the A10G. A NumPy-only consumer runs the product wheel. The remaining
+Phase 1 gates are product artifact transfer across hosts, broader export
+signatures, and installation validation beyond the measured A10G setup.
+The initial Phase 1 latency and diagnostic measurements are in
+[the CLI baseline](../research/phase1-cli-baseline.md). Two-host Phase 0 opaque
 executable transfer passes from GitHub Actions to an A10G. Cache behavior,
 independent CPU provider execution, C++/Rust hosting, bounded composition,
 symbolic dimensions, frontend contracts, foreign CUDA stream ordering, full
@@ -119,21 +124,28 @@ Sequence:
    thing to get right early.
 2. `tensor build` **initial static CUDA profile implemented** — the artifact layer that
    does not exist yet in TileLang (§3 of ground truth: no `export_library` equivalent).
-   It produces a cubin and versioned TIRx envelope from one explicit export. Broader
-   source signatures, runtime loading and cross-host product validation follow.
-3. **The prototyping surface (ADR 0006)** — device buffers, launch, `assert_close`, `bench`,
+   It produces a cubin and versioned TIRx envelope from one explicit export,
+   with a content-addressed cubin cache. Broader source signatures and
+   cross-host product validation remain.
+3. **The prototyping surface (ADR 0006), initial CUDA implementation** — device buffers, launch, `assert_close`, `bench`,
    NumPy/DLPack interop. Pulled forward out of Phase 6 because it needs only *opaque*
    executables, so it is **not gated on E4**, and because it is the harness E9–E12 run on.
-   It also forces the §15 runtime ABI into existence against real use rather than on paper.
-4. `tensor inspect` — a thin wrapper over `lower_trace`, which already works.
-5. `tensor run`, then `tensor bench`.
+   The current device owns its context, buffers and stream; CPU DLPack upload
+   works. GPU DLPack borrowing and foreign-stream handoff need a later adapter.
+4. `tensor inspect` **implemented** — frontend TIRx, target CUDA source and
+   per-pass traces use existing TileLang hooks; artifact manifests are checked
+   without compiler imports.
+5. `tensor run` and `tensor bench` **implemented for static CUDA artifacts** —
+   named `.npy` inputs, declared outputs, and a compiler-free consumer.
 
 **Metrics (§23), all of which need a number, not a vibe:**
 
 - steps from download to first kernel
 - manually installed dependencies
 - cold compile latency, warm compile latency
-- warm-start latency — **note the 4.2 s import floor and the 23 s first-run cost**
+- warm-start latency — compare the measured product consumer with the Phase 0
+  compiler-import and first-run costs, rather than treating those older costs
+  as the product baseline
 - diagnostic quality (scored against a set of deliberately broken kernels)
 - artifact portability across hosts
 - **launch overhead** — newly load-bearing, because the prototyping surface is the thing
@@ -141,8 +153,8 @@ Sequence:
 
 **Design constraints discovered so far:**
 
-- Do not import the compiler eagerly in the CLI. 4.2 s per invocation is not acceptable for
-  a tool whose main verb is `run`.
+- Do not import the compiler eagerly in the CLI. The Phase 0 compiler-import
+  floor was about 4.2 s; the measured product consumer avoids it.
 - Handle "no device present" gracefully. `determine_target()` currently raises.
 - Source bundles need both `tl_templates` and CUTLASS/CuTe headers. Cubin bundles
   contain the executable and notices, without compiler headers.
@@ -213,8 +225,8 @@ The prototyping surface is the version of that idea that survives a negative E4.
 
 ## Cross-cutting
 
-- **No product code before E4.** Creating `src/tensor` now would freeze structural decisions
-  the experiments are meant to inform. The repo has no `src/` yet, on purpose.
+- **Product code began after E4 and the Phase 0 exit.** `src/tensor` owns the CLI,
+  artifact envelope and CUDA workbench; Phase 0 experiments remain evidence.
 - **Every claim carries a number or a source.** Anything else is a guess, and §25's open
   questions were guesses for long enough.
 - **Re-verify ground truth at each phase boundary.** The proposal already had one stale

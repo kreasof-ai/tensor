@@ -51,3 +51,14 @@ def test_invalid_device_ordinal_cannot_report_build_ready(monkeypatch):
 
     assert report["status"] == "needs_setup"
     assert report["checks"]["device"]["status"] == "error"
+
+
+def test_runtime_only_install_reports_run_ready(monkeypatch):
+    monkeypatch.setattr(doctor, "check_packages", lambda: {"status": "error", "detail": "compiler missing"})
+    monkeypatch.setattr(doctor, "check_device", lambda ordinal: {"status": "ok", "arch": "sm_86"})
+    monkeypatch.setattr(doctor, "check_toolchain", lambda target, nvcc: {"status": "error"})
+
+    report = doctor.diagnose()
+
+    assert report["status"] == "run_ready"
+    assert report["target"] == "sm_86"

@@ -13,6 +13,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 PINNED_PACKAGES = {"tilelang": "0.1.14", "apache-tvm-ffi": "0.1.12"}
+RUNTIME_PACKAGES = {"numpy": "2.5.3"}
 TARGET = re.compile(r"sm_[0-9]{2,3}\Z")
 
 
@@ -40,6 +41,19 @@ def check_packages() -> dict:
                       hint="Install tilelang==0.1.14 and apache-tvm-ffi==0.1.12 (or run uv sync --locked in this checkout).",
                       installed=installed)
     return _check("ok", "pinned compiler packages installed", installed=installed)
+
+
+def check_runtime_packages() -> dict:
+    if sys.version_info[:2] != (3, 12):
+        return _check("error", "runtime requires Python 3.12")
+    try:
+        installed = version("numpy")
+    except PackageNotFoundError:
+        installed = None
+    if installed != RUNTIME_PACKAGES["numpy"]:
+        return _check("error", f"numpy=={installed or 'missing'} (need 2.5.3)",
+                      hint="Install the Tensor wheel with its NumPy dependency.")
+    return _check("ok", "NumPy runtime installed", numpy=installed)
 
 
 def check_provider() -> dict:
@@ -156,22 +170,25 @@ def diagnose(*, target: str | None = None, device: int = 0, nvcc: str | None = N
     if device < 0:
         return {"status": "needs_setup", "target": target,
                 "checks": {"device": _check("error", "device ordinal must be non-negative")}}
+    runtime = check_runtime_packages()
     packages = check_packages()
     provider = check_provider() if packages["status"] == "ok" else _check(
         "skipped", "compiler packages must be fixed before checking providers")
     detected = check_device(device)
     selected = target or detected.get("arch")
     toolchain = check_toolchain(selected, nvcc)
-    build_ready = all(check["status"] == "ok" for check in (packages, provider, toolchain))
-    device_ready = detected["status"] == "ok"
+    build_ready = all(check["status"] == "ok" for check in (runtime, packages, provider, toolchain))
+    device_ready = detected["status"] == "ok" and runtime["status"] == "ok"
     if build_ready and device_ready and selected == detected["arch"]:
         status = "ready"
     elif build_ready:
         status = "build_ready"
+    elif device_ready:
+        status = "run_ready"
     else:
         status = "needs_setup"
     return {"status": status, "target": selected,
-            "checks": {"packages": packages, "provider": provider,
+            "checks": {"runtime": runtime, "packages": packages, "provider": provider,
                        "device": detected, "toolchain": toolchain}}
 
 

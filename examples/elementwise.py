@@ -19,9 +19,5 @@ def elementwise(a: T.Tensor((SIZE,), "float32"),
 def tensor_export():
     return {
         "kernel": elementwise,
-        "launch": {
-            "grid": [(SIZE + 127) // 128, 1, 1],
-            "block": [128, 1, 1],
-            "shared_memory_bytes": 0,
-        },
+        "outputs": ["c"],
     }

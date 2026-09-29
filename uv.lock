@@ -457,6 +457,15 @@ wheels = [
 name = "tensor-workspace"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "numpy" },
+]
+
+[package.optional-dependencies]
+compiler = [
+    { name = "apache-tvm-ffi" },
+    { name = "tilelang" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -469,6 +478,12 @@ p0 = [
 ]
 
 [package.metadata]
+requires-dist = [
+    { name = "apache-tvm-ffi", marker = "extra == 'compiler'", specifier = "==0.1.12" },
+    { name = "numpy", specifier = "==2.5.3" },
+    { name = "tilelang", marker = "extra == 'compiler'", specifier = "==0.1.14" },
+]
+provides-extras = ["compiler"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.0" }]
