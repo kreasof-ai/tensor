@@ -5,7 +5,7 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phase 0 complete; Phase 1 static CUDA CLI baseline validated on the A10G.** The product
+**Status: Phase 0 complete; Phase 1 CUDA CLI supports symbolic shapes and GPU DLPack.** The product
 CLI has `doctor`, `build`, `inspect`, `run`, `bench`, and cache inspection.
 Phase 0 answered the question the proposal closes on:
 
@@ -100,12 +100,15 @@ The source must define `tensor_export()` returning `{"kernel": PrimFunc,
 memory from the lowered kernel. An optional explicit `launch` description is
 checked against those values. Declare outputs to use `tensor run` and the
 Python call API.
-The first profile accepts one static CUDA kernel with buffer pointer arguments.
-The included elementwise and float16 GEMM examples execute on the A10G.
+The CUDA profile accepts one kernel with contiguous buffers, static or symbolic
+shapes, and typed scalar arguments. The included elementwise, float16 GEMM and
+int64 scalar examples execute on the A10G.
 `--target sm_XX` permits a GPU-free build host; without it, build targets device
 0. Outputs are created exclusively. The `.tbin` contains a cubin, serialized
 frontend TIRx, exact compiler versions, source and payload hashes, and notices.
-This artifact envelope is version 1 and still subject to change during Phase 1.
+New artifacts use envelope version 2, which records the lowered argument order,
+integer launch expressions and pointer alignment. The consumer also reads
+existing version 1 static artifacts. The provider-neutral ABI is Phase 2 work.
 
 The build cache is keyed by source, frontend IR, exact compiler versions and
 target, CUDA compiler identity, and bundled compiler headers. `tensor build`
@@ -132,6 +135,14 @@ uv run --locked tensor inspect examples/elementwise.py --stage passes --target s
   --out build/trace
 ```
 
+For a symbolic length and a runtime scalar, build `examples/dynamic_affine.py`
+and supply `--scalar scale=2.5` to `run` or `bench`. Tensor infers `size` from
+the inputs; the same binary serves lengths 1, 127, 128, 129 and 1025. The Python
+equivalent is `kernel(a, b, scale=2.5)`. You can supply a dimension explicitly
+with `size=129` or `--scalar size=129`; it must agree with all input shapes.
+Scalar arguments support bool, signed/unsigned 8–64-bit integers and
+float32/float64, with overflow and finite-value checks.
+
 `run` and `bench` also accept a `.py` source and compile it first. A built
 artifact runs with only the Tensor wheel, NumPy, and an NVIDIA driver; compiler
 packages and CUDA development headers are absent from the consumer path.
@@ -152,12 +163,27 @@ with tx.Device() as device:
     print(tx.bench(kernel, (a, b, c)))
 ```
 
-The workbench exposes owned device buffers, shape/dtype/strides, byte snapshots,
-NumPy upload/download, CPU DLPack upload, `zeros`, `ones`, `full`, `randn`,
-`arange`, numerical checks, and timing. GPU DLPack borrowing and foreign stream
-ownership need their own adapter. The current CLI requires an exact SM match and
-static pointer-only kernels. [Phase 1 measurements](docs/research/phase1-cli-baseline.md)
-record the present latency and diagnostic limits.
+The workbench exposes owned and borrowed device buffers, shape/dtype/strides,
+byte snapshots, NumPy upload/download, CPU DLPack upload, GPU DLPack borrowing,
+`zeros`, `ones`, `full`, `randn`, `arange`, numerical checks, and timing.
+`bench` reports host enqueue and launch-plus-stream-synchronization times.
+
+`device.from_dlpack(gpu_tensor)` borrows a contiguous writable tensor without a
+copy or framework import. It retains the producer's managed tensor until
+release. The session retains the CUDA primary context so framework allocations
+and streams are accessible. Run the import in the producer's stream context;
+DLPack arranges the dependency onto Tensor's stream. For later producer updates,
+use `device.wait_for(producer_stream_handle)`. After launching into a borrowed
+output, call `device.handoff(consumer_stream_handle)` before consuming it there.
+`Device(stream=foreign_handle)` launches directly on a borrowed stream and
+preserves its ownership. Foreign streams must outlive the session. Session
+cleanup waits for its work and handed-off consumer streams, releases imported
+managed tensors exactly once, and restores the previous context.
+
+The current CUDA profile requires positive extents, an exact SM match,
+contiguous storage, and the artifact's pointer alignment. GPU execution is
+measured on A10G. [Phase 1 measurements](docs/research/phase1-cli-baseline.md)
+record latency, diagnostics and transfer evidence.
 
 ## Development environment
 

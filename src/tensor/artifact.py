@@ -8,8 +8,10 @@ import re
 import zipfile
 from pathlib import Path
 
+from tensor.signature import INTEGER_TYPES, SCALAR_TYPES, validate_expression
+
 FORMAT = "tensor.cuda"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 MAX_UNCOMPRESSED = 128 * 1024 * 1024
 MAX_MANIFEST = 2 * 1024 * 1024
 TARGET = re.compile(r"sm_[0-9]{2,3}\Z")
@@ -21,17 +23,18 @@ class ArtifactError(ValueError):
     pass
 
 
-def _dimensions(value: object, *, label: str) -> list[int]:
-    if (not isinstance(value, list) or len(value) != 3
-            or any(type(item) is not int or item < 1 for item in value)):
-        raise ArtifactError(f"{label} must be three positive integers")
-    return value
+def _expression(value, symbols: dict) -> None:
+    try:
+        validate_expression(value, symbols)
+    except (ValueError, TypeError) as exc:
+        raise ArtifactError(str(exc)) from exc
 
 
 def validate_manifest(manifest: object) -> dict:
     if not isinstance(manifest, dict):
         raise ArtifactError("manifest must be an object")
-    if manifest.get("format") != FORMAT or manifest.get("format_version") != FORMAT_VERSION:
+    revision = manifest.get("format_version")
+    if manifest.get("format") != FORMAT or type(revision) is not int or revision not in (1, FORMAT_VERSION):
         raise ArtifactError("unsupported Tensor artifact format/version")
     if manifest.get("kind") != "cubin":
         raise ArtifactError("the runtime requires a cubin executable")
@@ -41,35 +44,102 @@ def validate_manifest(manifest: object) -> dict:
     entrypoint = manifest.get("entrypoint")
     if not isinstance(entrypoint, str) or not NAME.fullmatch(entrypoint):
         raise ArtifactError("invalid CUDA entrypoint")
+    symbols = manifest.get("symbols", {})
+    if (not isinstance(symbols, dict) or len(symbols) > 128
+            or any(not isinstance(name, str) or not NAME.fullmatch(name)
+                   or not isinstance(dtype, str) or dtype not in INTEGER_TYPES
+                   for name, dtype in symbols.items())):
+        raise ArtifactError("invalid dimension symbols")
+    if revision == 1 and symbols:
+        raise ArtifactError("v1 artifacts cannot contain dimension symbols")
     launch = manifest.get("launch")
     if not isinstance(launch, dict) or set(launch) != {"grid", "block", "shared_memory_bytes"}:
         raise ArtifactError("invalid launch description")
-    _dimensions(launch["grid"], label="grid")
-    block = _dimensions(launch["block"], label="block")
-    if block[0] * block[1] * block[2] > 1024:
+    for field in ("grid", "block"):
+        dimensions = launch[field]
+        if not isinstance(dimensions, list) or len(dimensions) != 3:
+            raise ArtifactError(f"{field} must contain three dimensions")
+        for extent in dimensions:
+            _expression(extent, symbols)
+            if type(extent) is int and not 1 <= extent < (1 << 31):
+                raise ArtifactError(f"{field} must have positive int32 dimensions")
+            if revision == 1 and type(extent) is not int:
+                raise ArtifactError("v1 launch dimensions must be static")
+    block = launch["block"]
+    if all(type(value) is int for value in block) and block[0] * block[1] * block[2] > 1024:
         raise ArtifactError("launch block exceeds 1024 threads")
-    if type(launch["shared_memory_bytes"]) is not int or launch["shared_memory_bytes"] < 0:
+    shared = launch["shared_memory_bytes"]
+    _expression(shared, symbols)
+    if (type(shared) is int and not 0 <= shared < (1 << 31)) or (revision == 1 and type(shared) is not int):
         raise ArtifactError("invalid shared memory size")
     arguments = manifest.get("arguments")
-    if not isinstance(arguments, list) or not arguments:
-        raise ArtifactError("artifact has no buffer arguments")
+    if not isinstance(arguments, list) or not arguments or len(arguments) > 256:
+        raise ArtifactError("invalid artifact argument count")
     names = []
+    buffers = set()
     for argument in arguments:
-        if not isinstance(argument, dict) or set(argument) != {"name", "dtype", "shape"}:
-            raise ArtifactError("invalid buffer argument")
-        name, dtype, shape = argument["name"], argument["dtype"], argument["shape"]
+        if not isinstance(argument, dict):
+            raise ArtifactError("invalid argument")
+        kind = argument.get("kind", "buffer")
+        fields = {"name", "dtype", "shape"} if revision == 1 else (
+            {"kind", "name", "dtype", "shape", "alignment"} if kind == "buffer" else {"kind", "name", "dtype"})
+        if set(argument) != fields or kind not in ("buffer", "scalar") or (revision == 1 and kind != "buffer"):
+            raise ArtifactError("invalid argument descriptor")
+        name, dtype = argument["name"], argument["dtype"]
         if not isinstance(name, str) or not NAME.fullmatch(name):
-            raise ArtifactError("invalid buffer name")
+            raise ArtifactError("invalid argument name")
         if not isinstance(dtype, str) or not dtype:
-            raise ArtifactError("invalid buffer dtype")
-        if not isinstance(shape, list) or not shape or any(type(x) is not int or x < 1 for x in shape):
-            raise ArtifactError("invalid buffer shape")
+            raise ArtifactError("invalid argument dtype")
+        if revision == 2 and dtype not in {*SCALAR_TYPES, "float16"}:
+            raise ArtifactError(f"unsupported argument dtype {dtype}")
+        if kind == "scalar":
+            if dtype not in SCALAR_TYPES or (name in symbols and symbols[name] != dtype):
+                raise ArtifactError("invalid scalar argument dtype")
+        else:
+            if name in symbols:
+                raise ArtifactError("buffer and dimension names must be distinct")
+            buffers.add(name)
+            shape = argument["shape"]
+            if not isinstance(shape, list) or not shape or len(shape) > 64:
+                raise ArtifactError("invalid buffer shape")
+            for extent in shape:
+                _expression(extent, symbols)
+                if (type(extent) is int and extent < 1) or (revision == 1 and type(extent) is not int):
+                    raise ArtifactError("invalid buffer shape")
+            if revision == 2:
+                alignment = argument["alignment"]
+                if type(alignment) is not int or not 1 <= alignment <= 4096 or alignment & (alignment-1):
+                    raise ArtifactError("invalid buffer alignment")
         names.append(name)
     if len(names) != len(set(names)):
-        raise ArtifactError("duplicate buffer argument")
+        raise ArtifactError("duplicate argument")
+    if not buffers:
+        raise ArtifactError("artifact has no buffer arguments")
     outputs = manifest.get("outputs", [])
-    if not isinstance(outputs, list) or any(name not in names for name in outputs) or len(outputs) != len(set(outputs)):
+    if (not isinstance(outputs, list) or any(not isinstance(name, str) or name not in buffers for name in outputs)
+            or len(outputs) != len(set(outputs))):
         raise ArtifactError("invalid output names")
+    if revision == 2:
+        abi = manifest.get("abi")
+        if not isinstance(abi, list) or not abi or len(abi) > 256:
+            raise ArtifactError("missing or invalid CUDA ABI")
+        frontend = {item["name"]: item for item in arguments}
+        abi_names = []
+        for item in abi:
+            if not isinstance(item, dict) or set(item) != {"kind", "name", "dtype"}:
+                raise ArtifactError("invalid CUDA ABI argument")
+            name, kind, dtype = item["name"], item["kind"], item["dtype"]
+            if not isinstance(name, str) or kind not in ("scalar", "buffer") or not isinstance(dtype, str):
+                raise ArtifactError("invalid CUDA ABI argument")
+            original = frontend.get(name)
+            if original is not None:
+                if kind != original["kind"] or dtype != original["dtype"]:
+                    raise ArtifactError("CUDA ABI does not match frontend argument")
+            elif kind != "scalar" or symbols.get(name) != dtype:
+                raise ArtifactError(f"unmapped CUDA ABI argument {name}")
+            abi_names.append(name)
+        if len(abi_names) != len(set(abi_names)) or buffers - set(abi_names):
+            raise ArtifactError("duplicate or missing CUDA buffer ABI argument")
     for field in ("source_sha256",):
         value = manifest.get(field)
         if not isinstance(value, str) or not HASH.fullmatch(value):

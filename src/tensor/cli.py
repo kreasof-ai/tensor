@@ -31,6 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     run = commands.add_parser("run", help="execute a cubin artifact with .npy inputs")
     run.add_argument("artifact")
     run.add_argument("--input", action="append", default=[], metavar="NAME=FILE.npy")
+    run.add_argument("--scalar", action="append", default=[], metavar="NAME=NUMBER")
     run.add_argument("--out-dir", required=True, help="directory for named .npy outputs")
     run.add_argument("--device", type=int, default=0)
     run.add_argument("--target", help="target used when the input is Python source")
@@ -39,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     benchmark = commands.add_parser("bench", help="measure artifact launch plus synchronization")
     benchmark.add_argument("artifact")
     benchmark.add_argument("--input", action="append", default=[], metavar="NAME=FILE.npy")
+    benchmark.add_argument("--scalar", action="append", default=[], metavar="NAME=NUMBER")
     benchmark.add_argument("--device", type=int, default=0)
     benchmark.add_argument("--warmup", type=int, default=10)
     benchmark.add_argument("--iters", type=int, default=100)
@@ -108,10 +110,11 @@ def main(argv: list[str] | None = None) -> int:
                     build_artifact(source, artifact, target=args.target or detected["arch"], nvcc=args.nvcc,
                                    cache_dir=Path(args.cache_dir) if args.cache_dir else None)
                 if args.command == "run":
-                    result = run(artifact, args.input, Path(args.out_dir), ordinal=args.device)
+                    result = run(artifact, args.input, Path(args.out_dir), ordinal=args.device,
+                                 scalar_values=args.scalar)
                 else:
                     result = benchmark(artifact, args.input, ordinal=args.device,
-                                       warmup=args.warmup, iters=args.iters)
+                                       warmup=args.warmup, iters=args.iters, scalar_values=args.scalar)
                 if source.suffix == ".py":
                     result.pop("artifact")
                     result["source"] = str(source.resolve())

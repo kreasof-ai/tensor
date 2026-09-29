@@ -1,4 +1,4 @@
-"""First CUDA artifact producer: one static, pointer-only TileLang kernel."""
+"""CUDA artifact producer for one TileLang kernel with typed runtime arguments."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import zipfile
 from importlib.metadata import distribution, version
 from pathlib import Path
 
-from tensor.artifact import validate_manifest
+from tensor.artifact import FORMAT_VERSION, validate_manifest
 from tensor.doctor import TARGET, _resolve_nvcc, check_device, check_packages, check_provider
 
 
@@ -40,25 +40,6 @@ def _launch(value: object) -> dict:
         raise BuildError("shared_memory_bytes must be a non-negative integer")
     result["shared_memory_bytes"] = shared
     return result
-
-
-def _arguments(kernel: object) -> list[dict]:
-    try:
-        params, buffers = kernel.params, kernel.buffer_map
-        result = []
-        for parameter in params:
-            buffer = buffers[parameter]
-            dimensions = [int(extent) for extent in buffer.shape]
-            if not dimensions or any(extent < 1 for extent in dimensions):
-                raise BuildError("buffer shapes must have positive static extents")
-            result.append({"name": str(buffer.name), "dtype": str(buffer.dtype), "shape": dimensions})
-        if not result:
-            raise BuildError("the kernel has no buffer arguments")
-        return result
-    except BuildError:
-        raise
-    except (AttributeError, KeyError, TypeError, ValueError) as exc:
-        raise BuildError("this build profile accepts only static buffer arguments") from exc
 
 
 def _op_set(serialized: str) -> list[str]:
@@ -88,45 +69,6 @@ def _op_set(serialized: str) -> list[str]:
             raise BuildError("invalid operator reference in frontend IR")
         ops.add(label(index))
     return sorted(ops)
-
-
-def _entrypoint(source: str, argument_count: int) -> str:
-    definitions = re.findall(
-        r'extern\s+"C"\s+__global__\s+void\s+(?:__launch_bounds__\([^)]+\)\s+)?'
-        r'([A-Za-z_]\w*)\s*\(([^)]*)\)\s*\{', source, flags=re.S,
-    )
-    if len(definitions) != 1:
-        raise BuildError(f"expected one generated CUDA kernel, found {len(definitions)}")
-    name, parameters = definitions[0]
-    arguments = [part.strip() for part in parameters.split(",") if part.strip()]
-    if len(arguments) != argument_count or any("*" not in part for part in arguments):
-        raise BuildError("generated CUDA signature does not match static pointer-only buffer arguments")
-    return name
-
-
-def _lowered_launch(device_mod, entrypoint: str) -> dict:
-    functions = list(device_mod.functions.items())
-    if len(functions) != 1:
-        raise BuildError(f"this profile requires one CUDA kernel, found {len(functions)}")
-    name, function = functions[0]
-    if name.name_hint != entrypoint:
-        raise BuildError("lowered CUDA entrypoint does not match emitted source")
-    attrs = function.attrs
-    if "cluster_dims" in attrs or "use_cooperative_groups" in attrs:
-        raise BuildError("cluster/cooperative launches need a dedicated CUDA launch adapter")
-    extent = attrs.get("thread_extent")
-    if extent is None:
-        raise BuildError("lowered kernel has no thread extents")
-    try:
-        result = {
-            "grid": [int(extent.get(f"blockIdx.{axis}", 1)) for axis in "xyz"],
-            "block": [int(extent.get(f"threadIdx.{axis}", 1)) for axis in "xyz"],
-            "shared_memory_bytes": int(attrs["dyn_shared_memory_buf"])
-            if "dyn_shared_memory_buf" in attrs else 0,
-        }
-    except (TypeError, ValueError) as exc:
-        raise BuildError("symbolic launch geometry is outside the static CUDA profile") from exc
-    return _launch(result)
 
 
 def _notices(tilelang_root: Path) -> dict[str, bytes]:
@@ -243,9 +185,15 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
     kernel = spec["kernel"]
     if not isinstance(kernel, tvm.tirx.PrimFunc):
         raise BuildError("tensor_export()['kernel'] must be a TileLang/TIRx PrimFunc")
-    arguments = _arguments(kernel)
+    from tensor.lowering import device_signature, frontend_arguments
+
+    symbols = {}
+    try:
+        arguments = frontend_arguments(kernel, symbols)
+    except (ValueError, TypeError, AttributeError) as exc:
+        raise BuildError(f"unsupported frontend signature: {exc}") from exc
     outputs = spec.get("outputs", [])
-    argument_names = {argument["name"] for argument in arguments}
+    argument_names = {argument["name"] for argument in arguments if argument["kind"] == "buffer"}
     if (not isinstance(outputs, list) or any(not isinstance(name, str) or name not in argument_names for name in outputs)
             or len(outputs) != len(set(outputs))):
         raise BuildError("outputs must be a list of distinct kernel buffer names")
@@ -258,8 +206,10 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         cuda = str(lowered.kernel_source)
     except Exception as exc:
         raise BuildError(f"TileLang lowering failed: {type(exc).__name__}: {exc}") from exc
-    entrypoint = _entrypoint(cuda, len(arguments))
-    launch = _lowered_launch(lowered.device_mod, entrypoint)
+    try:
+        entrypoint, abi, launch = device_signature(kernel, lowered, cuda, symbols)
+    except (ValueError, TypeError, AttributeError) as exc:
+        raise BuildError(f"unsupported CUDA signature: {exc}") from exc
     if "launch" in spec and _launch(spec["launch"]) != launch:
         raise BuildError(f"declared launch {spec['launch']} disagrees with lowered kernel {launch}")
     tilelang_root = Path(tilelang.__file__).parent
@@ -279,6 +229,7 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         "target": target, "compiler": compiler, "nvcc_version": nvcc_version,
         "tilelang_version": version("tilelang"), "tvm_ffi_version": version("apache-tvm-ffi"),
         "options": ["--cubin", "-std=c++20", "-O3", "-lineinfo"],
+        "cuda_sha256": hashlib.sha256(cuda.encode()).hexdigest(),
     }
     key = hashlib.sha256(json.dumps(cache_identity, sort_keys=True).encode()).hexdigest()
     root = _cache_root(cache_dir)
@@ -312,9 +263,9 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
             pass  # An unwritable cache does not prevent a successful build.
     files = {"kernel.cubin": cubin, "kernel.tirx.json": ir.encode(), **_notices(tilelang_root)}
     manifest = {
-        "format": "tensor.cuda", "format_version": 1, "kind": "cubin",
+        "format": "tensor.cuda", "format_version": FORMAT_VERSION, "kind": "cubin",
         "target": target, "entrypoint": entrypoint, "launch": launch,
-        "arguments": arguments, "outputs": outputs,
+        "arguments": arguments, "outputs": outputs, "symbols": symbols, "abi": abi,
         "source_sha256": cache_identity["source_sha256"],
         "tilelang_version": version("tilelang"),
         "tvm_ffi_version": version("apache-tvm-ffi"), "op_set": _op_set(ir),

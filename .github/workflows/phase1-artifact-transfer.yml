@@ -29,20 +29,32 @@ jobs:
           uv sync --locked
           uv run --locked python tools/bootstrap_cuda.py --out "$CUDA_HOME"
           uv run --locked tensor doctor --target "$TENSOR_TARGET"
+      - name: Run the product signature, ownership and diagnostic guards
+        run: |
+          uv run --locked python -m pytest -o addopts='' -q \
+            tests/test_signature.py tests/test_dlpack.py tests/test_product_artifact.py \
+            tests/test_build.py tests/test_doctor.py
       - name: Build the product artifact and consumer wheel without a GPU
         run: |
-          uv run --locked tensor build examples/elementwise.py \
-            --target "$TENSOR_TARGET" --out build/transfer/elementwise.tbin
+          for example in elementwise gemm_relu dynamic_affine dynamic_gemm scalar_offset; do
+            uv run --locked tensor build "examples/$example.py" \
+              --target "$TENSOR_TARGET" --out "build/transfer/$example.tbin"
+          done
           uv build --wheel
           uv run --locked python - <<'PY'
-          import hashlib, json, os, pathlib, subprocess
+          import hashlib, json, os, pathlib, platform, subprocess
           artifact = pathlib.Path("build/transfer/elementwise.tbin")
           wheel = next(pathlib.Path("dist").glob("*.whl"))
           report = {
               "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "git_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], text=True).strip()),
               "host": os.uname().nodename,
+              "python": platform.python_version(),
+              "lock_sha256": hashlib.sha256(pathlib.Path("uv.lock").read_bytes()).hexdigest(),
               "target": os.environ["TENSOR_TARGET"],
               "artifact_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+              "artifacts": {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+                            for path in sorted(artifact.parent.glob("*.tbin"))},
               "wheel_sha256": hashlib.sha256(wheel.read_bytes()).hexdigest(),
               "wheel": wheel.name,
           }
@@ -52,7 +64,7 @@ jobs:
         with:
           name: tensor-cuda-${{ inputs.arch }}
           path: |
-            build/transfer/elementwise.tbin
+            build/transfer/*.tbin
             build/transfer/producer.json
             dist/*.whl
           if-no-files-found: error
@@ -95,15 +107,18 @@ jobs:
 
           root = pathlib.Path("build/transfer-smoke")
           report = json.loads((root / "build/transfer/producer.json").read_text())
-          artifact = root / "build/transfer/elementwise.tbin"
           wheel = root / "dist" / report["wheel"]
-          assert hashlib.sha256(artifact.read_bytes()).hexdigest() == report["artifact_sha256"]
           assert hashlib.sha256(wheel.read_bytes()).hexdigest() == report["wheel_sha256"]
-          manifest, _ = read_artifact(artifact)
-          assert manifest["target"] == report["target"]
+          for name, digest in report["artifacts"].items():
+              artifact = root / "build/transfer" / name
+              assert hashlib.sha256(artifact.read_bytes()).hexdigest() == digest
+              manifest, _ = read_artifact(artifact)
+              assert manifest["target"] == report["target"]
+              assert manifest["format_version"] == 2
           installed = {item.metadata["Name"].lower() for item in metadata.distributions()}
           assert installed == {"numpy", "tensor-workspace"}, installed
           assert not {"tilelang", "tvm", "torch"} & sys.modules.keys()
           print(json.dumps({"status": "passed", "platform": sys.platform,
-                            "packages": sorted(installed), "target": manifest["target"]}))
+                            "packages": sorted(installed), "target": manifest["target"],
+                            "artifacts": sorted(report["artifacts"])}))
           PY

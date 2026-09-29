@@ -8,6 +8,7 @@ from pathlib import Path
 
 from tensor.artifact import ArtifactError, read_artifact
 from tensor.cuda import Device, bench
+from tensor.signature import buffer_argument
 
 
 def _input_paths(values: list[str]) -> dict[str, Path]:
@@ -20,7 +21,23 @@ def _input_paths(values: list[str]) -> dict[str, Path]:
     return result
 
 
-def _prepare(device: Device, artifact: Path, input_values: list[str]):
+def _scalar_values(values: list[str]) -> dict:
+    result = {}
+    for value in values:
+        name, separator, literal = value.partition("=")
+        if not separator or not name or name in result:
+            raise ValueError("each --scalar must be a distinct NAME=NUMBER")
+        try:
+            parsed = json.loads(literal)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{name}: --scalar needs a JSON number or boolean") from exc
+        if type(parsed) not in (int, float, bool):
+            raise ValueError(f"{name}: --scalar needs a number or boolean")
+        result[name] = parsed
+    return result
+
+
+def _prepare(device: Device, artifact: Path, input_values: list[str], scalar_values: list[str]):
     import numpy as np
 
     executable = device.load(artifact)
@@ -29,32 +46,34 @@ def _prepare(device: Device, artifact: Path, input_values: list[str]):
     if not outputs:
         raise ArtifactError("artifact declares no outputs; rebuild with tensor_export()['outputs']")
     paths = _input_paths(input_values)
-    input_names = {item["name"] for item in descriptors if item["name"] not in outputs}
+    input_names = {item["name"] for item in descriptors if buffer_argument(item) and item["name"] not in outputs}
     if paths.keys() != input_names:
         raise ValueError(f"inputs must be exactly {sorted(input_names)}; received {sorted(paths)}")
-    buffers = {}
+    supplied = _scalar_values(scalar_values)
+    allowed = {item["name"] for item in descriptors if not buffer_argument(item)} | executable.manifest.get("symbols", {}).keys()
+    if supplied.keys() - allowed:
+        raise ValueError(f"unknown scalar arguments: {sorted(supplied.keys() - allowed)}")
     for item in descriptors:
         name = item["name"]
-        if name in outputs:
-            buffers[name] = device.empty(item["shape"], item["dtype"])
-        else:
+        if buffer_argument(item) and name not in outputs:
             array = np.load(paths[name], allow_pickle=False)
-            if array.shape != tuple(item["shape"]) or str(array.dtype) != item["dtype"]:
-                raise ValueError(f"{name} needs shape {item['shape']} and dtype {item['dtype']}")
-            buffers[name] = device.from_numpy(array)
-    ordered = tuple(buffers[item["name"]] for item in descriptors)
-    return executable, ordered, {name: buffers[name] for name in outputs}
+            if not isinstance(array, np.ndarray):
+                raise ValueError(f"{name} needs a .npy array")
+            supplied[name] = device.from_numpy(array)
+    ordered, dimensions, generated = executable.prepare(**supplied)
+    return executable, ordered, dimensions, generated
 
 
-def run(artifact: Path, input_values: list[str], out_dir: Path, *, ordinal: int = 0) -> dict:
+def run(artifact: Path, input_values: list[str], out_dir: Path, *, ordinal: int = 0,
+        scalar_values: list[str] | None = None) -> dict:
     started = time.perf_counter()
     import numpy as np
 
     with Device(ordinal) as device:
         device_ready = time.perf_counter()
-        executable, buffers, outputs = _prepare(device, artifact, input_values)
+        executable, buffers, dimensions, outputs = _prepare(device, artifact, input_values, scalar_values or [])
         prepared = time.perf_counter()
-        executable.launch(*buffers)
+        executable.launch(*buffers, **dimensions)
         results = {name: buffer.to_numpy() for name, buffer in outputs.items()}
         first_result = time.perf_counter()
         info = device.info
@@ -78,10 +97,10 @@ def run(artifact: Path, input_values: list[str], out_dir: Path, *, ordinal: int 
 
 
 def benchmark(artifact: Path, input_values: list[str], *, ordinal: int = 0,
-              warmup: int = 10, iters: int = 100) -> dict:
+              warmup: int = 10, iters: int = 100, scalar_values: list[str] | None = None) -> dict:
     with Device(ordinal) as device:
-        executable, buffers, _ = _prepare(device, artifact, input_values)
-        result = bench(executable, buffers, warmup=warmup, iters=iters)
+        executable, buffers, dimensions, _ = _prepare(device, artifact, input_values, scalar_values or [])
+        result = bench(executable, buffers, warmup=warmup, iters=iters, **dimensions)
         return {"status": "passed", "artifact": str(artifact.resolve()),
                 "device": device.info, "metric": "host_launch_plus_stream_sync", **result}
 
