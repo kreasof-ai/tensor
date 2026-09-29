@@ -1,6 +1,7 @@
 """CUDA selection and diagnostics work without a GPU or compiler packages."""
 
 import os
+from pathlib import Path
 import subprocess
 import sys
 
@@ -25,17 +26,18 @@ def compiler(tmp_path, monkeypatch):
 def test_configured_toolkit_wins_over_path(compiler, monkeypatch, variable):
     monkeypatch.setenv(variable, str(compiler.parent.parent))
     monkeypatch.setenv("PATH", "")
-    assert cuda_toolchain.resolve_nvcc() == str(compiler)
+    assert Path(cuda_toolchain.resolve_nvcc()) == compiler
 
 
 def test_explicit_compiler_wins_over_configured_toolkit(compiler, monkeypatch):
     monkeypatch.setenv("CUDA_HOME", "/missing/toolkit")
-    assert cuda_toolchain.resolve_nvcc(str(compiler)) == str(compiler)
+    assert Path(cuda_toolchain.resolve_nvcc(str(compiler))) == compiler
 
 
 def test_unconfigured_compiler_uses_path(compiler, monkeypatch):
     monkeypatch.setenv("PATH", str(compiler.parent))
-    assert cuda_toolchain.resolve_nvcc() == str(compiler)
+    # PATH lookup can return an uppercase PATHEXT suffix on Windows.
+    assert Path(cuda_toolchain.resolve_nvcc()) == compiler
 
 
 def test_invalid_toolkit_does_not_silently_use_another_compiler(compiler, monkeypatch):
