@@ -12,6 +12,8 @@ The bounded probes are complete, with both successful and negative results.
 **This does not establish every Phase 0 claim.** Fusion, a newly registered
 provider replacing a built-in target, Rust hosting, and performance on other
 GPU architectures remain unverified. No product package has been scaffolded.
+**Scope update — 2026-09-29:** the user deferred cross-GPU benchmarking, so
+it no longer blocks Phase 0 completion. The measurements below are unchanged.
 
 ## Cache behavior (E5)
 
@@ -174,8 +176,8 @@ alongside the favorable comparisons; these shapes do not justify a general
 speedup claim.
 
 These are five fixed, untuned workload comparisons on an A10G, not a broad
-performance claim. `sm_80`/`sm_90`/`sm_100` hardware performance and symbolic
-versus static throughput are not measured.
+performance claim. `sm_80`/`sm_90`/`sm_100` hardware performance is deferred
+from Phase 0. Symbolic-versus-static throughput remains an unrun A10G check.
 
 ## Two-host executable transfer (E12)
 

@@ -17,8 +17,9 @@ The remaining validation harness measures caches, CPU execution, a C++ host,
 symbolic dimensions, PyTorch frontends, full compilation, and GPU baselines.
 See [E15 and its raw data](docs/research/e15-phase0-validation.md).
 The full GPU-enabled regression suite passes **40 tests with zero skips**.
-Phase 0 remains open for fusion, new-provider registration, Rust hosting and
-cross-GPU performance; measured failures are recorded explicitly.
+Phase 0 remains open for fusion, new-provider registration and remaining
+native/ABI checks; measured failures are recorded explicitly. Cross-GPU
+benchmarking is deferred. Phase 0 performance evidence uses the available A10G.
 
 ---
 

@@ -41,7 +41,13 @@ product promise has been implemented.
 Two-host compiler-free execution is now a measured milestone. Phase 1 can be
 planned around that evidence, but the repository continues to label Phase 0
 as incomplete against its full original scope. The literal new-provider
-registration test and cross-GPU throughput comparison are not passing gates.
-Any decision to narrow those gates must be made explicitly rather than
-turning negative results into green checkmarks. No product packages are added
-as part of this validation work.
+registration test is not a passing gate. No product packages are added as
+part of this validation work.
+
+**Scope amendment — 2026-09-29:** the user explicitly deferred cross-GPU
+benchmarking. It is no longer a Phase 0 completion requirement. Performance
+evidence remains limited to A10G; static-versus-symbolic benchmarking on that
+device remains planned. Cross-target source emission/compilation does not
+establish runtime performance elsewhere. Cross-GPU performance stays
+unverified until future hardware validation, rather than being marked passed.
+The provider, artifact and native/ABI gaps remain unchanged.

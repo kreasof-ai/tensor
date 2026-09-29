@@ -57,7 +57,7 @@ Four findings move work earlier or change its shape:
 | E8 | framework contract — FX vs AOTAutograd | either | FX-to-CPU kernel passes; AOT forward/backward captured and reference-executed |
 | E9 | full compile latency (with `nvcc`) | **NVIDIA** | five workloads × six targets measured; compiler rejections recorded |
 | E10 | numerics validation | **NVIDIA** | ✅ 12 NumPy-reference cases on A10G |
-| E11 | kernel performance | **NVIDIA** | five A10G baseline comparisons measured; cross-GPU matrix unavailable |
+| E11 | kernel performance | **NVIDIA** | five A10G baseline comparisons measured; static/symbolic comparison pending; cross-GPU matrix deferred |
 | E12 | warm-start / artifact load latency | **NVIDIA** | five sizes × three processes; Actions-to-A10G executable transfer passes |
 
 **E4 came back positive and it changes the shape of the project.** A serialized TIRx module
@@ -90,9 +90,15 @@ architecture decision record written for each of the four load-bearing choices
 E9 and the architectural decisions are now recorded, including
 [ADR 0008](../adr/0008-phase0-evidence-boundaries.md). The literal new-provider
 registration test does not pass: executing and re-registering an existing CPU
-manifest is weaker evidence. Fusion/rescheduling, Rust and the cross-GPU
-performance matrix also remain open. Keep the phase in progress rather than
-silently narrowing its original scope.
+manifest is weaker evidence. Fusion/rescheduling and remaining native/ABI
+checks also remain open. Keep the phase in progress for those gaps.
+
+**Scope update — 2026-09-29:** at the user's request, cross-GPU benchmarking
+is deferred and does not block Phase 0 completion. Performance validation uses
+the available A10G, including the remaining static-versus-symbolic comparison.
+Source emission and full compilation across targets remain measured evidence;
+they do not establish execution or performance on those other GPUs. Revisit
+cross-GPU benchmarking before making performance claims across architectures.
 
 ---
 

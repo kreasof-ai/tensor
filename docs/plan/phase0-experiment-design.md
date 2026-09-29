@@ -152,9 +152,12 @@ target. §25's compile-latency question, properly answered. Local numbers are a 
 what makes the kernels real rather than plausible-looking. Until this runs, the workload set
 is structurally correct and semantically unproven.
 
-**E11 — `perf`.** Kernel throughput vs a tuned baseline. §23's runtime metrics. Also
-`sm_80` vs `sm_90` vs `sm_100` to check that the TMA-vs-cp.async lowering difference
-measured locally actually pays off.
+**E11 — `perf`.** Kernel throughput vs a tuned baseline on the available A10G,
+plus the remaining static-versus-symbolic comparison. §23's runtime metrics.
+At the user's request on 2026-09-29, cross-GPU `sm_80`/`sm_90`/`sm_100`
+benchmarking is deferred and is not a Phase 0 exit requirement. That future
+comparison can test whether TMA-vs-cp.async lowering differences pay off on
+the corresponding hardware. Cross-target compilation remains a separate probe.
 
 **E12 — `warm_start`.** Load a prebuilt artifact and measure time-to-first-kernel, with
 TileLang's cache warm and cold. The §23 number that constrains the whole `tensor` UX.
