@@ -1,0 +1,222 @@
+{
+  "conclusion": "success",
+  "event": "push",
+  "headSha": "fce946c651a38cebe2d1b7361159f0c9c312b956",
+  "jobs": [
+    {
+      "completedAt": "2026-09-30T00:03:07Z",
+      "conclusion": "success",
+      "databaseId": 109676012527,
+      "name": "producer (windows-latest, build/consumer/Scripts/python.exe)",
+      "startedAt": "2026-09-30T00:01:25Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7.0.1",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@v10.2.0",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned producer and local NVRTC components",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile the five CUDA profiles and audit cache recovery",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Package a deterministic module and its pinned dependency",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build the compiler-free consumer wheel",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install and inspect with only Tensor and NumPy",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7.0.1",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@v10.2.0",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7.0.1",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36648206335/job/109676012527"
+    },
+    {
+      "completedAt": "2026-09-30T00:03:01Z",
+      "conclusion": "success",
+      "databaseId": 109676012706,
+      "name": "producer (ubuntu-24.04, build/consumer/bin/python)",
+      "startedAt": "2026-09-30T00:01:25Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7.0.1",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@v10.2.0",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned producer and local NVRTC components",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile the five CUDA profiles and audit cache recovery",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Package a deterministic module and its pinned dependency",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build the compiler-free consumer wheel",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install and inspect with only Tensor and NumPy",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7.0.1",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@v10.2.0",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7.0.1",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36648206335/job/109676012706"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/kreasof-ai/tensor/actions/runs/36648206335",
+  "artifacts": [
+    {
+      "id": 11069851149,
+      "name": "tensor-phase2-ubuntu-24.04",
+      "digest": "sha256:e3d609d280fb645aa2ccbb33463f293202797ae089a66c13f76eb52d54653591",
+      "expired": false,
+      "size_in_bytes": 352668
+    },
+    {
+      "id": 11069387349,
+      "name": "tensor-phase2-windows-latest",
+      "digest": "sha256:cbc00f0b769e43eb733673487d46b90274505e15891fc9ce5cf19b599ac3c51f",
+      "expired": false,
+      "size_in_bytes": 352059
+    }
+  ],
+  "test_results": {
+    "ubuntu-24.04": {
+      "passed": 85,
+      "skipped": 19,
+      "seconds": 21.02
+    },
+    "windows-latest": {
+      "passed": 75,
+      "skipped": 29,
+      "seconds": 14.26
+    }
+  },
+  "scope": {
+    "nvrtc_compilation": true,
+    "cache_recovery": true,
+    "deterministic_module_closure": true,
+    "compiler_free_install_and_selection": true,
+    "gpu_execution_on_runners": false
+  }
+}

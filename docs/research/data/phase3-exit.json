@@ -1,0 +1,91 @@
+{
+  "status": "passed",
+  "date": "2026-09-30",
+  "implementation_commit": "fce946c651a38cebe2d1b7361159f0c9c312b956",
+  "clean_checkout_at_acceptance": true,
+  "ci_run": "https://github.com/kreasof-ai/tensor/actions/runs/36648206335",
+  "python": "3.12.14",
+  "platform": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+  "tests": {
+    "passed": 104,
+    "skipped": 0,
+    "seconds": 68.08,
+    "log_sha256": "db0f00dfcadb3e103649bd3b5111ab434eebe5fe7d7bd06548f5a802033065b8",
+    "command": "TENSOR_NVRTC_HOME=build/nvrtc-12.9 TENSOR_P0_CUDA=1 TENSOR_P1_CUDA=1 TENSOR_P2_CUDA=1 TENSOR_P3_CUDA=1 CUDA_HOME=experiments/p0/out/cuda-12.9 uv run --locked python -m pytest -o addopts= -q"
+  },
+  "lock_sha256": "92d82865a7064b02cae6ca9f2bc9b0f418c69a442f6eff731d7ec6656e50a4be",
+  "source_hashes": {
+    "src/tensor/__init__.py": "dc806cdd6a1ff9c826bdf4155debf5ec30bcff9f49ae92b1d634156ed863de26",
+    "src/tensor/__main__.py": "2d09a692db904ea8e4b37405e9dfe8321ff80987c6c5000cdfee7be263f21dcb",
+    "src/tensor/abi.py": "604aa75dd48c04262a5332113c9e79166d1e9eda73f3ca08089d2df31c72ff4a",
+    "src/tensor/artifact.py": "822b87921631d75f407ea63f055c84c1b3917a4d3eeace5f494412173e6d379c",
+    "src/tensor/build.py": "7e4bc9b64571e69bfd32b4d37d83a6abcd87962eadae870c64da8f079a8843b0",
+    "src/tensor/cli.py": "2f0915902a3b7fb5173e67daa93a9524b3ac1f11ccd1eef616328b27756ace45",
+    "src/tensor/commands.py": "7759c2f2d1d504412e9c4c3fc8f0c2efb6c09932b02684b1fad325f575a6741a",
+    "src/tensor/compiler.py": "949a23350e0afc238440aa69bfa8fa4a0ca8c162ad623fbe70ff1a9fc4f886ef",
+    "src/tensor/cpu.py": "fbeb118123a94045ccbcf04fba92e483553aaf3b2cf27a4a535680f8c5ebd6aa",
+    "src/tensor/cpu_build.py": "63ac621d1e871aafc9937afa068ce6d20692daf154d3d40a58a69a637d3d92ed",
+    "src/tensor/cuda.py": "4f8577e5c070c28d939d25b77e12cb04d5daebdd3ad0d5a6a031787b3502c85f",
+    "src/tensor/dlpack.py": "4a91366df53b5bba6ec8c13ac2576796d52c23b05c35a999299be07c862e84ff",
+    "src/tensor/doctor.py": "4ee412dd19df5b9d2ff0329cd91cbc5f5589086758ed8ecfcfd100641ac98b58",
+    "src/tensor/include/tensor/abi.h": "a294df7d079d010c9440729b1bb7d725411b806c034faa2bd3d78c205d23b013",
+    "src/tensor/inspect.py": "4e8b410c38113d99be1ee87b194642c41507053900a23050b52d835db9533c1d",
+    "src/tensor/lowering.py": "515b3ccbb57fc7dfb8c9c45d14156c323dc67ba3b51f9bfe1e8df80ffe996f43",
+    "src/tensor/modules.py": "fae3b7d851ada15142c9fab299ecb62aa9ae95f39f0d97016c732b20c46892e0",
+    "src/tensor/native/host.cpp": "e0e6c89a71761f128b5850fd1ef5e2f94c279ee3c44614c90f6f368145cd22b0",
+    "src/tensor/native/host.rs": "e0b4c7674146a17c5b67df8c9c36ee34ac57adf745bc02fa81e6fc3439138fd8",
+    "src/tensor/nvrtc.py": "144df78a7c49cddc1e9db2b8a22d8865483587915a6e69edd7591e71c6812d4a",
+    "src/tensor/portable.py": "b0c8c887e362ef9ea53540995736b2ab9a9f5488889b5a19d6165a002c4964ff",
+    "src/tensor/providers.py": "8296f7a1cf16a5966168c5ae5eeb2197e6056d59f775406d35f8494a82b5a30d",
+    "src/tensor/runtime.py": "dfe94d742eb622e557a430362a828f9d850a468cd95f29bbda7c859f79877b4e",
+    "src/tensor/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559"
+  },
+  "transfers": {
+    "linux": {
+      "cases": 21,
+      "diagnostics": 8,
+      "module_cli_run": true,
+      "module_cli_bench": true,
+      "two_hosts": true,
+      "archive_sha256": "e3d609d280fb645aa2ccbb33463f293202797ae089a66c13f76eb52d54653591",
+      "package_sha256": "15aa47d522cfcd0bc8b31f219175c2a973054cff6212e55cbb27508241b5afa6",
+      "package_bytes": 141672,
+      "installed_modules": 2,
+      "all_selections_packaged": true,
+      "first_kernel_seconds": 0.11282869300339371
+    },
+    "windows": {
+      "cases": 21,
+      "diagnostics": 8,
+      "module_cli_run": true,
+      "module_cli_bench": true,
+      "two_hosts": true,
+      "archive_sha256": "cbc00f0b769e43eb733673487d46b90274505e15891fc9ce5cf19b599ac3c51f",
+      "package_sha256": "409ce0326ee1afc53517fc89bf3ebca886abe18d6aebbfc5f1e99cf3609efb9c",
+      "package_bytes": 141275,
+      "installed_modules": 2,
+      "all_selections_packaged": true,
+      "first_kernel_seconds": 0.11250332000054186
+    }
+  },
+  "legacy_module": {
+    "status": "passed",
+    "case": "actual_cuda_v1_through_module_export",
+    "elements": 129,
+    "compiler_imports": []
+  },
+  "portable_validation": [
+    "CPU affine deserialization/recompilation and corrupted-cache recovery",
+    "NVRTC source-only module compilation and cached CLI execution",
+    "sm_80 affine and GEMM TIRx retargeted to A10G sm_86 and numerically executed",
+    "Frontend version and operator-set mismatches rejected before deserialization"
+  ],
+  "scope": [
+    "Offline directory/tpack dependencies, exact versions, one content identity per module name",
+    "Deterministic closure packages, verified snapshots, named one-kernel exports",
+    "Explicit source/TIRx compilation; exact-target binaries remain compiler-free",
+    "CPU Linux x86-64 validation and CUDA A10G sm_86 measured",
+    "Public registry, version ranges, fusion and autotuning remain later work",
+    "Direct PTX experimental after Tensor v1"
+  ]
+}

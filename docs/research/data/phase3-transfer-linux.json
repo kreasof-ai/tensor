@@ -1,0 +1,302 @@
+{
+  "status": "passed",
+  "ci_run": "https://github.com/kreasof-ai/tensor/actions/runs/36648206335",
+  "producer_revision": "fce946c651a38cebe2d1b7361159f0c9c312b956",
+  "consumer_revision": "fce946c651a38cebe2d1b7361159f0c9c312b956",
+  "consumer_dirty": false,
+  "two_hosts": true,
+  "producer": {
+    "status": "passed",
+    "hostname": "runnervmtr4k5",
+    "revision": "fce946c651a38cebe2d1b7361159f0c9c312b956",
+    "git_dirty": false,
+    "package_sha256": "15aa47d522cfcd0bc8b31f219175c2a973054cff6212e55cbb27508241b5afa6",
+    "package_bytes": 141672,
+    "deterministic": true,
+    "modules": {
+      "tensor-base": {
+        "version": "0.1.0",
+        "sha256": "e31a679d68f9f3fcd702e1c57e20e31496aeec445963f08efde8231476c58ec3",
+        "dependencies": {}
+      },
+      "tensor-ops": {
+        "version": "0.1.0",
+        "sha256": "913c833b3719c849964573d47485daeafca0976cf817426a0061af87b1519544",
+        "dependencies": {
+          "tensor-base": "e31a679d68f9f3fcd702e1c57e20e31496aeec445963f08efde8231476c58ec3"
+        }
+      }
+    },
+    "examples": [
+      "elementwise",
+      "gemm_relu",
+      "dynamic_affine",
+      "dynamic_gemm",
+      "scalar_offset"
+    ]
+  },
+  "package_sha256": "15aa47d522cfcd0bc8b31f219175c2a973054cff6212e55cbb27508241b5afa6",
+  "archive_sha256": "e3d609d280fb645aa2ccbb33463f293202797ae089a66c13f76eb52d54653591",
+  "consumer_matches_producer_wheel": true,
+  "runtime": {
+    "status": "passed",
+    "consumer_host": "default",
+    "packages": {
+      "numpy": "2.5.3",
+      "tensor-workspace": "0.1.0"
+    },
+    "compiler_imports": [],
+    "compiler_import_guard": true,
+    "device": {
+      "ordinal": 0,
+      "name": "NVIDIA A10G",
+      "arch": "sm_86",
+      "provider": "cuda"
+    },
+    "records": [
+      {
+        "case": "static_elementwise",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_affine_1_2.5",
+        "shape": [
+          1
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_affine_1_-0.75",
+        "shape": [
+          1
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_affine_127_2.5",
+        "shape": [
+          127
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_affine_127_-0.75",
+        "shape": [
+          127
+        ],
+        "max_abs_error": 2.384185791015625e-07
+      },
+      {
+        "case": "dynamic_affine_128_2.5",
+        "shape": [
+          128
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_affine_128_-0.75",
+        "shape": [
+          128
+        ],
+        "max_abs_error": 1.1920928955078125e-07
+      },
+      {
+        "case": "dynamic_affine_129_2.5",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 2.384185791015625e-07
+      },
+      {
+        "case": "dynamic_affine_129_-0.75",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 2.384185791015625e-07
+      },
+      {
+        "case": "dynamic_affine_1025_2.5",
+        "shape": [
+          1025
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_affine_1025_-0.75",
+        "shape": [
+          1025
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_gemm_1",
+        "shape": [
+          1,
+          32
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_gemm_31",
+        "shape": [
+          31,
+          32
+        ],
+        "max_abs_error": 0.0001220703125
+      },
+      {
+        "case": "dynamic_gemm_32",
+        "shape": [
+          32,
+          32
+        ],
+        "max_abs_error": 5.960464477539063e-08
+      },
+      {
+        "case": "dynamic_gemm_33",
+        "shape": [
+          33,
+          32
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_gemm_65",
+        "shape": [
+          65,
+          32
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "static_gemm_relu",
+        "shape": [
+          64,
+          64
+        ],
+        "max_abs_error": 5.960464477539063e-08
+      },
+      {
+        "case": "int64_delta_1099511627779",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "int64_delta_-1099511627773",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "gpu_dlpack_versioned_False",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "gpu_dlpack_versioned_True",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      }
+    ],
+    "diagnostics": [
+      {
+        "case": "missing_scalar",
+        "cause": "missing kernel arguments: ['scale']"
+      },
+      {
+        "case": "shape_conflict",
+        "cause": "b: dimension size mismatch; expected 129, received 128"
+      },
+      {
+        "case": "explicit_dimension_conflict",
+        "cause": "a: dimension size mismatch; expected 128, received 129"
+      },
+      {
+        "case": "nonfinite_scalar",
+        "cause": "scale must be finite and fit float32"
+      },
+      {
+        "case": "wrong_dtype",
+        "cause": "a needs shape [{'var': 'size'}] and dtype float32"
+      },
+      {
+        "case": "integer_overflow",
+        "cause": "delta is outside the int64 range"
+      },
+      {
+        "case": "noninteger_scalar",
+        "cause": "delta needs an integer int64"
+      },
+      {
+        "case": "unknown_argument",
+        "cause": "unknown kernel argument other"
+      }
+    ],
+    "legacy_artifact_sha256": null,
+    "first_kernel_seconds_from_script_check_entry": 0.11282869300339371,
+    "benchmark": {
+      "warmup": 10,
+      "iters": 100,
+      "median_launch_and_sync_seconds": 0.00010998249854310416,
+      "min_launch_and_sync_seconds": 9.070200030691922e-05,
+      "median_host_enqueue_seconds": 8.72470009198878e-05
+    },
+    "cli_first_result_seconds": 0.09052957099629566
+  },
+  "selections": {
+    "elementwise": {
+      "selection": "packaged",
+      "module_sha256": "e31a679d68f9f3fcd702e1c57e20e31496aeec445963f08efde8231476c58ec3",
+      "provider": "cuda",
+      "target": "sm_86",
+      "export": "elementwise"
+    },
+    "gemm_relu": {
+      "selection": "packaged",
+      "module_sha256": "913c833b3719c849964573d47485daeafca0976cf817426a0061af87b1519544",
+      "provider": "cuda",
+      "target": "sm_86",
+      "export": "gemm_relu"
+    },
+    "dynamic_affine": {
+      "selection": "packaged",
+      "module_sha256": "913c833b3719c849964573d47485daeafca0976cf817426a0061af87b1519544",
+      "provider": "cuda",
+      "target": "sm_86",
+      "export": "dynamic_affine"
+    },
+    "dynamic_gemm": {
+      "selection": "packaged",
+      "module_sha256": "913c833b3719c849964573d47485daeafca0976cf817426a0061af87b1519544",
+      "provider": "cuda",
+      "target": "sm_86",
+      "export": "dynamic_gemm"
+    },
+    "scalar_offset": {
+      "selection": "packaged",
+      "module_sha256": "913c833b3719c849964573d47485daeafca0976cf817426a0061af87b1519544",
+      "provider": "cuda",
+      "target": "sm_86",
+      "export": "scalar_offset"
+    }
+  },
+  "module_cli_run": true,
+  "module_cli_bench": true,
+  "relocated": true,
+  "frozen_install_without_source_package": true,
+  "local_compilation": false,
+  "phase2_baseline": {
+    "cases": 21,
+    "diagnostics": 8
+  }
+}

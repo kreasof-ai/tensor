@@ -4,7 +4,7 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phases 0, 1 and 2 complete within their measured profiles.**
+Current status: **Phases 0–3 complete within their measured profiles.**
 [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) selects NVRTC as the default
 CUDA compiler and the independent v3 module envelope.
 [ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md) completes
@@ -16,6 +16,13 @@ Linux and Windows CI artifacts and their wheels each pass GPU execution on a
 separate A10G with only Tensor and NumPy. The full GPU suite passes 89 tests
 with zero skips. Details and limits are in
 [the Phase 2 exit report](../research/phase2-exit.md).
+
+Phase 3 adds the offline module system: manifests, pinned closures, deterministic
+packages, verified caches and named exports. Linux and Windows CI packages each
+execute through installed exports on the separate A10G without compiler imports.
+The full GPU suite passes 104 tests with zero skips. See
+[ADR 0013](../adr/0013-phase3-offline-module-system.md), the
+[module guide](../modules.md) and [Phase 3 exit report](../research/phase3-exit.md).
 
 Phase 1 baseline: `doctor`, `build`,
 `inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated
@@ -221,24 +228,29 @@ tinygrad lowering path, stays experimental until after Tensor v1.**
 
 ---
 
-## Phase 3 — Module system
+## Phase 3 — Module system *(complete for the offline profile)*
 
-`tensor.json`, module resolver, artifact cache, exports, versioned ABI — the §11 design.
-**Now a packaging-and-versioning problem rather than a representation problem**, because E4
-established that the portable tier is a serialized TIRx module.
+`tensor.json` schema 1 defines named exports, exact module versions, Tensor ABI
+major and capabilities. `tensor.lock` pins every dependency's content identity.
+The resolver accepts local directories and deterministic `.tpack` archives;
+packages include the complete transitive closure. Cycles, conflicting identities,
+modified snapshots and stale frozen locks fail explicitly.
 
-The work that actually matters here is done in design and waiting on E4b. E4a produced a
-concrete manifest spec: `format_version`, exact `tilelang_version`, exact `tvm_ffi_version`,
-the extracted `op_set`, target specialization, and a content hash. The portable
-source tier needs three checks before compiler loading: TileLang version,
-FFI version and operator set. Executable images instead negotiate the runtime
-ABI/capabilities and provider target; compiler versions are provenance, not
-consumer equality requirements.
+`add`, `install`, `pack`, `resolve` and `module-name::export_name` references
+integrate with build, inspect, run and bench. A packaged exact-provider/target
+image is preferred, then a verified generated image. Missing images compile
+only when explicitly requested, through bundled frontend TIRx or Python source.
+Portable reuse checks frontend versions, IR/operator integrity and registered
+operators before deserialization. Actual CPU recompilation and NVRTC sm_80 to
+sm_86 affine/GEMM retargeting pass. Executable images instead negotiate runtime
+ABI/capabilities and provider target; frontend versions remain provenance.
 
-E13 corrected the source distribution footprint: it needs CUTLASS/CuTe as well
-as `tl_templates`, about 27.2 MB of headers (3.6 MB for the compressed bundle).
-E14 measures the cubin bundle separately. E15 independently verifies cross-host
-executable transfer with matching clean checkouts and a NumPy-only consumer.
+All five exports, dependency closure, frozen installation, relocation and
+compiler-free execution pass from Linux and Windows CI producers to A10G.
+[ADR 0013](../adr/0013-phase3-offline-module-system.md) defines the profile and
+[the exit report](../research/phase3-exit.md) records its gates and evidence.
+Public registries, version ranges, fusion and autotuning remain later extensions.
+NVRTC remains the default; direct PTX stays experimental after Tensor v1.
 
 ---
 

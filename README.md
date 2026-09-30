@@ -5,7 +5,7 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phases 0, 1 and 2 complete within their measured profiles.**
+**Status: Phases 0–3 complete within their measured profiles.**
 CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
 or host compiler required. CUDA and a CPU validation provider share call ABI
 1.1, including executable/event identities and zero external workspace,
@@ -19,12 +19,14 @@ Phase 0 answered the question the proposal closes on:
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
 
-Phase 3's offline module system is implemented and undergoing exit validation.
+Phase 3's offline module system is complete.
 `tensor.json` names exports, `tensor.lock` pins dependency content, and `tensor
 pack` bundles the complete closure. `add`, `install`, `resolve`, and
 `module-name::export_name` references work with compiler-free packaged binaries;
 missing targets compile through bundled TIRx/source only when explicitly
-requested. See the [module guide](docs/modules.md).
+requested. The GPU suite passes **104 tests with zero skips**; Linux and
+Windows module packages each pass execution on the separate A10G consumer.
+See the [module guide](docs/modules.md) and [Phase 3 exit report](docs/research/phase3-exit.md).
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
