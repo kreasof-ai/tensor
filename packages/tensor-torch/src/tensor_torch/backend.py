@@ -44,14 +44,15 @@ class Region:
                           all(not isinstance(d, torch.SymInt) for d in v.shape) for v in metadata)
         self.static_plan = False
 
+    def alignment_fallback(self, *args):
+        reason = 'FX inputs need 64-byte pointer alignment'
+        if reason not in self.record['fallbacks']:
+            self.record['fallbacks'].append(reason)
+        return self.reference(*args)
+
     def __call__(self, *args):
         if self.static_plan is not False:
             if self.static_plan is None:
-                return self.reference(*args)
-            if any(v.data_ptr() % 64 for v in args):
-                reason = 'FX inputs need 64-byte pointer alignment'
-                if reason not in self.record['fallbacks']:
-                    self.record['fallbacks'].append(reason)
                 return self.reference(*args)
             kernel, order = self.static_plan
             return kernel(*(args[i] for i in order))
@@ -107,7 +108,9 @@ class Region:
                     kernel = Kernel(path)
                     # Load/validate before publishing the specialization. First call
                     # below binds concrete tensor metadata and records stream usage.
-                    self.specializations[key] = (LaunchPlan(kernel, tuple(args[i] for i in order)), order)
+                    def fallback(*reordered):
+                        return self.alignment_fallback(*(reordered[order.index(i)] for i in range(len(self.external))))
+                    self.specializations[key] = (LaunchPlan(kernel, tuple(args[i] for i in order), fallback), order)
                     self.record['specializations'].append({'kind': category, 'target': target,
                         'artifact': str(path), 'cache_hit': hit,
                         'prepare_seconds': time.perf_counter() - started,

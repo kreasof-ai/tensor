@@ -266,3 +266,28 @@ def test_pointwise_activation_precision_and_arithmetic(tmp_path,dtype):
         sigmoid=torch.compile(lambda a:a.sigmoid(),backend=backend,fullgraph=True)
         torch.testing.assert_close(sigmoid(a),a.sigmoid(),atol=1e-7,rtol=.001 if dtype==torch.float16 else 1e-6)
     assert all(r['specializations'] and not r['fallbacks'] for r in backend.report['regions'])
+
+@GPU
+def test_runtime_scalars_reuse_preparation_without_changing_results(tmp_path):
+    import tensor
+    artifact=tmp_path/'affine.tbin'
+    tensor.build(Path(__file__).parents[1]/'examples/dynamic_affine.py',artifact,compiler='nvrtc')
+    kernel=tt.load(artifact)
+    a,b=(torch.randn(129,device='cuda') for _ in range(2))
+    with torch.inference_mode():
+        for scale in (2.0,.5,-3.0):
+            torch.testing.assert_close(kernel(a,b,scale),torch.relu(a*scale+b))
+    assert len(kernel._prepared)==1
+
+@GPU
+def test_attention_shared_operand_and_unaligned_storage_fallback(tmp_path):
+    backend=tt.Backend(cache_dir=tmp_path)
+    function=lambda q:torch.nn.functional.scaled_dot_product_attention(q,q,q)
+    shape=(1,2,128,64)
+    with torch.inference_mode():
+        compiled=torch.compile(function,backend=backend,fullgraph=True,dynamic=False)
+        aligned=torch.randn(shape,device='cuda',dtype=torch.float16)
+        torch.testing.assert_close(compiled(aligned),function(aligned),atol=.002,rtol=.02)
+        unaligned=torch.randn(aligned.numel()+1,device='cuda',dtype=torch.float16)[1:].reshape(shape)
+        torch.testing.assert_close(compiled(unaligned),function(unaligned),atol=.002,rtol=.02)
+    assert any('alignment' in f for r in backend.report['regions'] for f in r['fallbacks'])

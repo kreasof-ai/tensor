@@ -43,6 +43,7 @@ if opts.gpu_cache is not None:
     from phase4_benchmark import cases
     with torch.inference_mode():
         for name,function,args in cases(False):
+            torch._dynamo.reset()
             backend=tt.Backend(cache_dir=opts.gpu_cache)
             result=torch.compile(function,backend=backend,fullgraph=True,dynamic=False)(*args)
             torch.testing.assert_close(result,function(*args),atol=.01 if name.startswith('mlp') else .002,rtol=.02)

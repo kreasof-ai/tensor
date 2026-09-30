@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import atexit
 from contextlib import nullcontext
+from collections import OrderedDict
 import ctypes as c
 import threading
 from pathlib import Path
@@ -69,6 +70,7 @@ def close():
                 torch.cuda.synchronize()
             device.__exit__(None, None, None)
         _sessions.clear()
+        _streams.clear()
 
 
 atexit.register(close)
@@ -98,7 +100,7 @@ class Kernel:
         self.inputs = [d for d in self.manifest['arguments'] if d['name'] not in names]
         self.outputs = [next(d for d in self.manifest['arguments'] if d['name'] == n) for n in names]
         self._executables = {}
-        self._prepared = {}
+        self._prepared = OrderedDict()
         self._lock = threading.RLock()
         self._op = None
         self._into_op = None
@@ -191,7 +193,7 @@ class Kernel:
             all_values = dict(zip((d['name'] for d in self.inputs), args))
             all_values.update(zip((d['name'] for d in self.outputs), outputs))
             key = (ordinal, tuple((d['name'], tuple(v.shape), v.dtype) if buffer_argument(d)
-                                else (d['name'], type(v), v) for d in self.manifest['arguments']
+                                else (d['name'], type(v), v if d['name'] in self.manifest.get('symbols', {}) else None) for d in self.manifest['arguments']
                                 for v in [all_values[d['name']]]))
             prepared = self._prepared.get(key)
             if prepared is None:
@@ -212,6 +214,8 @@ class Kernel:
                     # Keep descriptor storage, not DLPack owners, in the prepared cache.
                     # Disposed Buffer objects retain ABI shape/stride backing only.
                     prepared = self._prepared[key] = (call, parameters, launch)
+                    if len(self._prepared) > 64:
+                        self._prepared.popitem(last=False)
                     shared = launch['shared_memory_bytes']
                     if shared > executable._shared_limit:
                         device.driver.call('cuFuncSetAttribute', executable.function, 8, shared)
@@ -222,6 +226,7 @@ class Kernel:
                     device.handoff(stream.cuda_stream)
                     for b in borrowed:
                         b._dispose()
+            self._prepared.move_to_end(key)
             call, parameters, launch = prepared
             for argument, d in zip(call.arguments, self.manifest.get('abi', self.manifest['arguments'])):
                 if buffer_argument(d):
@@ -349,12 +354,14 @@ class Prepared:
 
 class LaunchPlan:
     """Internal fast path, reached only after Region's concrete metadata guard."""
-    def __init__(self, kernel, args):
+    def __init__(self, kernel, args, fallback):
+        self.fallback = fallback
         self.prepared = kernel.prepare(*args)
         self.inputs = kernel.inputs
         self.outputs = kernel.outputs
         self.descriptors = kernel.manifest.get('abi', kernel.manifest['arguments'])
-        self.output_specs = [(tuple(t.shape), t.dtype, t.device) for t in self.prepared.outputs]
+        self.output_specs = [(tuple(t.shape), tuple(t.stride()), t.dtype, t.device) for t in self.prepared.outputs]
+        self.allocate = getattr(torch._C._dynamo.guards, '_empty_strided_cuda', None)
         self.positions = {d['name']:i for i,d in enumerate(self.inputs)}
         self.output_positions = {d['name']:i for i,d in enumerate(self.outputs)}
         self.kernel = kernel
@@ -367,8 +374,10 @@ class LaunchPlan:
         prepared = self.prepared
         if not prepared.device._open or prepared.executable._released:
             raise RuntimeError('launch plan belongs to a closed session')
-        outputs = [torch.empty(shape,dtype=dtype,device=device) for shape,dtype,device in self.output_specs]
         with prepared.lock, (torch.cuda.device(prepared.device.ordinal) if torch.cuda.current_device() != prepared.device.ordinal else nullcontext()):
+            outputs = [self.allocate(shape,stride,dtype) if self.allocate is not None
+                       else torch.empty(shape,dtype=dtype,device=device)
+                       for shape,stride,dtype,device in self.output_specs]
             stream = _current_stream(prepared.device.ordinal)
             for argument, descriptor in zip(prepared.arguments, self.descriptors):
                 name = descriptor['name']
@@ -376,7 +385,7 @@ class LaunchPlan:
                 if buffer_argument(descriptor):
                     pointer = value.data_ptr()
                     if pointer % descriptor.get('alignment',256):
-                        raise ValueError('FX input has insufficient pointer alignment')
+                        return self.fallback(*args)
                     value.record_stream(stream)
                     argument.buffer.address = pointer
                 else:
