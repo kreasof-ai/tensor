@@ -1,4 +1,4 @@
 # Preserve hashed cross-host validation evidence exactly on Linux and Windows.
 docs/research/data/webgpu-rx6700xt-transfer-* -text whitespace=cr-at-eol
-docs/research/data/phase6-*.json -text
+docs/research/data/phase6-*.json -text whitespace=cr-at-eol
 docs/research/data/phase6-*.xml -text

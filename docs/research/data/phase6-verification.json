@@ -42,6 +42,15 @@
     "allow_fp16_reduced_precision_reduction": false
   },
   "retained_evidence_sha256": {
+    "phase6-ci-linux-consumer.json": "8ea5c2b2db5682a1d043aea6f6e6b60f366d2780513f85ef07f99cf015fbbd27",
+    "phase6-ci-linux-producer.json": "c5fec5778adc8b38534230db3916eddad2e60d97eef8e6f4c155b8fe00bde20e",
+    "phase6-ci-linux-reference.json": "cc03326f0438c97727864845beae83a29c23aa3f3c3d72c2ae973d2ff86e8276",
+    "phase6-ci-linux-verification.json": "146388aee7cf9c140e1caa18adb6361c9910747f3f0ea3e94a0b22e88982d74b",
+    "phase6-ci-windows-consumer.json": "94712ed47ddd04785e59f490972d9a24a8d627836013800103257b8562b95f63",
+    "phase6-ci-windows-producer.json": "fb26d33fb2317e4a8afaa1c51e1b22c353c4e65c8c20e3339e26519a1ee0059e",
+    "phase6-ci-windows-reference.json": "23a50ccb6dd2504a6f071bbf44b44687edf645819e341aeca2ce26338cd6ce41",
+    "phase6-ci-windows-verification.json": "9b54e75a1947e2ae418746d8cad317e7e3b2373ddc91922aca561da0f5b2706f",
+    "phase6-ci.json": "2412da2e6c087802ca61c49892403b23405d62c8ac66c946052fa67249f1c2c2",
     "phase6-clean-consumer.json": "af7f405d0581c5e29711ecc261344295b1f335bbd17b00ce886a37cca71e1eff",
     "phase6-diagnostic-validation.json": "a09b700d9033269fe4c08742e0f34879ef30ac16c1f441f691138c3ac4f2ab7b",
     "phase6-nanogpt-benchmark.json": "3db4ee88fa19ab9ffa14ed4d27f6e97774a3d17c08a97ccec4a57916dde0fa56",
@@ -49,6 +58,32 @@
     "phase6-nanogpt-latency.svg": "3999f30bf9c46c76fe9d23a4522ae0691a74711548f1f62d0dbcee0284971730",
     "phase6-nanogpt-producer.json": "f4b139ced0d59065d7a2109b282920927611178b4406396b9b7387de2f937b97",
     "phase6-nanogpt-validation.json": "a742043fe97bd11052224272f999c9b0aed30c36e8da156294a5f1b1bb43e2dc",
-    "phase6-regression.xml": "30ad3cda803c0a70617e251bff3a44b495881cb45d5f0aa1287ae3507544759a"
+    "phase6-nvrtc-regression-ci.json": "0765914018ca3b5676cfa186acdb02656a35f353a561592e2063e8edb8dbfa2e",
+    "phase6-regression.xml": "30ad3cda803c0a70617e251bff3a44b495881cb45d5f0aa1287ae3507544759a",
+    "phase6-webgpu-regression-ci.json": "d2c33efd6efff018729fc17c37b512e8df021b1837f1ecb23ed99e0f2cd9e30e"
+  },
+  "implementation_commit": "200d22d5b6de7f42f5bb7583d920f6989559c191",
+  "remote_producer_run_id": 36774244454,
+  "remote_producer_platforms": [
+    "ubuntu-24.04",
+    "windows-latest"
+  ],
+  "remote_clean_consumer_diagnostic_updates": {
+    "linux": 10,
+    "windows": 10
+  },
+  "ci_workflows": {
+    "manual_training": {
+      "run_id": 36774244454,
+      "conclusion": "success"
+    },
+    "nvrtc_regression": {
+      "run_id": 36774244469,
+      "conclusion": "success"
+    },
+    "webgpu_regression": {
+      "run_id": 36774244383,
+      "conclusion": "success"
+    }
   }
 }

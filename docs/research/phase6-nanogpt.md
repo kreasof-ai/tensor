@@ -186,6 +186,29 @@ must use a matching runtime wheel and supported NVIDIA device/driver. The
 of all diagnostic kernels without a GPU and clean installed wheel integrity;
 that job does not claim GPU training execution on GitHub runners.
 
+The [Linux/Windows producer run](https://github.com/kreasof-ai/tensor/actions/runs/36774244454)
+passes both jobs at implementation commit `200d22d`. Each downloaded bundle and
+matching wheel then passes ten diagnostic updates on the separate A10G with
+only Tensor/NumPy installed. These transfers use a derived numerical fixture:
+the diagnostic oracle's values remain unchanged, while its bundle binding is
+explicitly updated after checking identical configuration, all 54 kernel
+kinds/parameters/schedules, runtime source equality after line-ending
+normalization, and artifact/module checksums. They establish execution of the
+independent producer images rather than binary identity or a second full-scale
+benchmark. The [CI record](data/phase6-ci.json),
+[Linux result](data/phase6-ci-linux-consumer.json),
+[Windows result](data/phase6-ci-windows-consumer.json),
+[Linux verification](data/phase6-ci-linux-verification.json) and
+[Windows verification](data/phase6-ci-windows-verification.json) retain the hashes
+and precise fixture-binding explanation. Derived fixtures and producer manifests
+are retained alongside those records.
+
+The existing [NVRTC runtime/module workflow](https://github.com/kreasof-ai/tensor/actions/runs/36774244469)
+and [WebGPU transfer workflow](https://github.com/kreasof-ai/tensor/actions/runs/36774244383)
+also pass at the same commit, including Windows C++ executor packaging. Their
+[NVRTC status](data/phase6-nvrtc-regression-ci.json) and
+[WebGPU status](data/phase6-webgpu-regression-ci.json) are retained.
+
 The native regression run enables every CUDA/WebGPU opt-in and the diagnostic
 ten-update case: **195 passed, zero skips, in 185.78 s**. Results and source/evidence hashes are retained in the
 [verification record](data/phase6-verification.json) and

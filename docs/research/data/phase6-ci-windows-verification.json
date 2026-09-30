@@ -1,0 +1,11 @@
+{
+  "producer_commit": "200d22d5b6de7f42f5bb7583d920f6989559c191",
+  "config_and_kernel_specializations_match": true,
+  "runtime_sources_match_after_line_ending_normalization": true,
+  "artifact_and_module_hashes_checked": 54,
+  "training_manifest_sha256": "fb26d33fb2317e4a8afaa1c51e1b22c353c4e65c8c20e3339e26519a1ee0059e",
+  "runtime_wheel_sha256": "13c3d7a1f2ad28b2723ff6a1907c530dcefeb97c5ec6832b02615f2b184277b6",
+  "original_numeric_reference_sha256": "a09b700d9033269fe4c08742e0f34879ef30ac16c1f441f691138c3ac4f2ab7b",
+  "derived_reference_sha256": "23a50ccb6dd2504a6f071bbf44b44687edf645819e341aeca2ce26338cd6ce41",
+  "reference_binding_note": "Diagnostic numeric values copied unchanged from the local Torch-validated oracle to an equivalent CI compilation. Config, all 54 kernel kinds/parameters/schedules, wheel runtime sources and artifact/module hashes checked; no claim of binary identity."
+}

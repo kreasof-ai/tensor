@@ -1,0 +1,110 @@
+{
+  "schema": "tensor.phase6-consumer.v1",
+  "status": "passed",
+  "packages": [
+    "numpy",
+    "tensor-workspace"
+  ],
+  "hostname": "default",
+  "platform": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+  "steps": [
+    {
+      "step": 1,
+      "loss": 5.463679075241089,
+      "gradient_norm": 2.5035274028778076,
+      "completed_seconds": 0.3220278619992314,
+      "status": "passed"
+    },
+    {
+      "step": 2,
+      "loss": 5.468213111162186,
+      "gradient_norm": 2.2835516929626465,
+      "completed_seconds": 0.0031689579918747768,
+      "status": "passed"
+    },
+    {
+      "step": 3,
+      "loss": 5.430687963962555,
+      "gradient_norm": 2.3051130771636963,
+      "completed_seconds": 0.0027608189993770793,
+      "status": "passed"
+    },
+    {
+      "step": 4,
+      "loss": 5.444049894809723,
+      "gradient_norm": 2.2677578926086426,
+      "completed_seconds": 0.0030380149983102456,
+      "status": "passed"
+    },
+    {
+      "step": 5,
+      "loss": 5.4699738919734955,
+      "gradient_norm": 2.259310483932495,
+      "completed_seconds": 0.002707107996684499,
+      "status": "passed"
+    },
+    {
+      "step": 6,
+      "loss": 5.438229590654373,
+      "gradient_norm": 2.30035400390625,
+      "completed_seconds": 0.0031205669947667047,
+      "status": "passed"
+    },
+    {
+      "step": 7,
+      "loss": 5.418303400278091,
+      "gradient_norm": 2.2261831760406494,
+      "completed_seconds": 0.003088056997512467,
+      "status": "passed"
+    },
+    {
+      "step": 8,
+      "loss": 5.395552843809128,
+      "gradient_norm": 2.172349452972412,
+      "completed_seconds": 0.002794320011162199,
+      "status": "passed"
+    },
+    {
+      "step": 9,
+      "loss": 5.400433123111725,
+      "gradient_norm": 2.1418378353118896,
+      "completed_seconds": 0.002827149990480393,
+      "status": "passed"
+    },
+    {
+      "step": 10,
+      "loss": 5.405709654092789,
+      "gradient_norm": 2.186042070388794,
+      "completed_seconds": 0.002673847004189156,
+      "status": "passed"
+    }
+  ],
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "config": {
+    "layers": 1,
+    "heads": 2,
+    "width": 32,
+    "vocab": 256,
+    "batch": 1,
+    "sequence": 16,
+    "loss_scale": 128.0,
+    "learning_rate": 0.0006,
+    "clip": 1.0
+  },
+  "owned_device_bytes": 503212,
+  "compiler_import_guard": true,
+  "compiler_imports": [],
+  "versions": {
+    "numpy": "2.5.3",
+    "tensor-workspace": "0.1.0"
+  },
+  "training_manifest_sha256": "fb26d33fb2317e4a8afaa1c51e1b22c353c4e65c8c20e3339e26519a1ee0059e",
+  "reference_sha256": "23a50ccb6dd2504a6f071bbf44b44687edf645819e341aeca2ce26338cd6ce41",
+  "final_state_samples_checked": true,
+  "seconds": 0.5734038430091459
+}
