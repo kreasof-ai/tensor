@@ -1,9 +1,9 @@
 # Native WebGPU provider
 
 Phase 5 implements portable inference through native wgpu. Its physical AMD/Apple
-exit gate is still open. The local software Vulkan adapter passes the inference
-suite, including compiler-free module consumption; its timings are software CPU
-execution and must not be interpreted as AMD/Apple GPU performance.
+exit gate is still open. Software Vulkan validates compiler-free consumption in
+CI. The [latency comparison](research/latency-scaling.md) runs matched workloads
+on the physical NVIDIA A10G through CUDA and native WebGPU/Vulkan.
 
 ## Build and consume
 
@@ -59,7 +59,9 @@ identity/features/limits, package versions, producer and artifact hashes, cold
 pipeline creation, host enqueue and completed-call timing. MLP intermediates stay
 on the device. Timing uses preallocated outputs and excludes uploads/downloads
 and first pipeline creation. It measures host submission plus queue completion,
-not isolated GPU timestamps.
+not isolated GPU timestamps. The [matched A10G scaling benchmark](research/latency-scaling.md)
+instead allocates each output inside the timed call, matching the CUDA baseline
+protocol, and compares copies of the same input tensors.
 
 ## Supported scope
 
@@ -81,7 +83,12 @@ its online-softmax algorithm without a global score matrix. A large CUDA schedul
 can exceed WebGPU workgroup limits even for the same logical operation. Tensor
 rejects schedules above 32 KiB of workgroup storage; smaller adapter limits are
 also checked. Buffer bindings are limited to the requested/device maximum, up to
-128 MiB each. Dispatch x can be packed over x/z with the verified POD grid bound;
+128 MiB each by default. Native applications can explicitly negotiate a larger
+limit, for example `tx.Device(provider="webgpu", max_buffer_size=268435456)`
+for the 64M-element FP32 benchmark. Both the adapter's buffer allocation and
+storage-binding limits must support the request; unsupported requests fail.
+The default limit and shader workgroup-storage limit remain unchanged.
+Dispatch x can be packed over x/z with the verified POD grid bound;
 batch/head dimensions are flattened onto y. Subgroup width 32 is never assumed.
 
 The artifact target is `webgpu-portable-v1`, kind `wgsl`. Portability comes from
@@ -92,6 +99,45 @@ Python binding is pinned to wgpu 0.29.0, bundling wgpu-native 27.0.2.0; it is an
 optional consumer dependency, with its own transitive dependencies and native
 library footprint. The previously measured wgpu-native v29 stripped-library size
 is not a measurement of this entire Python distribution.
+
+## Headless NVIDIA Vulkan in a compute container
+
+CUDA-only containers may expose `compute,utility` driver capabilities while
+omitting NVIDIA's Vulkan libraries. A container launched with
+`NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics` normally receives those
+libraries from its host. See the [NVIDIA container capability documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/docker-specialized.html).
+
+For the A10G benchmark's existing compute-only workspace, we instead extracted
+the **matching 595.91.07 user-space driver** into a local directory. No kernel
+module or system driver was installed. NVIDIA documents `libEGL_nvidia` as a
+headless Vulkan ICD when X11 libraries are unavailable in its
+[installed-components reference](https://download.nvidia.com/XFree86/Linux-x86_64/595.91.07/README/installedcomponents.html).
+
+```sh
+mkdir -p build/nvidia-vulkan-595.91.07
+curl --fail --location \
+  https://download.nvidia.com/XFree86/Linux-x86_64/595.91.07/NVIDIA-Linux-x86_64-595.91.07.run \
+  --output build/nvidia-vulkan-595.91.07/NVIDIA-Linux-x86_64-595.91.07.run
+sh build/nvidia-vulkan-595.91.07/NVIDIA-Linux-x86_64-595.91.07.run \
+  --extract-only --target build/nvidia-vulkan-595.91.07/driver
+python - <<'PY'
+import json
+from pathlib import Path
+root = Path('build/nvidia-vulkan-595.91.07/driver').resolve()
+icd = json.loads((root / 'nvidia_icd.json').read_text())
+icd['ICD']['library_path'] = str(root / 'libEGL_nvidia.so.595.91.07')
+Path('build/nvidia-vulkan-595.91.07/icd.json').write_text(json.dumps(icd))
+PY
+export VK_DRIVER_FILES="$PWD/build/nvidia-vulkan-595.91.07/icd.json"
+export LD_LIBRARY_PATH="$PWD/build/nvidia-vulkan-595.91.07/driver${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export WGPU_BACKEND_TYPE=Vulkan
+tensor doctor --provider webgpu --json
+```
+
+This recipe is specific to the measured host driver version. Use a driver
+matching the host's `nvidia-smi` version on another system. The comparison
+requires a discrete adapter whose name matches CUDA's selected GPU and rejects
+software-adapter results.
 
 ## Validation gates
 

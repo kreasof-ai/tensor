@@ -16,6 +16,38 @@ ROOT = Path(__file__).resolve().parents[1]
 NATIVE = pytest.mark.skipif(os.environ.get("TENSOR_WEBGPU") != "1", reason="set TENSOR_WEBGPU=1 for native adapter tests")
 
 
+@pytest.mark.parametrize("size", [True, 0, 3, 4.0])
+def test_invalid_buffer_limit_is_rejected_before_adapter_creation(size):
+    with pytest.raises(ValueError, match="max_buffer_size"):
+        tx.Device(provider="webgpu", max_buffer_size=size)
+
+
+def test_buffer_limit_option_is_provider_specific():
+    with pytest.raises(ValueError, match="only supported by the WebGPU"):
+        tx.Device(provider="cpu", max_buffer_size=268435456)
+
+
+@NATIVE
+def test_native_buffer_limit_opt_in():
+    from tensor.runtime import TensorRuntimeError
+    from tensor.webgpu import probe
+    default = 134217728
+    info = probe()
+    maximum = min(info['limits']['max-buffer-size'], info['limits']['max-storage-buffer-binding-size'])
+    with tx.Device(provider="webgpu") as device:
+        assert device.info['limits']['max-storage-buffer-binding-size'] <= default
+        with pytest.raises(ValueError, match="limit"):
+            device.empty((default//4+1,))
+    with pytest.raises(TensorRuntimeError, match="exceeds adapter limit"):
+        with tx.Device(provider="webgpu", max_buffer_size=maximum+1):
+            pass
+    if maximum > default:
+        with tx.Device(provider="webgpu", max_buffer_size=default+4) as device:
+            buffer = device.empty((default//4+1,))
+            assert buffer.nbytes == default+4
+            buffer.release()
+
+
 @pytest.fixture(scope="module")
 def artifacts(tmp_path_factory):
     directory = tmp_path_factory.mktemp("webgpu")

@@ -50,13 +50,16 @@ class Device(Session):
     error = TensorRuntimeError
     capabilities = CAPABILITIES | {"opaque_buffer_handles", "async_launch", "events"}
 
-    def __init__(self, ordinal=0, *, stream=None):
+    def __init__(self, ordinal=0, *, stream=None, max_buffer_size=None):
         if stream is not None:
             raise ValueError("WebGPU uses its owned queue; external streams are unsupported")
+        if max_buffer_size is not None and (type(max_buffer_size) is not int or max_buffer_size < 4):
+            raise ValueError("max_buffer_size must be an integer of at least four bytes")
         adapters = _adapters()
         if type(ordinal) is not int or not 0 <= ordinal < len(adapters):
             raise self.error(f"WebGPU adapter ordinal {ordinal} unavailable ({len(adapters)} adapters)")
         self.ordinal, self._adapter = ordinal, adapters[ordinal]
+        self._max_buffer_size = max_buffer_size
         self.info = {"ordinal": ordinal, "provider": "webgpu", "arch": TARGET,
                      "name": str(self._adapter.info["device"]), "adapter": dict(self._adapter.info)}
         self._open = False
@@ -66,9 +69,13 @@ class Device(Session):
         if self._open:
             raise self.error("device session is already open")
         limits = self._adapter.limits
+        buffer_limit = min(limits["max-storage-buffer-binding-size"], limits["max-buffer-size"])
+        if self._max_buffer_size is not None and self._max_buffer_size > buffer_limit:
+            raise self.error(f"requested WebGPU buffer size {self._max_buffer_size} exceeds adapter limit {buffer_limit}")
+        buffer_size = min(self._max_buffer_size or 134217728, buffer_limit)
         requested = {"max-compute-workgroup-storage-size": min(32768, limits["max-compute-workgroup-storage-size"]),
-                     "max-storage-buffer-binding-size": min(134217728, limits["max-storage-buffer-binding-size"]),
-                     "max-buffer-size": min(134217728, limits["max-buffer-size"])}
+                     "max-storage-buffer-binding-size": buffer_size,
+                     "max-buffer-size": buffer_size}
         features = ["shader-f16"] if "shader-f16" in self._adapter.features else []
         try:
             self._gpu = self._adapter.request_device_sync(required_features=features, required_limits=requested)

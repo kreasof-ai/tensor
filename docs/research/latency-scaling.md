@@ -1,253 +1,214 @@
 # Larger-shape latency scaling
 
-The outer `torch.compile` wrapper becomes a smaller fraction of latency as
-GPU work grows. It does not explain every large-shape performance gap.
-At 64M pointwise elements, Tensor through `torch.compile` is only **1.03×
-slower than direct matched TileLang**. At GEMM 4096³, that ratio is 1.00×,
-but both execute a kernel that is much slower than Triton and eager PyTorch.
+All baselines now execute the **same operations, shapes, dtypes and input
+values on the physical NVIDIA A10G**. Tensor wgpu uses Vulkan; the other
+providers use CUDA. CPU software-adapter timings are excluded from this
+comparison. The 17-profile sweep and two targeted repeats passed numerical
+checks, including WebGPU GEMM 4096³ and attention S=8192.
 
-Measured on 2026-09-30 with the same A10G, C++ executor and pinned compiler
-environment as the [direct comparison](direct-backend-comparison.md).
-All 17 scaling profiles passed numerical checks. A separate repeat of the
-small pointwise anchor and largest GEMM confirmed the GEMM slowdown.
+The outer CUDA `torch.compile` wrapper becomes a smaller fraction of latency
+as GPU work grows. At 64M pointwise elements, Tensor through `torch.compile`
+is **1.02×** matched TileLang. At GEMM 4096³ the ratio is
+1.01×, but both remain slower than Triton and eager PyTorch.
+The current portable wgpu lowering is slower still: 4.92× Tensor through
+`torch.compile` for 64M pointwise, 14.68× for GEMM 4096³, and
+64.44× for non-causal S=8192 attention.
 
-The [WebGPU baseline](#webgpu-wgpu-baseline) adds Tensor's native wgpu
-provider on the same host's **llvmpipe CPU software adapter**. Physical
-AMD/Apple GPU measurements remain pending. Its workload and timing differences
-are labeled in the main tables and figure. The figure's top panels include
-both devices; its bottom ratios cover CUDA providers only.
+Measured on 2026-09-30 with driver 595.91.07, the C++ Torch executor and the
+pinned environment from the [direct comparison](direct-backend-comparison.md),
+plus wgpu 0.29.0 / wgpu-native 27.0.2.0. NVIDIA's matching Vulkan libraries
+were extracted locally to enable the existing compute-only container.
 
-![Latency scaling and full Tensor call ratios](data/latency-scaling.png)
+![Matched A10G latency scaling and full Tensor call ratios](data/latency-scaling.png)
 
 [SVG figure](data/latency-scaling.svg).
-[Full raw observations, targeted repeat and fingerprints](data/latency-scaling.json).
-[WebGPU raw observations](data/webgpu-software.json).
+[Full raw observations, repeat, numerical errors and fingerprints](data/latency-scaling.json).
 [Scaling benchmark](../../tools/scaling_backend_benchmark.py).
+[WebGPU workload preparation](../../tools/webgpu_scaling.py).
 [Plot exporter](../../tools/plot_latency_scaling.py).
-
-| Baseline | Execution device | Output allocation | Completed-call samples / warmups |
-|---|---|---|---|
-| Tensor through torch.compile | NVIDIA A10G, CUDA | Inside each call | 45 / 20 |
-| Matched native TileLang | NVIDIA A10G, CUDA | Inside each call | 45 / 20 |
-| Native Triton | NVIDIA A10G, CUDA | Inside each call | 45 / 20 |
-| Eager PyTorch | NVIDIA A10G, CUDA | Inside each call | 45 / 20 |
-| Tensor WebGPU (wgpu) | llvmpipe, CPU software Vulkan | Preallocated | 5 / 2 |
 
 ## Individual-call latency
 
-All values are milliseconds. The CUDA columns report **one warm allocating
-call followed by stream synchronization**. Their median uses 45 individual
-observations with rotating provider order. Synchronization overhead is included
-for every provider. This measures time until the output is ready, rather than
-the amortized completed batches reported in the earlier comparison.
+Every table reports **one warm allocating call followed by completion
+synchronization**, in milliseconds. Each median uses 45 individual samples,
+after 20 warmups, with rotating provider order. Output allocation is inside
+the timer and output destruction is outside it. Input upload/download, AOT
+compilation and cold pipeline creation are excluded. The same input tensors
+are copied into WebGPU storage before measurement; their hashes are recorded.
 
-The **wgpu CPU** column uses preallocated outputs and five completed calls
-after two warmups. It executes on llvmpipe, rather than the A10G.
-**— means no measurement for that workload**, not zero time or lack of backend
-support. Rows retain distinct operations and attention shapes where necessary;
-the Tensor / TileLang ratios always use the CUDA columns.
+| Baseline | A10G API | Entry point |
+|---|---|---|
+| Tensor through torch.compile | CUDA | PyTorch adapter with native C++ executor |
+| Direct Tensor C++ (figure/raw data) | CUDA | Native executor without outer torch.compile wrapper |
+| Matched TileLang | CUDA | Native TVM-FFI, identical Tensor cubin |
+| Triton | CUDA | Compiled-kernel runner |
+| Eager PyTorch | CUDA | Eager operators / library kernels |
+| Tensor wgpu | Vulkan | Tensor's native WebGPU allocating API and owned queue |
 
-TileLang here uses native TVM-FFI allocation/launch with Tensor's identical
-cubin. Triton uses its compiled-kernel runner. The raw data also retains ordinary
-NVCC TileLang, warmed Triton JIT, direct Tensor and default Inductor results.
+WebGPU uses its own allocator and queue-completion operation. It has no
+PyTorch integration in this measurement. These are comparable completed-call
+latencies for the same workload, rather than isolated shader timings or
+identical host wrappers. CUDA-only host batches and graph timings are retained
+in the raw data, alongside ordinary NVCC TileLang, warmed Triton JIT and Inductor.
 
-| FP32 pointwise elements | Tensor through torch.compile | Matched TileLang | Triton | Eager PyTorch | wgpu CPU | Tensor / TileLang |
+| FP32 pointwise elements | Tensor through torch.compile | Matched TileLang | Triton | Eager PyTorch | Tensor wgpu / Vulkan | Tensor CUDA / TileLang |
 |---|---:|---:|---:|---:|---:|---:|
-| 1 | — | — | — | — | 0.483 | — |
-| 127 | — | — | — | — | 0.468 | — |
-| 128 | — | — | — | — | 0.479 | — |
-| 129 | 0.088 | 0.026 | 0.034 | 0.047 | 0.487 | 3.35× |
-| 4097 | — | — | — | — | 0.517 | — |
-| 1M | 0.073 | 0.041 | 0.047 | 0.061 | 3.305 | 1.78× |
-| 4M | 0.151 | 0.120 | 0.127 | 0.265 | — | 1.26× |
-| 16M | 0.457 | 0.426 | 0.440 | 1.002 | — | 1.07× |
-| 64M | 1.683 | 1.640 | 1.664 | 3.951 | — | 1.03× |
+| 129 | 0.060 | 0.018 | 0.027 | 0.033 | 0.563 | 3.25× |
+| 1M | 0.074 | 0.041 | 0.048 | 0.061 | 0.443 | 1.80× |
+| 4M | 0.152 | 0.121 | 0.127 | 0.265 | 1.444 | 1.26× |
+| 16M | 0.469 | 0.432 | 0.439 | 1.006 | 2.591 | 1.09× |
+| 64M | 1.680 | 1.641 | 1.668 | 3.951 | 8.267 | 1.02× |
 
-CUDA computes `relu(a*2+b)`; wgpu computes the symbolic affine profile
-`relu(a*2.5+b)`. Shared element counts do not establish a matched-workload
-speedup because the scalar binding, device and allocation protocols differ.
+Here M means 2²⁰ elements. Every provider computes `relu(a*2+b)`.
+The small anchor varies between runs: its repeat measured
+0.085 ms for Tensor through `torch.compile`,
+0.024 ms for TileLang and
+0.595 ms for wgpu. Both observations are retained;
+hollow plot markers show the repeat. A smaller input is not guaranteed to
+have a lower observed host-call latency in these separate samples.
+At 64M, wgpu's 8.267 ms is 2.09× eager PyTorch.
 
-Here M means 2²⁰ elements. The first pointwise anchor varied between runs:
-the targeted repeat measured 0.058 ms for Tensor and 0.017 ms for matched
-TileLang, with a similar 3.41× ratio. Its change reflects timing variation,
-rather than a claim that 1M elements are intrinsically faster than 129.
-Both observations are retained and the repeat appears as hollow plot markers.
+| FP16 linear + bias + ReLU, M=N=K | Tensor through torch.compile | Matched TileLang | Triton | Eager PyTorch | Tensor wgpu / Vulkan | Tensor CUDA / TileLang |
+|---|---:|---:|---:|---:|---:|---:|
+| 512 | 0.062 | 0.027 | 0.033 | 0.036 | 0.859 | 2.32× |
+| 1024 | 0.108 | 0.073 | 0.074 | 0.073 | 2.993 | 1.48× |
+| 2048 | 0.504 | 0.470 | 0.373 | 0.366 | 20.285 | 1.07× |
+| 4096 | 10.629 | 10.549 | 4.635 | 2.352 | 156.017 | 1.01× |
 
-| FP16 M×N×K | Operation | Tensor through torch.compile | Matched TileLang | Triton | Eager PyTorch | wgpu CPU | Tensor / TileLang |
-|---|---|---:|---:|---:|---:|---:|---:|
-| 33×65×37 | GEMM | — | — | — | — | 1.057 | — |
-| 33×65×37 | GEMM + bias + ReLU | — | — | — | — | 0.967 | — |
-| 256×256×256 | GEMM | — | — | — | — | 25.743 | — |
-| 512×512×512 | GEMM | — | — | — | — | 201.058 | — |
-| 512×512×512 | GEMM + bias + ReLU | 0.059 | 0.026 | 0.031 | 0.033 | — | 2.24× |
-| 1024×1024×1024 | GEMM + bias + ReLU | 0.105 | 0.072 | 0.071 | 0.070 | — | 1.46× |
-| 2048×2048×2048 | GEMM + bias + ReLU | 0.482 | 0.438 | 0.382 | 0.378 | — | 1.10× |
-| 4096×4096×4096 | GEMM + bias + ReLU | 10.633 | 10.587 | 4.059 | 2.375 | — | 1.00× |
+All providers compute `relu(linear(a, w, bias))`, including bias/ReLU at every
+shape. At 4096, Tensor through `torch.compile` is
+2.29× slower than Triton and
+4.52× slower than eager PyTorch.
+Wgpu measures 156.017 ms, or
+66.34× eager PyTorch. The targeted repeat measured
+10.623, 10.544,
+4.428, 2.364 and
+155.991 ms for Tensor, TileLang, Triton, eager and wgpu
+respectively. The large-GEMM behavior persists across those runs.
 
-The square wgpu profiles are plain GEMM; the CUDA square profiles include
-bias/ReLU. The figure shows square profiles and labels this operation
-difference explicitly; the two non-square profiles appear only in the table.
+| FP16 attention, B=1 H=8 D=64 | Tensor through torch.compile | Matched TileLang | Triton | Eager PyTorch | Tensor wgpu / Vulkan | Tensor CUDA / TileLang |
+|---|---:|---:|---:|---:|---:|---:|
+| S=1024, non-causal | 0.122 | 0.086 | 0.084 | 0.074 | 3.690 | 1.42× |
+| S=2048, non-causal | 0.276 | 0.238 | 0.220 | 0.205 | 13.828 | 1.16× |
+| S=4096, non-causal | 0.809 | 0.770 | 0.699 | 0.716 | 49.585 | 1.05× |
+| S=8192, non-causal | 2.993 | 2.876 | 2.695 | 2.509 | 192.876 | 1.04× |
+| S=1024, causal | 0.096 | 0.063 | 0.075 | 0.074 | 2.605 | 1.52× |
+| S=2048, causal | 0.195 | 0.159 | 0.164 | 0.210 | 8.449 | 1.22× |
+| S=4096, causal | 0.508 | 0.464 | 0.442 | 0.484 | 26.932 | 1.09× |
+| S=8192, causal | 1.675 | 1.605 | 1.464 | 1.479 | 100.019 | 1.04× |
 
-At 4096, full Tensor calls are still **2.62× slower than Triton** and
-**4.48× slower than eager PyTorch** in the main sweep. The repeat measured
-10.607, 10.549, 4.400 and 2.353 ms respectively. This is a persistent GPU
-kernel gap despite ordinary run-to-run variation, especially in Triton's
-measurement. None of these implementations is autotuned by this benchmark.
+Every provider uses B=1/H=8/D=64 at all four sequence lengths, with no
+dropout or custom mask. Wgpu measures 192.876 ms for S=8192
+non-causal attention and 100.019 ms for causal attention:
+76.86× and 67.61× eager PyTorch respectively.
 
-| FP16 attention, B/H/S/D | Mode | Tensor through torch.compile | Matched TileLang | Triton | Eager PyTorch | wgpu CPU | Tensor / TileLang |
-|---|---|---:|---:|---:|---:|---:|---:|
-| 2/2/65/64 | Non-causal | — | — | — | — | 7.429 | — |
-| 2/2/129/64 | Non-causal | — | — | — | — | 25.192 | — |
-| 1/1/512/64 | Non-causal | — | — | — | — | 76.703 | — |
-| 2/2/65/128 | Non-causal | — | — | — | — | 19.001 | — |
-| 2/2/129/128 | Non-causal | — | — | — | — | 62.953 | — |
-| 1/1/512/128 | Non-causal | — | — | — | — | 188.799 | — |
-| 1/8/1024/64 | Non-causal | 0.118 | 0.085 | 0.081 | 0.073 | — | 1.39× |
-| 1/8/2048/64 | Non-causal | 0.270 | 0.236 | 0.215 | 0.205 | — | 1.14× |
-| 1/8/4096/64 | Non-causal | 0.817 | 0.778 | 0.699 | 0.718 | — | 1.05× |
-| 1/8/8192/64 | Non-causal | 2.991 | 2.944 | 2.698 | 2.491 | — | 1.02× |
-| 2/2/65/64 | Causal | — | — | — | — | 4.631 | — |
-| 2/2/129/64 | Causal | — | — | — | — | 13.507 | — |
-| 1/1/512/64 | Causal | — | — | — | — | 54.625 | — |
-| 2/2/65/128 | Causal | — | — | — | — | 13.522 | — |
-| 2/2/129/128 | Causal | — | — | — | — | 34.528 | — |
-| 1/1/512/128 | Causal | — | — | — | — | 124.000 | — |
-| 1/8/1024/64 | Causal | 0.097 | 0.062 | 0.075 | 0.074 | — | 1.55× |
-| 1/8/2048/64 | Causal | 0.187 | 0.156 | 0.161 | 0.209 | — | 1.20× |
-| 1/8/4096/64 | Causal | 0.497 | 0.460 | 0.429 | 0.478 | — | 1.08× |
-| 1/8/8192/64 | Causal | 1.668 | 1.620 | 1.467 | 1.484 | — | 1.03× |
+The top plot panels include wgpu medians and interquartile bands for every
+matched shape. Bottom panels include Tensor CUDA / wgpu ratios as well as
+CUDA baselines, using a logarithmic scale so the larger gaps remain visible.
+Ratios below one favor Tensor through `torch.compile`.
 
-The figure plots wgpu D=64 and D=128 separately. Its S=512 markers are
-unconnected because B/H changes from 2/2 to 1/1. No wgpu observation shares
-the CUDA attention table's B=1/H=8, S=1024–8192 profile.
+## WebGPU lowering and correctness
 
-At S=8192, Tensor's full call is about 11% slower than Triton for non-causal
-attention and 14% slower for causal attention. The same-kernel TileLang ratio
-is close to parity because it isolates wrapper cost. It cannot establish
-competitiveness against a different GPU kernel.
+The workloads match, while schedules remain backend-specific. Wgpu GEMM uses
+32×32 output tiles, K=16 and scalar FP32 accumulation. Attention retains the
+streaming online-softmax algorithm with 8×16 query/key tiles and FP32
+accumulators. There is no vendor matrix-instruction lowering or autotuning.
+Large CUDA schedules cannot simply be copied when they exceed WebGPU's
+workgroup-storage limits.
 
-## WebGPU (wgpu) baseline
+All 17 WebGPU outputs passed against eager PyTorch with `atol=0.002`,
+`rtol=0.02`, matching the benchmark's CUDA acceptance tolerances. Pointwise
+outputs were exact. Per-case maximum errors and artifact/input hashes are
+retained in the raw data; FP16 error at large output magnitudes is assessed
+with both relative and absolute tolerances. The repeat reused identical
+input values and WGSL hashes.
 
-Measured on 2026-09-30 using wgpu 0.29.0, wgpu-native 27.0.2.0 and Mesa
-llvmpipe (LLVM 20.1.2). These tables report **median host submission plus
-queue completion**, in milliseconds, from five calls after two warmups.
-Inputs and outputs are already allocated; upload/download and cold pipeline
-creation are excluded. This is direct Tensor execution without a PyTorch
-wrapper. All 33 checks in the [validation suite](phase5-webgpu.md) passed.
-[Raw timings, adapter identity and validation results](data/webgpu-software.json).
-
-WebGPU uses 32×32 output tiles and K=16 with FP32 accumulation. The 256/512
-profiles are plain GEMM, whereas the CUDA square profiles include bias/ReLU.
-Doubling the square dimension increases the recorded WebGPU median about
-7.81× for 8× the arithmetic work. This describes software execution, not
-hardware GPU scaling; the small-profile medians also have timing variation.
-
-Attention retains streaming online softmax, with query/key tiles of 8×16.
-Batch and head counts change
-at S=512, so this is not a fixed-batch sequence-length sweep. The CUDA table
-uses B=1/H=8, D=64 and S=1024–8192; none of those attention shapes has a
-WebGPU measurement here.
-
-No CUDA/WebGPU speedup ratio is reported because these runs use different
-execution devices, workloads and allocation protocols. The software adapter's
-host-enqueue timing can include CPU execution or queue backpressure; it is
-not a measurement of Python wrapper overhead or isolated GPU time. Physical
-AMD/Apple results are needed before assessing WebGPU GPU performance.
+The scalar shader schedules and WebGPU allocation/submission path differ
+from the optimized CUDA implementations. These completed-call measurements
+do not isolate their individual costs. No wgpu GPU timestamp measurement is
+reported, and CUDA graph timings below must not be interpreted as wgpu time.
 
 ## Host overhead versus GPU execution
 
-Excluding the noisy 129-element anchor, the main sweep's host submission
-difference between `tensor_compile` and `tensor_direct` has a median of
-**43 µs**, ranging from 40 to 49 µs. Their serialized-call difference has a
-median of 38 µs, ranging from 35 to 80 µs. These are differences between
-independently measured medians; they are not an exact additive decomposition
-of CPU and GPU work.
+Excluding the noisy 129-element anchor, the CUDA host submission difference
+between `tensor_compile` and `tensor_direct` has a median of
+**46 µs**, ranging from 43 to 48 µs.
+Their serialized-call difference has a median of 39 µs, but individual
+cases have substantial timing variation, including negative differences.
+These differences between independent sample medians are not an exact
+additive decomposition of CPU and GPU work.
 
-For 64M pointwise elements, Tensor's captured GPU time is about 1.62 ms,
-so tens of microseconds of wrapper cost have little relative impact. For
-the 1M case, about 25 µs of GPU work remains comparable to the wrapper cost.
+For 64M pointwise elements, captured direct Tensor GPU time is about
+1.616 ms; for 1M it is about
+26 µs. The relative cost of the outer wrapper shrinks
+as GPU work grows. The CUDA GEMM 4096 slowdown remains when host dispatch
+is removed:
 
-The GEMM 4096 slowdown remains when host dispatch is removed:
-
-| Captured GPU time, GEMM 4096³ | Main sweep | Targeted repeat |
+| Captured CUDA GPU time, GEMM 4096³ | Main sweep | Targeted repeat |
 |---|---:|---:|
-| Direct Tensor | 10.536 ms | 10.514 ms |
-| Matched TileLang | 10.550 ms | 10.498 ms |
-| Triton compiled launcher | 4.034 ms | 4.326 ms |
-| Eager PyTorch | 2.363 ms | 2.304 ms |
+| Direct Tensor | 10.501 ms | 10.501 ms |
+| Matched TileLang | 10.477 ms | 10.516 ms |
+| Triton compiled launcher | 4.484 ms | 4.353 ms |
+| Eager PyTorch | 2.357 ms | 2.359 ms |
 
-Direct Tensor GPU time increases about 24.5× from GEMM 2048³ to 4096³, while
-the arithmetic work increases 8×. Identical-cubin TileLang reproduces the
-behavior. This points to poor scaling of the fixed kernel schedule; this
-benchmark does not identify the precise memory or instruction bottleneck.
-Improving only the outer wrapper cannot resolve this gap.
+Direct Tensor captured GPU time increases about 23.1× from GEMM 2048³
+to 4096³ for 8× the arithmetic work. Identical-cubin TileLang reproduces the
+large-GEMM slowdown. Improving only the outer wrapper cannot resolve it;
+these measurements do not identify the precise instruction or memory bottleneck.
 
 ## Method and reproduction
 
 The sweep uses seed 42, contiguous inputs, inference mode and a non-default
-stream. FP32 pointwise remains `relu(a*2+b)`, FP16 linear retains bias/ReLU,
-and FP16 BHSD attention uses default PyTorch SDPA as its numerical/baseline
-reference. Shape growth changes no tile sizes or tuning policy.
+CUDA stream. Every provider executes the same pointwise, fused linear or BHSD
+attention operation. Backend schedules are fixed throughout the sweep.
+The wgpu adapter must be a discrete GPU whose name matches CUDA's selected
+GPU; a software-adapter result cannot enter the comparison.
 
-All allocating and fixed-output direct graphs are checked against eager;
+All CUDA allocating and fixed-output graphs are checked against eager;
 matched TileLang outputs are bitwise equal to Tensor. Both `torch.compile`
-Tensor and Inductor outputs are checked too. All 34 matched cubin variants
-in the main sweep and four in the repeat have verified binary hashes and
-matching argument ABI and launch metadata.
+Tensor and Inductor outputs are checked. All 34 matched cubin variants in
+the sweep and four in the repeat have verified binary hashes, argument ABI
+and launch metadata. WebGPU uses copies of the same input tensors and records
+19 numerical checks across the sweep and repeat, plus WGSL/source hashes.
 
-Host measurements use nine rotated batches of 20 calls, after 100 warmups
-per provider. The completion variant synchronizes once after each batch and
-divides elapsed time by 20; it describes amortized throughput. Serialized
-measurements warm 20 calls, then synchronize after every one of 45 timed
-calls. Output destruction occurs outside each serialized timer. GPU timing
-captures ten calls and uses nine CUDA-event samples with warmed graphs.
-The small 129-element anchor's GPU event timing has appreciable graph launch
-and event overhead with ten-call replay; it is not used to infer intrinsic
-microkernel latency. The larger-shape GPU comparisons remove that ambiguity.
+CUDA host measurements use nine batches of 20 calls after 100 warmups;
+the completed-batch variant synchronizes once per batch. Serialized timing
+rotates all nine providers across nine batches of five calls, after 20
+warmups. It synchronizes the appropriate stream/queue after each call and
+releases each output outside the timer. CUDA GPU timing captures ten calls
+and uses nine CUDA-event samples with warmed graphs. The tiny anchor's
+CUDA event timing includes appreciable graph-launch/event overhead.
 
-No individual run provides an exact CPU/GPU sum. Batched calls overlap host
-submission with GPU work, so their overhead becomes almost invisible once
-GPU execution dominates. The serialized measurements retain the additional
-time a caller pays before one result is ready.
+The WebGPU session explicitly negotiates 256 MiB buffer bindings for the
+64M FP32 case; smaller limits fail instead of silently reducing the workload.
+It retains the 32 KiB workgroup-storage ceiling. Shader compilation and
+uploads finish before any timed call. NVRTC remains the CUDA compiler default,
+and consumer execution remains toolkit free.
 
-On the same pinned producer environment, with the optional native adapter,
-local NVRTC bundle and native TileLang's NVCC toolkit:
+On the pinned producer environment with the optional Torch/native adapters
+and WebGPU extra, use a working NVIDIA Vulkan ICD. The
+[headless Vulkan setup](../webgpu.md#headless-nvidia-vulkan-in-a-compute-container)
+records how this compute-only workspace loaded the matching driver locally.
 
 ```sh
 export PYTHONPATH="$PWD/packages/tensor-torch/src"
 export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
 export CUDA_HOME=/path/to/cuda-12.9
-python tools/scaling_backend_benchmark.py \
-  --cache build/phase4-completion-cache --out build/latency-scaling/full.json
+export VK_DRIVER_FILES="$PWD/build/nvidia-vulkan-595.91.07/icd.json"
+export LD_LIBRARY_PATH="$PWD/build/nvidia-vulkan-595.91.07/driver${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export WGPU_BACKEND_TYPE=Vulkan
+python tools/scaling_backend_benchmark.py --webgpu \
+  --cache build/phase4-completion-cache --out build/latency-scaling-a10g/full.json
 
-# Repeat selected cases with the same controls.
-python tools/scaling_backend_benchmark.py \
+python tools/scaling_backend_benchmark.py --webgpu \
   --case pointwise-129 --case gemm-4096-4096-4096 \
-  --cache build/phase4-completion-cache --out build/latency-scaling/repeat.json
+  --cache build/phase4-completion-cache --out build/latency-scaling-a10g-repeat/repeat.json
 
-# Optional plot dependency: matplotlib 3.11.2 in the measured environment.
+# Matplotlib 3.11.2 in the measured environment; the report includes both APIs.
 python tools/plot_latency_scaling.py docs/research/data/latency-scaling.json \
-  --webgpu-report docs/research/data/webgpu-software.json \
   --out build/latency-scaling/scaling
 ```
 
-NVRTC remains Tensor's default compiler and consumer execution remains toolkit
-free. These optional research tools add no consumer dependency or backend.
-
-For the WebGPU baseline, build the transfer suite in the producer environment,
-then run it in a separate environment with the Tensor wheel's `[webgpu]`
-extra installed. The [WebGPU guide](../webgpu.md#build-and-consume) gives the
-wheel installation and transfer steps; the consumer needs no TileLang or Torch.
-
-```sh
-# Producer: emits the WGSL artifacts and suite manifest without a GPU.
-python tools/webgpu_validation.py --build build/webgpu-transfer
-
-# Clean consumer: software-adapter run, matching the five-sample report above.
-python tools/webgpu_validation.py --consume build/webgpu-transfer \
-  --iters 5 --out build/webgpu-software.json
-
-# Physical AMD/Apple consumer: require hardware for the pending acceptance gate.
-python tools/webgpu_validation.py --consume build/webgpu-transfer \
-  --require-second-gpu --iters 5 --out build/webgpu-hardware.json
-```
+Physical A10G execution establishes this same-device comparison. Phase 5's
+separate AMD/Apple portability acceptance gate remains open; see the
+[Phase 5 validation report](phase5-webgpu.md).

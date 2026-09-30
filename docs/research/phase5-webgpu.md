@@ -2,13 +2,22 @@
 
 2026-09-30. The native WebGPU provider and agreed inference lowering are
 implemented. **Phase 5 is not yet accepted:** the user will run the transferred
-suite on a physical AMD or Apple GPU. The current machine exposes an A10G for
-CUDA and only Mesa llvmpipe for WebGPU; software Vulkan cannot close that gate.
+suite on a physical AMD or Apple GPU. Initial WebGPU validation used Mesa
+llvmpipe; the same machine's A10G was subsequently enabled for Vulkan with
+matching local NVIDIA driver libraries. The [matched A10G comparison](latency-scaling.md)
+passes all 17 scaling workloads and two repeats on physical hardware. That
+same-device comparison leaves the separate AMD/Apple portability gate open.
 
 The full local suite passed **164 tests, zero skips, in 184.75 seconds**, with
 CUDA, native Torch execution, direct Triton controls and WebGPU enabled. Nine
 additional evidence-audit tests and one packed-dispatch regression passed after
 that run. No CUDA kernel schedules or NVRTC default changed.
+
+The subsequent A10G comparison added explicit large-buffer negotiation and
+revalidated **180 unique checks**: 128 passed with native WebGPU enabled,
+and all 52 CUDA opt-in checks passed in a separate run. No unchecked cases
+remained. The [scaling evidence](data/latency-scaling.json) records that
+regression summary, 17 same-input CUDA/Vulkan profiles and two matched repeats.
 
 An isolated environment installed the built Tensor wheel, NumPy 2.5.3 and wgpu
 0.29.0, with native wgpu 27.0.2.0. Its six distributions were Tensor, NumPy, wgpu,
