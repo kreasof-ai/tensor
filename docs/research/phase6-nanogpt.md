@@ -1,5 +1,12 @@
 # Phase 6: standalone nanoGPT training
 
+The results below retain the original Phase 6 implementation and wheel hashes.
+The subsequent [repository reorganization](../development.md) moves training
+templates into the optional `tensor-nn` distribution. Current consumers install
+Tensor, Tensor NN and NumPy, and use a rebuilt v2 training bundle. Historical
+two-distribution results remain unchanged; the reproduction commands below use
+the current layout.
+
 Phase 6 completes the agreed CUDA training profile: **ten complete updates of a
 123,980,544-parameter GPT**, using only Tensor and NumPy on the consumer.
 Manual backward, clipping and AdamW all execute packaged kernels. On an A10G,
@@ -165,15 +172,16 @@ From the pinned producer environment, with `TENSOR_NVRTC_HOME` pointing to the
 local NVRTC bundle and headers prepared as in the existing compiler guide:
 
 ```sh
-uv run --no-sync python tools/phase6_producer.py --out build/nanogpt --target sm_86 --tune
-uv run --no-sync python tools/phase6_validate.py --bundle build/nanogpt --out build/validation.json
+uv run --no-sync python benchmarks/nanogpt/producer.py --out build/nanogpt --target sm_86 --tune
+uv run --no-sync python benchmarks/nanogpt/validate.py --bundle build/nanogpt --out build/validation.json
 TORCHINDUCTOR_CACHE_DIR="$PWD/build/inductor-fresh" \
 TRITON_CACHE_DIR="$PWD/build/triton-fresh" \
-uv run --no-sync python tools/phase6_benchmark.py --bundle build/nanogpt --windows 5 --out build/benchmark.json
+uv run --no-sync python benchmarks/nanogpt/benchmark.py --bundle build/nanogpt --windows 5 --out build/benchmark.json
 uv build --wheel --out-dir build/wheel
+uv build --wheel packages/tensor-nn --out-dir build/wheel
 uv venv --python 3.12 build/consumer
-uv pip install --python build/consumer/bin/python build/wheel/tensor_workspace-0.1.0-py3-none-any.whl
-build/consumer/bin/python tools/phase6_consumer.py --bundle build/nanogpt \
+uv pip install --python build/consumer/bin/python build/wheel/tensor_workspace-0.1.0-py3-none-any.whl build/wheel/tensor_nn-0.1.0-py3-none-any.whl
+build/consumer/bin/python benchmarks/nanogpt/consumer.py --bundle build/nanogpt \
   --reference build/validation.json --out build/consumer.json
 ```
 

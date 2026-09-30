@@ -2,9 +2,9 @@ name: WebGPU producer and compiler-free transfer
 
 on:
   push:
-    paths: ["src/**", "tests/test_webgpu*.py", "examples/**", "tools/webgpu*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase5-webgpu.yml"]
+    paths: ["src/**", "tests/providers/test_webgpu*.py", "examples/**", "scripts/validation/webgpu*.py", "benchmarks/inference/webgpu*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase5-webgpu.yml"]
   pull_request:
-    paths: ["src/**", "tests/test_webgpu*.py", "examples/**", "tools/webgpu*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase5-webgpu.yml"]
+    paths: ["src/**", "tests/providers/test_webgpu*.py", "examples/**", "scripts/validation/webgpu*.py", "benchmarks/inference/webgpu*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase5-webgpu.yml"]
   workflow_dispatch:
 
 permissions:
@@ -25,9 +25,9 @@ jobs:
           version: "0.12.9"
       - run: uv sync --locked
       - name: GPU-free WGSL envelope and TIRx producer checks
-        run: uv run --locked python -m pytest tests/test_webgpu.py tests/test_webgpu_audit.py -o addopts='' -q
+        run: uv run --locked python -m pytest tests/providers/test_webgpu.py tests/providers/test_webgpu_audit.py -o addopts='' -q
       - name: Build the inference suite without a device or vendor compiler
-        run: uv run --locked python tools/webgpu_validation.py --build build/transfer
+        run: uv run --locked python scripts/validation/webgpu_validation.py --build build/transfer
       - name: Package the optional native consumer
         run: uv build --wheel --out-dir build/transfer/wheel
       - uses: actions/upload-artifact@v7.0.1
@@ -61,9 +61,9 @@ jobs:
           uv venv --python 3.12 build/consumer
           uv pip install --python build/consumer/bin/python "build/transfer/wheel/tensor_workspace-0.1.0-py3-none-any.whl[webgpu]"
       - name: Execute Windows-produced WGSL and packaged modules without compiler imports
-        run: build/consumer/bin/python tools/webgpu_validation.py --consume build/transfer --iters 3 --out build/consumer-result.json
+        run: build/consumer/bin/python scripts/validation/webgpu_validation.py --consume build/transfer --iters 3 --out build/consumer-result.json
       - name: Audit coverage, source identities and software classification
-        run: build/consumer/bin/python tools/webgpu_audit.py --suite build/transfer/suite.json --result build/consumer-result.json --allow-software
+        run: build/consumer/bin/python scripts/validation/webgpu_audit.py --suite build/transfer/suite.json --result build/consumer-result.json --allow-software
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-webgpu-software-evidence

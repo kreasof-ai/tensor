@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "packages": [
+    "numpy",
+    "tensor-workspace"
+  ],
+  "compiler_and_optional_import_guard": true,
+  "manual_backward": true,
+  "cuda_artifact_execution": true,
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  }
+}

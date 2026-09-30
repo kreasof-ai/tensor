@@ -32,8 +32,8 @@ jobs:
       - name: Run the product signature, ownership and diagnostic guards
         run: |
           uv run --locked python -m pytest -o addopts='' -q \
-            tests/test_signature.py tests/test_dlpack.py tests/test_product_artifact.py \
-            tests/test_build.py tests/test_doctor.py
+            tests/runtime/test_signature.py tests/runtime/test_dlpack.py tests/artifacts/test_product_artifact.py \
+            tests/compiler/test_build.py tests/integration/test_doctor.py
       - name: Build the product artifact and consumer wheel without a GPU
         run: |
           for example in elementwise gemm_relu dynamic_affine dynamic_gemm scalar_offset; do

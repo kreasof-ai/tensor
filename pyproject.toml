@@ -24,8 +24,8 @@ where = ["src"]
 [tool.setuptools.package-data]
 tensor = ["include/tensor/*.h", "native/*.cpp", "native/*.rs"]
 
-# Phase 0 depends on TileLang and its TIRx substrate. Nothing here is product code:
-# these are the tools the architecture-validation experiments run against.
+# Keep the historical p0 group as the pinned producer stack. Ordinary runtime
+# dependencies stay minimal; optional training templates are a workspace member.
 [dependency-groups]
 p0 = [
     "tilelang==0.1.14",
@@ -34,7 +34,15 @@ p0 = [
 ]
 dev = [
     "pytest>=8.0",
+    "tensor-nn==0.1.0",
 ]
+
+[tool.uv.workspace]
+members = ["packages/tensor-nn"]
+
+[tool.uv.sources]
+tensor-workspace = { workspace = true }
+tensor-nn = { workspace = true }
 
 [tool.uv]
 # TileLang's transitive dependencies are recorded in uv.lock. The compiler-free
@@ -42,6 +50,6 @@ dev = [
 default-groups = ["p0", "dev"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "packages/tensor-nn/tests", "packages/tensor-torch/tests"]
 addopts = "-q"
 pythonpath = ["."]

@@ -58,13 +58,13 @@ def _enqueue(executable, launch, stream, parameters):
         code = _submit(executable.function.value, *launch['grid'], *launch['block'],
                        launch['shared_memory_bytes'], stream, c.addressof(parameters))
         if code:
-            from tensor.cuda import CudaError
+            from tensor.providers.cuda import CudaError
             raise CudaError(f'cuLaunchKernel failed with CUDA error {code}')
 
-from tensor.artifact import read_artifact
-from tensor.cuda import Device
-from tensor.abi import BoundCall
-from tensor.signature import SCALAR_TYPES, bind_shapes, buffer_argument, resolve_shape, scalar_value
+from tensor.artifacts.format import read_artifact
+from tensor.providers.cuda import Device
+from tensor.runtime.abi import BoundCall
+from tensor.runtime.signature import SCALAR_TYPES, bind_shapes, buffer_argument, resolve_shape, scalar_value
 
 _sessions = {}
 _lock = threading.RLock()
@@ -361,7 +361,7 @@ class Prepared:
         self.args, self.outputs = args, outputs
         self.device = self.executable.device
         self.arguments = type(call.arguments).from_buffer_copy(call.arguments)
-        from tensor.abi import Argument, BufferDescriptor
+        from tensor.runtime.abi import Argument, BufferDescriptor
         self.parameters = (c.c_void_p * len(self.arguments))(*(
             c.addressof(arg) + (Argument.buffer.offset + BufferDescriptor.address.offset if arg.kind == 1
                               else Argument.scalar.offset) for arg in self.arguments))

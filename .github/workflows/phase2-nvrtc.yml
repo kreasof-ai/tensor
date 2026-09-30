@@ -2,9 +2,9 @@ name: NVRTC runtime and module transfer
 
 on:
   push:
-    paths: ["src/**", "packages/tensor-torch/**", "tools/phase4_*.py", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+    paths: ["src/**", "packages/tensor-torch/**", "packages/tensor-nn/**", "benchmarks/inference/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "scripts/validation/phase2_producer.py", "scripts/validation/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
   pull_request:
-    paths: ["src/**", "packages/tensor-torch/**", "tools/phase4_*.py", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+    paths: ["src/**", "packages/tensor-torch/**", "packages/tensor-nn/**", "benchmarks/inference/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "scripts/validation/phase2_producer.py", "scripts/validation/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
   workflow_dispatch:
 
 permissions:
@@ -38,11 +38,11 @@ jobs:
       - name: Check shared descriptors, diagnostics, CPU provider and native C++ hosting
         run: uv run --locked --extra publish python -m pytest -o addopts='' -q
       - name: Compile the five CUDA profiles and audit cache recovery
-        run: uv run --locked python tools/phase2_producer.py --out build/phase2-transfer --target sm_86
+        run: uv run --locked python scripts/validation/phase2_producer.py --out build/phase2-transfer --target sm_86
       - name: Compile the FlashAttention demonstration with NVRTC
         run: uv run --locked tensor build examples/flash_attention.py --target sm_86 --out build/flash-attention.tbin
       - name: Package a deterministic module and its pinned dependency
-        run: uv run --locked python tools/phase3_producer.py --artifacts build/phase2-transfer --out build/phase3-transfer
+        run: uv run --locked python scripts/validation/phase3_producer.py --artifacts build/phase2-transfer --out build/phase3-transfer
       - name: Prepare the PyPI transport wheel without uploading
         run: uv run --locked tensor publish build/phase3-transfer/ops.tpack --dry-run --out-dir build/phase3-registry
       - name: Build the compiler-free consumer wheel
@@ -83,11 +83,11 @@ jobs:
               assert module.resolve(name,target='sm_86')['selection']=='packaged'
           assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
           PY
-          "${{ matrix.python }}" tools/phase3_registry_check.py build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl --out build/phase3-registry/consumer.json
+          "${{ matrix.python }}" scripts/validation/phase3_registry_check.py build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl --out build/phase3-registry/consumer.json
       - name: Compile actual FX adapter profiles without a GPU
         run: |
           uv pip install --no-deps -e packages/tensor-torch
-          uv run --locked --no-sync python tools/phase4_producer.py --out build/phase4-transfer --target sm_86
+          uv run --locked --no-sync python benchmarks/inference/fx_producer.py --out build/phase4-transfer --target sm_86
       - name: Build the separate PyTorch adapter wheel
         run: uv build --wheel packages/tensor-torch --out-dir build/torch-wheel
       - name: Build the C++ executor against the pinned PyTorch without a toolkit
@@ -106,10 +106,10 @@ jobs:
             torch_python=build/torch-consumer/bin/python
           fi
           uv pip install --python "$torch_python" dist/tensor_workspace-0.1.0-py3-none-any.whl build/torch-wheel/tensor_torch-0.1.0-*.whl torch==2.14.0
-          "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer
+          "$torch_python" benchmarks/inference/fx_consumer.py build/phase2-transfer
           uv pip install --python "$torch_python" --reinstall-package tensor-torch build/torch-native-wheel/tensor_torch-0.1.0-*.whl
-          "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer --require-native
-          TENSOR_TORCH_NATIVE=0 "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer
+          "$torch_python" benchmarks/inference/fx_consumer.py build/phase2-transfer --require-native
+          TENSOR_TORCH_NATIVE=0 "$torch_python" benchmarks/inference/fx_consumer.py build/phase2-transfer
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-torch-native-${{ matrix.os }}

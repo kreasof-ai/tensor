@@ -22,12 +22,12 @@ NVRTC or native host compiler is needed to emit WGSL:
 uv sync --locked
 uv run --locked tensor build examples/webgpu_gemm.py --provider webgpu --out linear.tbin
 uv run --locked tensor inspect examples/webgpu_gemm.py --provider webgpu --stage target
-uv run --locked python tools/webgpu_validation.py --build build/webgpu-transfer
+uv run --locked python scripts/validation/webgpu_validation.py --build build/webgpu-transfer
 ```
 
 The generated directory contains `suite.json`, executable WGSL `.tbin` files and
 `validation.tpack`, with original portable TIRx/source included. Transfer the
-directory and `tools/webgpu_validation.py` to the other machine. Install the
+directory and `scripts/validation/webgpu_validation.py` to the other machine. Install the
 prepared Tensor wheel and its optional WebGPU extra into a separate Python 3.12
 environment. This resolves the native wgpu library appropriate to that machine.
 
@@ -156,7 +156,7 @@ software-adapter results.
 
 ## Validation gates
 
-`TENSOR_WEBGPU=1 python -m pytest tests/test_webgpu.py` enables native-adapter
+`TENSOR_WEBGPU=1 python -m pytest tests/providers/test_webgpu.py` enables native-adapter
 contract checks. Ordinary tests exercise GPU-free lowering and artifact
 validation. The dedicated workflow builds on Linux and Windows and transfers the
 Windows-produced package to a separate Linux software consumer. Software success

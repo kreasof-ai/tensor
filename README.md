@@ -5,6 +5,11 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
+The [development guide](docs/development.md) describes the grouped core layout,
+optional `tensor-torch`/`tensor-nn` packages, benchmark commands and compatibility
+imports. Standalone training now installs the separate `tensor-nn` wheel alongside
+Tensor and NumPy; the Phase 6 report retains the original measured distribution.
+
 **Status: Phases 0–6 complete within their measured profiles.**
 CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
 or host compiler required. CUDA and a CPU validation provider share call ABI

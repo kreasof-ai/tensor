@@ -11,7 +11,7 @@ def load(reference, *, project='.', module_cache=None, target=None, compile=Fals
     source fallback; backend FX cache misses compile with NVRTC automatically.
     """
     if '::' in str(reference):
-        from tensor.modules import resolve_reference
+        from tensor.artifacts.modules import resolve_reference
         if target is None:
             import torch
             target = 'sm_' + ''.join(map(str, torch.cuda.get_device_capability()))

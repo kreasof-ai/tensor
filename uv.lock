@@ -6,6 +6,12 @@ resolution-markers = [
     "sys_platform != 'darwin'",
 ]
 
+[manifest]
+members = [
+    "tensor-nn",
+    "tensor-workspace",
+]
+
 [[package]]
 name = "apache-tvm-ffi"
 version = "0.1.12"
@@ -814,6 +820,17 @@ wheels = [
 ]
 
 [[package]]
+name = "tensor-nn"
+version = "0.1.0"
+source = { editable = "packages/tensor-nn" }
+dependencies = [
+    { name = "tensor-workspace" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "tensor-workspace", editable = "." }]
+
+[[package]]
 name = "tensor-workspace"
 version = "0.1.0"
 source = { editable = "." }
@@ -836,6 +853,7 @@ webgpu = [
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
+    { name = "tensor-nn" },
 ]
 p0 = [
     { name = "apache-tvm-ffi" },
@@ -854,7 +872,10 @@ requires-dist = [
 provides-extras = ["compiler", "publish", "webgpu"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.0" }]
+dev = [
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "tensor-nn", editable = "packages/tensor-nn" },
+]
 p0 = [
     { name = "apache-tvm-ffi", specifier = "==0.1.12" },
     { name = "numpy", specifier = "==2.5.3" },

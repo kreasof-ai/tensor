@@ -2,8 +2,8 @@
 
 from tensor.runtime import Buffer, Executable, Event, bench, TensorRuntimeError
 from tensor.providers import Device
-from tensor.modules import Project, Module, ModuleError
-from tensor.manual import ManualFunction, BackwardContext
+from tensor.artifacts.modules import Project, Module, ModuleError
+from tensor.runtime.manual import ManualFunction, BackwardContext
 # Load the lightweight producer entry point before defining build, so importing
 # its submodule on the first call cannot replace this public function.
 from tensor.build import build_artifact as _build_artifact
@@ -30,7 +30,7 @@ def build(source, out, *, target=None, nvcc=None, cache_dir=None, compiler=None,
 
 def cache_info(cache_dir=None) -> dict:
     from pathlib import Path
-    from tensor.build import cache_info as _cache_info
+    from tensor.compiler.build import cache_info as _cache_info
 
     return _cache_info(Path(cache_dir) if cache_dir else None)
 

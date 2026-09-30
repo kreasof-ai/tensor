@@ -13,7 +13,7 @@ from pathlib import Path
 import torch
 from torch.fx import Graph, GraphModule
 
-from tensor.artifact import read_artifact
+from tensor.artifacts.format import read_artifact
 from .bridge import Kernel, LaunchPlan
 from .lowering import emit, regions
 
