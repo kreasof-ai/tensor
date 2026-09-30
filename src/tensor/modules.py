@@ -565,6 +565,9 @@ class Module:
         if target is None:
             if provider == "cpu":
                 target = "cpu-linux-x86_64"
+            elif provider == "webgpu":
+                from tensor.webgpu_contract import TARGET as WEBGPU_TARGET
+                target = WEBGPU_TARGET
             else:
                 from tensor.doctor import check_device
                 device = check_device(0)
@@ -572,7 +575,9 @@ class Module:
                     raise ModuleError("no CUDA device; supply an exact target")
                 target = device["arch"]
         from tensor.artifact import TARGET
-        if (provider == "cuda" and (not isinstance(target,str) or not TARGET.fullmatch(target))) or (provider == "cpu" and target != "cpu-linux-x86_64"):
+        if ((provider == "cuda" and (not isinstance(target,str) or not TARGET.fullmatch(target)))
+                or (provider == "cpu" and target != "cpu-linux-x86_64")
+                or (provider == "webgpu" and target != "webgpu-portable-v1")):
             raise ModuleError("target does not match the requested provider")
         root = self.cache / "packages" / self.digest
         spec = data.manifest["exports"][export]
@@ -595,7 +600,7 @@ class Module:
         if (provider,target) in binaries:
             return {"path": str(root / binaries[provider,target]), "selection": "packaged", "module_sha256": self.digest,
                     "provider": provider, "target": target, "export": export}
-        selected_compiler = compiler or ("native" if provider == "cpu" else "nvcc" if nvcc else "nvrtc")
+        selected_compiler = compiler or ("wgsl" if provider == "webgpu" else "native" if provider == "cpu" else "nvcc" if nvcc else "nvrtc")
         key = hashlib.sha256(_canonical({"module": self.digest,"export": export,"provider": provider,
                                         "target": target,"compiler": selected_compiler,"abi": [ABI_MAJOR,ABI_MINOR]})).hexdigest()
         output = self.cache / "artifacts" / f"{key}.tbin"
@@ -637,7 +642,7 @@ class Module:
                 "provider": provider, "target": target, "export": export, "build": result}
 
     def load(self, export, device, **options):
-        resolved = self.resolve(export, provider="cpu" if device.device_type == 1 else "cuda",
+        resolved = self.resolve(export, provider=device.info["provider"],
                                 target=device.info["arch"], **options)
         return device.load(resolved["path"])
 

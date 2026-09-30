@@ -1,4 +1,4 @@
-# Tensor runtime contract — ABI 1.1
+# Tensor runtime contract — ABI 1.2
 
 This contract separates an executable call from compiler representations and
 provider mechanisms. It applies to the current contiguous, positive-extent,
@@ -12,6 +12,7 @@ single-device profile on 64-bit little-endian hosts. The
 | Tensor package `0.1.0` | Current development distribution |
 | Artifact envelope `tensor.module` v3 | Container, image selection and metadata schema |
 | Runtime ABI 1.1 | Existing call layouts plus executable, event and workspace descriptors |
+| Runtime ABI 1.2 | Same layouts; explicit session-qualified opaque buffer arguments |
 | TileLang / TVM FFI versions | Producer/frontend IR provenance; not consumer dependencies |
 
 V3 declares `runtime_abi.major`, `minor`, and `required_capabilities`. Unknown
@@ -25,6 +26,26 @@ are adapted to the current call layout at launch. They do not gain CPU or
 cross-SM execution support. Older consumers reject v3 through format checks.
 ABI 1.1 producers declare executable descriptors and zero external workspace.
 Existing ABI 1.0 v3 artifacts remain accepted with implicit zero workspace.
+CUDA/CPU producers still require minor 1. WebGPU requires minor 2 and the
+`opaque_buffer_handles` capability; old consumers and pointer-only providers
+reject those artifacts before loading them.
+
+ABI 1.2 reserves device type 256 for WebGPU, independently of DLPack. Argument
+kind 3 (`TENSOR_ARG_OPAQUE_BUFFER`) keeps the same 64-byte structure: `buffer`
+carries shape, strides, capacity and device metadata with `address == 0`, while
+`scalar` holds a nonzero buffer handle. The call's `stream.handle` identifies the
+owning live session. Providers resolve the handle and validate metadata and the
+artifact's logical shapes before submission. Session close or buffer release
+invalidates every copy of the handle. Kind 1 remains a raw-address buffer and
+kind 2 remains a scalar. No field offsets, structure sizes or existing IDs change.
+
+WebGPU exposes an owned queue, asynchronous submission, completion events and
+NumPy upload/download. It rejects external streams and raw-pointer DLPack imports.
+Its workgroup allocations live in the shader and are checked against adapter
+limits, rather than passing CUDA dynamic shared memory at launch. External global
+workspace remains zero. WebGPU event waits currently wait for the originating
+queue's completion, including subsequent work; they guarantee correctness but
+do not provide CUDA's fine-grained stream ordering.
 
 ## Descriptors
 

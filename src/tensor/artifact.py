@@ -38,13 +38,14 @@ def validate_manifest(manifest: object) -> dict:
             or manifest.get("format") != (FORMAT if revision >= 3 else "tensor.cuda")):
         raise ArtifactError("unsupported Tensor artifact format/version")
     provider = manifest.get("provider", "cuda") if revision >= 3 else "cuda"
-    if provider not in ("cuda", "cpu"):
+    if provider not in ("cuda", "cpu", "webgpu"):
         raise ArtifactError("unsupported runtime provider")
-    if manifest.get("kind") != ("cubin" if provider == "cuda" else "native"):
+    if manifest.get("kind") != {"cuda": "cubin", "cpu": "native", "webgpu": "wgsl"}[provider]:
         raise ArtifactError("invalid executable kind for provider")
     target = manifest.get("target")
     if (not isinstance(target, str) or
-            (not TARGET.fullmatch(target) if provider == "cuda" else target != "cpu-linux-x86_64")):
+            (not TARGET.fullmatch(target) if provider == "cuda" else target !=
+             {"cpu": "cpu-linux-x86_64", "webgpu": "webgpu-portable-v1"}[provider])):
         raise ArtifactError("invalid provider target")
     if revision >= 3:
         from tensor.abi import check_requirement, check_workspace
@@ -172,7 +173,19 @@ def validate_manifest(manifest: object) -> dict:
     ):
         raise ArtifactError("invalid frontend operator set")
     files = manifest.get("files")
-    image = "kernel.cubin" if provider == "cuda" else "kernel.so"
+    if provider == "webgpu":
+        from tensor.webgpu_contract import validate_metadata
+        try:
+            validate_metadata(manifest.get("webgpu"), manifest["abi"])
+            if manifest["runtime_abi"]["minor"] < 2 or "opaque_buffer_handles" not in manifest["runtime_abi"]["required_capabilities"]:
+                raise ValueError("WebGPU requires ABI 1.2 opaque buffer handles")
+            if launch["grid"][2] != 1 or launch["shared_memory_bytes"] != 0:
+                raise ValueError("WebGPU uses a flattened z grid and static workgroup storage")
+            if any(type(value) is not int for value in launch["block"]):
+                raise ValueError("WebGPU needs a static workgroup size")
+        except (KeyError, ValueError) as exc:
+            raise ArtifactError(str(exc)) from exc
+    image = {"cuda": "kernel.cubin", "cpu": "kernel.so", "webgpu": "kernel.wgsl"}[provider]
     if not isinstance(files, dict) or {image, "kernel.tirx.json"} - files.keys():
         raise ArtifactError("missing executable or frontend IR")
     for name, digest in files.items():
@@ -205,8 +218,17 @@ def read_artifact(path: str | Path) -> tuple[dict, dict[str, bytes]]:
     for name, content in files.items():
         if hashlib.sha256(content).hexdigest() != manifest["files"][name]:
             raise ArtifactError(f"payload hash mismatch: {name}")
-    image = "kernel.cubin" if manifest.get("provider", "cuda") == "cuda" else "kernel.so"
-    if not files[image].startswith(b"\x7fELF"):
+    provider = manifest.get("provider", "cuda")
+    image = {"cuda": "kernel.cubin", "cpu": "kernel.so", "webgpu": "kernel.wgsl"}[provider]
+    if provider == "webgpu":
+        from tensor.webgpu_contract import reflect
+        try:
+            contract = reflect(files[image].decode("utf-8"), manifest["entrypoint"], manifest["abi"], manifest["launch"])
+            if contract != manifest["webgpu"]:
+                raise ValueError("WGSL feature/binding/limit contract differs from manifest")
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise ArtifactError(str(exc)) from exc
+    elif not files[image].startswith(b"\x7fELF"):
         raise ArtifactError(f"{image} is not an ELF executable")
     try:
         ir = json.loads(files["kernel.tirx.json"])

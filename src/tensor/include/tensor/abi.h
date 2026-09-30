@@ -1,4 +1,4 @@
-/* Tensor runtime ABI 1.1. ABI 1.0 call layouts are preserved. */
+/* Tensor runtime ABI 1.2. ABI 1.0 call layouts are preserved. */
 #ifndef TENSOR_ABI_H
 #define TENSOR_ABI_H
 #include <stdint.h>
@@ -8,13 +8,15 @@ extern "C" {
 #endif
 
 #define TENSOR_ABI_VERSION 1u
-#define TENSOR_ABI_MINOR 1u
+#define TENSOR_ABI_MINOR 2u
 #define TENSOR_EXEC_ASYNC 1u
 #define TENSOR_EVENT_KNOWN_COMPLETE 1u
 #define TENSOR_DEVICE_CPU 1u
 #define TENSOR_DEVICE_CUDA 2u
+#define TENSOR_DEVICE_WEBGPU 256u
 #define TENSOR_ARG_BUFFER 1u
 #define TENSOR_ARG_SCALAR 2u
+#define TENSOR_ARG_OPAQUE_BUFFER 3u
 #define TENSOR_OK 0
 #define TENSOR_ERROR_ABI 1
 #define TENSOR_ERROR_ARGUMENT 2
@@ -46,8 +48,17 @@ typedef struct TensorArgumentV1 {
   uint32_t kind;
   uint32_t dtype;
   TensorBufferV1 buffer; /* zero for a scalar */
-  uint64_t scalar;       /* zero for a buffer */
+  uint64_t scalar;       /* scalar bits or kind-3 handle; zero for kind 1 */
 } TensorArgumentV1;
+
+/* ABI 1.2 adds kind OPAQUE_BUFFER without changing any struct layout. Its
+ * buffer metadata is identical to BUFFER, but address MUST be zero and scalar
+ * contains a nonzero session-owned buffer handle. The call's stream.handle
+ * identifies that session. No pointer conversion or CUDA/DLPack borrowing is
+ * permitted. Providers resolve and validate the handle and metadata before
+ * submission. Release/session close invalidates all copies of the handle.
+ * Artifact capability opaque_buffer_handles is mandatory for this encoding.
+ */
 
 typedef struct TensorStreamV1 {
   uint32_t device_type;

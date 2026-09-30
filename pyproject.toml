@@ -9,6 +9,7 @@ dependencies = ["numpy==2.5.3"]
 [project.optional-dependencies]
 compiler = ["tilelang==0.1.14", "apache-tvm-ffi==0.1.12"]
 publish = ["twine>=6.2,<8"]
+webgpu = ["wgpu==0.29.0"]
 
 [project.scripts]
 tensor = "tensor.cli:main"

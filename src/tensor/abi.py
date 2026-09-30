@@ -8,10 +8,11 @@ import sys
 from tensor.signature import SCALAR_TYPES, buffer_argument, evaluate, scalar_value
 
 ABI_MAJOR = 1
-ABI_MINOR = 1
+ABI_MINOR = 2
 DTYPES = {name: index for index, name in enumerate(("bool", "int8", "uint8", "int16", "uint16",
           "int32", "uint32", "int64", "uint64", "float16", "float32", "float64"), 1)}
 CAPABILITIES = frozenset({"contiguous", "scalars", "symbolic_shapes", "executable_descriptors", "no_external_workspace"})
+KNOWN_CAPABILITIES = CAPABILITIES | {"opaque_buffer_handles"}
 
 
 class BufferDescriptor(c.Structure):
@@ -80,10 +81,10 @@ def runtime_requirement(arguments: list[dict], symbols: dict) -> dict:
         required.append("scalars")
     if symbols:
         required.append("symbolic_shapes")
-    return {"major": ABI_MAJOR, "minor": ABI_MINOR, "required_capabilities": required}
+    return {"major": ABI_MAJOR, "minor": 1, "required_capabilities": required}
 
 
-def check_requirement(requirement: dict, capabilities=CAPABILITIES) -> None:
+def check_requirement(requirement: dict, capabilities=KNOWN_CAPABILITIES) -> None:
     if (not isinstance(requirement, dict) or set(requirement) != {"major", "minor", "required_capabilities"}
             or type(requirement["major"]) is not int or requirement["major"] != ABI_MAJOR
             or type(requirement["minor"]) is not int or not 0 <= requirement["minor"] <= ABI_MINOR):
@@ -94,6 +95,8 @@ def check_requirement(requirement: dict, capabilities=CAPABILITIES) -> None:
         raise ValueError("invalid runtime capabilities")
     if missing := set(required) - capabilities:
         raise ValueError(f"missing runtime capabilities: {sorted(missing)}")
+    if "opaque_buffer_handles" in required and requirement["minor"] < 2:
+        raise ValueError("opaque buffer handles require runtime ABI 1.2")
 
 
 class BoundCall:
@@ -113,6 +116,9 @@ class BoundCall:
                 self.storage.append(value)
                 argument.kind = 1
                 argument.buffer = value._descriptor
+                if "opaque_buffer_handles" in device.capabilities:
+                    argument.kind = 3
+                    argument.scalar = value._handle
             else:
                 value = values[name] if name in values else evaluate({"var": name}, symbols)
                 scalar = SCALAR_TYPES[dtype](value if validated else scalar_value(value, dtype, name))

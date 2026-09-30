@@ -96,7 +96,7 @@ def _cache_root(override: Path | None = None) -> Path:
 
 def cache_info(cache_dir: Path | None = None) -> dict:
     root = _cache_root(cache_dir)
-    entries = [*root.glob("*.cubin"), *root.glob("*.so")] if root.is_dir() else []
+    entries = [*root.glob("*.cubin"), *root.glob("*.so"), *root.glob("webgpu/*.tbin")] if root.is_dir() else []
     return {"path": str(root.resolve()), "entries": len(entries),
             "bytes": sum(path.stat().st_size for path in entries)}
 
@@ -143,6 +143,10 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
                    nvcc: str | None = None, cache_dir: Path | None = None,
                    compiler: str | None = None, nvrtc_home: str | Path | None = None,
                    provider: str = "cuda") -> dict:
+    if provider == "webgpu":
+        from tensor.webgpu_build import build_webgpu
+        return build_webgpu(source_path, output_path, target=target, cache_dir=cache_dir,
+                            compiler=compiler, nvcc=nvcc, nvrtc_home=nvrtc_home)
     if provider == "cpu":
         from tensor.cpu_build import build_cpu
         return build_cpu(source_path, output_path, target=target, cache_dir=cache_dir,

@@ -6,6 +6,16 @@ import argparse
 import json
 
 
+def _execution_target(provider, ordinal):
+    if provider == "webgpu":
+        from tensor.webgpu import probe
+        return probe(ordinal)
+    if provider == "cpu":
+        return {"status": "ok", "arch": "cpu-linux-x86_64"}
+    from tensor.doctor import check_device
+    return check_device(ordinal)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tensor", description="Tensor kernel tooling")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -71,11 +81,11 @@ def main(argv: list[str] | None = None) -> int:
     benchmark.add_argument("--nvcc", help="CUDA compiler used when the input is Python source")
     benchmark.add_argument("--cache-dir", help="cache used when the input is Python source")
     for command in (doctor, build, run, benchmark, resolve, inspect):
-        command.add_argument("--compiler", choices=("nvrtc", "nvcc") if command is doctor else ("nvrtc", "nvcc", "native"),
+        command.add_argument("--compiler", choices=("nvrtc", "nvcc", "wgsl") if command is doctor else ("nvrtc", "nvcc", "native", "wgsl"),
                              help="executable compiler (default: nvrtc; --nvcc selects nvcc)")
         command.add_argument("--nvrtc-home", help="NVRTC library/header bundle (or TENSOR_NVRTC_HOME)")
-    for command in (build, run, benchmark, resolve, inspect):
-        command.add_argument("--provider", choices=("cuda", "cpu"),
+    for command in (doctor, build, run, benchmark, resolve, inspect):
+        command.add_argument("--provider", choices=("cuda", "cpu", "webgpu"),
                              help="provider (default: cuda for source; inferred for artifacts)")
     for command in (add, install, build, run, benchmark, resolve, inspect):
         command.add_argument("--project", default=".", help="directory containing tensor.json and tensor.lock")
@@ -113,7 +123,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "doctor":
         from tensor.doctor import diagnose, render
-
+        if args.provider == "webgpu":
+            from tensor.webgpu import probe
+            from tensor.runtime import TensorRuntimeError
+            try:
+                report = probe(args.device)
+                report["status"] = "run_ready"
+            except (TensorRuntimeError, ValueError) as exc:
+                report = {"status": "blocked", "provider": "webgpu", "detail": str(exc)}
+            print(json.dumps(report, indent=2))
+            return 0 if report["status"] == "run_ready" else 1
         report = diagnose(target=args.target, device=args.device, nvcc=args.nvcc,
                           compiler=args.compiler, nvrtc_home=args.nvrtc_home)
         print(json.dumps(report, indent=2) if args.json else render(report))
@@ -186,7 +205,7 @@ def main(argv: list[str] | None = None) -> int:
                 result = json.dumps(read_wheel(path)[0], indent=2)
             elif path.suffix == ".py":
                 result = inspect_source(path, stage=args.stage, target=args.target,
-                                        trace_dir=Path(args.out) if args.out else None)
+                                        trace_dir=Path(args.out) if args.out else None, provider=args.provider or "cuda")
             else:
                 result = inspect_artifact(path, args.stage)
         except (ArtifactError, OSError, ValueError, RuntimeError) as exc:
@@ -211,7 +230,7 @@ def main(argv: list[str] | None = None) -> int:
                 if "::" in args.artifact:
                     from tensor.modules import resolve_reference
                     provider = args.provider or "cuda"
-                    detected = check_device(args.device) if provider == "cuda" else {"status":"ok","arch":"cpu-linux-x86_64"}
+                    detected = _execution_target(provider, args.device)
                     if detected["status"] != "ok":
                         raise CudaError(detected["detail"])
                     if args.target and args.target != detected["arch"]:
@@ -222,7 +241,7 @@ def main(argv: list[str] | None = None) -> int:
                     artifact = Path(resolution["path"])
                 elif source.suffix == ".py":
                     provider = args.provider or "cuda"
-                    detected = check_device(args.device) if provider == "cuda" else {"status": "ok", "arch": "cpu-linux-x86_64"}
+                    detected = _execution_target(provider, args.device)
                     if detected["status"] != "ok":
                         raise CudaError(detected["detail"])
                     artifact = Path(directory) / "kernel.tbin"

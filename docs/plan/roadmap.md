@@ -303,12 +303,28 @@ host compiler. NVRTC remains the only automatic kernel compiler.
 
 ## Phase 5 — Second provider
 
-AMD or Metal. **The first real test of the provider ABI**, and the reason E6 exists
-locally with the `cpu` backend: a design that only ever met NVIDIA should be considered
-provisional, and validating against a second backend is much cheaper locally than by
-renting hardware.
+**In progress: native WebGPU through wgpu.** See [ADR 0015](../adr/0015-webgpu-provider.md)
+and the [implementation/validation guide](../webgpu.md). Tensor maintains portable
+TIRx GEMM/reduction lowering, while TileLang owns the existing SIMT pipeline and
+WGSL code generation. Runtime shader translation uses the bundled native wgpu
+implementation, with no TileLang/TVM or vendor toolkit on the consumer.
 
-RDNA2 specifically is not in scope: no supported TileLang path exists.
+The bounded inference profile includes elementwise/scalars/symbolic shapes,
+FP16/FP32 tiled GEMM and linear tails/bias/ReLU, device-resident MLP composition,
+and FP16 streaming forward attention with batching, causal/noncausal masking,
+sequence tails and head dimensions 64/128. Missing features and workgroup/buffer
+limits produce explicit errors. Training, arbitrary TileLang/TIRx programs,
+subgroup matrix instructions and PyTorch WebGPU storage interop are outside this
+profile. CUDA continues to default to NVRTC.
+
+ABI 1.2 explicitly adds session-qualified opaque buffer handles without changing
+the CPU/CUDA call layouts or turning GPU handles into addresses. Software Vulkan
+correctness, isolated consumers and GPU-free Linux/Windows producers are checked;
+**completion requires transferred artifacts executing on a real AMD or Apple GPU**,
+with adapter/feature/limit metadata, correctness and measured latency. The user
+will run the prepared validation bundle on that machine. A software adapter or
+another NVIDIA execution does not satisfy this exit gate. RDNA-family eligibility
+now follows actual WebGPU capabilities rather than the native TileLang ROCm path.
 
 ---
 

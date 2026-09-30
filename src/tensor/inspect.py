@@ -14,17 +14,21 @@ from tensor.doctor import TARGET, check_device
 
 
 def inspect_source(path: Path, *, stage: str, target: str | None = None,
-                   trace_dir: Path | None = None) -> str:
+                   trace_dir: Path | None = None, provider="cuda") -> str:
     if not path.is_file() or path.suffix != ".py":
         raise ValueError("inspect source must be an existing Python file")
     if stage == "manifest":
         raise ValueError("source has no artifact manifest; use tirx, target, or passes")
-    if target is None and stage in ("target", "passes"):
+    if provider == "webgpu":
+        if target not in (None, "webgpu-portable-v1"):
+            raise ValueError("WebGPU inspection needs target webgpu-portable-v1")
+        target = "webgpu-portable-v1"
+    if provider == "cuda" and target is None and stage in ("target", "passes"):
         device = check_device(0)
         if device["status"] != "ok":
             raise ValueError("no CUDA target detected; pass --target sm_XX")
         target = device["arch"]
-    if target is not None and not TARGET.fullmatch(target):
+    if provider == "cuda" and target is not None and not TARGET.fullmatch(target):
         raise ValueError("target must be an exact CUDA SM, e.g. sm_86")
     namespace = runpy.run_path(str(path.resolve()))
     export = namespace.get("tensor_export")
@@ -42,10 +46,21 @@ def inspect_source(path: Path, *, stage: str, target: str | None = None,
     if stage == "tirx":
         symbol = str(kernel.attrs["global_symbol"])
         return str(tvm.IRModule({symbol: kernel}).script())
+    def compile_source():
+        if provider == "webgpu":
+            from tensor.webgpu_lowering import lower_simt_gemm, verify_uniform_barriers
+            device_target = tvm.target.Target("webgpu")
+            with tilelang.transform.PassContext(opt_level=3, config={"tirx.disable_vectorize": True}), device_target:
+                lowered = tilelang.lower(lower_simt_gemm(kernel), target=device_target,
+                    enable_device_compile=False, enable_host_codegen=False)
+                for function in lowered.device_mod.functions.values():
+                    verify_uniform_barriers(function)
+                return str(lowered.kernel_source)
+        return compile_kernel_source(kernel, {"kind": "cuda", "arch": target})
     from tilelang.tools.compile_only import compile_kernel_source
 
     if stage == "target":
-        return compile_kernel_source(kernel, {"kind": "cuda", "arch": target})
+        return compile_source()
     if stage != "passes":
         raise ValueError("stage must be manifest, tirx, target, or passes")
     import tilelang.tools.lower_trace as trace
@@ -61,7 +76,7 @@ def inspect_source(path: Path, *, stage: str, target: str | None = None,
         with contextlib.redirect_stdout(io.StringIO()):
             trace.enable(mode="terminal", trace_dir=str(root))
             try:
-                compile_kernel_source(kernel, {"kind": "cuda", "arch": target})
+                compile_source()
             finally:
                 trace.reset()
         after = sorted(root.rglob("*_after.tir"), key=lambda file: file.name)

@@ -8,7 +8,8 @@ The full architectural proposal lives in [`proposal.md`](proposal.md).
 **Status: Phases 0–3 complete within their measured profiles.**
 CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
 or host compiler required. CUDA and a CPU validation provider share call ABI
-1.1, including executable/event identities and zero external workspace,
+1.1, including executable/event identities and zero external workspace;
+the compatible ABI 1.2 addition represents WebGPU buffers as opaque handles,
 independently versioned from the v3 artifact envelope. See the
 [Phase 2 exit report](docs/research/phase2-exit.md) and
 [runtime contract](docs/runtime-abi.md). Direct PTX is experimental work after
@@ -45,6 +46,12 @@ AOTAutograd evaluation includes compiled forward/backward regions; full
 compiled training remains experimental.
 The optional C++ executor and [direct TileLang/Triton comparison](docs/research/direct-backend-comparison.md)
 measure runtime overhead separately from GPU kernel execution.
+
+Phase 5 adds an optional [native WebGPU provider](docs/webgpu.md), Tensor-owned
+TIRx GEMM/reduction lowering and WGSL artifacts. Elementwise, FP16/FP32 linear,
+MLP composition and batched FP16 forward attention pass the software Vulkan
+suite in an isolated Tensor/NumPy/wgpu environment. Physical AMD/Apple validation
+and performance measurements remain the Phase 5 exit gate.
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.

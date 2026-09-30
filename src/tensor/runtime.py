@@ -233,7 +233,7 @@ class Executable:
                     raise self.device.error("buffer has been released")
                 # V1 omitted alignment metadata; retain CUDA allocation alignment there.
                 alignment = descriptor.get("alignment", 256)
-                if value.pointer % alignment:
+                if "opaque_buffer_handles" not in self.device.capabilities and value.pointer % alignment:
                     raise ValueError(f"{descriptor['name']} needs {alignment}-byte pointer alignment")
         symbols, values = bind_shapes(self.manifest, values, dimensions)
         launch = resolve_launch(self.manifest["launch"], symbols)
