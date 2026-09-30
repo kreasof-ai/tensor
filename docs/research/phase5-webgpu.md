@@ -1,5 +1,13 @@
 # Phase 5 WebGPU implementation and hardware validation
 
+**Phase 5 is complete.** The [Linux-to-Windows RX 6700 XT transfer](webgpu-rx6700xt-transfer.md)
+passes all 33 inference/composition checks on physical AMD Vulkan hardware.
+The strict audit was rerun against the original producer bundle and reports
+`physical_second_gpu=true`, `two_hosts=true`, and `phase5_hardware_gate="passed"`.
+The returned consumer result is timestamped 2026-09-30 18:35:37 UTC
+(2026-10-01 in Asia/Jakarta). Source/artifact hashes match, compiler imports are
+blocked, and adapter limits and measured timings are retained with the evidence.
+
 **2026-10-01 update:** [Windows RX 6700 XT validation](webgpu-rx6700xt.md)
 passes all 33 inference/composition checks on physical AMD hardware through
 Vulkan in an isolated wheel consumer, plus 28 native-enabled contract/audit
@@ -7,8 +15,8 @@ tests with zero skips. Timings and raw evidence are recorded in that report.
 D3D12 passes six FP32 affine checks before rejecting missing `shader-f16`.
 The subsequent [AMD scaling sweep](latency-scaling.md#windows-rx-6700-xt-at-the-same-workload-sizes)
 also passes all 17 A10G workload sizes and two repeats with matching WGSL hashes.
-**Phase 5 is not yet accepted:** the AMD run built its suite locally, so the
-strict auditor rejects its same-host evidence for the two-host transfer gate.
+This initial AMD run built its suite locally and left the two-host transfer gate
+open. The subsequent Linux-produced bundle run above closes that requirement.
 
 2026-09-30 implementation baseline: the native WebGPU provider and agreed
 inference lowering are implemented. Initial WebGPU validation used Mesa
@@ -72,5 +80,6 @@ The existing [NVRTC/Torch workflow also passed](https://github.com/kreasof-ai/te
 on Linux and Windows for the implementation's source parent; the follow-up only
 normalized transfer-manifest paths. Its [metadata](data/webgpu-nvrtc-regression-ci.json)
 records both jobs. Physical AMD Vulkan execution and a latency baseline are now
-recorded in the [RX 6700 XT report](webgpu-rx6700xt.md); **the physical AMD/Apple
-two-host acceptance transfer remains open.**
+recorded in the [RX 6700 XT report](webgpu-rx6700xt.md). The subsequent
+[physical AMD two-host transfer](webgpu-rx6700xt-transfer.md) passes the strict
+audit and completes Phase 5 acceptance.

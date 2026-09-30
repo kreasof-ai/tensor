@@ -1,5 +1,10 @@
 # Windows RX 6700 XT WebGPU validation
 
+**Acceptance update:** the subsequent
+[Linux-to-Windows RX 6700 XT transfer](webgpu-rx6700xt-transfer.md) passes all 33
+checks and the strict two-host audit, completing Phase 5. The same-host run
+documented below is the earlier hardware-validation baseline.
+
 On **2026-10-01 (Asia/Jakarta)**, the native wgpu provider passed all **33
 inference/composition checks** on this machine's physical **AMD Radeon RX 6700
 XT through Vulkan**. The WebGPU contract and evidence-audit suite also passed
@@ -149,8 +154,8 @@ was not changed.
 
 ## Acceptance boundary
 
-**Physical AMD execution is verified. The formal Phase 5 two-host transfer gate
-remains open.** The producer and consumer in this run both used hostname
+**Physical AMD execution is verified. This run alone left the formal Phase 5
+two-host transfer gate open.** The producer and consumer in this run both used hostname
 `pc-gaming`. `--require-second-gpu` verifies a physical AMD/Apple adapter, while
 the evidence auditor additionally requires distinct producer/consumer hosts.
 
@@ -160,6 +165,7 @@ hash/isolation and timing checks and correctly reported
 The option relaxes the formal gate; it does not classify this Vulkan GPU as
 software (`software_adapter=false`). A strict audit rejected the same-host
 evidence with `Phase 5 needs a transferred suite on a physical AMD or Apple GPU`.
-To close that gate, consume a matching suite and wheel produced on another host
-and retain a successful strict audit. The earlier Windows-to-Linux software
-transfer and physical A10G results remain separate evidence.
+The subsequent [Linux-to-Windows AMD transfer](webgpu-rx6700xt-transfer.md)
+consumes a matching suite and wheel produced on another host and passes the
+strict audit, closing that gate. The earlier Windows-to-Linux software transfer
+and physical A10G results remain separate evidence.

@@ -4,8 +4,9 @@ Phase 5 implements portable inference through native wgpu. The physical
 [Windows RX 6700 XT validation](research/webgpu-rx6700xt.md) passes all 33
 inference/composition checks through Vulkan, plus 28 native-enabled contract/audit
 tests. Its D3D12 backend rejects FP16 artifacts because `shader-f16` is absent in
-the measured configuration. The formal two-host AMD/Apple transfer gate remains
-open: this AMD run used a local producer. Software Vulkan validates compiler-free
+the measured configuration. **Phase 5 is complete:** the subsequent
+[Linux-to-Windows AMD transfer](research/webgpu-rx6700xt-transfer.md) passes all
+33 checks and the strict two-host audit. Software Vulkan validates compiler-free
 consumption in CI. The [latency comparison](research/latency-scaling.md) runs
 matched workloads on the physical NVIDIA A10G through CUDA and native WebGPU/Vulkan.
 The [RX 6700 XT scaling follow-up](research/latency-scaling.md#windows-rx-6700-xt-at-the-same-workload-sizes)
@@ -162,9 +163,11 @@ Windows-produced package to a separate Linux software consumer. Software success
 does not close the physical GPU gate. Run the transferred suite with
 `--require-second-gpu` on AMD or Apple and retain `webgpu-result.json` as acceptance
 evidence; performance and vendor-specific issues must be assessed from that run.
-The [RX 6700 XT result](research/webgpu-rx6700xt.md) verifies physical AMD
-execution and records timings, but its same-host producer does not satisfy the
-auditor's distinct-host requirement.
+The initial [RX 6700 XT result](research/webgpu-rx6700xt.md) verifies physical AMD
+execution and records timings. The subsequent
+[Linux-to-Windows transfer](research/webgpu-rx6700xt-transfer.md) satisfies the
+auditor's distinct-host requirement and closes Phase 5 acceptance. Its retained
+suite and result reproduce the strict audit without `--allow-software`.
 
 The portable SIMT lowering prioritizes complete profile correctness. No CUDA,
 native TileLang, Triton or vendor-library performance parity is claimed. Kernel

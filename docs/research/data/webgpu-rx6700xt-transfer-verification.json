@@ -1,0 +1,39 @@
+{
+  "schema": "tensor.webgpu-transfer-verification.v1",
+  "verified_utc": "2026-09-30T18:43:56.286915+00:00",
+  "result_timestamp_utc": "2026-09-30T18:35:37.451801+00:00",
+  "source_commit": "f2b056b56751bc01f031c7e17f1e7c19b881f10a",
+  "producer_hostname": "default",
+  "consumer_hostname": "pc-gaming",
+  "original_bundle_sha256": "726627843ab186d0215287047865b2c25afd3e7cc800a4ead21d0fec05311554",
+  "returned_results_sha256": "054f35e6b8573c1ad6192b6343221ea73b1e739850802a44e2c46d35df1aba42",
+  "audit_source_sha256": "c8fc468b435752737853db775a5387a35ff8e1a1b6df18f11bbf9161686e55e7",
+  "strict_audit": {
+    "status": "passed",
+    "cases": 33,
+    "physical_second_gpu": true,
+    "two_hosts": true,
+    "phase5_hardware_gate": "passed"
+  },
+  "verification": {
+    "original_zip_integrity": "passed",
+    "returned_zip_integrity": "passed",
+    "returned_manifest_identical_to_original": true,
+    "all_original_bundle_file_hashes_verified": 60,
+    "strict_audit_rerun_on_producer": "passed",
+    "rerun_matches_returned_audit": true,
+    "timed_cases": 32,
+    "distinct_artifacts": 23,
+    "iters_per_timed_case": 15,
+    "compiler_import_guard": true,
+    "compiler_imports": []
+  },
+  "files_sha256": {
+    "webgpu-rx6700xt-transfer-suite.json": "231c23c68fd00cb13f247648416219859b75e356177ac72e1fc06b79643bbca8",
+    "webgpu-rx6700xt-transfer-result.json": "0403f45608997d8a3f53c767ab3701f4170f46f4c204acbc943eaf026f2bc443",
+    "webgpu-rx6700xt-transfer-audit.json": "d92aae5174ccb92e8128aba436af61c831364ef3b22d3d6546f8c5a0b92ee87e",
+    "webgpu-rx6700xt-transfer-bundle-manifest.json": "e48ceca4f2d5d579c9411158b4e93f25531d563b24fb834fbb55c3d2bcfd2b9c",
+    "webgpu-rx6700xt-transfer-validation.log": "893a951ba34b99f9dc697cd0f40cc60c6a0289692ee964b369b91d517e2ab432"
+  },
+  "byte_preservation": "Retained evidence uses its original ZIP bytes. Git attributes disable line-ending normalization for these files."
+}

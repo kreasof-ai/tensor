@@ -1,0 +1,131 @@
+{
+  "status": "run_ready",
+  "ordinal": 0,
+  "provider": "webgpu",
+  "arch": "webgpu-portable-v1",
+  "adapter": {
+    "vendor": "AMD proprietary driver",
+    "architecture": "",
+    "device": "AMD Radeon RX 6700 XT",
+    "description": "26.6.2 (AMD proprietary shader compiler)",
+    "stackgroup_min_size": 4,
+    "stackgroup_max_size": 128,
+    "vendor_id": 4098,
+    "device_id": 29663,
+    "adapter_type": "DiscreteGPU",
+    "backend_type": "Vulkan"
+  },
+  "features": [
+    "bgra8unorm-storage",
+    "buffer-binding-array",
+    "conservative-rasterization",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-filterable",
+    "indirect-first-instance",
+    "mappable-primary-buffers",
+    "multi-draw-indirect-count",
+    "partially-bound-binding-array",
+    "pipeline-statistics-query",
+    "polygon-mode-line",
+    "polygon-mode-point",
+    "push-constants",
+    "ray-query",
+    "rg11b10ufloat-renderable",
+    "sampled-texture-and-storage-buffer-array-non-uniform-indexing",
+    "shader-early-depth-test",
+    "shader-f16",
+    "shader-f64",
+    "shader-int64",
+    "shader-primitive-index",
+    "storage-resource-binding-array",
+    "subgroup",
+    "subgroup-barrier",
+    "subgroup-vertex",
+    "texture-adapter-specific-format-features",
+    "texture-binding-array",
+    "texture-compression-bc",
+    "texture-format-nv12",
+    "texture-format16bit-norm",
+    "timestamp-query",
+    "timestamp-query-inside-encoders",
+    "timestamp-query-inside-passes",
+    "vertex-writable-storage"
+  ],
+  "limits": {
+    "max-bind-groups": 8,
+    "max-bind-groups-plus-vertex-buffers": 0,
+    "max-bindings-per-bind-group": 1000,
+    "max-buffer-size": 4503599627370496,
+    "max-color-attachment-bytes-per-sample": 0,
+    "max-color-attachments": 0,
+    "max-compute-invocations-per-workgroup": 1024,
+    "max-compute-workgroup-size-x": 1024,
+    "max-compute-workgroup-size-y": 1024,
+    "max-compute-workgroup-size-z": 1024,
+    "max-compute-workgroup-storage-size": 32768,
+    "max-compute-workgroups-per-dimension": 65535,
+    "max-dynamic-storage-buffers-per-pipeline-layout": 8,
+    "max-dynamic-uniform-buffers-per-pipeline-layout": 8,
+    "max-inter-stage-shader-variables": 0,
+    "max-non-sampler-bindings": 4294967295,
+    "max-push-constant-size": 256,
+    "max-sampled-textures-per-shader-stage": 4294967295,
+    "max-samplers-per-shader-stage": 4294967295,
+    "max-storage-buffer-binding-size": 2147483647,
+    "max-storage-buffers-per-shader-stage": 4294967295,
+    "max-storage-textures-per-shader-stage": 4294967295,
+    "max-texture-array-layers": 8192,
+    "max-texture-dimension-1d": 16384,
+    "max-texture-dimension-2d": 16384,
+    "max-texture-dimension-3d": 8192,
+    "max-uniform-buffer-binding-size": 2147483647,
+    "max-uniform-buffers-per-shader-stage": 4294967295,
+    "max-vertex-attributes": 64,
+    "max-vertex-buffer-array-stride": 16383,
+    "max-vertex-buffers": 16,
+    "min-storage-buffer-offset-alignment": 32,
+    "min-uniform-buffer-offset-alignment": 32
+  }
+}
+passed affine_1
+passed affine_127
+passed affine_128
+passed affine_129
+passed affine_4097
+passed affine_1048576
+passed elementwise_f16_tail
+passed gemm_f16
+passed linear_f16
+passed linear_transpose
+passed linear_f32
+passed linear_f16_acc32
+passed mlp_second
+passed gemm_256
+passed gemm_512
+passed dynamic_gemm_1
+passed dynamic_gemm_31
+passed dynamic_gemm_32
+passed dynamic_gemm_33
+passed dynamic_gemm_65
+passed attention_d64_s65_full
+passed attention_d64_s129_full
+passed attention_d64_s512_full
+passed attention_d64_s65_causal
+passed attention_d64_s129_causal
+passed attention_d64_s512_causal
+passed attention_d128_s65_full
+passed attention_d128_s129_full
+passed attention_d128_s512_full
+passed attention_d128_s65_causal
+passed attention_d128_s129_causal
+passed attention_d128_s512_causal
+{"status": "passed", "cases": 33, "physical_second_gpu": true}
+{
+  "status": "passed",
+  "cases": 33,
+  "physical_second_gpu": true,
+  "two_hosts": true,
+  "phase5_hardware_gate": "passed"
+}

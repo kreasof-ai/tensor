@@ -303,7 +303,7 @@ host compiler. NVRTC remains the only automatic kernel compiler.
 
 ## Phase 5 — Second provider
 
-**In progress: native WebGPU through wgpu.** See [ADR 0015](../adr/0015-webgpu-provider.md)
+**Complete: native WebGPU through wgpu.** See [ADR 0015](../adr/0015-webgpu-provider.md)
 and the [implementation/validation guide](../webgpu.md). Tensor maintains portable
 TIRx GEMM/reduction lowering, while TileLang owns the existing SIMT pipeline and
 WGSL code generation. Runtime shader translation uses the bundled native wgpu
@@ -319,12 +319,13 @@ profile. CUDA continues to default to NVRTC.
 
 ABI 1.2 explicitly adds session-qualified opaque buffer handles without changing
 the CPU/CUDA call layouts or turning GPU handles into addresses. Software Vulkan
-correctness, isolated consumers and GPU-free Linux/Windows producers are checked;
-**completion requires transferred artifacts executing on a real AMD or Apple GPU**,
-with adapter/feature/limit metadata, correctness and measured latency. The user
-will run the prepared validation bundle on that machine. A software adapter or
-another NVIDIA execution does not satisfy this exit gate. RDNA-family eligibility
-now follows actual WebGPU capabilities rather than the native TileLang ROCm path.
+correctness, isolated consumers and GPU-free Linux/Windows producers are checked.
+The [Linux-to-Windows RX 6700 XT transfer](../research/webgpu-rx6700xt-transfer.md)
+passes all 33 inference/composition checks and the strict audit, satisfying the
+real AMD/Apple transfer exit gate with adapter/feature/limit metadata,
+correctness and measured latency. The consumer uses the matching runtime wheel
+without compiler/framework packages. RDNA-family eligibility follows actual
+WebGPU capabilities rather than the native TileLang ROCm path.
 
 ---
 

@@ -2,7 +2,9 @@
 
 Status: accepted implementation direction, 2026-09-30. Physical AMD Vulkan
 execution [verified on Windows RX 6700 XT](../research/webgpu-rx6700xt.md),
-2026-10-01; the two-host AMD/Apple acceptance transfer remains open.
+2026-10-01. Phase 5 acceptance is complete: the
+[Linux-to-Windows RX 6700 XT transfer](../research/webgpu-rx6700xt-transfer.md)
+passes all 33 checks and the strict two-host audit.
 
 ## Decision
 
