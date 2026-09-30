@@ -84,6 +84,10 @@ jobs:
           assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
           PY
           "${{ matrix.python }}" tools/phase3_registry_check.py build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl --out build/phase3-registry/consumer.json
+      - name: Compile actual FX adapter profiles without a GPU
+        run: |
+          uv pip install --no-deps -e packages/tensor-torch
+          uv run --locked --no-sync python tools/phase4_producer.py --out build/phase4-transfer --target sm_86
       - name: Build the separate PyTorch adapter wheel
         run: uv build --wheel packages/tensor-torch --out-dir build/torch-wheel
       - name: Check installed PyTorch backend without compiler packages or GPU
@@ -100,7 +104,10 @@ jobs:
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-torch-${{ matrix.os }}
-          path: build/torch-wheel/*.whl
+          path: |
+            build/torch-wheel/*.whl
+            build/phase4-transfer/*.tbin
+            build/phase4-transfer/producer.json
           if-no-files-found: error
           retention-days: 30
       - uses: actions/upload-artifact@v7.0.1
