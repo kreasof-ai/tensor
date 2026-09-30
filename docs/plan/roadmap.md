@@ -23,6 +23,9 @@ execute through installed exports on the separate A10G without compiler imports.
 The full GPU suite passes 104 tests with zero skips. See
 [ADR 0013](../adr/0013-phase3-offline-module-system.md), the
 [module guide](../modules.md) and [Phase 3 exit report](../research/phase3-exit.md).
+The [PyPI transport adapter](../adr/0014-pypi-module-transport.md) extends that
+profile with publishing and exact-version registry retrieval, retaining the
+offline package format and existing runtime compatibility checks.
 
 Phase 1 baseline: `doctor`, `build`,
 `inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated
@@ -228,15 +231,16 @@ tinygrad lowering path, stays experimental until after Tensor v1.**
 
 ---
 
-## Phase 3 — Module system *(complete for the offline profile)*
+## Phase 3 — Module system *(offline profile complete; PyPI transport added)*
 
 `tensor.json` schema 1 defines named exports, exact module versions, Tensor ABI
 major and capabilities. `tensor.lock` pins every dependency's content identity.
-The resolver accepts local directories and deterministic `.tpack` archives;
+The resolver accepts local directories, deterministic `.tpack` archives and
+Tensor transport wheels from local files or a Python Simple Index;
 packages include the complete transitive closure. Cycles, conflicting identities,
 modified snapshots and stale frozen locks fail explicitly.
 
-`add`, `install`, `pack`, `resolve` and `module-name::export_name` references
+`add`, `install`, `pack`, `publish`, `resolve` and `module-name::export_name` references
 integrate with build, inspect, run and bench. A packaged exact-provider/target
 image is preferred, then a verified generated image. Missing images compile
 only when explicitly requested, through bundled frontend TIRx or Python source.
@@ -249,7 +253,11 @@ All five exports, dependency closure, frozen installation, relocation and
 compiler-free execution pass from Linux and Windows CI producers to A10G.
 [ADR 0013](../adr/0013-phase3-offline-module-system.md) defines the profile and
 [the exit report](../research/phase3-exit.md) records its gates and evidence.
-Public registries, version ranges, fusion and autotuning remain later extensions.
+`publish` uses optional Twine for PyPI/TestPyPI/custom uploads. Registry `add`
+pins wheel and module hashes; frozen installation can restore an empty cache
+from the pinned index, while `--offline` prohibits network retrieval. See
+[ADR 0014](../adr/0014-pypi-module-transport.md). Version ranges, authenticated
+download indexes, fusion and autotuning remain later extensions.
 NVRTC remains the default; direct PTX stays experimental after Tensor v1.
 
 ---

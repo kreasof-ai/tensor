@@ -43,12 +43,18 @@ Exports plus explicit `files` are the complete package file list. Include helper
 and notices explicitly; unlisted files, symlinks and case-colliding paths do not
 become part of a package. Empty exports are useful for an application project.
 
-Dependencies identify a local directory or `.tpack`, an exact version, and
+Dependencies identify a local directory, `.tpack` or Tensor transport wheel, an exact version, and
 optionally an expected module `sha256`. A hash-only dependency uses an existing
 verified cache snapshot. Resolution pins all transitive hashes; conflicting
 versions or contents under one name and dependency cycles fail. A `.tpack`
 contains the whole resolved closure, so its original directory paths are not
 needed on another host.
+
+PyPI dependencies additionally pin an origin containing the Simple Index URL,
+Python distribution name and wheel SHA-256. `tensor add pypi:...` writes these
+fields automatically. The module's `sha256` identifies its Tensor content;
+`pypi.sha256` identifies the transport wheel. The project manifest and lock
+together pin the registry source and complete dependency closure.
 
 ## Build and package the included examples
 
@@ -64,6 +70,71 @@ place built `.tbin` files inside your module and list them under each export's
 `artifacts`, optionally also `portable`. `tensor pack` validates the files and
 creates a deterministic archive with their content hashes and pinned closure.
 It creates a new output exclusively. It does not publish to a registry.
+
+## Publish and install through PyPI
+
+`tensor publish` wraps a verified `.tpack` and its complete dependency closure
+in a deterministic, data-only Python wheel. Source directories are first packed
+through the same validator. The default Python distribution is
+`tensor-module-<module-name>`; `--distribution` selects another available PyPI
+project name. This prefix is a naming convention, not a reserved namespace.
+The module version is also the Python distribution version.
+
+Prepare and inspect the wheel without credentials, Twine or network uploads:
+
+```bash
+tensor publish ./my-ops --dry-run --out-dir build/pypi-preview
+tensor inspect build/pypi-preview/tensor_module_my_ops-0.1.0-py3-none-any.whl
+```
+
+Install the optional publisher dependencies, then upload to TestPyPI or PyPI:
+
+```bash
+pip install 'tensor-workspace[publish]'
+# Configure Twine credentials using its environment variables or keyring.
+tensor publish ./my-ops --repository testpypi --out-dir build/testpypi
+tensor publish ./my-ops --repository pypi --out-dir build/pypi
+```
+
+Twine checks the prepared wheel and uploads noninteractively. Its standard
+`TWINE_USERNAME`, `TWINE_PASSWORD`, keyring and publishing authentication apply.
+Preparation rejects existing outputs; failed uploads retain the verified wheel,
+which can also be uploaded with `python -m twine upload PATH.whl`. Custom upload
+services use `--repository-url`; this is distinct from the download index URL.
+
+Consumers need only Tensor and NumPy:
+
+```bash
+tensor add pypi:tensor-module-my-ops==0.1.0 --project app
+tensor install --project app --frozen
+tensor install --project app --frozen --offline
+```
+
+Use `--index-url https://test.pypi.org/simple/` on `add` for TestPyPI or provide
+another public Simple Index URL. One explicitly selected index is used and
+persisted with the wheel hash. JSON (PEP 691) and HTML (PEP 503) index responses
+are supported; Tensor selects its exact `py3-none-any` transport wheel, requires
+a SHA-256, and validates wheel metadata, RECORD hashes and the embedded package
+before updating the project. New adds exclude yanked releases; restoration of
+an already pinned wheel can use a yanked release with the exact pinned hash.
+Changed wheel hashes or module identities fail. Registry URL credentials and
+non-HTTPS remote endpoints are rejected; HTTP loopback supports local indexes.
+Authenticated private downloads are not yet supported. Upload authentication is
+handled by Twine.
+
+An intact cached closure avoids network access. A missing or corrupt registry
+closure can be restored with `install`, including `--frozen`, into a fresh cache
+without changing the lock. `--offline` prevents registry requests and requires
+local sources or the verified cache. `resolve`, `run` and `bench` read installed
+snapshots and never download packages implicitly.
+
+The wheel is only a transport envelope: Python compatibility tags do not encode
+GPU architecture, CUDA driver or Tensor ABI requirements. Tensor still checks
+those when selecting/loading an export. Installing the wheel with pip places
+its payload at `tensor_module_payloads/<normalized_distribution>/module.tpack`
+in site-packages, but does not mutate a Tensor project. Tensor can consume the
+wheel directly using `tensor add ./PACKAGE.whl`, or consume that installed
+`.tpack`. No compiler or Python dependencies are declared by transport wheels.
 
 ## Install and resolve
 
@@ -127,7 +198,8 @@ Use `compile=True` on `load()` or `resolve()` when local compilation is intended
 image was packaged, cached or newly compiled. Kernel and buffer lifetimes remain
 the [runtime contract](runtime-abi.md).
 
-This phase supports local paths, exact versions and opaque one-kernel exports.
-Network registries, version ranges, fusion and multi-image CUDA compatibility
-are later extensions. The [decision record](adr/0013-phase3-offline-module-system.md)
-states the supported boundary.
+This implementation supports local paths, PyPI transport, exact versions and
+opaque one-kernel exports. Version ranges, fusion, autotuning and multi-image
+CUDA compatibility remain extensions. The original
+[offline decision](adr/0013-phase3-offline-module-system.md) and
+[PyPI transport decision](adr/0014-pypi-module-transport.md) state the boundaries.

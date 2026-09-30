@@ -8,6 +8,7 @@ dependencies = ["numpy==2.5.3"]
 
 [project.optional-dependencies]
 compiler = ["tilelang==0.1.14", "apache-tvm-ffi==0.1.12"]
+publish = ["twine>=6.2,<8"]
 
 [project.scripts]
 tensor = "tensor.cli:main"

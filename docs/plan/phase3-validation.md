@@ -58,3 +58,25 @@ Retain full GPU test output, raw CI records, per-platform acceptance and source
 hashes. Record skips on GPU-free runners and the difference between Windows
 production and Linux GPU execution. No cross-SM binary compatibility follows
 from successful portable TIRx retargeting.
+
+## PyPI transport acceptance
+
+Run the registry tests with the optional publisher extra. They use only local
+HTTP loopback endpoints, including an actual Twine multipart upload; no public
+index is modified and no real publisher credentials are required.
+
+```bash
+uv run --locked --extra publish python -m pytest tests/test_registry.py -o addopts='' -q
+tensor publish build/phase3-transfer/ops.tpack --dry-run --out-dir build/phase3-registry
+build/phase3-consumer/bin/python tools/phase3_registry_check.py \
+  build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl \
+  --execute --out build/phase3-registry-gpu.json
+```
+
+Install the current runtime wheel into the clean consumer first. The checker
+serves the prepared transport wheel through a local HTML Simple Index, adds it,
+restores the frozen project into another empty cache, stops the server and
+repeats frozen installation offline. It selects all five exact-target exports
+under the compiler import guard. `--execute` additionally runs the existing
+21 numerical/interop cases and eight diagnostics on the sm_86 A10G. CI omits
+that flag on GPU-free Linux/Windows runners.

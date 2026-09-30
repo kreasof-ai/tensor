@@ -1,4 +1,4 @@
-"""Offline Tensor modules, pinned dependency graphs and verified export loading.
+"""Tensor modules, pinned dependency graphs and verified export loading.
 
 Package operations read bytes and metadata only. Source/TIRx execution requires
 an explicit compile request; native export loading needs no frontend imports.
@@ -106,10 +106,15 @@ def _manifest(value):
     if not isinstance(dependencies, dict) or len(dependencies) > 128:
         raise ModuleError("dependencies must be an object")
     for name, spec in dependencies.items():
-        if (not NAME.fullmatch(name) or not isinstance(spec, dict) or spec.keys() - {"path", "version", "sha256"}
+        if (not NAME.fullmatch(name) or not isinstance(spec, dict) or spec.keys() - {"path", "version", "sha256", "pypi"}
                 or not isinstance(spec.get("version"), str) or not VERSION.fullmatch(spec["version"])
-                or not ({"path", "sha256"} & spec.keys())):
-            raise ModuleError(f"{name}: dependency needs an exact version and local path or SHA-256")
+                or not ({"path", "sha256", "pypi"} & spec.keys())):
+            raise ModuleError(f"{name}: dependency needs an exact version and local path, PyPI origin or SHA-256")
+        if "pypi" in spec:
+            from tensor.registry import origin
+            if "path" in spec or "sha256" not in spec:
+                raise ModuleError("PyPI dependencies require a module hash and cannot also have a local path")
+            spec["pypi"] = origin(spec["pypi"])
         if "path" in spec and (not isinstance(spec["path"], str) or not spec["path"] or "://" in spec["path"]):
             raise ModuleError("dependency paths must identify local directories or .tpack files")
         if "sha256" in spec and (not isinstance(spec["sha256"], str) or not HASH.fullmatch(spec["sha256"])):
@@ -329,7 +334,14 @@ def _archive(path):
         raise ModuleError(f"invalid package archive: {exc}") from exc
 
 
-def _resolve(project, cache, locked=None, root_data=None):
+def _package(path):
+    if Path(path).suffix == ".whl":
+        from tensor.registry import read_wheel
+        return read_wheel(path)
+    return _archive(path)
+
+
+def _resolve(project, cache, locked=None, root_data=None, *, offline=False):
     raw = root_data or _directory(project)
     packages, active = {}, []
     def visit(data):
@@ -340,11 +352,29 @@ def _resolve(project, cache, locked=None, root_data=None):
         manifest = copy.deepcopy(data.manifest)
         for child, spec in manifest["dependencies"].items():
             candidate = data.origin / spec["path"] if data.origin and "path" in spec else None
-            if candidate is not None and candidate.exists():
+            if "pypi" in spec:
+                saved_active, saved_packages = len(active), dict(packages)
+                try:
+                    # Verify the whole cached closure before deciding it needs repair.
+                    dependency = visit(_cached(cache, spec["sha256"]))
+                except (OSError, ModuleError):
+                    del active[saved_active:]
+                    packages.clear()
+                    packages.update(saved_packages)
+                    if offline:
+                        raise ModuleError(f"missing or corrupt cached registry dependency: {child}; install without --offline to restore it")
+                    from tensor.registry import fetch
+                    remote = spec["pypi"]
+                    graph, archived, _ = fetch(remote["distribution"], spec["version"],
+                        index=remote["index"], wheel_sha256=remote["sha256"])
+                    dependency = archived[graph["root"]]
+                    for item in archived.values():
+                        merge(item)
+            elif candidate is not None and candidate.exists():
                 if candidate.is_dir():
                     dependency = visit(_directory(candidate))
                 else:
-                    graph, archived = _archive(candidate)
+                    graph, archived = _package(candidate)
                     dependency = archived[graph["root"]]
                     for item in archived.values():
                         merge(item)
@@ -393,13 +423,16 @@ def _lock(path):
     return value
 
 
-def install(project=".", *, cache_dir=None, frozen=False):
+def install(project=".", *, cache_dir=None, frozen=False, offline=False):
     project, cache = Path(project).resolve(), _cache_root(cache_dir)
     path = project / "tensor.lock"
     previous = _lock(path) if path.exists() else None
     if frozen and previous is None:
         raise ModuleError("--frozen requires tensor.lock")
-    record, packages = _resolve(project, cache, previous)
+    raw = _directory(project)
+    if frozen and raw.digest != previous["project_sha256"]:
+        raise ModuleError("tensor.lock is stale; run tensor install to update it")
+    record, packages = _resolve(project, cache, previous, raw, offline=offline)
     if frozen and record != previous:
         raise ModuleError("tensor.lock is stale; run tensor install to update it")
     for data in packages.values():
@@ -410,13 +443,22 @@ def install(project=".", *, cache_dir=None, frozen=False):
             "modules": record["packages"], "cache": str(cache.resolve())}
 
 
-def add(source, project=".", *, cache_dir=None):
-    project, source, cache = Path(project).resolve(), Path(source).resolve(), _cache_root(cache_dir)
+def add(source, project=".", *, cache_dir=None, index_url=None):
+    project, cache = Path(project).resolve(), _cache_root(cache_dir)
     raw = _directory(project)
-    if source.is_dir():
-        graph, packages = _resolve(source, cache)
+    remote = None
+    if isinstance(source, str) and source.startswith("pypi:"):
+        from tensor.registry import PYPI_INDEX, fetch, reference
+        distribution, version = reference(source)
+        graph, packages, remote = fetch(distribution, version, index=index_url or PYPI_INDEX)
     else:
-        graph, packages = _archive(source)
+        if index_url is not None:
+            raise ModuleError("--index-url applies only to pypi: references")
+        source = Path(source).resolve()
+        if source.is_dir():
+            graph, packages = _resolve(source, cache)
+        else:
+            graph, packages = _package(source)
     dependency = packages[graph["root"]]
     name = dependency.manifest["name"]
     if name == raw.manifest["name"]:
@@ -425,8 +467,11 @@ def add(source, project=".", *, cache_dir=None):
     for data in packages.values():
         _store(cache, data)
     updated = copy.deepcopy(raw.manifest)
-    updated["dependencies"][name] = {"version": dependency.manifest["version"], "sha256": dependency.digest,
-                                     "path": Path(os.path.relpath(source, project)).as_posix()}
+    updated["dependencies"][name] = {"version": dependency.manifest["version"], "sha256": dependency.digest}
+    if remote is not None:
+        updated["dependencies"][name]["pypi"] = remote
+    else:
+        updated["dependencies"][name]["path"] = Path(os.path.relpath(source, project)).as_posix()
     staged = _data(updated, raw.files, project)
     record, resolved = _resolve(project, cache, root_data=staged)
     for data in resolved.values():
@@ -444,7 +489,7 @@ def add(source, project=".", *, cache_dir=None):
             lock_path.unlink(missing_ok=True)
         raise
     return {"status": "added", "name": name, "version": dependency.manifest["version"],
-            "sha256": dependency.digest, "lock": str(lock_path)}
+            "sha256": dependency.digest, "lock": str(lock_path), **({"pypi": remote} if remote else {})}
 
 
 def pack(project, out, *, cache_dir=None):

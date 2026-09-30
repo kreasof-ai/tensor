@@ -9,13 +9,23 @@ import json
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tensor", description="Tensor kernel tooling")
     commands = parser.add_subparsers(dest="command", required=True)
-    add = commands.add_parser("add", help="add a local module directory or .tpack and pin its dependency graph")
+    add = commands.add_parser("add", help="add a local module, Tensor wheel or pypi:distribution==version")
     add.add_argument("source")
-    install = commands.add_parser("install", help="install the project's pinned local module graph")
+    add.add_argument("--index-url", help="Simple Index URL for pypi: references (default: PyPI)")
+    install = commands.add_parser("install", help="install the project's pinned module graph")
     install.add_argument("--frozen", action="store_true", help="require an unchanged tensor.lock")
+    install.add_argument("--offline", action="store_true", help="restore only from local sources and verified cache")
     pack = commands.add_parser("pack", help="create a deterministic .tpack including dependencies")
     pack.add_argument("source", nargs="?", default=".")
     pack.add_argument("--out", required=True)
+    publish = commands.add_parser("publish", help="wrap a module closure in a wheel and publish using Twine")
+    publish.add_argument("source", nargs="?", default=".")
+    publish.add_argument("--out-dir", default="dist", help="directory for the prepared wheel")
+    publish.add_argument("--distribution", help="PyPI project name (default: tensor-module-MODULE)")
+    publish.add_argument("--dry-run", action="store_true", help="prepare and verify the wheel without uploading")
+    repository = publish.add_mutually_exclusive_group()
+    repository.add_argument("--repository", choices=("pypi", "testpypi"), default="pypi")
+    repository.add_argument("--repository-url", help="custom upload URL; distinct from the Simple Index URL")
     resolve = commands.add_parser("resolve", help="select an installed module-name::export_name")
     resolve.add_argument("reference")
     resolve.add_argument("--target")
@@ -69,23 +79,28 @@ def main(argv: list[str] | None = None) -> int:
                              help="provider (default: cuda for source; inferred for artifacts)")
     for command in (add, install, build, run, benchmark, resolve, inspect):
         command.add_argument("--project", default=".", help="directory containing tensor.json and tensor.lock")
-    for command in (add, install, pack, build, run, benchmark, resolve, inspect, cache):
+    for command in (add, install, pack, publish, build, run, benchmark, resolve, inspect, cache):
         command.add_argument("--module-cache", help="module cache root (or TENSOR_MODULE_CACHE)")
     for command in (run, benchmark, resolve, inspect):
         command.add_argument("--compile", action="store_true", help="allow source/TIRx compilation when no exact-target artifact exists")
     args = parser.parse_args(argv)
 
-    if args.command in ("add", "install", "pack", "resolve"):
+    if args.command in ("add", "install", "pack", "publish", "resolve"):
         from tensor.modules import ModuleError, add as add_module, install as install_modules, pack as pack_module, resolve_reference
         from tensor.build import BuildError
         from tensor.artifact import ArtifactError
         try:
             if args.command == "add":
-                result = add_module(args.source, args.project, cache_dir=args.module_cache)
+                result = add_module(args.source, args.project, cache_dir=args.module_cache, index_url=args.index_url)
             elif args.command == "install":
-                result = install_modules(args.project, cache_dir=args.module_cache, frozen=args.frozen)
+                result = install_modules(args.project, cache_dir=args.module_cache, frozen=args.frozen, offline=args.offline)
             elif args.command == "pack":
                 result = pack_module(args.source, args.out, cache_dir=args.module_cache)
+            elif args.command == "publish":
+                from tensor.registry import publish as publish_module
+                result = publish_module(args.source, out_dir=args.out_dir, distribution=args.distribution,
+                    cache_dir=args.module_cache, dry_run=args.dry_run, repository=args.repository,
+                    repository_url=args.repository_url)
             else:
                 result = resolve_reference(args.reference, project=args.project, module_cache=args.module_cache,
                     provider=args.provider or "cuda", target=args.target, compile=args.compile,
@@ -166,6 +181,9 @@ def main(argv: list[str] | None = None) -> int:
             elif path.suffix == ".tpack":
                 from tensor.modules import _archive
                 result = json.dumps(_archive(path)[0], indent=2)
+            elif path.suffix == ".whl":
+                from tensor.registry import read_wheel
+                result = json.dumps(read_wheel(path)[0], indent=2)
             elif path.suffix == ".py":
                 result = inspect_source(path, stage=args.stage, target=args.target,
                                         trace_dir=Path(args.out) if args.out else None)

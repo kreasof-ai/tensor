@@ -36,11 +36,13 @@ jobs:
           uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
           uv run --locked tensor doctor --target sm_86 --compiler nvrtc --json
       - name: Check shared descriptors, diagnostics, CPU provider and native C++ hosting
-        run: uv run --locked python -m pytest -o addopts='' -q
+        run: uv run --locked --extra publish python -m pytest -o addopts='' -q
       - name: Compile the five CUDA profiles and audit cache recovery
         run: uv run --locked python tools/phase2_producer.py --out build/phase2-transfer --target sm_86
       - name: Package a deterministic module and its pinned dependency
         run: uv run --locked python tools/phase3_producer.py --artifacts build/phase2-transfer --out build/phase3-transfer
+      - name: Prepare the PyPI transport wheel without uploading
+        run: uv run --locked tensor publish build/phase3-transfer/ops.tpack --dry-run --out-dir build/phase3-registry
       - name: Build the compiler-free consumer wheel
         run: uv build --wheel
       - name: Install and inspect with only Tensor and NumPy
@@ -79,6 +81,7 @@ jobs:
               assert module.resolve(name,target='sm_86')['selection']=='packaged'
           assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
           PY
+          "${{ matrix.python }}" tools/phase3_registry_check.py build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl --out build/phase3-registry/consumer.json
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-phase2-${{ matrix.os }}

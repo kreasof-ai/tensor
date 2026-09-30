@@ -19,12 +19,15 @@ Phase 0 answered the question the proposal closes on:
 > How much of `tensorc` already exists in TileLang and TIRx, and what minimal layer is
 > actually missing between those systems and the developer experience we want?
 
-Phase 3's offline module system is complete.
+Phase 3 includes offline modules and a PyPI transport adapter.
 `tensor.json` names exports, `tensor.lock` pins dependency content, and `tensor
 pack` bundles the complete closure. `add`, `install`, `resolve`, and
 `module-name::export_name` references work with compiler-free packaged binaries;
 missing targets compile through bundled TIRx/source only when explicitly
-requested. The GPU suite passes **104 tests with zero skips**; Linux and
+requested. `tensor publish` wraps a module closure in a data-only wheel;
+`tensor add pypi:distribution==version` pins and installs it through a Python
+package index. Twine is optional and only needed for uploading. The original
+offline profile's GPU suite passed **104 tests with zero skips**; Linux and
 Windows module packages each pass execution on the separate A10G consumer.
 See the [module guide](docs/modules.md) and [Phase 3 exit report](docs/research/phase3-exit.md).
 
