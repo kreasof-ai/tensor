@@ -26,6 +26,8 @@ The full GPU suite passes 104 tests with zero skips. See
 The [PyPI transport adapter](../adr/0014-pypi-module-transport.md) extends that
 profile with publishing and exact-version registry retrieval, retaining the
 offline package format and existing runtime compatibility checks.
+Its [acceptance report](../research/phase3-pypi.md) records 116 GPU-enabled tests,
+Linux/Windows CI and execution of both producers' registry packages on A10G.
 
 Phase 1 baseline: `doctor`, `build`,
 `inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated

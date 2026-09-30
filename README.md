@@ -30,6 +30,9 @@ package index. Twine is optional and only needed for uploading. The original
 offline profile's GPU suite passed **104 tests with zero skips**; Linux and
 Windows module packages each pass execution on the separate A10G consumer.
 See the [module guide](docs/modules.md) and [Phase 3 exit report](docs/research/phase3-exit.md).
+The PyPI adapter passes **116 tests with zero skips** on the A10G. Linux and
+Windows CI pass local upload tests and clean-consumer registry restoration. See
+[PyPI transport acceptance](docs/research/phase3-pypi.md).
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.

@@ -1,0 +1,257 @@
+{
+  "status": "passed",
+  "wheel_sha256": "7b557152dd588f5feea2f67fd7d60d14c0da96b7274abcadc1eeebbfe0815288",
+  "distribution": "tensor-module-tensor-ops",
+  "modules": {
+    "tensor-base": {
+      "dependencies": {},
+      "sha256": "a9c25372846e4cf141a29d9e4a974a7b084ad9f67a362922b844cdb7b529f840",
+      "version": "0.1.0"
+    },
+    "tensor-ops": {
+      "dependencies": {
+        "tensor-base": "a9c25372846e4cf141a29d9e4a974a7b084ad9f67a362922b844cdb7b529f840"
+      },
+      "sha256": "6099988069245e63ea29a72d8da6107af6e4e63338cc0eabbd2590a502afeb75",
+      "version": "0.1.0"
+    }
+  },
+  "fresh_cache_restore": true,
+  "offline_frozen_install": true,
+  "compiler_imports": false,
+  "selections": {
+    "tensor-base::elementwise": "packaged",
+    "tensor-ops::dynamic_affine": "packaged",
+    "tensor-ops::dynamic_gemm": "packaged",
+    "tensor-ops::gemm_relu": "packaged",
+    "tensor-ops::scalar_offset": "packaged"
+  },
+  "runtime": {
+    "status": "passed",
+    "consumer_host": "default",
+    "packages": {
+      "numpy": "2.5.3",
+      "tensor-workspace": "0.1.0"
+    },
+    "compiler_imports": [],
+    "compiler_import_guard": true,
+    "device": {
+      "ordinal": 0,
+      "name": "NVIDIA A10G",
+      "arch": "sm_86",
+      "provider": "cuda"
+    },
+    "records": [
+      {
+        "case": "static_elementwise",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_affine_1_2.5",
+        "shape": [
+          1
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_affine_1_-0.75",
+        "shape": [
+          1
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_affine_127_2.5",
+        "shape": [
+          127
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_affine_127_-0.75",
+        "shape": [
+          127
+        ],
+        "max_abs_error": 2.384185791015625e-07
+      },
+      {
+        "case": "dynamic_affine_128_2.5",
+        "shape": [
+          128
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_affine_128_-0.75",
+        "shape": [
+          128
+        ],
+        "max_abs_error": 1.1920928955078125e-07
+      },
+      {
+        "case": "dynamic_affine_129_2.5",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 2.384185791015625e-07
+      },
+      {
+        "case": "dynamic_affine_129_-0.75",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 2.384185791015625e-07
+      },
+      {
+        "case": "dynamic_affine_1025_2.5",
+        "shape": [
+          1025
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_affine_1025_-0.75",
+        "shape": [
+          1025
+        ],
+        "max_abs_error": 4.76837158203125e-07
+      },
+      {
+        "case": "dynamic_gemm_1",
+        "shape": [
+          1,
+          32
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_gemm_31",
+        "shape": [
+          31,
+          32
+        ],
+        "max_abs_error": 0.0001220703125
+      },
+      {
+        "case": "dynamic_gemm_32",
+        "shape": [
+          32,
+          32
+        ],
+        "max_abs_error": 5.960464477539063e-08
+      },
+      {
+        "case": "dynamic_gemm_33",
+        "shape": [
+          33,
+          32
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "dynamic_gemm_65",
+        "shape": [
+          65,
+          32
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "static_gemm_relu",
+        "shape": [
+          64,
+          64
+        ],
+        "max_abs_error": 5.960464477539063e-08
+      },
+      {
+        "case": "int64_delta_1099511627779",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "int64_delta_-1099511627773",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "gpu_dlpack_versioned_False",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      },
+      {
+        "case": "gpu_dlpack_versioned_True",
+        "shape": [
+          129
+        ],
+        "max_abs_error": 0.0
+      }
+    ],
+    "diagnostics": [
+      {
+        "case": "missing_scalar",
+        "cause": "missing kernel arguments: ['scale']"
+      },
+      {
+        "case": "shape_conflict",
+        "cause": "b: dimension size mismatch; expected 129, received 128"
+      },
+      {
+        "case": "explicit_dimension_conflict",
+        "cause": "a: dimension size mismatch; expected 128, received 129"
+      },
+      {
+        "case": "nonfinite_scalar",
+        "cause": "scale must be finite and fit float32"
+      },
+      {
+        "case": "wrong_dtype",
+        "cause": "a needs shape [{'var': 'size'}] and dtype float32"
+      },
+      {
+        "case": "integer_overflow",
+        "cause": "delta is outside the int64 range"
+      },
+      {
+        "case": "noninteger_scalar",
+        "cause": "delta needs an integer int64"
+      },
+      {
+        "case": "unknown_argument",
+        "cause": "unknown kernel argument other"
+      }
+    ],
+    "legacy_artifact_sha256": null,
+    "first_kernel_seconds_from_script_check_entry": 0.2441323849998298,
+    "benchmark": {
+      "warmup": 10,
+      "iters": 100,
+      "median_launch_and_sync_seconds": 9.15870041353628e-05,
+      "min_launch_and_sync_seconds": 8.926200098358095e-05,
+      "median_host_enqueue_seconds": 8.651649841340259e-05
+    },
+    "cli_first_result_seconds": 0.09361031700245803
+  },
+  "validated_revision": "c7cc1acad51c6ff80a4f6e33645c40b3dff7584b",
+  "ci_run": "https://github.com/kreasof-ai/tensor/actions/runs/36651240548",
+  "producer_platform": "windows",
+  "gpu_consumer_platform": "linux",
+  "producer_clean": true,
+  "runtime_wheel_matches_source_LF": true,
+  "consumer_matches_producer_runtime_files": true,
+  "consumer_distributions": [
+    "numpy",
+    "tensor-workspace"
+  ],
+  "transport_prepared_on_consumer": true,
+  "package_sha256": "45e20532cfaa9cff8faaf3adca096c489ce4a2dd6cc397ef53fa1d9e562c9c8a"
+}
