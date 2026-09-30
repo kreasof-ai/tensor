@@ -1,0 +1,1569 @@
+{
+  "status": "passed",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "torch_version": "2.14.0+cu130",
+  "producer": {
+    "device": {
+      "ordinal": 0,
+      "name": "NVIDIA A10G",
+      "arch": "sm_86",
+      "provider": "cuda"
+    },
+    "rows": [
+      {
+        "name": "b1-h8-s128-d64-noncausal",
+        "shape": [
+          1,
+          8,
+          128,
+          64
+        ],
+        "causal": false,
+        "artifact": "artifacts/b1-h8-s128-d64-noncausal.tbin",
+        "artifact_sha256": "09dace94036c8af6883378c2bad7f4ce4fef4669c8651c74ea998ed57bc325e6",
+        "source_sha256": "734e75ae6d41b4289c1f9fd126335cbf9477fbfe2b19d376eb0b187d1eeff9da",
+        "build_seconds": 5.093473064996942,
+        "nvrtc_seconds": 1.377394394003204,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s128-d64-causal",
+        "shape": [
+          1,
+          8,
+          128,
+          64
+        ],
+        "causal": true,
+        "artifact": "artifacts/b1-h8-s128-d64-causal.tbin",
+        "artifact_sha256": "dc400a6edffcb420acab22add4d8dc24be17571c0dc2f11ab6df5b16dc4976e2",
+        "source_sha256": "c13367c274f22600d64f3e402cd901df29823304cc5c4d713e138d2507a9432d",
+        "build_seconds": 5.763574106997112,
+        "nvrtc_seconds": 1.3744903540064115,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s129-d64-noncausal",
+        "shape": [
+          1,
+          8,
+          129,
+          64
+        ],
+        "causal": false,
+        "artifact": "artifacts/b1-h8-s129-d64-noncausal.tbin",
+        "artifact_sha256": "4701b9c5b93228bf11612c72968f2721a716c024c17670405197136a13c955f8",
+        "source_sha256": "8cfb41ce48e267eca2f254cc365884d8078e8387c120926e128b97a55bc76014",
+        "build_seconds": 4.663576038001338,
+        "nvrtc_seconds": 1.401443502996699,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s129-d64-causal",
+        "shape": [
+          1,
+          8,
+          129,
+          64
+        ],
+        "causal": true,
+        "artifact": "artifacts/b1-h8-s129-d64-causal.tbin",
+        "artifact_sha256": "cf4ec2f3968984103005751abb18e0e03f32aaf78514610b1affd272ef87e49d",
+        "source_sha256": "2f22f8ecf513b812dc731ee120394711f9a71f8973db91b18f6c682a0ab8207a",
+        "build_seconds": 4.207366583999828,
+        "nvrtc_seconds": 1.4115162870002678,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s512-d64-noncausal",
+        "shape": [
+          1,
+          8,
+          512,
+          64
+        ],
+        "causal": false,
+        "artifact": "artifacts/b1-h8-s512-d64-noncausal.tbin",
+        "artifact_sha256": "320f77ef472dcf8b439b4d94f1422a6ab096eccfc873ef54a268abab0cfeedd9",
+        "source_sha256": "3169bee7f284189daa7ea1aa58f882736b48ac64d49c730a0dc9b2d77c6dfa9c",
+        "build_seconds": 4.994685219004168,
+        "nvrtc_seconds": 1.3747970050026197,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s512-d64-causal",
+        "shape": [
+          1,
+          8,
+          512,
+          64
+        ],
+        "causal": true,
+        "artifact": "artifacts/b1-h8-s512-d64-causal.tbin",
+        "artifact_sha256": "bcd3e6f292a222591eeefd96775e6aa80c8df9449904521611473271b14dd738",
+        "source_sha256": "a0f0c5028927e1cdaa205a52d755577b2491a500208b0297399570aba60b8699",
+        "build_seconds": 5.750623165004072,
+        "nvrtc_seconds": 1.3757240220002132,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s1024-d64-noncausal",
+        "shape": [
+          1,
+          8,
+          1024,
+          64
+        ],
+        "causal": false,
+        "artifact": "artifacts/b1-h8-s1024-d64-noncausal.tbin",
+        "artifact_sha256": "f0535d0b1d2752331cdbfd99d56962d03c0c8d3cf48504792eeaa738798d9dbe",
+        "source_sha256": "e4d8493567ef9b19ce06e6f3127afc096852c1cb46d60f95b2ff790ab04b0273",
+        "build_seconds": 5.076755308997235,
+        "nvrtc_seconds": 1.3701381899954868,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s1024-d64-causal",
+        "shape": [
+          1,
+          8,
+          1024,
+          64
+        ],
+        "causal": true,
+        "artifact": "artifacts/b1-h8-s1024-d64-causal.tbin",
+        "artifact_sha256": "43e73d685311510fe6107f4dfee74d5fa298e04762b3abe9673dd57412a93cb1",
+        "source_sha256": "f4a4a3fe7cba44515e46e5f7cb7ff1b7e34fc98f3e1084a5c8b694aa9c0d2609",
+        "build_seconds": 5.47613759500382,
+        "nvrtc_seconds": 1.3754254770028638,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b2-h4-s257-d64-noncausal",
+        "shape": [
+          2,
+          4,
+          257,
+          64
+        ],
+        "causal": false,
+        "artifact": "artifacts/b2-h4-s257-d64-noncausal.tbin",
+        "artifact_sha256": "ac36b8a47787d5fc0d2b3d5281fee0674d006f366a8cbfbc8512916495730ca5",
+        "source_sha256": "125dae720d151caaa9e932959f11e3978c78957209bbbf3010a1118ee99e6179",
+        "build_seconds": 4.885592104001262,
+        "nvrtc_seconds": 1.4043192440003622,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b2-h4-s257-d64-causal",
+        "shape": [
+          2,
+          4,
+          257,
+          64
+        ],
+        "causal": true,
+        "artifact": "artifacts/b2-h4-s257-d64-causal.tbin",
+        "artifact_sha256": "cd3bbbe0eca613f073c76f42c78a9400bcd775993f72e921c63d6d2f52d1e522",
+        "source_sha256": "0484397a22ed498d7d7e45885869f357fff9d93a3025fb3d066b9ed58124a677",
+        "build_seconds": 4.196089554003265,
+        "nvrtc_seconds": 1.4133646960035549,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s512-d128-noncausal",
+        "shape": [
+          1,
+          8,
+          512,
+          128
+        ],
+        "causal": false,
+        "artifact": "artifacts/b1-h8-s512-d128-noncausal.tbin",
+        "artifact_sha256": "98bec349acefc99abbc6853e0f0a3e61e267389dcf934fe8a07c09c594cbce75",
+        "source_sha256": "8ac805b17b0ac15db959224c379d6192cdd7ce7b07e610a4a1a5eb23d04c026e",
+        "build_seconds": 6.5829183850000845,
+        "nvrtc_seconds": 1.438591683996492,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      },
+      {
+        "name": "b1-h8-s512-d128-causal",
+        "shape": [
+          1,
+          8,
+          512,
+          128
+        ],
+        "causal": true,
+        "artifact": "artifacts/b1-h8-s512-d128-causal.tbin",
+        "artifact_sha256": "c9ee6b546740201c8d38cfaa78a48c8a5dbc947a8fe487464e528610c9904deb",
+        "source_sha256": "25ee847ff2e5c37002cc37937cf8e96c2ad51ac1805e4e6751406ca2048bf5cc",
+        "build_seconds": 5.00414903100318,
+        "nvrtc_seconds": 1.4476862369992887,
+        "compiler": "nvrtc",
+        "cache_hit": false
+      }
+    ],
+    "torch_compile_backend": false,
+    "source_revision": "6f6646a9ada13ef80c2dbdc8a69debb429ac1bd0",
+    "source_dirty": true
+  },
+  "rows": [
+    {
+      "name": "b1-h8-s128-d64-noncausal",
+      "shape": [
+        1,
+        8,
+        128,
+        64
+      ],
+      "causal": false,
+      "artifact": "artifacts/b1-h8-s128-d64-noncausal.tbin",
+      "artifact_sha256": "09dace94036c8af6883378c2bad7f4ce4fef4669c8651c74ea998ed57bc325e6",
+      "source_sha256": "734e75ae6d41b4289c1f9fd126335cbf9477fbfe2b19d376eb0b187d1eeff9da",
+      "build_seconds": 5.093473064996942,
+      "nvrtc_seconds": 1.377394394003204,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.00048828125,
+          "pytorch_max_abs_error": 0.00048828125
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0,
+          "pytorch_max_abs_error": 0.0
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 5.191680192947388,
+        "samples_us": [
+          5.509120225906372,
+          5.2019202709198,
+          5.191680192947388,
+          5.181440114974976,
+          5.191680192947388,
+          5.1712000370025635,
+          5.160959959030151
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 8.601599931716919,
+        "samples_us": [
+          8.908799886703491,
+          8.622080087661743,
+          8.591359853744507,
+          8.591359853744507,
+          8.601599931716919,
+          8.590720295906067,
+          8.611840009689331
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.81228000565898,
+        "enqueue_samples_us": [
+          71.2763299816288,
+          69.15297999512404,
+          68.81228000565898,
+          66.97074000840075,
+          67.48756000888534,
+          69.40259001567028,
+          67.92336003854871
+        ],
+        "batch_completion_median_us": 68.92798002809286,
+        "batch_completion_samples_us": [
+          71.47702999645844,
+          69.27228001586627,
+          68.92798002809286,
+          67.08513996272814,
+          67.60465999832377,
+          69.58420002774801,
+          68.06165998568758
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 22.31894999567885,
+        "enqueue_samples_us": [
+          23.3663700055331,
+          22.21135000581853,
+          23.32896998268552,
+          22.31894999567885,
+          22.040740004740655,
+          21.511629965971224,
+          22.327949991449714
+        ],
+        "batch_completion_median_us": 22.405249983421527,
+        "batch_completion_samples_us": [
+          23.45296998100821,
+          22.29794998129364,
+          23.416069961967878,
+          22.405249983421527,
+          22.10685001045931,
+          21.599929968942888,
+          22.411250029108487
+        ]
+      },
+      "gpu_speedup": 1.6568046590007066,
+      "submission_speedup": 0.3250530477505631,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s128-d64-causal",
+      "shape": [
+        1,
+        8,
+        128,
+        64
+      ],
+      "causal": true,
+      "artifact": "artifacts/b1-h8-s128-d64-causal.tbin",
+      "artifact_sha256": "dc400a6edffcb420acab22add4d8dc24be17571c0dc2f11ab6df5b16dc4976e2",
+      "source_sha256": "c13367c274f22600d64f3e402cd901df29823304cc5c4d713e138d2507a9432d",
+      "build_seconds": 5.763574106997112,
+      "nvrtc_seconds": 1.3744903540064115,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 5.32480001449585,
+        "samples_us": [
+          5.570560097694397,
+          5.32480001449585,
+          5.304319858551025,
+          5.32480001449585,
+          5.32480001449585,
+          5.294079780578613,
+          5.32480001449585
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 8.878080248832703,
+        "samples_us": [
+          9.123839735984802,
+          8.888319730758667,
+          8.86784017086029,
+          8.888319730758667,
+          8.878080248832703,
+          8.857600092887878,
+          8.86784017086029
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 67.32585003192071,
+        "enqueue_samples_us": [
+          67.06355001369957,
+          68.0221599759534,
+          66.61432998953387,
+          68.92778998007998,
+          67.32585003192071,
+          67.13865004712716,
+          68.9824800065253
+        ],
+        "batch_completion_median_us": 67.41875004081521,
+        "batch_completion_samples_us": [
+          67.16355004755314,
+          68.12175997765735,
+          66.72342999081593,
+          69.10208998306189,
+          67.41875004081521,
+          67.2392500564456,
+          69.08029004989658
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 22.37765002064407,
+        "enqueue_samples_us": [
+          24.123479961417615,
+          22.37765002064407,
+          21.94223998230882,
+          22.784660031902604,
+          22.00814000389073,
+          24.92519997758791,
+          21.611039992421865
+        ],
+        "batch_completion_median_us": 22.4622600217117,
+        "batch_completion_samples_us": [
+          24.203180000768043,
+          22.4622600217117,
+          22.030740001355298,
+          22.872059998917393,
+          22.073639993323013,
+          25.01399998436682,
+          21.69914005207829
+        ]
+      },
+      "gpu_speedup": 1.6673077344996357,
+      "submission_speedup": 0.3331752666448589,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s129-d64-noncausal",
+      "shape": [
+        1,
+        8,
+        129,
+        64
+      ],
+      "causal": false,
+      "artifact": "artifacts/b1-h8-s129-d64-noncausal.tbin",
+      "artifact_sha256": "4701b9c5b93228bf11612c72968f2721a716c024c17670405197136a13c955f8",
+      "source_sha256": "8cfb41ce48e267eca2f254cc365884d8078e8387c120926e128b97a55bc76014",
+      "build_seconds": 4.663576038001338,
+      "nvrtc_seconds": 1.401443502996699,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.00048828125,
+          "pytorch_max_abs_error": 0.00048828125
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 9.5367431640625e-07,
+          "pytorch_max_abs_error": 9.5367431640625e-07
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 6.860799789428711,
+        "samples_us": [
+          7.116159796714783,
+          6.850559711456299,
+          6.830080151557922,
+          6.8403202295303345,
+          6.860799789428711,
+          6.871039867401123,
+          6.870719790458679
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 15.656960010528564,
+        "samples_us": [
+          15.882240533828735,
+          15.656960010528564,
+          15.63647985458374,
+          15.697280168533325,
+          15.677440166473389,
+          15.646719932556152,
+          15.656319856643677
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.79227999888826,
+        "enqueue_samples_us": [
+          77.16895001067314,
+          85.5976200546138,
+          78.65758001571521,
+          68.0990699765971,
+          67.73416003852617,
+          68.79227999888826,
+          68.14246997237206
+        ],
+        "batch_completion_median_us": 68.89947995659895,
+        "batch_completion_samples_us": [
+          77.27834999968763,
+          85.7382200047141,
+          78.84127997385804,
+          68.20826994953677,
+          67.84625998989213,
+          68.89947995659895,
+          68.25286996900104
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 22.389950026990846,
+        "enqueue_samples_us": [
+          23.93408001807984,
+          22.389950026990846,
+          21.822740018251352,
+          22.618759976467118,
+          21.664529995177872,
+          21.47582999896258,
+          23.099169993656687
+        ],
+        "batch_completion_median_us": 22.543950035469607,
+        "batch_completion_samples_us": [
+          24.08658001513686,
+          22.543950035469607,
+          21.97724003053736,
+          22.77545994729735,
+          21.820640031364746,
+          21.632830030284822,
+          23.249670048244298
+        ]
+      },
+      "gpu_speedup": 2.2820896238151698,
+      "submission_speedup": 0.3272005833668187,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s129-d64-causal",
+      "shape": [
+        1,
+        8,
+        129,
+        64
+      ],
+      "causal": true,
+      "artifact": "artifacts/b1-h8-s129-d64-causal.tbin",
+      "artifact_sha256": "cf4ec2f3968984103005751abb18e0e03f32aaf78514610b1affd272ef87e49d",
+      "source_sha256": "2f22f8ecf513b812dc731ee120394711f9a71f8973db91b18f6c682a0ab8207a",
+      "build_seconds": 4.207366583999828,
+      "nvrtc_seconds": 1.4115162870002678,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.00048828125,
+          "pytorch_max_abs_error": 0.00048828125
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 6.686720252037048,
+        "samples_us": [
+          6.952959895133972,
+          6.686720252037048,
+          6.696959733963013,
+          6.717439889907837,
+          6.676480174064636,
+          6.666240096092224,
+          6.666240096092224
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 16.291840076446533,
+        "samples_us": [
+          16.486400365829468,
+          16.302080154418945,
+          16.291520595550537,
+          16.291840076446533,
+          16.27135992050171,
+          16.250879764556885,
+          16.302080154418945
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 69.39779006643221,
+        "enqueue_samples_us": [
+          71.06992998160422,
+          69.39779006643221,
+          66.73723997664638,
+          69.19548999576364,
+          69.64640000660438,
+          73.81688003079034,
+          67.73855995561462
+        ],
+        "batch_completion_median_us": 69.50930001039524,
+        "batch_completion_samples_us": [
+          71.20982998458203,
+          69.50930001039524,
+          66.84544001473114,
+          69.30169001861941,
+          69.75739997869823,
+          73.93418003630359,
+          67.85485995351337
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 22.377749992301688,
+        "enqueue_samples_us": [
+          22.995960025582463,
+          22.926559977349825,
+          21.687740008928813,
+          22.377749992301688,
+          22.582860037800856,
+          22.26184995379299,
+          21.912540032644756
+        ],
+        "batch_completion_median_us": 22.538650009664707,
+        "batch_completion_samples_us": [
+          23.160970013123006,
+          23.087059962563217,
+          21.850639968761243,
+          22.538650009664707,
+          22.743860026821494,
+          22.42034999653697,
+          22.07404002547264
+        ]
+      },
+      "gpu_speedup": 2.4364470865194896,
+      "submission_speedup": 0.3242537330442691,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s512-d64-noncausal",
+      "shape": [
+        1,
+        8,
+        512,
+        64
+      ],
+      "causal": false,
+      "artifact": "artifacts/b1-h8-s512-d64-noncausal.tbin",
+      "artifact_sha256": "320f77ef472dcf8b439b4d94f1422a6ab096eccfc873ef54a268abab0cfeedd9",
+      "source_sha256": "3169bee7f284189daa7ea1aa58f882736b48ac64d49c730a0dc9b2d77c6dfa9c",
+      "build_seconds": 4.994685219004168,
+      "nvrtc_seconds": 1.3747970050026197,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.000244140625,
+          "pytorch_max_abs_error": 0.000244140625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0,
+          "pytorch_max_abs_error": 0.0
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 19.742720127105713,
+        "samples_us": [
+          19.95776057243347,
+          19.72223997116089,
+          19.752960205078125,
+          19.7324800491333,
+          19.752960205078125,
+          19.742720127105713,
+          19.68127965927124
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 23.050239086151123,
+        "samples_us": [
+          23.42911958694458,
+          23.050239086151123,
+          23.050239086151123,
+          23.050239086151123,
+          23.060479164123535,
+          23.050239086151123,
+          23.08095932006836
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.07165998907294,
+        "enqueue_samples_us": [
+          76.58303002244793,
+          74.13908999296837,
+          67.60644995665643,
+          68.07165998907294,
+          67.5364500057185,
+          68.2909699389711,
+          66.06142997043207
+        ],
+        "batch_completion_median_us": 68.3182699867757,
+        "batch_completion_samples_us": [
+          76.84073003474623,
+          74.40260000294074,
+          67.85165998735465,
+          68.3182699867757,
+          67.77975999284536,
+          68.5329699626891,
+          66.3006299873814
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 30.960619988036342,
+        "enqueue_samples_us": [
+          32.17545003280975,
+          30.61331997741945,
+          30.0699000217719,
+          30.979220027802512,
+          30.960619988036342,
+          30.295609976747073,
+          33.291569998255
+        ],
+        "batch_completion_median_us": 31.159420032054186,
+        "batch_completion_samples_us": [
+          32.37115000956692,
+          30.799619999015704,
+          30.259510022005998,
+          31.175120020634495,
+          31.159420032054186,
+          30.49670995096676,
+          33.47406993270852
+        ]
+      },
+      "gpu_speedup": 1.1675310665273708,
+      "submission_speedup": 0.4560920532397217,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s512-d64-causal",
+      "shape": [
+        1,
+        8,
+        512,
+        64
+      ],
+      "causal": true,
+      "artifact": "artifacts/b1-h8-s512-d64-causal.tbin",
+      "artifact_sha256": "bcd3e6f292a222591eeefd96775e6aa80c8df9449904521611473271b14dd738",
+      "source_sha256": "a0f0c5028927e1cdaa205a52d755577b2491a500208b0297399570aba60b8699",
+      "build_seconds": 5.750623165004072,
+      "nvrtc_seconds": 1.3757240220002132,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 19.824639558792114,
+        "samples_us": [
+          20.12160062789917,
+          19.84511971473694,
+          19.824639558792114,
+          19.824639558792114,
+          19.814399480819702,
+          19.804160594940186,
+          19.824639558792114
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 22.39487886428833,
+        "samples_us": [
+          22.773759365081787,
+          22.425599098205566,
+          22.38464117050171,
+          22.38464117050171,
+          22.39487886428833,
+          22.374401092529297,
+          22.415359020233154
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.69438002468087,
+        "enqueue_samples_us": [
+          68.69438002468087,
+          67.77756003430113,
+          68.69137003377546,
+          69.09879004524555,
+          70.5484199716011,
+          68.89238000439946,
+          68.1222599814646
+        ],
+        "batch_completion_median_us": 68.9386799786007,
+        "batch_completion_samples_us": [
+          68.9386799786007,
+          68.02587005950045,
+          68.93268000567332,
+          69.34809003723785,
+          70.7978200080106,
+          69.13329001690727,
+          68.36437001766171
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 31.315219966927543,
+        "enqueue_samples_us": [
+          31.922540001687594,
+          31.800029973965138,
+          30.655009977635927,
+          31.315219966927543,
+          31.6942400240805,
+          29.954199999338016,
+          30.56032001040876
+        ],
+        "batch_completion_median_us": 31.50872995320242,
+        "batch_completion_samples_us": [
+          32.10764996765647,
+          31.984340021153912,
+          30.84392003074754,
+          31.50872995320242,
+          31.884039999567904,
+          30.138700021780096,
+          30.74412001296878
+        ]
+      },
+      "gpu_speedup": 1.129648728183627,
+      "submission_speedup": 0.4570544426290591,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s1024-d64-noncausal",
+      "shape": [
+        1,
+        8,
+        1024,
+        64
+      ],
+      "causal": false,
+      "artifact": "artifacts/b1-h8-s1024-d64-noncausal.tbin",
+      "artifact_sha256": "f0535d0b1d2752331cdbfd99d56962d03c0c8d3cf48504792eeaa738798d9dbe",
+      "source_sha256": "e4d8493567ef9b19ce06e6f3127afc096852c1cb46d60f95b2ff790ab04b0273",
+      "build_seconds": 5.076755308997235,
+      "nvrtc_seconds": 1.3701381899954868,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.0001220703125,
+          "pytorch_max_abs_error": 0.000244140625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0,
+          "pytorch_max_abs_error": 0.0
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 68.94591808319092,
+        "samples_us": [
+          69.32479858398438,
+          69.00735855102539,
+          68.8640022277832,
+          68.94591808319092,
+          68.8640022277832,
+          69.04831886291504,
+          68.9356803894043
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 49.0393590927124,
+        "samples_us": [
+          49.254398345947266,
+          48.998398780822754,
+          49.00864124298096,
+          49.0393590927124,
+          49.00864124298096,
+          49.07008171081543,
+          49.0393590927124
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 67.80836003599688,
+        "enqueue_samples_us": [
+          65.5321099475259,
+          68.62797999929171,
+          67.57646006008144,
+          66.8627399863908,
+          67.80836003599688,
+          68.50167002994567,
+          70.51451000734232
+        ],
+        "batch_completion_median_us": 70.8124200173188,
+        "batch_completion_samples_us": [
+          71.80373999290168,
+          70.9103199915262,
+          70.45332000416238,
+          70.37110997771379,
+          70.8124200173188,
+          70.59682000544854,
+          72.48554997204337
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 22.195950004970655,
+        "enqueue_samples_us": [
+          23.569569966639392,
+          22.204940032679588,
+          22.210340030142106,
+          21.968439978081733,
+          21.7593399429461,
+          22.04174001235515,
+          22.195950004970655
+        ],
+        "batch_completion_median_us": 50.408210008754395,
+        "batch_completion_samples_us": [
+          51.18483000842389,
+          50.29810999985784,
+          50.408210008754395,
+          50.40871001256164,
+          50.385809954605065,
+          50.34121000790037,
+          50.489119967096485
+        ]
+      },
+      "gpu_speedup": 0.7112728419040119,
+      "submission_speedup": 0.711855490836578,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s1024-d64-causal",
+      "shape": [
+        1,
+        8,
+        1024,
+        64
+      ],
+      "causal": true,
+      "artifact": "artifacts/b1-h8-s1024-d64-causal.tbin",
+      "artifact_sha256": "43e73d685311510fe6107f4dfee74d5fa298e04762b3abe9673dd57412a93cb1",
+      "source_sha256": "f4a4a3fe7cba44515e46e5f7cb7ff1b7e34fc98f3e1084a5c8b694aa9c0d2609",
+      "build_seconds": 5.47613759500382,
+      "nvrtc_seconds": 1.3754254770028638,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.00048828125,
+          "pytorch_max_abs_error": 0.00048828125
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 45.004801750183105,
+        "samples_us": [
+          45.30144214630127,
+          45.12767791748047,
+          44.89215850830078,
+          44.87167835235596,
+          45.004801750183105,
+          45.004801750183105,
+          44.994239807128906
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 49.592318534851074,
+        "samples_us": [
+          49.797120094299316,
+          49.58208084106445,
+          49.592318534851074,
+          49.56160068511963,
+          49.592318534851074,
+          49.5308780670166,
+          49.592318534851074
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.16476998210419,
+        "enqueue_samples_us": [
+          67.89455997932237,
+          69.48108995857183,
+          67.3841500247363,
+          68.38587003585417,
+          69.29988994670566,
+          68.16476998210419,
+          67.60055999620818
+        ],
+        "batch_completion_median_us": 68.6612800200237,
+        "batch_completion_samples_us": [
+          68.39176996436436,
+          69.97739998041652,
+          67.8753600368509,
+          68.87518000439741,
+          69.79220001085196,
+          68.6612800200237,
+          68.09737002186012
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 22.00593997258693,
+        "enqueue_samples_us": [
+          22.699349938193336,
+          22.114739986136556,
+          21.33243004209362,
+          23.35377001145389,
+          21.642729989252985,
+          21.972940012346953,
+          22.00593997258693
+        ],
+        "batch_completion_median_us": 50.682410001172684,
+        "batch_completion_samples_us": [
+          51.311529969098046,
+          50.587509977049194,
+          50.613819985301234,
+          50.788320004357956,
+          50.628910030354746,
+          50.866110032075085,
+          50.682410001172684
+        ]
+      },
+      "gpu_speedup": 1.1019339405188981,
+      "submission_speedup": 0.7381512547740469,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b2-h4-s257-d64-noncausal",
+      "shape": [
+        2,
+        4,
+        257,
+        64
+      ],
+      "causal": false,
+      "artifact": "artifacts/b2-h4-s257-d64-noncausal.tbin",
+      "artifact_sha256": "ac36b8a47787d5fc0d2b3d5281fee0674d006f366a8cbfbc8512916495730ca5",
+      "source_sha256": "125dae720d151caaa9e932959f11e3978c78957209bbbf3010a1118ee99e6179",
+      "build_seconds": 4.885592104001262,
+      "nvrtc_seconds": 1.4043192440003622,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.00048828125,
+          "pytorch_max_abs_error": 0.000244140625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 7.62939453125e-06,
+          "pytorch_max_abs_error": 7.62939453125e-06
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 10.280959606170654,
+        "samples_us": [
+          10.557440519332886,
+          10.301439762115479,
+          10.280959606170654,
+          10.280959606170654,
+          10.26047945022583,
+          10.280959606170654,
+          10.26047945022583
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 14.141440391540527,
+        "samples_us": [
+          14.489599466323853,
+          14.141440391540527,
+          14.131200313568115,
+          14.110720157623291,
+          14.100480079650879,
+          14.141440391540527,
+          14.161920547485352
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 67.22574995364994,
+        "enqueue_samples_us": [
+          67.48436004272662,
+          67.22574995364994,
+          66.2086299416842,
+          65.43591996887699,
+          69.87619999563321,
+          66.30252995819319,
+          67.4362500285497
+        ],
+        "batch_completion_median_us": 67.37714997143485,
+        "batch_completion_samples_us": [
+          67.62625998817384,
+          67.37714997143485,
+          66.35232995904516,
+          65.58811997820158,
+          70.03419996181037,
+          66.45093999395613,
+          67.58085000910796
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 30.573410040233284,
+        "enqueue_samples_us": [
+          31.330630008596927,
+          30.573410040233284,
+          29.85838997119572,
+          29.56499003630597,
+          30.552210009773262,
+          30.775009945500642,
+          32.0572400232777
+        ],
+        "batch_completion_median_us": 30.67211997404229,
+        "batch_completion_samples_us": [
+          31.436329954885878,
+          30.67211997404229,
+          29.967890004627407,
+          29.671290030819364,
+          30.671320055262186,
+          30.88331999606453,
+          32.167739991564304
+        ]
+      },
+      "gpu_speedup": 1.3754980987429233,
+      "submission_speedup": 0.455230296725908,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b2-h4-s257-d64-causal",
+      "shape": [
+        2,
+        4,
+        257,
+        64
+      ],
+      "causal": true,
+      "artifact": "artifacts/b2-h4-s257-d64-causal.tbin",
+      "artifact_sha256": "cd3bbbe0eca613f073c76f42c78a9400bcd775993f72e921c63d6d2f52d1e522",
+      "source_sha256": "0484397a22ed498d7d7e45885869f357fff9d93a3025fb3d066b9ed58124a677",
+      "build_seconds": 4.196089554003265,
+      "nvrtc_seconds": 1.4133646960035549,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 10.250240564346313,
+        "samples_us": [
+          10.496000051498413,
+          10.240000486373901,
+          10.22976040840149,
+          10.250240564346313,
+          10.240000486373901,
+          10.26047945022583,
+          10.280959606170654
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 14.254080057144165,
+        "samples_us": [
+          14.673279523849487,
+          14.243839979171753,
+          14.213119745254517,
+          14.254080057144165,
+          14.254080057144165,
+          14.254080057144165,
+          14.223359823226929
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 67.57955001376104,
+        "enqueue_samples_us": [
+          67.94936001824681,
+          67.12793998303823,
+          71.26053002139088,
+          67.57955001376104,
+          68.10256003518589,
+          66.92684000881854,
+          67.36054994689766
+        ],
+        "batch_completion_median_us": 67.71585998649243,
+        "batch_completion_samples_us": [
+          68.08796999393962,
+          67.26454994350206,
+          71.40403002267703,
+          67.71585998649243,
+          68.24087002314627,
+          67.07084001391195,
+          67.50355998519808
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 31.3346300390549,
+        "enqueue_samples_us": [
+          33.777780045056716,
+          31.3346300390549,
+          30.688620026921853,
+          31.78212995408103,
+          30.549910006811842,
+          31.690140021964908,
+          30.700919960509054
+        ],
+        "batch_completion_median_us": 31.442530016647652,
+        "batch_completion_samples_us": [
+          33.865080040413886,
+          31.442530016647652,
+          30.75362001254689,
+          31.881039976724423,
+          30.651409979327582,
+          31.798140043974854,
+          30.807319999439642
+        ]
+      },
+      "gpu_speedup": 1.3906093196216793,
+      "submission_speedup": 0.46433036548483064,
+      "shared_memory_bytes": 25600,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s512-d128-noncausal",
+      "shape": [
+        1,
+        8,
+        512,
+        128
+      ],
+      "causal": false,
+      "artifact": "artifacts/b1-h8-s512-d128-noncausal.tbin",
+      "artifact_sha256": "98bec349acefc99abbc6853e0f0a3e61e267389dcf934fe8a07c09c594cbce75",
+      "source_sha256": "8ac805b17b0ac15db959224c379d6192cdd7ce7b07e610a4a1a5eb23d04c026e",
+      "build_seconds": 6.5829183850000845,
+      "nvrtc_seconds": 1.438591683996492,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.000244140625,
+          "pytorch_max_abs_error": 0.000244140625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0,
+          "pytorch_max_abs_error": 0.0
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 32.378880977630615,
+        "samples_us": [
+          32.61375904083252,
+          32.30720043182373,
+          32.33792066574097,
+          32.38912105560303,
+          32.378880977630615,
+          32.31744050979614,
+          32.40959882736206
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 41.73823833465576,
+        "samples_us": [
+          42.12736129760742,
+          41.656317710876465,
+          41.73823833465576,
+          41.707520484924316,
+          41.73823833465576,
+          41.76896095275879,
+          41.71775817871094
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.43326998932753,
+        "enqueue_samples_us": [
+          69.76788994506933,
+          68.20916001743171,
+          71.08451995009091,
+          69.18977996974718,
+          67.98515998525545,
+          67.6614600524772,
+          68.43326998932753
+        ],
+        "batch_completion_median_us": 68.7956799811218,
+        "batch_completion_samples_us": [
+          70.13639995420817,
+          68.57546999526676,
+          71.44991999666672,
+          69.56398996408097,
+          68.35376996605191,
+          68.02037001762073,
+          68.7956799811218
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 30.909519991837442,
+        "enqueue_samples_us": [
+          31.782639998709783,
+          31.39462998660747,
+          30.213610007194802,
+          30.909519991837442,
+          31.244319980032742,
+          30.309209978440776,
+          29.895199986640364
+        ],
+        "batch_completion_median_us": 45.33990999334492,
+        "batch_completion_samples_us": [
+          46.1760199686978,
+          45.33800994977355,
+          45.484919974114746,
+          45.33851002634037,
+          45.357909984886646,
+          45.33990999334492,
+          45.26001001067925
+        ]
+      },
+      "gpu_speedup": 1.2890574681531206,
+      "submission_speedup": 0.6590517021677325,
+      "shared_memory_bytes": 46080,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "b1-h8-s512-d128-causal",
+      "shape": [
+        1,
+        8,
+        512,
+        128
+      ],
+      "causal": true,
+      "artifact": "artifacts/b1-h8-s512-d128-causal.tbin",
+      "artifact_sha256": "c9ee6b546740201c8d38cfaa78a48c8a5dbc947a8fe487464e528610c9904deb",
+      "source_sha256": "25ee847ff2e5c37002cc37937cf8e96c2ad51ac1805e4e6751406ca2048bf5cc",
+      "build_seconds": 5.00414903100318,
+      "nvrtc_seconds": 1.4476862369992887,
+      "compiler": "nvrtc",
+      "cache_hit": false,
+      "correctness": [
+        {
+          "family": "random",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        },
+        {
+          "family": "large_logits",
+          "tensor_max_abs_error": 0.001953125,
+          "pytorch_max_abs_error": 0.001953125
+        },
+        {
+          "family": "zero_logits",
+          "tensor_max_abs_error": 0.0009765625,
+          "pytorch_max_abs_error": 0.0009765625
+        }
+      ],
+      "tensor_gpu": {
+        "median_us": 31.088640689849854,
+        "samples_us": [
+          31.334400177001953,
+          31.088640689849854,
+          31.088640689849854,
+          31.006720066070557,
+          31.139841079711914,
+          30.945279598236084,
+          31.05760097503662
+        ]
+      },
+      "pytorch_flash_gpu": {
+        "median_us": 36.25983953475952,
+        "samples_us": [
+          36.6592001914978,
+          36.19839906692505,
+          36.270079612731934,
+          36.25983953475952,
+          36.26976013183594,
+          36.2393593788147,
+          36.25983953475952
+        ]
+      },
+      "tensor_prepared_submission": {
+        "enqueue_median_us": 68.76278006529901,
+        "enqueue_samples_us": [
+          65.86221999896225,
+          69.68659996346105,
+          68.99547995999455,
+          70.52411005133763,
+          68.76278006529901,
+          68.26687000284437,
+          68.60626999696251
+        ],
+        "batch_completion_median_us": 69.10998999956064,
+        "batch_completion_samples_us": [
+          66.21391999942716,
+          70.04840997979045,
+          69.35249002708588,
+          70.87062003847677,
+          69.10998999956064,
+          68.63317998067942,
+          68.96857994433958
+        ]
+      },
+      "pytorch_submission": {
+        "enqueue_median_us": 30.0936999701662,
+        "enqueue_samples_us": [
+          30.69072001380846,
+          31.371430013678037,
+          30.0936999701662,
+          29.27308996731881,
+          30.58850998058915,
+          29.545900033554062,
+          29.610290002892725
+        ],
+        "batch_completion_median_us": 39.14897999493405,
+        "batch_completion_samples_us": [
+          39.89609998825472,
+          39.06787998857908,
+          39.14897999493405,
+          39.06407997419592,
+          39.249879991984926,
+          39.18759000953287,
+          39.1066799784312
+        ]
+      },
+      "gpu_speedup": 1.1663372450567777,
+      "submission_speedup": 0.5664735300234154,
+      "shared_memory_bytes": 46080,
+      "workspace": {
+        "alignment": 1,
+        "bytes": 0
+      }
+    }
+  ],
+  "iterations": 100,
+  "repetitions": 7,
+  "warmup": 20,
+  "rtol": 0.02,
+  "atol": 0.002,
+  "compiler_imports": false,
+  "torch_compile_backend": false,
+  "baseline": "PyTorch SDPA forced FLASH_ATTENTION",
+  "gpu_timing": "CUDA events around CUDA graph replay; median per operation",
+  "submission_timing": "wall-clock batch enqueue and completion; warm pre-borrowed Tensor buffers",
+  "allocation_policy": "Tensor reuses a preallocated output; PyTorch SDPA returns allocated outputs (graph allocator during capture)",
+  "scope": "specialized FP16 forward self-attention; contiguous BHSD; causal/noncausal; no mask/dropout/GQA/backward",
+  "acceptance": {
+    "source_template_sha256": "734e75ae6d41b4289c1f9fd126335cbf9477fbfe2b19d376eb0b187d1eeff9da",
+    "demo_sha256": "b3d079f53a3569251331098d73377c1ce40a08669af63514f6f7144417fc2b86",
+    "specializations_match_template": true,
+    "gpu_regression_tests": {
+      "passed": 4,
+      "seconds": 21.1
+    },
+    "related_regression_tests": {
+      "passed": 27,
+      "seconds": 15.63
+    },
+    "clean_cli_replay": {
+      "output_identical": true,
+      "installed_distributions": [
+        "numpy",
+        "tensor-workspace"
+      ]
+    }
+  }
+}

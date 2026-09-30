@@ -39,6 +39,8 @@ jobs:
         run: uv run --locked --extra publish python -m pytest -o addopts='' -q
       - name: Compile the five CUDA profiles and audit cache recovery
         run: uv run --locked python tools/phase2_producer.py --out build/phase2-transfer --target sm_86
+      - name: Compile the FlashAttention demonstration with NVRTC
+        run: uv run --locked tensor build examples/flash_attention.py --target sm_86 --out build/flash-attention.tbin
       - name: Package a deterministic module and its pinned dependency
         run: uv run --locked python tools/phase3_producer.py --artifacts build/phase2-transfer --out build/phase3-transfer
       - name: Prepare the PyPI transport wheel without uploading

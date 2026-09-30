@@ -34,6 +34,11 @@ The PyPI adapter passes **116 tests with zero skips** on the A10G. Linux and
 Windows CI pass local upload tests and clean-consumer registry restoration. See
 [PyPI transport acceptance](docs/research/phase3-pypi.md).
 
+A [FlashAttention demonstration](docs/research/flash-attention-demo.md) now builds
+FP16 causal/non-causal attention with NVRTC and runs it from `.tbin`. Twelve A10G
+configurations pass correctness checks; GPU and host submission timings are
+reported separately. PyTorch FX integration remains Phase 4 work.
+
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
 The validation harness measures caches, independent CPU provider execution,

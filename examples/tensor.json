@@ -8,7 +8,8 @@
     "gemm_relu": "gemm_relu.py",
     "dynamic_affine": "dynamic_affine.py",
     "dynamic_gemm": "dynamic_gemm.py",
-    "scalar_offset": "scalar_offset.py"
+    "scalar_offset": "scalar_offset.py",
+    "flash_attention": "flash_attention.py"
   },
   "capabilities": ["contiguous", "scalars", "symbolic_shapes"]
 }

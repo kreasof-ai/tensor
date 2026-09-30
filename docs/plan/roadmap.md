@@ -269,6 +269,13 @@ NVRTC remains the default; direct PTX stays experimental after Tensor v1.
 `torch.compile(..., backend="tensor")`, inference-oriented FX graphs first. E8 informs the
 representation choice. Keep graph breaks working — PyTorch owns the gap.
 
+Include FP16 forward self-attention in the inference benchmark set: contiguous
+BHSD, causal/non-causal, tail sequences, batching and head dimensions 64/128.
+Compare with forced PyTorch FlashAttention SDPA and measure GPU execution and
+host submission separately. The current
+[attention demonstration](../research/flash-attention-demo.md) uses Tensor's
+existing NVRTC artifacts/runtime; FX lowering of SDPA remains Phase 4 work.
+
 ---
 
 ## Phase 5 — Second provider
