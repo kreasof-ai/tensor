@@ -2,9 +2,9 @@ name: NVRTC runtime and module transfer
 
 on:
   push:
-    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+    paths: ["src/**", "packages/tensor-torch/**", "tools/phase4_*.py", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
   pull_request:
-    paths: ["src/**", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
+    paths: ["src/**", "packages/tensor-torch/**", "tools/phase4_*.py", "tests/**", "examples/**", "tools/bootstrap_nvrtc.py", "tools/phase2_producer.py", "tools/phase3_*.py", "pyproject.toml", "uv.lock", ".github/workflows/phase2-nvrtc.yml"]
   workflow_dispatch:
 
 permissions:
@@ -84,6 +84,25 @@ jobs:
           assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
           PY
           "${{ matrix.python }}" tools/phase3_registry_check.py build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl --out build/phase3-registry/consumer.json
+      - name: Build the separate PyTorch adapter wheel
+        run: uv build --wheel packages/tensor-torch --out-dir build/torch-wheel
+      - name: Check installed PyTorch backend without compiler packages or GPU
+        shell: bash
+        run: |
+          uv venv --python 3.12 build/torch-consumer
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            torch_python=build/torch-consumer/Scripts/python.exe
+          else
+            torch_python=build/torch-consumer/bin/python
+          fi
+          uv pip install --python "$torch_python" dist/tensor_workspace-0.1.0-py3-none-any.whl build/torch-wheel/tensor_torch-0.1.0-*.whl torch==2.14.0
+          "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-torch-${{ matrix.os }}
+          path: build/torch-wheel/*.whl
+          if-no-files-found: error
+          retention-days: 30
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-phase2-${{ matrix.os }}

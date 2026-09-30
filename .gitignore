@@ -1,6 +1,9 @@
 # Python
 __pycache__/
 *.py[cod]
+# Optional adapter extension is built into wheels, never checked in.
+packages/tensor-torch/src/tensor_torch/_launch*.so
+packages/tensor-torch/src/tensor_torch/_launch*.pyd
 *.egg-info/
 .eggs/
 build/

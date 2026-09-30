@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tensor-torch"
+version = "0.1.0"
+description = "PyTorch client adapter and NVRTC FX backend for Tensor"
+requires-python = ">=3.12,<3.13"
+dependencies = ["tensor-workspace==0.1.0", "torch>=2.8,<2.15"]
+
+[project.entry-points.torch_dynamo_backends]
+tensor = "tensor_torch:backend"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+tensor_torch = ["templates/*.py"]

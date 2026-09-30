@@ -264,7 +264,7 @@ NVRTC remains the default; direct PTX stays experimental after Tensor v1.
 
 ---
 
-## Phase 4 — PyTorch backend
+## Phase 4 — PyTorch backend *(in validation)*
 
 `torch.compile(..., backend="tensor")`, inference-oriented FX graphs first. E8 informs the
 representation choice. Keep graph breaks working — PyTorch owns the gap.
@@ -274,7 +274,25 @@ BHSD, causal/non-causal, tail sequences, batching and head dimensions 64/128.
 Compare with forced PyTorch FlashAttention SDPA and measure GPU execution and
 host submission separately. The current
 [attention demonstration](../research/flash-attention-demo.md) uses Tensor's
-existing NVRTC artifacts/runtime; FX lowering of SDPA remains Phase 4 work.
+existing NVRTC artifacts/runtime. The separate [tensor-torch adapter](../pytorch.md)
+now lowers inference FX regions for pointwise operations, rank-two FP16 GEMM
+with epilogues, and this SDPA profile. Installed exports also have functional
+and mutable-output custom-op registrations with symbolic FakeTensor shapes.
+Unsupported regions and graph breaks remain in PyTorch, with observable coverage.
+AOTAutograd evaluation executes compiled forward and backward regions, with
+unsupported backward operators reported as PyTorch fallback. Full training and
+attention backward remain outside the inference-first scope.
+
+Validation includes current-stream launches, allocator lifetime, CUDA graph
+capture, compiler-free cached execution, numerical and cache recovery checks,
+and clean adapter wheels on Linux/Windows. Performance acceptance uses 20 A10G
+inference cases: end-to-end geometric mean at most 1.10× Inductor, no case above
+1.25×, selected fused graphs at least 1.25× eager, prepared submission at most
+15 µs, cached preparation at most 100 ms, and cold pointwise/GEMM preparation
+at most 10/30 s. Acceptance results are being collected; GPU execution and host
+submission are measured separately. The compact submission shim needs Python
+headers to build its wheel and no CUDA toolkit; installed consumers need no
+host compiler. NVRTC remains the only automatic kernel compiler.
 
 ---
 
