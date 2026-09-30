@@ -387,3 +387,23 @@ def test_native_fixed_and_fx_calls_reject_closed_session(tmp_path):
             call()
         with pytest.raises(RuntimeError,match='closed session'):
             plan(a,b)
+
+
+@GPU
+def test_native_cuda_failures_preserve_provider_exception(tmp_path):
+    _require_native()
+    from tensor.cuda import CudaError
+    from tensor_torch.bridge import Kernel, _native_plan
+    a,b = (torch.randn(129,device='cuda') for _ in range(2))
+    backend = tt.Backend(cache_dir=tmp_path)
+    with torch.inference_mode():
+        torch.compile(lambda a,b:torch.relu(a*2+b),backend=backend,fullgraph=True)(a,b)
+        kernel = Kernel(backend.report['regions'][0]['specializations'][0]['artifact'])
+        prepared = kernel.prepare(a,b)
+        # Zero block width is rejected by the driver before any device execution.
+        prepared.launch = {**prepared.launch,'block': [0,1,1]}
+        invalid = _native_plan(prepared,(a,b),prepared.outputs,fixed=True)
+        with pytest.raises(CudaError,match='cuLaunchKernel failed with CUDA error'):
+            invalid()
+        prepared()
+        torch.testing.assert_close(prepared.outputs[0],torch.relu(a*2+b))

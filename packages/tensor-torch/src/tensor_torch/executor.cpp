@@ -20,6 +20,10 @@
 using Launch = int (CUDA_CALL *)(void*, unsigned, unsigned, unsigned,
     unsigned, unsigned, unsigned, unsigned, void*, void**, void**);
 
+struct CudaFailure : std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
 static Launch driver_launch() {
     static Launch launch = [] {
 #ifdef _WIN32
@@ -29,7 +33,7 @@ static Launch driver_launch() {
         auto driver = dlopen("libcuda.so.1", RTLD_NOW | RTLD_LOCAL);
         auto entry = driver ? reinterpret_cast<Launch>(dlsym(driver, "cuLaunchKernel")) : nullptr;
 #endif
-        if (!entry) throw std::runtime_error("CUDA driver launch entry point unavailable");
+        if (!entry) throw CudaFailure("CUDA driver launch entry point unavailable");
         return entry;
     }();
     return launch;
@@ -159,7 +163,7 @@ public:
             }
             auto code = submit_(function_, launch_[0], launch_[1], launch_[2], launch_[3],
                 launch_[4], launch_[5], launch_[6], impl.getStreamNativeHandle(stream), parameters_.data(), nullptr);
-            if (code) throw std::runtime_error("cuLaunchKernel failed with CUDA error " + std::to_string(code));
+            if (code) throw CudaFailure("cuLaunchKernel failed with CUDA error " + std::to_string(code));
         }
         if (fixed_) return py::none();
         if (outputs_.size() == 1)
@@ -172,6 +176,9 @@ public:
 };
 
 PYBIND11_MODULE(TENSOR_EXECUTOR_MODULE, m) {
+    // Preserve the provider's public exception contract on the native path.
+    auto cuda_error = py::module_::import("tensor.cuda").attr("CudaError");
+    py::register_exception<CudaFailure>(m, "CudaLaunchError", cuda_error.ptr());
     py::class_<Plan>(m, "Plan")
         .def(py::init<uint64_t, std::array<unsigned, 7>, py::tuple, py::tuple, py::list, bool>())
         .def("__call__", &Plan::call);

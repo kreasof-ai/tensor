@@ -29,6 +29,8 @@ from tensor_torch.bridge import _submit, _executor
 assert _submit is not None, 'CI must produce the native submission shim'
 if opts.require_native:
     assert _executor is not None, 'native wheel must import its matching C++ executor'
+    from tensor.cuda import CudaError
+    assert issubclass(_executor.CudaLaunchError,CudaError)
 with torch.inference_mode():
     args=(torch.randn(129),torch.randn(129))
     f=torch.compile(lambda a,b:torch.relu(a*2+b),backend='tensor',fullgraph=True)
