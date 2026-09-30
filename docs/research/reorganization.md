@@ -59,6 +59,26 @@ training and WebGPU validation bundles need their matching source/wheels;
 training v1 bundles require original wheels or a fresh v2 build.
 
 The [verification record](data/reorganization-verification.json) binds source,
-wheel, module and evidence hashes. Linux/Windows workflows use the grouped
-script/test paths and build matching core and NN wheels; their completed status
-and transferred-consumer results are recorded separately after the pushed run.
+wheel, module and evidence hashes. All three workflows pass at implementation
+commit `75acca2`, including their Linux/Windows jobs:
+
+- [NN producer](https://github.com/kreasof-ai/tensor/actions/runs/36779120801),
+  retained [status](data/reorganization-nn-ci.json).
+- [NVRTC runtime/module and native executor](https://github.com/kreasof-ai/tensor/actions/runs/36779120793),
+  retained [status](data/reorganization-nvrtc-ci.json).
+- [WebGPU producer/transfer](https://github.com/kreasof-ai/tensor/actions/runs/36779120766),
+  retained [status](data/reorganization-webgpu-ci.json).
+
+The NN jobs compile all 54 diagnostic kernels without a GPU and verify both
+installed wheels. Their actual Linux and Windows bundles then each pass ten
+diagnostic updates on the separate A10G in clean three-distribution consumers:
+[Linux](data/reorganization-ci-linux-consumer.json) and
+[Windows](data/reorganization-ci-windows-consumer.json). Numerical fixtures copy
+the local Torch-validated diagnostic values unchanged, with explicit binding to
+the equivalent independent compilation after config, all kernel specializations,
+all 11 implementation sources, both wheels and artifact/module checksum checks.
+[Linux verification](data/reorganization-ci-linux-verification.json) and
+[Windows verification](data/reorganization-ci-windows-verification.json) record
+line-ending normalization, original/derived fixture hashes and wheel identities.
+Derived fixtures and producer manifests are retained beside those records.
+These are transferred diagnostic runs, not additional full-scale benchmarks.

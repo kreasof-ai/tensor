@@ -337,10 +337,12 @@ WebGPU capabilities rather than the native TileLang ROCm path.
 At the user's request, scope is a concrete ten-update training workload and a
 public manual backward interface; standalone autograd remains deferred.
 `ManualFunction` defines saved-buffer lifetime, gradient metadata and context
-consumption without Torch. `tensor.nn.NanoGPT` executes the 12-layer/12-head/
+consumption without Torch. `tensor_nn.NanoGPT` executes the 12-layer/12-head/
 width-768 model, including embedding/scatter gradients, tied weights, LayerNorm,
 linear and dense causal attention backward, GELU, cross-entropy, clipping and
-AdamW, using only Tensor and NumPy on the consumer.
+AdamW, using Tensor, the optional Tensor NN distribution and NumPy on the consumer.
+The [repository layout](../development.md) separates these templates from core;
+the original Phase 6 evidence retains its earlier two-distribution packaging.
 
 The NVRTC producer builds 54 specializations and searches three schedules for
 each of 18 GEMM/fused-GEMM shapes. Static buffer reuse and projection/GELU and

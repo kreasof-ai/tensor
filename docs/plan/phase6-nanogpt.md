@@ -15,6 +15,11 @@ autograd is deferred. The public manual interface defines saved-buffer
 lifetime, gradient metadata and context consumption; callbacks own accumulation
 and recomputation.
 
+After the [repository reorganization](../development.md), templates ship in the
+optional `tensor-nn` distribution. Consumers install matching Tensor/Tensor NN
+wheels and NumPy; fresh v2 bundles bind both implementations. Original Phase 6
+measurements retain their original two-distribution wheels and v1 bundle hashes.
+
 Implementation covers embedding/scatter gradients, linear gradients,
 LayerNorm, GELU, residuals, causal attention, cross-entropy, global gradient
 clipping and AdamW. The static training plan reuses buffers and performs bounded

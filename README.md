@@ -65,7 +65,7 @@ GPU-free producers and Windows-to-Linux execution CI pass; see the
 
 Phase 6 adds a public [manual backward interface](docs/manual-backward.md) and
 standalone CUDA nanoGPT training: ten complete updates of a 124M-parameter model
-with only Tensor and NumPy installed. NVRTC builds 54 kernel specializations;
+using Tensor, the optional Tensor NN package and NumPy. NVRTC builds 54 kernel specializations;
 bounded fusion and explicit autotuning yield **36.58 ms/update on A10G**, versus
 **38.34 ms/update** for compiled Torch with native SDPA and fused AdamW.
 Numerical gradients, optimizer state and clean-consumer execution pass. See the

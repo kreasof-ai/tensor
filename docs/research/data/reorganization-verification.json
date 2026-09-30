@@ -213,12 +213,34 @@
     "diagnostic": "16ae6c6a90d6e95ce1de3d0ebfc5a9aa381c8f5cee04664cfa66f69358433924"
   },
   "retained_evidence_sha256": {
+    "reorganization-ci-linux-consumer.json": "2845a90c26885978a92748f5285172e5543873b98c7ff7ce284c37e6fc626459",
+    "reorganization-ci-linux-producer.json": "9b974de836b1f9233f8e1364346c9d378c86140208b2cb60ff8817cfb742c638",
+    "reorganization-ci-linux-reference.json": "599a517b2bb34f5c2fd333ef2fafd8f144fea5c832793ee07aee70f6921d20f8",
+    "reorganization-ci-linux-verification.json": "63deca31396be53598c30b812fce23d2a88f40e209a369146481464b22f87685",
+    "reorganization-ci-windows-consumer.json": "0a7c1db1672cd6fd8a0beb8d420c2bebbe7f62e65022cd44f50d931ec88b6b99",
+    "reorganization-ci-windows-producer.json": "9ff5e9e0b632b25d4385b25f4a5bba7d828daeadb75b6289fbfad364fed91b32",
+    "reorganization-ci-windows-reference.json": "f1d9d13f5d66e694890f2ab7a3fd89399a7c166b0b22b127aadf69eaaccb5cdb",
+    "reorganization-ci-windows-verification.json": "7dd81119311ed6f747dde714a7da157d5583afa5b476355c14aadfd6b2eede70",
     "reorganization-core-consumer.json": "d64663ae86462135d1eccddae9b95a07e7754b8df10e72abf4c737474f904b56",
     "reorganization-diagnostic-validation.json": "a5ba9285ddc967cdbfcaa2145ca7a6dc5648b2144c552057591b8d686f9937d6",
     "reorganization-nanogpt-producer.json": "026f6583d08a053d00a659927a79ef5745710ab483b46e83d79d3f5f05ead459",
     "reorganization-nanogpt-validation.json": "536c78c719dd77e833fd08379ffeacdb13a10b6bd8cb387e7433e73845a27916",
+    "reorganization-nn-ci.json": "b32458cd4964c86e5af115559edf023cbb07e6f30b59718ed14693aeb6256637",
+    "reorganization-nvrtc-ci.json": "b153c38710d6c805855a742f2bb96bb3c35895c65f219bad3daa18ca8393a697",
     "reorganization-paths.json": "c427e520d752c742abcb90e234175e09bad19b390b061703cc415abd3bb376e9",
     "reorganization-regression.xml": "6566ad9575b90e44290fbe660e7dfa3bdefc0ce66d5d80612038d06462f88821",
-    "reorganization-training-consumer.json": "cd3bd41bf85adcfae59676537f3e78c158e94a7c17e2a9d36b3c323cf9209110"
+    "reorganization-training-consumer.json": "cd3bd41bf85adcfae59676537f3e78c158e94a7c17e2a9d36b3c323cf9209110",
+    "reorganization-webgpu-ci.json": "b9e7cdb2eeade7413e4028b68f8fc6e09610aa1c99f55a4445d08a0a962cd809"
+  },
+  "implementation_commit": "75acca2c3b6b6bdd462b2f08ddf85169985d83c3",
+  "ci_runs": {
+    "nn_producer": 36779120801,
+    "nvrtc_runtime": 36779120793,
+    "webgpu_transfer": 36779120766
+  },
+  "ci_conclusion": "success",
+  "transferred_training_updates": {
+    "linux_producer_to_a10g": 10,
+    "windows_producer_to_a10g": 10
   }
 }

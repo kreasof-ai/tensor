@@ -1,0 +1,14 @@
+{
+  "producer_commit": "75acca2c3b6b6bdd462b2f08ddf85169985d83c3",
+  "config_and_kernel_specializations_match": true,
+  "implementation_sources_match_after_line_ending_normalization": 11,
+  "artifact_and_module_hashes_checked": 54,
+  "training_manifest_sha256": "9b974de836b1f9233f8e1364346c9d378c86140208b2cb60ff8817cfb742c638",
+  "wheel_sha256": {
+    "tensor_nn-0.1.0-py3-none-any.whl": "968d6dc5aaf7c59c32f1a39ee60d9b900be985d75d4c262e9ec464f6562bc459",
+    "tensor_workspace-0.1.0-py3-none-any.whl": "49ac7aecc61225d1355d9dc09675633cf75b756871c0203d885b020277feadb8"
+  },
+  "original_numeric_reference_sha256": "a5ba9285ddc967cdbfcaa2145ca7a6dc5648b2144c552057591b8d686f9937d6",
+  "derived_reference_sha256": "599a517b2bb34f5c2fd333ef2fafd8f144fea5c832793ee07aee70f6921d20f8",
+  "reference_binding_note": "Diagnostic numeric values copied unchanged from the local Torch-validated oracle to an equivalent CI compilation. Config, all 54 kernel kinds/parameters/schedules, both wheels and all 11 implementation sources checked, including line-ending normalization. Artifact/module hashes checked; no claim of binary identity."
+}
