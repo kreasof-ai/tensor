@@ -168,7 +168,15 @@ all per-repeat prefill/decode times and every decode step latency. Plotting uses
 `.tbin`/`.tpack` formats and the runtime ABI are unchanged; the experimental LFM2
 plan additionally binds its code fingerprints and artifact checksums.
 
-The Linux/Windows workflow compiles a two-layer synthetic mixed-encoding GGUF
-with NVRTC and inspects it in an isolated four-distribution wheel consumer.
+The [Linux/Windows LFM2 workflow](https://github.com/kreasof-ai/tensor/actions/runs/36791347005)
+passes: both hosts compile 31 specializations for a two-layer synthetic
+mixed-encoding GGUF with NVRTC, build both wheels and inspect the model in an
+isolated four-distribution consumer. The existing
+[runtime/module](https://github.com/kreasof-ai/tensor/actions/runs/36791347034),
+[WebGPU](https://github.com/kreasof-ai/tensor/actions/runs/36791346992) and
+[training](https://github.com/kreasof-ai/tensor/actions/runs/36791347001)
+workflows also pass at implementation commit
+`a1f40c0795c9bbec0f07e9f5988767eec248748f`.
+The [CI record](data/lfm2-ci.json) retains every job and check.
 This GPU-free contract check complements the full A10G checkpoint execution;
 it is not evidence of full-model GPU performance on Windows or other hardware.
