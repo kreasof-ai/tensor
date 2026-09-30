@@ -16,6 +16,9 @@ calls through that API are slower than direct TileLang and Triton calls.
 [Raw samples, source/binary hashes and environment](data/direct-backend-comparison.json).
 [Benchmark implementation](../../tools/direct_backend_benchmark.py).
 [Independent Triton kernels](../../tools/direct_triton_kernels.py).
+The [larger-shape scaling sweep](latency-scaling.md) extends pointwise to 64M
+elements, GEMM to 4096³ and attention to sequence length 8192, including
+synchronized single-call latency as well as batched and GPU measurements.
 
 ## Aggregate results
 

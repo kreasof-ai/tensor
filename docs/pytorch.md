@@ -56,6 +56,8 @@ and isolated launch timings and validation evidence.
 The [direct backend comparison](research/direct-backend-comparison.md) measures
 native TileLang and Triton alongside Tensor, separating GPU execution, prepared
 submission, allocating kernel calls, and the outer `torch.compile` wrapper.
+The [larger-shape sweep](research/latency-scaling.md) shows how wrapper cost and
+kernel execution scale, with separate synchronized single-call measurements.
 
 ## Inference graphs
 
