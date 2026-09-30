@@ -85,6 +85,13 @@ references. Another 27 module/codegen/signature regressions passed in 15.63
 seconds. Linux/Windows CI compile the default export with NVRTC; GPU execution
 is measured locally on A10G.
 
+CI [36654018983](https://github.com/kreasof-ai/tensor/actions/runs/36654018983)
+passed for implementation `1769be3dafde8f8edccd20c3f7aa0d51a54adc4a`.
+Linux passed 97 tests with 23 expected skips; Windows passed 87 with 33 skips.
+Both compile the new default attention export with NVRTC. The four new
+attention checks require GPU opt-in and skip on those GPU-free runners.
+[CI metadata](data/flash-attention-ci.json) records the successful steps.
+
 ## Implementation boundary and evidence
 
 This supports specialized contiguous `[batch, heads, sequence, head_dim]`
