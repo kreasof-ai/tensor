@@ -49,8 +49,10 @@ Initial artifact loading, DLPack/ABI validation, graph specialization, and
 functional custom-operator registration remain in Python. Ordinary custom-op
 calls still use the Python bridge; use compiled FX regions or prepared calls
 for the native executor. The outer Dynamo call wrapper also remains in Python.
-The executor uses PyTorch's [generic device/stream interface](https://github.com/pytorch/pytorch/blob/v2.14.0/c10/core/impl/DeviceGuardImplInterface.h)
+The executor uses PyTorch's [generic device/stream interface](https://github.com/pytorch/pytorch/blob/main/c10/core/impl/DeviceGuardImplInterface.h)
 to access the current stream without CUDA toolkit headers.
+See the [measured C++ executor results](research/native-executor.md) for full-call
+and isolated launch timings and validation evidence.
 
 ## Inference graphs
 
