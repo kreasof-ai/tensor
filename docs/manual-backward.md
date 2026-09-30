@@ -56,9 +56,7 @@ when crossing sessions or frameworks. The ordinary Tensor session checks and
 stream rules still apply.
 
 `tensor_nn.NanoGPT`, from the optional `tensor-nn` distribution, demonstrates an
-explicit reverse tape using this interface. The old `tensor.nn` namespace delegates
-to that installed package.
-Its static buffers and precompiled kernels execute embedding gradients, linear
+explicit reverse tape using this interface. Its static buffers and precompiled kernels execute embedding gradients, linear
 and attention backward, LayerNorm, GELU, cross-entropy, clipping and AdamW.
 See the [Phase 6 report](research/phase6-nanogpt.md) for compilation, clean
 consumer execution and numerical checks. This is a bounded training template;

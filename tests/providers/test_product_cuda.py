@@ -13,7 +13,7 @@ pytestmark = pytest.mark.skipif(not os.environ.get("TENSOR_P1_CUDA"), reason="se
 def test_product_build_load_launch_and_prototype(tmp_path):
     import numpy as np
     import tensor as tx
-    from tensor.build import build_artifact
+    from tensor.compiler.build import build_artifact
 
     source = Path(__file__).resolve().parents[2] / "examples" / "elementwise.py"
     artifact = tmp_path / "elementwise.tbin"
@@ -63,8 +63,8 @@ assert not {'tilelang', 'tvm', 'torch'} & sys.modules.keys()
 def test_product_gemm_uses_lowered_dynamic_shared_memory(tmp_path):
     import numpy as np
     import tensor as tx
-    from tensor.build import build_artifact
-    from tensor.artifact import read_artifact
+    from tensor.compiler.build import build_artifact
+    from tensor.artifacts.format import read_artifact
 
     source = Path(__file__).resolve().parents[2] / "examples" / "gemm_relu.py"
     with tx.Device() as device:
@@ -88,8 +88,8 @@ def test_product_gemm_uses_lowered_dynamic_shared_memory(tmp_path):
 def test_one_dynamic_binary_handles_boundaries_scalars_and_cli(tmp_path):
     import numpy as np
     import tensor as tx
-    from tensor.build import build_artifact
-    from tensor.commands import benchmark, run
+    from tensor.compiler.build import build_artifact
+    from tensor.cli.commands import benchmark, run
 
     root = Path(__file__).resolve().parents[2]
     artifact = tmp_path / "dynamic.tbin"
@@ -141,7 +141,7 @@ assert not {'tilelang', 'tvm', 'torch'} & sys.modules.keys()
 def test_int64_scalar_preserves_width_and_rejects_overflow(tmp_path):
     import numpy as np
     import tensor as tx
-    from tensor.build import build_artifact
+    from tensor.compiler.build import build_artifact
 
     source = Path(__file__).resolve().parents[2] / "examples/scalar_offset.py"
     artifact = tmp_path / "scalar.tbin"
@@ -163,7 +163,7 @@ def test_int64_scalar_preserves_width_and_rejects_overflow(tmp_path):
 def test_dynamic_gemm_one_binary_for_five_row_counts(tmp_path):
     import numpy as np
     import tensor as tx
-    from tensor.build import build_artifact
+    from tensor.compiler.build import build_artifact
 
     source = Path(__file__).resolve().parents[2] / "examples/dynamic_gemm.py"
     artifact = tmp_path / "gemm.tbin"
@@ -185,7 +185,7 @@ def test_gpu_dlpack_orders_foreign_streams_and_preserves_ownership(tmp_path):
     import ctypes
     import torch
     import tensor as tx
-    from tensor.build import build_artifact
+    from tensor.compiler.build import build_artifact
 
     root = Path(__file__).resolve().parents[2]
     artifact = tmp_path / "dynamic.tbin"

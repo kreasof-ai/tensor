@@ -151,7 +151,7 @@ state reset, logging and loss downloads are outside timing. Tensor's required
 non-finite gradient check is inside its optimizer/update timing. Raw step times,
 losses and methodology are in the [benchmark data](data/phase6-nanogpt-benchmark.json);
 the [SVG](data/phase6-nanogpt-latency.svg) and
-[plot generator](../../tools/plot_phase6_training.py) support export/reproduction.
+[plot generator](../../scripts/plots/plot_phase6_training.py) support export/reproduction.
 
 Tensor construction plus its first ten updates took **3.327 s**, including
 consumer loading/preparation; adding the producer build/tune cost gives

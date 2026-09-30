@@ -1,7 +1,7 @@
 """Manual backward ownership, gradient metadata and failure semantics."""
 import pytest
 from tensor.providers import Device
-from tensor.manual import ManualFunction
+from tensor.runtime.manual import ManualFunction
 
 
 def test_manual_backward_context_lifetime_and_optional_integer_gradient():

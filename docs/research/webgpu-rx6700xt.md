@@ -111,7 +111,7 @@ Run from the repository root in PowerShell. Use fresh build directories, since
 
 ```powershell
 uv sync --locked --extra webgpu
-.venv/Scripts/python.exe tools/webgpu_validation.py --build build/webgpu-rx6700xt
+.venv/Scripts/python.exe scripts/validation/webgpu_validation.py --build build/webgpu-rx6700xt
 uv build --wheel --out-dir build/webgpu-rx6700xt/wheel
 uv venv --python 3.12 build/webgpu-rx6700xt-consumer
 uv pip install --python build/webgpu-rx6700xt-consumer/Scripts/python.exe 'build/webgpu-rx6700xt/wheel/tensor_workspace-0.1.0-py3-none-any.whl[webgpu]'
@@ -123,8 +123,8 @@ $env:TMP = $env:TEMP
 
 # Confirm adapter identity/backend before choosing its ordinal.
 build/webgpu-rx6700xt-consumer/Scripts/python.exe -m tensor doctor --provider webgpu --device 0 --json
-build/webgpu-rx6700xt-consumer/Scripts/python.exe tools/webgpu_validation.py --consume build/webgpu-rx6700xt --device 0 --require-second-gpu --iters 15 --out build/webgpu-rx6700xt-vulkan.json
-build/webgpu-rx6700xt-consumer/Scripts/python.exe tools/webgpu_audit.py --suite build/webgpu-rx6700xt/suite.json --result build/webgpu-rx6700xt-vulkan.json --allow-software
+build/webgpu-rx6700xt-consumer/Scripts/python.exe scripts/validation/webgpu_validation.py --consume build/webgpu-rx6700xt --device 0 --require-second-gpu --iters 15 --out build/webgpu-rx6700xt-vulkan.json
+build/webgpu-rx6700xt-consumer/Scripts/python.exe scripts/validation/webgpu_audit.py --suite build/webgpu-rx6700xt/suite.json --result build/webgpu-rx6700xt-vulkan.json --allow-software
 
 $env:TENSOR_WEBGPU = '1'
 .venv/Scripts/python.exe -m pytest tests/test_webgpu.py tests/test_webgpu_audit.py -o addopts='' -q --junitxml=build/webgpu-rx6700xt-tests.xml

@@ -156,11 +156,11 @@ uv run --locked --extra publish python -m pytest -o addopts='' -q
 Build and install the adapter wheel, then run:
 
 ```sh
-python tools/phase4_benchmark.py --cache build/torch-benchmark-cache --out build/torch-benchmark.json
-python tools/phase4_producer.py --target sm_86 --out build/torch-profiles
+python benchmarks/inference/backend_benchmark.py --cache build/torch-benchmark-cache --out build/torch-benchmark.json
+python benchmarks/inference/fx_producer.py --target sm_86 --out build/torch-profiles
 ```
 
-Use `tools/phase4_consumer_check.py` from a clean wheel installation for backend
+Use `benchmarks/inference/fx_consumer.py` from a clean wheel installation for backend
 discovery, FakeTensor contracts, compiler-free cached graphs, and transferred
 profile execution. The committed evidence records exact versions, artifact
 hashes, targets, measured timings, test counts and CI job identities.

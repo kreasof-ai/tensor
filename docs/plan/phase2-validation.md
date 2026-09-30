@@ -11,7 +11,7 @@ uv sync --locked
 uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
 export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
 uv run --locked tensor doctor --target sm_86 --compiler nvrtc --json
-uv run --locked python tools/phase2_producer.py --out build/phase2-transfer
+uv run --locked python scripts/validation/phase2_producer.py --out build/phase2-transfer
 uv build --wheel
 uv venv --python 3.12 build/phase2-consumer
 uv pip install --python build/phase2-consumer/bin/python \
@@ -44,7 +44,7 @@ The successful header reads must be confined to `/nvrtc/include/`,
 Missing-header probes in strace are not successful dependency reads.
 Retain the full trace and its hash with the report. The
 [local report](../research/phase2-validation.md) records the observed audit.
-`python tools/phase2_audit_trace.py PATH_TO_TRACE` checks successful reads,
+`python scripts/validation/phase2_audit_trace.py PATH_TO_TRACE` checks successful reads,
 including extensionless headers and files opened for compiler-input hashing;
 repeat `--root` to specify different explicit include roots.
 
@@ -56,7 +56,7 @@ artifact filename/hashes. Keep container hostname separate from physical
 hostname, so a local container is not counted as a second host. Run:
 
 ```bash
-build/phase2-consumer/bin/python tools/phase1_transfer_check.py \
+build/phase2-consumer/bin/python scripts/validation/phase1_transfer_check.py \
   build/phase2-transfer --allow-same-host --out build/phase2-consumer.json
 ```
 
@@ -68,7 +68,7 @@ checkouts and omit `--allow-same-host`. The new
 `.github/workflows/phase2-nvrtc.yml` builds on Linux/Windows and checks wheel
 inspection in a fresh Tensor/NumPy environment; GPU execution is separate.
 
-For Linux/Windows Actions archives, use `tools/phase2_transfer_check.py` instead
+For Linux/Windows Actions archives, use `scripts/validation/phase2_transfer_check.py` instead
 of manufacturing a Phase 1 provenance manifest. Save `gh run view RUN_ID --json
 conclusion,event,headSha,jobs,status,url` and the run's Actions artifact API
 records into one JSON document with an `artifacts` array. Download each archive
@@ -76,7 +76,7 @@ with `gh api repos/kreasof-ai/tensor/actions/artifacts/ARTIFACT_ID/zip > build/c
 Install its included wheel in a fresh consumer environment, then run:
 
 ```bash
-build/phase2-consumer/bin/python tools/phase2_transfer_check.py build/ci.zip \
+build/phase2-consumer/bin/python scripts/validation/phase2_transfer_check.py build/ci.zip \
   --ci-record build/ci.json --platform linux --out build/ci-gpu.json
 ```
 
@@ -99,7 +99,7 @@ uv run --locked tensor build examples/elementwise.py --provider cpu \
   --out build/phase2-cpu.tbin
 uv run --locked python - <<'PY'
 from pathlib import Path
-from tensor.artifact import read_artifact
+from tensor.artifacts.format import read_artifact
 _,files=read_artifact('build/phase2-cpu.tbin')
 Path('build/phase2-kernel.so').write_bytes(files['kernel.so'])
 _,files=read_artifact('build/phase2-transfer/elementwise.tbin')
@@ -132,7 +132,7 @@ uv run --locked python tools/bootstrap_cuda.py --out build/cuda-12.9
 export CUDA_HOME="$PWD/build/cuda-12.9"
 TENSOR_P0_CUDA=1 TENSOR_P1_CUDA=1 TENSOR_P2_CUDA=1 \
   uv run --locked python -m pytest -o addopts='' -q
-uv run --locked python tools/phase2_measure.py \
+uv run --locked python scripts/validation/phase2_measure.py \
   --runtime-python build/phase2-consumer/bin/python \
   --nvcc "$CUDA_HOME/bin/nvcc" --out build/phase2-comparison
 ```

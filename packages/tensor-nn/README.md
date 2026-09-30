@@ -10,8 +10,7 @@ Install both local distributions from the repository:
 uv pip install -e . -e packages/tensor-nn
 ```
 
-The canonical API is `from tensor_nn import GPTConfig, NanoGPT`. Existing
-`tensor.nn` imports delegate to this installed package. Manual backward itself
+The API is `from tensor_nn import GPTConfig, NanoGPT`. Manual backward itself
 remains in core: `from tensor import ManualFunction, BackwardContext`.
 
 Build/validation/benchmark commands are under `benchmarks/nanogpt`. New bundles

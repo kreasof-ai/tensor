@@ -163,7 +163,7 @@ gh run download RUN_ID -n tensor-cuda-sm_86 -D build/downloaded
 uv venv --python 3.12 build/transfer-consumer
 uv pip install --python build/transfer-consumer/bin/python \
   build/downloaded/dist/tensor_workspace-0.1.0-py3-none-any.whl
-build/transfer-consumer/bin/python tools/phase1_transfer_check.py \
+build/transfer-consumer/bin/python scripts/validation/phase1_transfer_check.py \
   build/downloaded --out build/transfer-check.json
 ```
 

@@ -6,7 +6,7 @@ import zipfile
 
 import pytest
 
-from tensor.artifact import ArtifactError, read_artifact
+from tensor.artifacts.format import ArtifactError, read_artifact
 
 
 def _bundle(path, *, corrupt=False, duplicate=False):

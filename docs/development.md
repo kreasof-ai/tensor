@@ -14,7 +14,6 @@ src/tensor/
   cli/           argument handling, run/bench/inspect and diagnostics
   include/       installed native ABI headers
   native/        installed C++/Rust reference hosts
-  nn/            compatibility namespace for the optional training package
 
 packages/
   tensor-torch/  PyTorch adapter, native submission code and adapter tests
@@ -28,26 +27,24 @@ scripts/
   validation/   artifact transfer, registry and provider acceptance commands
   plots/        standalone figures from retained benchmark data
 
-tools/           bootstrap scripts and compatibility entry points
+tools/           dependency bootstrap scripts
 tests/           runtime/compiler/artifact/provider/integration/legacy contracts
 examples/        small kernels and modules
 experiments/p0/  historical architecture experiments
 docs/research/   historical measurements and their original evidence
 ```
 
-Use the grouped implementation paths for new internal code. Examples are
-`tensor.runtime.abi`, `tensor.providers.cuda`, `tensor.compiler.build` and
-`tensor.artifacts.modules`. Existing flat imports such as `tensor.abi`,
-`tensor.cuda`, `tensor.build` and `tensor.modules` are compatibility aliases to
-the same module objects. Module globals and monkeypatches remain shared. The
-top-level `tensor.build(...)` function remains callable after either import path.
-Root `src/tensor/*.py` compatibility files contain no duplicated implementation.
+Use the grouped implementation paths: `tensor.runtime.abi`,
+`tensor.providers.cuda`, `tensor.compiler.build` and `tensor.artifacts.modules`.
+Flat imports such as `tensor.abi`, `tensor.cuda`, `tensor.build` and
+`tensor.modules` have been removed. Import build internals from
+`tensor.compiler.build`; the public `tensor.build(...)` function remains callable.
 
 The public workbench remains `import tensor as tx`. Manual backward stays in
 core: `tx.ManualFunction` and `tx.BackwardContext`. Training uses the optional
-`from tensor_nn import GPTConfig, NanoGPT`; the old `tensor.nn` namespace delegates
-when that distribution is installed. The core wheel depends only on NumPy and
-can import and run the CLI without NN, Torch, wgpu or compiler packages.
+`from tensor_nn import GPTConfig, NanoGPT`; the `tensor.nn` namespace has been
+removed. The core wheel depends only on NumPy and can import and run the CLI
+without NN, Torch, wgpu or compiler packages.
 
 ## Development environment
 
@@ -103,8 +100,11 @@ well as file moves. The reorganized runtime deliberately rejects v1 training
 bundles; run those with their original wheels or build a new v2 bundle. Generic
 `.tbin`/`.tpack` formats and native descriptor layouts have not changed.
 
-Historical `tools/*.py` paths remain small entry-point/import wrappers for the
-relocated scripts. New commands and workflow paths use `benchmarks` or `scripts`.
-Historical reports retain the paths, distribution counts and source hashes they
+Relocated `tools/*.py` wrappers have been removed. Run benchmark commands from
+`benchmarks`, validation and plot commands from `scripts`, and dependency
+bootstrap commands from `tools`. The [path mapping](research/data/reorganization-paths.json)
+lists replacements for retired imports and commands.
+
+Historical reports retain the distribution counts and source hashes they
 actually measured. Their original wheels remain the reproducible consumer for
-their fingerprint-bound artifacts; a file move does not rewrite past evidence.
+fingerprint-bound artifacts; import cleanup does not rewrite past evidence.

@@ -1,7 +1,7 @@
 """A faster invalid schedule must never win the kernel search."""
 import numpy as np
 import pytest
-from tensor.tuning import tune
+from tensor.compiler.tuning import tune
 
 
 class Output:
@@ -17,7 +17,7 @@ class Candidate:
 
 
 def test_tuning_rejects_fast_wrong_results_and_wrong_saved_intermediates(monkeypatch):
-    monkeypatch.setattr('tensor.tuning.measure_cuda',lambda device,callback:{'median_gpu_seconds':device})
+    monkeypatch.setattr('tensor.compiler.tuning.measure_cuda',lambda device,callback:{'median_gpu_seconds':device})
     output,saved=Output(),Output()
     candidates={'wrong_output':Candidate([9,9],0.01,saved=[1,2]),
                 'wrong_saved':Candidate([1,2],0.02,saved=[9,9]),
@@ -29,6 +29,6 @@ def test_tuning_rejects_fast_wrong_results_and_wrong_saved_intermediates(monkeyp
 
 
 def test_tuning_requires_finite_reference_and_correct_candidates(monkeypatch):
-    monkeypatch.setattr('tensor.tuning.measure_cuda',lambda device,callback:{'median_gpu_seconds':device})
+    monkeypatch.setattr('tensor.compiler.tuning.measure_cuda',lambda device,callback:{'median_gpu_seconds':device})
     with pytest.raises(ValueError,match='finite'):tune({'bad':Candidate([0],1)},[],Output(),[np.nan])
     with pytest.raises(ValueError,match='all tuning'):tune({'bad':Candidate([0],1)},[],Output(),[10])

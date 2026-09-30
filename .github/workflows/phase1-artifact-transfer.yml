@@ -103,7 +103,7 @@ jobs:
           import pathlib
           import sys
 
-          from tensor.artifact import read_artifact
+          from tensor.artifacts.format import read_artifact
 
           root = pathlib.Path("build/transfer-smoke")
           report = json.loads((root / "build/transfer/producer.json").read_text())

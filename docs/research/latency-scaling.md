@@ -28,9 +28,9 @@ were extracted locally to enable the existing compute-only container.
 
 [SVG figure](data/latency-scaling.svg).
 [Full raw observations, repeat, numerical errors and fingerprints](data/latency-scaling.json).
-[Scaling benchmark](../../tools/scaling_backend_benchmark.py).
-[WebGPU workload preparation](../../tools/webgpu_scaling.py).
-[Plot exporter](../../tools/plot_latency_scaling.py).
+[Scaling benchmark](../../benchmarks/inference/scaling_backend_benchmark.py).
+[WebGPU workload preparation](../../benchmarks/inference/webgpu_scaling.py).
+[Plot exporter](../../scripts/plots/plot_latency_scaling.py).
 
 ## Individual-call latency
 
@@ -202,15 +202,15 @@ export CUDA_HOME=/path/to/cuda-12.9
 export VK_DRIVER_FILES="$PWD/build/nvidia-vulkan-595.91.07/icd.json"
 export LD_LIBRARY_PATH="$PWD/build/nvidia-vulkan-595.91.07/driver${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export WGPU_BACKEND_TYPE=Vulkan
-python tools/scaling_backend_benchmark.py --webgpu \
+python benchmarks/inference/scaling_backend_benchmark.py --webgpu \
   --cache build/phase4-completion-cache --out build/latency-scaling-a10g/full.json
 
-python tools/scaling_backend_benchmark.py --webgpu \
+python benchmarks/inference/scaling_backend_benchmark.py --webgpu \
   --case pointwise-129 --case gemm-4096-4096-4096 \
   --cache build/phase4-completion-cache --out build/latency-scaling-a10g-repeat/repeat.json
 
 # Matplotlib 3.11.2 in the measured environment; the report includes both APIs.
-python tools/plot_latency_scaling.py docs/research/data/latency-scaling.json \
+python scripts/plots/plot_latency_scaling.py docs/research/data/latency-scaling.json \
   --out build/latency-scaling/scaling
 ```
 
@@ -233,8 +233,8 @@ wgpu-native 27.0.2.0, with the same Tensor consumer source as the
 [SVG figure](data/webgpu-rx6700xt-scaling.svg).
 [AMD raw observations and repeats](data/webgpu-rx6700xt-scaling.json).
 [Producer suite and shader hashes](data/webgpu-rx6700xt-scaling-suite.json).
-[Standalone benchmark](../../tools/webgpu_scaling_benchmark.py).
-[Plot exporter](../../tools/plot_webgpu_scaling.py).
+[Standalone benchmark](../../benchmarks/inference/webgpu_scaling_benchmark.py).
+[Plot exporter](../../scripts/plots/plot_webgpu_scaling.py).
 
 Every entry is one warm **allocating call plus queue completion**, with
 45 individual samples after 20 warmups. Output creation is inside the timer;
@@ -304,11 +304,11 @@ the [Windows validation report](webgpu-rx6700xt.md#reproduce-on-windows), use a
 fresh suite directory and confirm that device 0 is the physical Vulkan adapter:
 
 ```powershell
-.venv/Scripts/python.exe tools/webgpu_scaling_benchmark.py --build build/webgpu-rx6700xt-scaling
+.venv/Scripts/python.exe benchmarks/inference/webgpu_scaling_benchmark.py --build build/webgpu-rx6700xt-scaling
 $env:OPENBLAS_NUM_THREADS = '6' # CPU reference only; outside GPU timing
-build/webgpu-rx6700xt-consumer/Scripts/python.exe tools/webgpu_scaling_benchmark.py --consume build/webgpu-rx6700xt-scaling --device 0 --compare docs/research/data/latency-scaling.json --repeat-case pointwise-129 --repeat-case gemm-4096-4096-4096 --out build/webgpu-rx6700xt-scaling.json
+build/webgpu-rx6700xt-consumer/Scripts/python.exe benchmarks/inference/webgpu_scaling_benchmark.py --consume build/webgpu-rx6700xt-scaling --device 0 --compare docs/research/data/latency-scaling.json --repeat-case pointwise-129 --repeat-case gemm-4096-4096-4096 --out build/webgpu-rx6700xt-scaling.json
 
-uv run --no-project --python 3.12 --with matplotlib==3.11.2 --with numpy==2.5.3 python tools/plot_webgpu_scaling.py docs/research/data/latency-scaling.json build/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-scaling-plot
+uv run --no-project --python 3.12 --with matplotlib==3.11.2 --with numpy==2.5.3 python scripts/plots/plot_webgpu_scaling.py docs/research/data/latency-scaling.json build/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-scaling-plot
 ```
 
 The benchmark rejects changed consumer sources, artifact hashes, workload
@@ -383,5 +383,5 @@ and timing-report/specification provenance. Actual DRAM MBU is explicitly null.
 Reproduce the derivation without rerunning the GPU:
 
 ```powershell
-build/webgpu-rx6700xt-consumer/Scripts/python.exe tools/webgpu_utilization.py docs/research/data/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-utilization.json
+build/webgpu-rx6700xt-consumer/Scripts/python.exe benchmarks/inference/webgpu_utilization.py docs/research/data/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-utilization.json
 ```

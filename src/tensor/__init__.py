@@ -4,9 +4,7 @@ from tensor.runtime import Buffer, Executable, Event, bench, TensorRuntimeError
 from tensor.providers import Device
 from tensor.artifacts.modules import Project, Module, ModuleError
 from tensor.runtime.manual import ManualFunction, BackwardContext
-# Load the lightweight producer entry point before defining build, so importing
-# its submodule on the first call cannot replace this public function.
-from tensor.build import build_artifact as _build_artifact
+from tensor.compiler.build import build_artifact as _build_artifact
 
 
 def assert_close(actual, expected, *, rtol=1e-5, atol=1e-8) -> None:

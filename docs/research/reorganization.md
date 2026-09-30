@@ -1,5 +1,11 @@
 # Repository reorganization acceptance
 
+This report records the initial migration at commit `75acca2`, when compatibility
+aliases were retained. Subsequent cleanup removes those aliases and tool wrappers;
+see the [cleanup report](canonical-layout.md) and
+[current development guide](../development.md). The measurements and raw
+evidence below describe that original migration.
+
 Core implementations now live under `tensor.runtime`, `tensor.providers`,
 `tensor.compiler`, `tensor.artifacts` and `tensor.cli`. Manual backward remains in
 core; NN templates and the static nanoGPT plan ship in the separate `tensor-nn`

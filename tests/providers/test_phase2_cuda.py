@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 import tensor as tx
-from tensor.build import build_artifact
+from tensor.compiler.build import build_artifact
 
 pytestmark = pytest.mark.skipif(os.environ.get("TENSOR_P2_CUDA") != "1",reason="set TENSOR_P2_CUDA=1")
 ROOT=Path(__file__).resolve().parents[2]

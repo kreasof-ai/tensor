@@ -177,7 +177,7 @@ public:
 
 PYBIND11_MODULE(TENSOR_EXECUTOR_MODULE, m) {
     // Preserve the provider's public exception contract on the native path.
-    auto cuda_error = py::module_::import("tensor.cuda").attr("CudaError");
+    auto cuda_error = py::module_::import("tensor.providers.cuda").attr("CudaError");
     py::register_exception<CudaFailure>(m, "CudaLaunchError", cuda_error.ptr());
     py::class_<Plan>(m, "Plan")
         .def(py::init<uint64_t, std::array<unsigned, 7>, py::tuple, py::tuple, py::list, bool>())

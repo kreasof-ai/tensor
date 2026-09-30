@@ -21,7 +21,7 @@ export CUDA_HOME="$PWD/build/cuda-12.9"
 uv build --wheel
 uv venv --python 3.12 build/consumer-venv
 uv pip install --python build/consumer-venv/bin/python dist/tensor_workspace-0.1.0-py3-none-any.whl
-uv run --locked python tools/phase1_measure.py \
+uv run --locked python scripts/validation/phase1_measure.py \
   --runtime-python build/consumer-venv/bin/python --out build/phase1-metrics.json
 ```
 

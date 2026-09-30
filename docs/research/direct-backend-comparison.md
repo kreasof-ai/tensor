@@ -14,8 +14,8 @@ The outer `torch.compile` wrapper remains a substantial cost: complete Tensor
 calls through that API are slower than direct TileLang and Triton calls.
 
 [Raw samples, source/binary hashes and environment](data/direct-backend-comparison.json).
-[Benchmark implementation](../../tools/direct_backend_benchmark.py).
-[Independent Triton kernels](../../tools/direct_triton_kernels.py).
+[Benchmark implementation](../../benchmarks/inference/direct_backend_benchmark.py).
+[Independent Triton kernels](../../benchmarks/inference/direct_triton_kernels.py).
 The [larger-shape scaling sweep](latency-scaling.md) extends pointwise to 64M
 elements, GEMM to 4096³ and attention to sequence length 8192, including
 synchronized single-call latency as well as batched and GPU measurements.
@@ -147,7 +147,7 @@ Tensor consumers retain their existing compiler-free execution path.
 PYTHONPATH="$PWD/packages/tensor-torch/src" \
 TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9" \
 CUDA_HOME=/path/to/cuda-12.9 \
-  python tools/direct_backend_benchmark.py \
+  python benchmarks/inference/direct_backend_benchmark.py \
     --cache build/phase4-completion-cache --out build/direct-comparison/full.json
 
 TENSOR_DIRECT_CUDA=1 python -m pytest tests/test_direct_backends.py -q

@@ -89,11 +89,11 @@ graphs on A10G with compiler imports blocked. Three Linux-produced and three
 Windows-produced profiles execute through both functional custom ops and native
 prepared calls. Windows native GPU execution itself has not been measured.
 
-Reproduce the full comparison by running `tools/phase4_benchmark.py` twice
+Reproduce the full comparison by running `benchmarks/inference/backend_benchmark.py` twice
 with `TENSOR_TORCH_NATIVE=0` and twice with native execution enabled, using the
 same installed wheel and populated cache. To isolate adapter overhead:
 
 ```sh
-python tools/phase4_executor_benchmark.py \
+python benchmarks/inference/executor_benchmark.py \
   --artifact path/to/cached-pointwise-129.tbin --out build/executor-timing.json
 ```

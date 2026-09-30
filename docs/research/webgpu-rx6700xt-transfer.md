@@ -78,7 +78,7 @@ validate the transfer suite's latency reporting. The separate allocating-call
 From the repository root, rerun the strict evidence audit without a relaxation:
 
 ```bash
-python tools/webgpu_audit.py \
+python scripts/validation/webgpu_audit.py \
   --suite docs/research/data/webgpu-rx6700xt-transfer-suite.json \
   --result docs/research/data/webgpu-rx6700xt-transfer-result.json
 ```

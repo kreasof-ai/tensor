@@ -15,8 +15,8 @@ import zipfile
 
 import pytest
 
-from tensor.modules import ModuleError, Project, add, install, pack
-from tensor.registry import _record, build_wheel, index_url, publish, read_wheel
+from tensor.artifacts.modules import ModuleError, Project, add, install, pack
+from tensor.artifacts.registry import _record, build_wheel, index_url, publish, read_wheel
 
 
 def module(path, name, *, dependencies=None):

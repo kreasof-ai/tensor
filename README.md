@@ -6,7 +6,7 @@ a capability-based provider model, and first-class compiled tensor modules.
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
 The [development guide](docs/development.md) describes the grouped core layout,
-optional `tensor-torch`/`tensor-nn` packages, benchmark commands and compatibility
+optional `tensor-torch`/`tensor-nn` packages, benchmark commands and canonical
 imports. Standalone training now installs the separate `tensor-nn` wheel alongside
 Tensor and NumPy; the Phase 6 report retains the original measured distribution.
 

@@ -12,8 +12,8 @@ export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
 export CUDA_HOME="$PWD/experiments/p0/out/cuda-12.9"
 TENSOR_P0_CUDA=1 TENSOR_P1_CUDA=1 TENSOR_P2_CUDA=1 TENSOR_P3_CUDA=1 \
   uv run --locked python -m pytest -o addopts='' -q
-uv run --locked python tools/phase2_producer.py --out build/phase3-kernels --target sm_86
-uv run --locked python tools/phase3_producer.py \
+uv run --locked python scripts/validation/phase2_producer.py --out build/phase3-kernels --target sm_86
+uv run --locked python scripts/validation/phase3_producer.py \
   --artifacts build/phase3-kernels --out build/phase3-transfer
 uv build --wheel
 uv venv --python 3.12 build/phase3-consumer
@@ -41,7 +41,7 @@ Verify the archive digest before extracting its wheel; install that included
 wheel into a separate clean consumer environment per producer platform.
 
 ```bash
-build/phase3-consumer/bin/python tools/phase3_transfer_check.py build/linux.zip \
+build/phase3-consumer/bin/python scripts/validation/phase3_transfer_check.py build/linux.zip \
   --ci-record build/phase3-ci.json --platform linux --out build/linux-gpu.json
 ```
 
@@ -68,7 +68,7 @@ index is modified and no real publisher credentials are required.
 ```bash
 uv run --locked --extra publish python -m pytest tests/test_registry.py -o addopts='' -q
 tensor publish build/phase3-transfer/ops.tpack --dry-run --out-dir build/phase3-registry
-build/phase3-consumer/bin/python tools/phase3_registry_check.py \
+build/phase3-consumer/bin/python scripts/validation/phase3_registry_check.py \
   build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl \
   --execute --out build/phase3-registry-gpu.json
 ```

@@ -63,7 +63,7 @@ jobs:
           from tensor_nn import GPTConfig, NanoGPT, ManualFunction
           from tensor_nn.nanogpt import requirements
           from tensor_nn.provenance import implementation_hashes
-          from tensor.artifact import read_artifact
+          from tensor.artifacts.format import read_artifact
           root=Path('build/phase6-training')
           manifest=json.loads((root/'training.json').read_text())
           assert set(requirements(GPTConfig(**manifest['config'])))==set(manifest['kernels'])

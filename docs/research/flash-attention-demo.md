@@ -6,7 +6,7 @@ The [attention example](../../examples/flash_attention.py) implements FP16
 forward self-attention with online softmax, FP32 accumulators and tile-local
 scores. It produces a Tensor `.tbin` through NVRTC and executes through the
 existing CUDA driver runtime with no global attention-score workspace. The
-[demo](../../tools/flash_attention_demo.py) specializes that one source and
+[demo](../../benchmarks/inference/flash_attention_demo.py) specializes that one source and
 compares against PyTorch 2.14.0's **forced FLASH_ATTENTION** SDPA backend.
 This is an executable-kernel demonstration, not an implemented Phase 4 FX backend.
 
@@ -62,7 +62,7 @@ With the pinned producer and NVRTC bundle:
 
 ```bash
 TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9" \
-  uv run --locked python tools/flash_attention_demo.py --out-dir build/attention-demo
+  uv run --locked python benchmarks/inference/flash_attention_demo.py --out-dir build/attention-demo
 ```
 
 The output directory must be new. `--quick` runs four causal/non-causal cases

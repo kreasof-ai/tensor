@@ -5,8 +5,8 @@ import copy
 import numpy as np
 import pytest
 
-from tensor.artifact import ArtifactError, validate_manifest
-from tensor.signature import bind_shapes, resolve_launch, scalar_value
+from tensor.artifacts.format import ArtifactError, validate_manifest
+from tensor.runtime.signature import bind_shapes, resolve_launch, scalar_value
 
 
 def manifest():

@@ -62,8 +62,13 @@ jobs:
                   if fullname.split('.')[0] in {'tilelang','tvm','tvm_ffi','torch'}:
                       raise ImportError('compiler import prohibited: '+fullname)
           sys.meta_path.insert(0,Guard())
-          from tensor.artifact import read_artifact
-          from tensor.modules import Project, add, install
+          import tensor
+          import importlib.util
+          assert callable(tensor.build)
+          for name in ('abi', 'cuda', 'build', 'modules', 'nn'):
+              assert importlib.util.find_spec('tensor.' + name) is None
+          from tensor.artifacts.format import read_artifact
+          from tensor.artifacts.modules import Project, add, install
           for artifact in pathlib.Path('build/phase2-transfer').glob('*.tbin'):
               manifest,_=read_artifact(artifact)
               assert manifest['format_version']==3

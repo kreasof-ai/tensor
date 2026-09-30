@@ -8,7 +8,7 @@ import zipfile
 
 import pytest
 
-from tensor.modules import ModuleError, Project, add, install, pack
+from tensor.artifacts.modules import ModuleError, Project, add, install, pack
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -179,9 +179,9 @@ def test_exact_binary_then_portable_compile_cache_and_corruption_recovery(cpu_im
 
 
 def test_portable_preflight_rejects_frontend_and_operator_mismatches(cpu_image,tmp_path):
-    from tensor.artifact import read_artifact
-    from tensor.build import BuildError
-    from tensor.portable import preflight
+    from tensor.artifacts.format import read_artifact
+    from tensor.compiler.build import BuildError
+    from tensor.artifacts.portable import preflight
     manifest,files=read_artifact(cpu_image)
     for field,value in (('tilelang_version','future-frontend'),('op_set',['unknown.operator'])):
         changed={**manifest,field:value};path=tmp_path/(field+'.tbin')
@@ -193,7 +193,7 @@ def test_portable_preflight_rejects_frontend_and_operator_mismatches(cpu_image,t
 
 
 def test_source_helpers_are_isolated_and_do_not_mutate_snapshots(tmp_path):
-    from tensor.portable import export_spec
+    from tensor.artifacts.portable import export_spec
     for value in (1,2):
         lib=module(tmp_path/str(value),f'lib{value}',exports={'kernel':'src/kernel.py'},files=['src/helper.py'])
         source(lib/'src/kernel.py','import helper\ndef tensor_export(): return {"value":helper.VALUE}\n')

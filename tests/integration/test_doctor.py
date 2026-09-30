@@ -2,7 +2,7 @@
 
 import subprocess
 
-from tensor import doctor
+from tensor.cli import doctor
 
 
 def test_explicit_target_allows_gpu_free_build_host(monkeypatch):

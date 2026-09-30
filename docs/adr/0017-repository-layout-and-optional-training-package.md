@@ -22,12 +22,12 @@ with their package. Keep Phase 0 experiments and measured evidence historical.
 
 ## Compatibility
 
-Flat core modules become small aliases to canonical module objects. This preserves
-private/public symbol imports and shared globals, including monkeypatch behavior.
-The top-level `tensor.build` function preloads its compatibility submodule so a
-later import cannot replace the callable. The `tensor.nn` namespace lazily forwards
-training symbols and reports the missing optional distribution explicitly.
-Old tool scripts remain entry-point/import wrappers; live workflows use new paths.
+The initial migration retained flat core aliases, a forwarding `tensor.nn`
+namespace and old tool wrappers. A subsequent user-requested cleanup removes
+those compatibility paths. Internal imports use grouped modules, NN imports use
+`tensor_nn`, and commands use `benchmarks` or `scripts`. The public
+`tensor.build(...)` function remains available and imports its implementation
+from `tensor.compiler.build`.
 
 The generic artifact schemas, native descriptor layouts and public workbench
 signatures do not change. Training bundles are separately implementation-bound:

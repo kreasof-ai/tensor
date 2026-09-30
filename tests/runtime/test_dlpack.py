@@ -4,7 +4,7 @@ import ctypes as c
 
 import pytest
 
-from tensor.dlpack import (DLDataType, DLDevice, DLManagedTensor,
+from tensor.runtime.dlpack import (DLDataType, DLDevice, DLManagedTensor,
                            DLManagedTensorVersioned, DLPackVersion, DLTensor, borrow)
 
 
