@@ -1,8 +1,17 @@
-# Phase 5 WebGPU implementation and open hardware gate
+# Phase 5 WebGPU implementation and hardware validation
 
-2026-09-30. The native WebGPU provider and agreed inference lowering are
-implemented. **Phase 5 is not yet accepted:** the user will run the transferred
-suite on a physical AMD or Apple GPU. Initial WebGPU validation used Mesa
+**2026-10-01 update:** [Windows RX 6700 XT validation](webgpu-rx6700xt.md)
+passes all 33 inference/composition checks on physical AMD hardware through
+Vulkan in an isolated wheel consumer, plus 28 native-enabled contract/audit
+tests with zero skips. Timings and raw evidence are recorded in that report.
+D3D12 passes six FP32 affine checks before rejecting missing `shader-f16`.
+The subsequent [AMD scaling sweep](latency-scaling.md#windows-rx-6700-xt-at-the-same-workload-sizes)
+also passes all 17 A10G workload sizes and two repeats with matching WGSL hashes.
+**Phase 5 is not yet accepted:** the AMD run built its suite locally, so the
+strict auditor rejects its same-host evidence for the two-host transfer gate.
+
+2026-09-30 implementation baseline: the native WebGPU provider and agreed
+inference lowering are implemented. Initial WebGPU validation used Mesa
 llvmpipe; the same machine's A10G was subsequently enabled for Vulkan with
 matching local NVIDIA driver libraries. The [matched A10G comparison](latency-scaling.md)
 passes all 17 scaling workloads and two repeats on physical hardware. That
@@ -62,5 +71,6 @@ all 33 Windows-to-Linux consumer checks and the evidence audit succeeded. See
 The existing [NVRTC/Torch workflow also passed](https://github.com/kreasof-ai/tensor/actions/runs/36739977375)
 on Linux and Windows for the implementation's source parent; the follow-up only
 normalized transfer-manifest paths. Its [metadata](data/webgpu-nvrtc-regression-ci.json)
-records both jobs. **Physical AMD/Apple execution and its performance assessment
-remain open.**
+records both jobs. Physical AMD Vulkan execution and a latency baseline are now
+recorded in the [RX 6700 XT report](webgpu-rx6700xt.md); **the physical AMD/Apple
+two-host acceptance transfer remains open.**

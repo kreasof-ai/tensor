@@ -1,9 +1,16 @@
 # Native WebGPU provider
 
-Phase 5 implements portable inference through native wgpu. Its physical AMD/Apple
-exit gate is still open. Software Vulkan validates compiler-free consumption in
-CI. The [latency comparison](research/latency-scaling.md) runs matched workloads
-on the physical NVIDIA A10G through CUDA and native WebGPU/Vulkan.
+Phase 5 implements portable inference through native wgpu. The physical
+[Windows RX 6700 XT validation](research/webgpu-rx6700xt.md) passes all 33
+inference/composition checks through Vulkan, plus 28 native-enabled contract/audit
+tests. Its D3D12 backend rejects FP16 artifacts because `shader-f16` is absent in
+the measured configuration. The formal two-host AMD/Apple transfer gate remains
+open: this AMD run used a local producer. Software Vulkan validates compiler-free
+consumption in CI. The [latency comparison](research/latency-scaling.md) runs
+matched workloads on the physical NVIDIA A10G through CUDA and native WebGPU/Vulkan.
+The [RX 6700 XT scaling follow-up](research/latency-scaling.md#windows-rx-6700-xt-at-the-same-workload-sizes)
+passes all 17 of those workload sizes, with identical WGSL, including 64M
+pointwise, GEMM 4096³ and attention S=8192, and records a cross-system Vulkan comparison.
 
 ## Build and consume
 
@@ -51,6 +58,13 @@ validation. macOS uses Metal and Windows uses the available native wgpu backend.
 FP16 artifacts require the actual adapter's `shader-f16` feature; no FP32 fallback
 silently changes the artifact's buffer representation. Unsupported adapters fail
 with a feature/limit error.
+
+On the tested Windows RX 6700 XT, ordinal 0 selected Vulkan with `shader-f16`;
+ordinal 1 selected D3D12 without it. Recheck ordinals with `tensor doctor` before
+selection. If the suite is on another drive from the Windows temporary directory,
+set `TEMP` and `TMP` to a directory on the suite's drive before consumption; the
+[Windows report](research/webgpu-rx6700xt.md#reproduce-on-windows) records the
+cross-drive module-path error and complete PowerShell reproduction commands.
 
 Consumers import only Tensor, NumPy and wgpu. The validation command blocks
 TileLang/TVM/TVM-FFI/Torch/Triton imports, restores the packaged module into a fresh
@@ -148,6 +162,9 @@ Windows-produced package to a separate Linux software consumer. Software success
 does not close the physical GPU gate. Run the transferred suite with
 `--require-second-gpu` on AMD or Apple and retain `webgpu-result.json` as acceptance
 evidence; performance and vendor-specific issues must be assessed from that run.
+The [RX 6700 XT result](research/webgpu-rx6700xt.md) verifies physical AMD
+execution and records timings, but its same-host producer does not satisfy the
+auditor's distinct-host requirement.
 
 The portable SIMT lowering prioritizes complete profile correctness. No CUDA,
 native TileLang, Triton or vendor-library performance parity is claimed. Kernel

@@ -1,0 +1,841 @@
+{
+  "schema": "tensor.webgpu-scaling-suite.v1",
+  "cases": [
+    {
+      "name": "pointwise-129",
+      "profile": "pointwise",
+      "shapes": [
+        [
+          129
+        ],
+        [
+          129
+        ]
+      ],
+      "dtype": "float32",
+      "example": "elementwise.py",
+      "constants": {
+        "SIZE": 129
+      },
+      "artifact": "pointwise-129/kernel.tbin",
+      "artifact_sha256": "8e80cae4bedb221f742f518abf4489e543e470fe5418a1f3836e38404ae077b1",
+      "source_sha256": "b0529dc2a141289d2b3339f74ff3662c8ef5e3fa8602e92592e8c7e2afe4579f",
+      "wgsl_sha256": "341a65e0afcc70841c3e21221e118e8f13c955658f7d8305bfe4918b7f7a26fe",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 0,
+      "build_seconds": 5.437708599958569,
+      "build_cache_hit": false
+    },
+    {
+      "name": "pointwise-1048576",
+      "profile": "pointwise",
+      "shapes": [
+        [
+          1048576
+        ],
+        [
+          1048576
+        ]
+      ],
+      "dtype": "float32",
+      "example": "elementwise.py",
+      "constants": {
+        "SIZE": 1048576
+      },
+      "artifact": "pointwise-1048576/kernel.tbin",
+      "artifact_sha256": "7614903c55b5a5404ed473da99b620e3ab0fff9ab136f370dd8d78069d426bd1",
+      "source_sha256": "21e228fce517072d4595e6aaca4ea29247f73157d0df23ee5fbd1b2e1fc47391",
+      "wgsl_sha256": "c25e0f7c66fdd46445ba5fcdd846735330a0e87ab91f1cd9a5e738688f80e46f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          8192,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 0,
+      "build_seconds": 0.17951379995793104,
+      "build_cache_hit": false
+    },
+    {
+      "name": "pointwise-4194304",
+      "profile": "pointwise",
+      "shapes": [
+        [
+          4194304
+        ],
+        [
+          4194304
+        ]
+      ],
+      "dtype": "float32",
+      "example": "elementwise.py",
+      "constants": {
+        "SIZE": 4194304
+      },
+      "artifact": "pointwise-4194304/kernel.tbin",
+      "artifact_sha256": "959669ca17de24ffa1b85a11fba794f96a317a20643d8b0d81779afcb0b3dea4",
+      "source_sha256": "4875fcd6f3fff025e150a29dbc42b427fff507ce0d164870c703ce91012127cf",
+      "wgsl_sha256": "c25e0f7c66fdd46445ba5fcdd846735330a0e87ab91f1cd9a5e738688f80e46f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32768,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 0,
+      "build_seconds": 0.17152119998354465,
+      "build_cache_hit": false
+    },
+    {
+      "name": "pointwise-16777216",
+      "profile": "pointwise",
+      "shapes": [
+        [
+          16777216
+        ],
+        [
+          16777216
+        ]
+      ],
+      "dtype": "float32",
+      "example": "elementwise.py",
+      "constants": {
+        "SIZE": 16777216
+      },
+      "artifact": "pointwise-16777216/kernel.tbin",
+      "artifact_sha256": "870452844e539f3d821863b2e03064a956d07c24883612da5e02832ed1867e84",
+      "source_sha256": "0bab59e6e02b652e2885f9c7ae73639a638098b97eec0415e4eae5fa17bf19f5",
+      "wgsl_sha256": "c25e0f7c66fdd46445ba5fcdd846735330a0e87ab91f1cd9a5e738688f80e46f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          131072,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 0,
+      "build_seconds": 0.1806313000852242,
+      "build_cache_hit": false
+    },
+    {
+      "name": "pointwise-67108864",
+      "profile": "pointwise",
+      "shapes": [
+        [
+          67108864
+        ],
+        [
+          67108864
+        ]
+      ],
+      "dtype": "float32",
+      "example": "elementwise.py",
+      "constants": {
+        "SIZE": 67108864
+      },
+      "artifact": "pointwise-67108864/kernel.tbin",
+      "artifact_sha256": "2e17931581a47850bdb281b3f89be33720f940325522b68e73e1f8b816a8180a",
+      "source_sha256": "f13ef58fae711aeebebe24aa782389531caaadf4d01d8ecf7daad03ff53cf2da",
+      "wgsl_sha256": "c25e0f7c66fdd46445ba5fcdd846735330a0e87ab91f1cd9a5e738688f80e46f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          524288,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 0,
+      "build_seconds": 0.17911619995720685,
+      "build_cache_hit": false
+    },
+    {
+      "name": "gemm-512-512-512",
+      "profile": "gemm",
+      "shapes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512
+        ]
+      ],
+      "dtype": "float16",
+      "example": "webgpu_gemm.py",
+      "constants": {
+        "M": 512,
+        "N": 512,
+        "K": 512,
+        "DTYPE": "float16",
+        "OUTPUT_DTYPE": "float16",
+        "TRANSPOSE_B": true,
+        "USE_BIAS": true,
+        "RELU": true
+      },
+      "artifact": "gemm-512-512-512/kernel.tbin",
+      "artifact_sha256": "e82e5c6d146ebb28ee27b79a1f72938d30cd242024cbb31569ce156ff17888b7",
+      "source_sha256": "695a6181994cb5ab89ed7ff522f0052691586c5ccc7cdb8d1bef9d76027c4669",
+      "wgsl_sha256": "a4f5e8ba2ff99172fb3d0fc171ba708d4b8999ac49d17183f7fe0c7bfd894ba6",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          16,
+          16,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144,
+      "build_seconds": 0.4618835001019761,
+      "build_cache_hit": false
+    },
+    {
+      "name": "gemm-1024-1024-1024",
+      "profile": "gemm",
+      "shapes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024
+        ]
+      ],
+      "dtype": "float16",
+      "example": "webgpu_gemm.py",
+      "constants": {
+        "M": 1024,
+        "N": 1024,
+        "K": 1024,
+        "DTYPE": "float16",
+        "OUTPUT_DTYPE": "float16",
+        "TRANSPOSE_B": true,
+        "USE_BIAS": true,
+        "RELU": true
+      },
+      "artifact": "gemm-1024-1024-1024/kernel.tbin",
+      "artifact_sha256": "0f8054428741cbeda757e5228073df557cbd4e1da08396de362f55f2fbf363fe",
+      "source_sha256": "b6c080636ecd41c115acb1c3ed0e362ebfc702162accbbe4ce6c03815d409ebb",
+      "wgsl_sha256": "5ba62651b83de2e708b2c70f2765271e7e8eb6431083f474194032e2b637130c",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          32,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144,
+      "build_seconds": 0.40061820007395,
+      "build_cache_hit": false
+    },
+    {
+      "name": "gemm-2048-2048-2048",
+      "profile": "gemm",
+      "shapes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048
+        ]
+      ],
+      "dtype": "float16",
+      "example": "webgpu_gemm.py",
+      "constants": {
+        "M": 2048,
+        "N": 2048,
+        "K": 2048,
+        "DTYPE": "float16",
+        "OUTPUT_DTYPE": "float16",
+        "TRANSPOSE_B": true,
+        "USE_BIAS": true,
+        "RELU": true
+      },
+      "artifact": "gemm-2048-2048-2048/kernel.tbin",
+      "artifact_sha256": "59aa9f8f6a073650b40b5b0bf6866beba6f7bb2739ad24a176567aaa4703ffe7",
+      "source_sha256": "6b036b8008bdd722f1841839529862267129c865957453b18e8c3e35b2eb0822",
+      "wgsl_sha256": "065992a058cc48416dc9605f8bddcf92d899ff68930ce24700f71f3b3c465380",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          64,
+          64,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144,
+      "build_seconds": 0.3942674999125302,
+      "build_cache_hit": false
+    },
+    {
+      "name": "gemm-4096-4096-4096",
+      "profile": "gemm",
+      "shapes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [
+          4096
+        ]
+      ],
+      "dtype": "float16",
+      "example": "webgpu_gemm.py",
+      "constants": {
+        "M": 4096,
+        "N": 4096,
+        "K": 4096,
+        "DTYPE": "float16",
+        "OUTPUT_DTYPE": "float16",
+        "TRANSPOSE_B": true,
+        "USE_BIAS": true,
+        "RELU": true
+      },
+      "artifact": "gemm-4096-4096-4096/kernel.tbin",
+      "artifact_sha256": "746b80c3fb48eed1ae6502bdeab51ad489fa645b53e0d3c4ce709d93d18c26ad",
+      "source_sha256": "2deb6f5445ee6103722cd6c15f3f29e50a8e32c92f502b4e57ebf79bd57469cb",
+      "wgsl_sha256": "998b3360f76eb0bca22856526c3f22b47f7389134d2017dc4d410532d5e38b04",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          128,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144,
+      "build_seconds": 0.4024469000287354,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-1024-64-False",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 1024,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": false,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-1024-64-False/kernel.tbin",
+      "artifact_sha256": "b692fb31183883dcaf0dfd8f782977cb793f042648eb087decbecc8e313f5072",
+      "source_sha256": "26af512a600c2d45d244463b55f31ff4223719c91a79b0d97b7e8afcfc7f9d54",
+      "wgsl_sha256": "bf3b8aaac56372231cfad3a97a4889d974b99b9702b48da25da3a74ad579b9c1",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 1.6286464999429882,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-1024-64-True",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 1024,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": true,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-1024-64-True/kernel.tbin",
+      "artifact_sha256": "b9130c05749873cef6546f3e75168e71d34c44002fa267672c2a6b82aaaeba44",
+      "source_sha256": "9711aa51cfddbc885f2ddae6d51f536029551e166500e7cd9a43bd344f44c4ea",
+      "wgsl_sha256": "52723510ade1f2f383f09452a43fa29a5606d1ada58043ba387c54ce3641ef52",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 2.4063106999965385,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-2048-64-False",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 2048,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": false,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-2048-64-False/kernel.tbin",
+      "artifact_sha256": "8f2cba982ccb7f35b481bccea9f74d3a3956e1736d45e69c8ac36621dc525716",
+      "source_sha256": "8424ae2903ab56db185d9094dbf8114c0849abcc5d7e1efd73c4fd60614bd6b5",
+      "wgsl_sha256": "8795765510182745b33a3fc0d76c61754f9b822ffde9f5d74313b993640b551c",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          256,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 1.6661334000527859,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-2048-64-True",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 2048,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": true,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-2048-64-True/kernel.tbin",
+      "artifact_sha256": "187913ad0a96f0535c9d888f089fb99cde87cb30ee9413b059151da72c642905",
+      "source_sha256": "f651d582a593166166679608274964540fea519c2e03ddbd9639673d6ad43a2d",
+      "wgsl_sha256": "7e84290529cf13ad07f11f01acb8f7a675f0187ee06871bcbbee5f42c2984d4f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          256,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 2.4497082999441773,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-4096-64-False",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 4096,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": false,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-4096-64-False/kernel.tbin",
+      "artifact_sha256": "20d7c6586659b07b85adf2dcc5d5c275e6bab736db5b4f5003cf21c1b761cb56",
+      "source_sha256": "e1de811598fa32cdcff6979c86b3bb6c93bdd1793a978ccd8b0cffe8843c31f3",
+      "wgsl_sha256": "f4697bdbcfede53d4058a1a58d7bce7a3fce034d861825d9675f9a2dec937ff2",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          512,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 1.6110785999335349,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-4096-64-True",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 4096,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": true,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-4096-64-True/kernel.tbin",
+      "artifact_sha256": "26a620d22fad93e7618a4c42df538a60df553c7c1b527cc4508e6a97d80de02f",
+      "source_sha256": "523a591f10481dcc48de4edc4ff2dd78031aa131d3d286a0786caaafa899da07",
+      "wgsl_sha256": "1836b76a2ba22cabc610fcdb00bf749c56ba56f088cc5ae20c252f994e33c960",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          512,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 2.3979672000277787,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-8192-64-False",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 8192,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": false,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-8192-64-False/kernel.tbin",
+      "artifact_sha256": "311ddf75bcb6c2fbd7642244c74e813620eff8959a65708408acaee1877fa0fa",
+      "source_sha256": "e9ee0433434108ec06073d03b717a3d6ad4028e531c2e234f58ccec391b32c59",
+      "wgsl_sha256": "0d9293c611b337692d9d0e9ca0a0e9a4d27221717459fa5f022a1439598dc161",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          1024,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 1.6260985999833792,
+      "build_cache_hit": false
+    },
+    {
+      "name": "sdpa-1-8-8192-64-True",
+      "profile": "attention",
+      "shapes": [
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "example": "flash_attention.py",
+      "constants": {
+        "BATCH": 1,
+        "HEADS": 8,
+        "SEQ_LEN": 8192,
+        "HEAD_DIM": 64,
+        "IS_CAUSAL": true,
+        "BLOCK_M": 8,
+        "BLOCK_N": 16
+      },
+      "artifact": "sdpa-1-8-8192-64-True/kernel.tbin",
+      "artifact_sha256": "c3fa5cf1d604291bb607e46a683aac462e3cfd037bd96c104a395236fdeeee19",
+      "source_sha256": "e7005e2cacd0c5cf3056345e374266e3f2589764a9212b5dadaf5a3b3f3f258d",
+      "wgsl_sha256": "6436ced16c6c539dd7b5ed96b030678845841e4706d6eae610012614321e8b57",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          1024,
+          8,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8096,
+      "build_seconds": 2.597436499898322,
+      "build_cache_hit": false
+    }
+  ],
+  "consumer_source_sha256": {
+    "webgpu.py": "24931c2f982f33e8cf881942fcc231d059c37106ed3706d2123da62d40fbe357",
+    "webgpu_contract.py": "6129770b3fcd38f776e9586afb53e3b17c86b52955d2d3871ebd48fe97a136be",
+    "abi.py": "eff9d7209558cc9143267f1ebae3a0065708d727240459e23e07678888cd0d0f",
+    "artifact.py": "e34fca9fac33770a8a5b6cc5d7f540092f67c8adc0bab0c8d2ef3bf09e53c4fe",
+    "runtime.py": "35e240bc3efed312214046ce9bb99f4a8cfdfa056a586eb0b8f7f88589e2389e",
+    "modules.py": "e618c52f8ad0e0fa2cacf022f9607a6a63af5064b39dc866231eb328be8555ef",
+    "providers.py": "b43060d9029daabfd1e3af79531808dd57f012da4a5d94b0debe5d4afb2d13dc"
+  },
+  "source_commit": "ed1f8ea8f72dba06e85aa96a84e3962353250acf",
+  "producer": {
+    "hostname": "pc-gaming",
+    "tilelang": "0.1.14",
+    "tvm_ffi": "0.1.12"
+  }
+}

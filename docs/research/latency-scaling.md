@@ -6,6 +6,11 @@ providers use CUDA. CPU software-adapter timings are excluded from this
 comparison. The 17-profile sweep and two targeted repeats passed numerical
 checks, including WebGPU GEMM 4096³ and attention S=8192.
 
+A subsequent [Windows RX 6700 XT sweep](#windows-rx-6700-xt-at-the-same-workload-sizes)
+passes all 17 sizes with byte-identical WebGPU shaders and the same allocating-call
+timing protocol. Its input values, operating system, host and driver differ;
+the cross-system WebGPU comparison is reported separately below.
+
 The outer CUDA `torch.compile` wrapper becomes a smaller fraction of latency
 as GPU work grows. At 64M pointwise elements, Tensor through `torch.compile`
 is **1.02×** matched TileLang. At GEMM 4096³ the ratio is
@@ -212,3 +217,171 @@ python tools/plot_latency_scaling.py docs/research/data/latency-scaling.json \
 Physical A10G execution establishes this same-device comparison. Phase 5's
 separate AMD/Apple portability acceptance gate remains open; see the
 [Phase 5 validation report](phase5-webgpu.md).
+
+## Windows RX 6700 XT at the same workload sizes
+
+Measured on **2026-10-01 (Asia/Jakarta)**, the physical RX 6700 XT through
+Vulkan passed **all 17 scaling workloads and two targeted repeats**. The
+operations, dimensions, dtypes and every WGSL SHA-256 match the A10G sweep
+above. The AMD run used Windows 11, driver `32.0.21043.19003` / Vulkan
+description `26.6.2`, Python 3.12.13, NumPy 2.5.3, wgpu 0.29.0 and
+wgpu-native 27.0.2.0, with the same Tensor consumer source as the
+[smaller RX 6700 XT validation](webgpu-rx6700xt.md).
+
+![Same WebGPU workload sizes on A10G and RX 6700 XT](data/webgpu-rx6700xt-scaling.png)
+
+[SVG figure](data/webgpu-rx6700xt-scaling.svg).
+[AMD raw observations and repeats](data/webgpu-rx6700xt-scaling.json).
+[Producer suite and shader hashes](data/webgpu-rx6700xt-scaling-suite.json).
+[Standalone benchmark](../../tools/webgpu_scaling_benchmark.py).
+[Plot exporter](../../tools/plot_webgpu_scaling.py).
+
+Every entry is one warm **allocating call plus queue completion**, with
+45 individual samples after 20 warmups. Output creation is inside the timer;
+output release, uploads/downloads, CPU reference calculation, artifact build
+and first pipeline creation are outside it. The consumer negotiates 256 MiB
+allocation/storage-binding limits, allowing the full 64M FP32 workload without
+reducing its size. It runs in the six-distribution compiler-free wheel
+environment used for the earlier AMD validation.
+
+The RX and A10G runs have **different input values**. AMD uses NumPy PCG64
+with `SeedSequence([42, case_index])`; A10G used Torch's CUDA random generator.
+AMD correctness uses NumPy FP32 references, with attention evaluated in
+64-query chunks to bound host memory. All checks pass `atol=0.002, rtol=0.02`.
+Pointwise results are exact; maximum GEMM absolute errors range from 0.0625
+to 0.25, and attention errors from 0.0001221 to 0.0019531. Relative tolerance
+and output magnitude are included in GEMM acceptance.
+
+These are measurements of two complete systems. The RX run times one
+WebGPU provider; the A10G run rotated it with CUDA providers. Hardware,
+CPU, OS, driver, allocator and interleaving differ, so the ratios do not
+isolate GPU architecture or shader execution time. No AMD CUDA, Torch,
+TileLang or Triton baseline was measured. Here **RX/A10G > 1 means the RX
+system's completed call took longer**; both columns use Tensor wgpu/Vulkan.
+
+| FP32 pointwise elements | A10G wgpu | RX 6700 XT wgpu | RX/A10G |
+|---|---:|---:|---:|
+| 129 | 0.563 ms | 0.526 ms | 0.93× |
+| 1M | 0.443 ms | 0.852 ms | 1.92× |
+| 4M | 1.444 ms | 5.535 ms | 3.83× |
+| 16M | 2.591 ms | 11.555 ms | 4.46× |
+| 64M | 8.267 ms | 35.299 ms | 4.27× |
+
+M means 2²⁰ elements. Every workload computes `relu(a*2+b)`.
+
+| FP16 linear + bias + ReLU, M=N=K | A10G wgpu | RX 6700 XT wgpu | RX/A10G |
+|---|---:|---:|---:|
+| 512 | 0.859 ms | 1.245 ms | 1.45× |
+| 1024 | 2.993 ms | 5.163 ms | 1.72× |
+| 2048 | 20.285 ms | 28.780 ms | 1.42× |
+| 4096 | 156.017 ms | 206.811 ms | 1.33× |
+
+This retains transpose-B, bias/ReLU, 32×32 output tiles and K=16.
+
+| FP16 attention, B=1 H=8 D=64 | A10G wgpu | RX 6700 XT wgpu | RX/A10G |
+|---|---:|---:|---:|
+| S=1024, noncausal | 3.690 ms | 5.178 ms | 1.40× |
+| S=2048, noncausal | 13.828 ms | 19.836 ms | 1.43× |
+| S=4096, noncausal | 49.585 ms | 73.172 ms | 1.48× |
+| S=8192, noncausal | 192.876 ms | 268.707 ms | 1.39× |
+| S=1024, causal | 2.605 ms | 3.225 ms | 1.24× |
+| S=2048, causal | 8.449 ms | 11.989 ms | 1.42× |
+| S=4096, causal | 26.932 ms | 35.106 ms | 1.30× |
+| S=8192, causal | 100.019 ms | 134.228 ms | 1.34× |
+
+Attention uses the same streaming online softmax and 8×16 query/key tiles.
+The largest shapes fit and execute correctly. Their latency remains that of
+the portable scalar/SIMT lowering; this run adds no subgroup or matrix acceleration.
+
+The two AMD repeats regenerated identical inputs and produced identical output
+hashes and shader hashes: 129-element pointwise measured **0.544 ms**, and
+GEMM 4096³ measured **204.921 ms**, versus 0.526 and 206.811 ms in the main sweep.
+The large-GEMM result therefore persists in the repeat. Interquartile bands
+and all individual samples are retained in the figure and raw result.
+
+To reproduce in PowerShell after preparing the wheel consumer described in
+the [Windows validation report](webgpu-rx6700xt.md#reproduce-on-windows), use a
+fresh suite directory and confirm that device 0 is the physical Vulkan adapter:
+
+```powershell
+.venv/Scripts/python.exe tools/webgpu_scaling_benchmark.py --build build/webgpu-rx6700xt-scaling
+$env:OPENBLAS_NUM_THREADS = '6' # CPU reference only; outside GPU timing
+build/webgpu-rx6700xt-consumer/Scripts/python.exe tools/webgpu_scaling_benchmark.py --consume build/webgpu-rx6700xt-scaling --device 0 --compare docs/research/data/latency-scaling.json --repeat-case pointwise-129 --repeat-case gemm-4096-4096-4096 --out build/webgpu-rx6700xt-scaling.json
+
+uv run --no-project --python 3.12 --with matplotlib==3.11.2 --with numpy==2.5.3 python tools/plot_webgpu_scaling.py docs/research/data/latency-scaling.json build/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-scaling-plot
+```
+
+The benchmark rejects changed consumer sources, artifact hashes, workload
+shapes/dtypes, A10G WGSL hashes and software adapters. This follow-up is a
+local producer/consumer performance sweep; it does not close Phase 5's
+separate two-host acceptance gate. D3D12 remains outside this comparison
+because it lacks `shader-f16` in the measured Windows configuration.
+
+## RX 6700 XT compute and bandwidth utilization
+
+The current lowering leaves substantial headroom: the largest GEMM achieves
+approximately **5.03% of advertised FP32 peak**, while the largest pointwise
+case achieves **5.94% effective useful-data bandwidth utilization**. These
+are derived from the recorded completed allocating-call medians, not a new
+GPU-counter measurement or a whole-model training MFU measurement.
+
+AMD specifies **13.21 TFLOP/s FP32 vector**, **26.43 TFLOP/s FP16 vector**,
+and **384 GB/s GDDR6 bandwidth** for the
+[RX 6700 XT](https://www.amd.com/en/products/graphics/desktops/radeon/6000-series/amd-radeon-rx-6700-xt.html).
+The compute denominator below is FP32 because the emitted WGSL explicitly
+converts FP16 matrix operands to `f32` and calls `fma` on FP32 accumulators.
+The packed FP16 vector peak is an alternate denominator, not the arithmetic
+path currently emitted. Advertised peaks use peak clock assumptions; effective
+clocks during these measurements were not captured.
+
+| Workload | Useful throughput | Compute utilization vs FP32 peak |
+|---|---:|---:|
+| FP16 linear 512³ | 0.216 TFLOP/s | 1.63% |
+| FP16 linear 1024³ | 0.416 TFLOP/s | 3.15% |
+| FP16 linear 2048³ | 0.597 TFLOP/s | 4.52% |
+| FP16 linear 4096³ | 0.665 TFLOP/s | 5.03% |
+| Attention S8192, noncausal, B1/H8/D64 | 0.511 TFLOP/s | 3.87% |
+| Attention S8192, causal, B1/H8/D64 | 0.512 TFLOP/s | 3.88% |
+
+For GEMM, useful FLOPs are `2*M*N*K`, counting an FMA as two operations and
+excluding bias/ReLU. Attention counts the two dominant matrix products:
+`4*B*H*S*S*D` for noncausal, and `2*B*H*S*(S+1)*D` for the useful causal
+triangle. Softmax, scaling/normalization and masked/padded tile work are not
+included. Utilization is `useful FLOPs / (call seconds * peak FLOP/s)`.
+These are useful-work MFU approximations; they are not the percentage of
+GPU cycles busy or occupied. Against the full 26.43 TFLOP/s FP16 vector peak,
+the largest GEMM is **2.51%** and S8192 attention is approximately **1.94%**.
+
+Pointwise is better assessed by useful data movement. Reading two FP32 inputs
+and writing one FP32 output requires `12*N` bytes per call, so effective MBU
+is `12*N / (call seconds * 384e9)`:
+
+| Pointwise elements | Useful IO bandwidth | Effective useful-IO MBU |
+|---|---:|---:|
+| 1M | 14.77 GB/s | 3.85% |
+| 4M | 9.09 GB/s | 2.37% |
+| 16M | 17.42 GB/s | 4.54% |
+| 64M | 22.81 GB/s | 5.94% |
+
+At 64M, that is 805,306,368 bytes / 35.299 ms, compared with the advertised
+384 GB/s. The corresponding pure useful-data transfer lower bound is about
+2.10 ms; this bound omits allocation, submission, initialization and additional
+traffic, so it is not a promised optimized latency.
+
+**Actual DRAM MBU is unknown.** Neither actual GDDR6 byte traffic nor isolated
+GPU execution time was measured. Tiled GEMM and attention reload operands,
+while caches may satisfy those loads. Dividing only their one-read/one-write
+tensor sizes by time would report minimum useful-IO rates, not actual DRAM
+utilization, and would be especially misleading for attention. AMD's cache-based
+effective bandwidth figure is not the GDDR6 peak used here. The same allocation
+and host overhead included in call timing also lowers these effective metrics;
+the results do not identify the precise kernel or driver bottleneck.
+
+The [derived utilization data](data/webgpu-rx6700xt-utilization.json) contains
+all 17 workloads and both repeats, FLOP/byte counts, both compute denominators,
+and timing-report/specification provenance. Actual DRAM MBU is explicitly null.
+Reproduce the derivation without rerunning the GPU:
+
+```powershell
+build/webgpu-rx6700xt-consumer/Scripts/python.exe tools/webgpu_utilization.py docs/research/data/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-utilization.json
+```

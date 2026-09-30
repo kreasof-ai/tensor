@@ -1,7 +1,8 @@
 # ADR 0015: Portable WebGPU inference provider and opaque buffers
 
-Status: accepted implementation direction, 2026-09-30. Physical AMD/Apple
-acceptance remains open.
+Status: accepted implementation direction, 2026-09-30. Physical AMD Vulkan
+execution [verified on Windows RX 6700 XT](../research/webgpu-rx6700xt.md),
+2026-10-01; the two-host AMD/Apple acceptance transfer remains open.
 
 ## Decision
 

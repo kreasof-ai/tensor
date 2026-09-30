@@ -50,8 +50,11 @@ measure runtime overhead separately from GPU kernel execution.
 Phase 5 adds an optional [native WebGPU provider](docs/webgpu.md), Tensor-owned
 TIRx GEMM/reduction lowering and WGSL artifacts. Elementwise, FP16/FP32 linear,
 MLP composition and batched FP16 forward attention pass the software Vulkan
-suite in an isolated Tensor/NumPy/wgpu environment. Physical AMD/Apple validation
-and performance measurements remain the Phase 5 exit gate. Linux/Windows
+suite and all 33 checks on a physical [Windows RX 6700 XT through Vulkan](docs/research/webgpu-rx6700xt.md)
+in an isolated Tensor/NumPy/wgpu environment. The AMD run also passes 28
+native-enabled contract/audit tests and records latency; its D3D12 backend lacks
+the required FP16 feature. The separate two-host AMD/Apple artifact-transfer
+gate remains open because the AMD suite was built locally. Linux/Windows
 GPU-free producers and Windows-to-Linux execution CI pass; see the
 [Phase 5 validation report](docs/research/phase5-webgpu.md).
 
