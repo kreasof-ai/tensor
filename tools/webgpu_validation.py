@@ -54,7 +54,7 @@ def produce(directory):
         result = tx.build(src, out, provider="webgpu", cache_dir=directory / "compiler-cache")
         exports[name] = {"source": f"src/{name}.py", "portable": f"artifacts/{name}.tbin",
                          "artifacts": [f"artifacts/{name}.tbin"]}
-        return {"artifact": str(out.relative_to(directory)), "sha256": hashlib.sha256(out.read_bytes()).hexdigest(),
+        return {"artifact": out.relative_to(directory).as_posix(), "sha256": hashlib.sha256(out.read_bytes()).hexdigest(),
                 "export": name, "build_seconds": result["seconds"]}
 
     affine = artifact("affine", "dynamic_affine.py")
