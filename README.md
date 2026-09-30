@@ -39,7 +39,10 @@ FP16 causal/non-causal attention with NVRTC and runs it from `.tbin`. Twelve A10
 configurations pass correctness checks; GPU and host submission timings are
 reported separately. The separate [PyTorch adapter](docs/pytorch.md) now lowers
 inference FX regions through NVRTC, including SDPA, and exposes installed
-kernels as custom operators. Phase 4 performance acceptance is being validated.
+kernels as custom operators. [Phase 4 acceptance](docs/research/phase4-exit.md)
+passes 141 GPU tests, Linux/Windows CI, and all inference performance gates.
+AOTAutograd evaluation includes compiled forward/backward regions; full
+compiled training remains experimental.
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.

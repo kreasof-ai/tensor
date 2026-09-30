@@ -1,0 +1,1231 @@
+{
+  "native_submission": true,
+  "torch": "2.14.0+cu130",
+  "device": "NVIDIA A10G",
+  "cases": [
+    {
+      "name": "pointwise-129",
+      "cold_graph_seconds": 2.718289773998549,
+      "cached_graph_seconds": 0.04443618600635091,
+      "end_to_end_us": {
+        "tensor": 70.98769994627219,
+        "eager": 25.997410048148595,
+        "inductor": 63.58104998071212
+      },
+      "gpu_us": {
+        "tensor": 1.1468800157308578,
+        "eager": 3.9321601390838623,
+        "inductor": 1.1468800157308578
+      },
+      "tensor_over_inductor": 1.116491469829563,
+      "eager_speedup": 0.36622414964599526,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "mul",
+              "add",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "pointwise",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/9baddc7f1fac00f4e1f7ec948c8c0a897f2f8e7571e0e13f83a6f5e576736abb.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 2.5763818769992213,
+                "inputs": [
+                  [
+                    129
+                  ],
+                  [
+                    129
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "pointwise-257",
+      "cold_graph_seconds": 2.025941479994799,
+      "cached_graph_seconds": 0.025754455993592273,
+      "end_to_end_us": {
+        "tensor": 68.09603997680824,
+        "eager": 26.69772999070119,
+        "inductor": 62.837029981892556
+      },
+      "gpu_us": {
+        "tensor": 1.1673600226640701,
+        "eager": 3.9526399970054626,
+        "inductor": 1.1673600226640701
+      },
+      "tensor_over_inductor": 1.0836928479342698,
+      "eager_speedup": 0.39205994944483924,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "mul",
+              "add",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "pointwise",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/fb031b07440593c8d8f2f55e6a2f83f1e6a74effa7d6d62e7b52052e2452077a.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 1.989857368003868,
+                "inputs": [
+                  [
+                    257
+                  ],
+                  [
+                    257
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "pointwise-1048576",
+      "cold_graph_seconds": 1.9946817539967014,
+      "cached_graph_seconds": 0.025743035999767017,
+      "end_to_end_us": {
+        "tensor": 68.70965000416618,
+        "eager": 46.248299986473285,
+        "inductor": 61.72581997816451
+      },
+      "gpu_us": {
+        "tensor": 27.299840450286865,
+        "eager": 46.387200355529785,
+        "inductor": 26.3372802734375
+      },
+      "tensor_over_inductor": 1.1131427663248896,
+      "eager_speedup": 0.6730975923130017,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "mul",
+              "add",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "pointwise",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/f8ce220152af4e1b43c904c32b37dca9181d661309f8d49764225d08f42f2993.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 1.975188149001042,
+                "inputs": [
+                  [
+                    1048576
+                  ],
+                  [
+                    1048576
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "pointwise-4194304",
+      "cold_graph_seconds": 1.8609605620004004,
+      "cached_graph_seconds": 0.025603303998650517,
+      "end_to_end_us": {
+        "tensor": 105.28506994887721,
+        "eager": 251.262849997147,
+        "inductor": 107.32751994510181
+      },
+      "gpu_us": {
+        "tensor": 103.21920394897461,
+        "eager": 246.80448532104492,
+        "inductor": 105.5731201171875
+      },
+      "tensor_over_inductor": 0.9809699320615131,
+      "eager_speedup": 2.3865002902990096,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "mul",
+              "add",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "pointwise",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/b23993e1818a4d40ef98efb74c53e7171fd4f4b034e58c516877ad5864163227.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 1.8419116270015365,
+                "inputs": [
+                  [
+                    4194304
+                  ],
+                  [
+                    4194304
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "gemm-33-65-64",
+      "cold_graph_seconds": 2.867234869998356,
+      "cached_graph_seconds": 0.04744105400459375,
+      "end_to_end_us": {
+        "tensor": 72.36042998556513,
+        "eager": 26.401720024296083,
+        "inductor": 94.23456001968589
+      },
+      "gpu_us": {
+        "tensor": 3.17440003156662,
+        "eager": 4.0140798687934875,
+        "inductor": 3.7068799138069153
+      },
+      "tensor_over_inductor": 0.7678757132250505,
+      "eager_speedup": 0.36486405663375476,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "linear",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "gemm",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/be365eb9a8641bae7fdd91c59c857cf8dd10a0e3e939f34c98054a2324fbdbc8.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 2.837140236995765,
+                "inputs": [
+                  [
+                    33,
+                    64
+                  ],
+                  [
+                    65,
+                    64
+                  ],
+                  [
+                    65
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "gemm-128-128-128",
+      "cold_graph_seconds": 2.7622828950043186,
+      "cached_graph_seconds": 0.04436428299959516,
+      "end_to_end_us": {
+        "tensor": 73.03144004254136,
+        "eager": 31.338819972006604,
+        "inductor": 101.33848001714796
+      },
+      "gpu_us": {
+        "tensor": 2.744320034980774,
+        "eager": 3.9526399970054626,
+        "inductor": 3.8707199692726135
+      },
+      "tensor_over_inductor": 0.7206683979292305,
+      "eager_speedup": 0.42911409050337096,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "linear",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "gemm",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/3332eeeabaee964e525dfb6aa97a63b9d8ab2ef7621dad97978b62a5e89a29a8.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 2.7195168910038774,
+                "inputs": [
+                  [
+                    128,
+                    128
+                  ],
+                  [
+                    128,
+                    128
+                  ],
+                  [
+                    128
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "gemm-512-512-512",
+      "cold_graph_seconds": 2.8240415699983714,
+      "cached_graph_seconds": 0.04504041800100822,
+      "end_to_end_us": {
+        "tensor": 72.24973000120372,
+        "eager": 27.12033994612284,
+        "inductor": 95.76768999977503
+      },
+      "gpu_us": {
+        "tensor": 10.035200119018555,
+        "eager": 9.50272023677826,
+        "inductor": 9.359359741210938
+      },
+      "tensor_over_inductor": 0.754426988907986,
+      "eager_speedup": 0.3753694296943532,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "linear",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "gemm",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/8a37393ef782c41ce453a87e93c077bb21088cf466eb44c62fce47a9c0bcb6e7.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 2.7815235820016824,
+                "inputs": [
+                  [
+                    512,
+                    512
+                  ],
+                  [
+                    512,
+                    512
+                  ],
+                  [
+                    512
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "mlp-128-256-128",
+      "cold_graph_seconds": 5.624941720001516,
+      "cached_graph_seconds": 0.05729685400001472,
+      "end_to_end_us": {
+        "tensor": 96.99129994260147,
+        "eager": 52.13912001636345,
+        "inductor": 133.70532004046254
+      },
+      "gpu_us": {
+        "tensor": 6.103039979934692,
+        "eager": 7.167999744415283,
+        "inductor": 7.045120000839233
+      },
+      "tensor_over_inductor": 0.7254109254085739,
+      "eager_speedup": 0.5375649161029792,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "linear_1"
+            ],
+            "specializations": [
+              {
+                "kind": "gemm",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/d61d0e270dc160ae063dd6af06cc88319c27f282f94affe0483d64fd8060df98.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 2.8264912750018993,
+                "inputs": [
+                  [
+                    128,
+                    256
+                  ],
+                  [
+                    128,
+                    256
+                  ],
+                  [
+                    128
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          },
+          {
+            "nodes": [
+              "linear",
+              "relu"
+            ],
+            "specializations": [
+              {
+                "kind": "gemm",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/a839fb442e346f268505777acaf33c840572fa776f3140fb3c4780295421b37b.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 2.744256678997772,
+                "inputs": [
+                  [
+                    128,
+                    128
+                  ],
+                  [
+                    256,
+                    128
+                  ],
+                  [
+                    256
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      }
+    },
+    {
+      "name": "sdpa-1-8-128-64-False",
+      "cold_graph_seconds": 4.887364233996777,
+      "cached_graph_seconds": 0.04759407399978954,
+      "end_to_end_us": {
+        "tensor": 72.0237100176746,
+        "eager": 23.70567002799362,
+        "inductor": 99.36094997101463
+      },
+      "gpu_us": {
+        "tensor": 5.2019202709198,
+        "eager": 8.663039803504944,
+        "inductor": 8.663039803504944
+      },
+      "tensor_over_inductor": 0.7248693781479063,
+      "eager_speedup": 0.32913703032204605,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/fe86f689252bdcbda0bc553f5ab7c924ccc21debd2c5d0a903250f90f727a75a.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.84297452300234,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    128,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    128,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    128,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 23.30725998035632,
+        "gpu_us": 8.683519959449768
+      }
+    },
+    {
+      "name": "sdpa-1-8-128-64-True",
+      "cold_graph_seconds": 5.665399945006357,
+      "cached_graph_seconds": 0.04839361199992709,
+      "end_to_end_us": {
+        "tensor": 72.1708100172691,
+        "eager": 22.826850035926327,
+        "inductor": 100.87939001095947
+      },
+      "gpu_us": {
+        "tensor": 5.2428799867630005,
+        "eager": 8.929280042648315,
+        "inductor": 8.99071991443634
+      },
+      "tensor_over_inductor": 0.7154167963290472,
+      "eager_speedup": 0.3162892314838131,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/0e0cf2d3069d1cda6fda1f951936b9a9b0e00ae7b2e81e1b7fdaa6d69b3f75a5.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 5.630174644997169,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    128,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    128,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    128,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 23.13234996108804,
+        "gpu_us": 8.94976019859314
+      }
+    },
+    {
+      "name": "sdpa-1-8-129-64-False",
+      "cold_graph_seconds": 4.461859862996789,
+      "cached_graph_seconds": 0.04756194599758601,
+      "end_to_end_us": {
+        "tensor": 73.18414995097555,
+        "eager": 23.458360010408796,
+        "inductor": 101.16558005393017
+      },
+      "gpu_us": {
+        "tensor": 6.922240257263184,
+        "eager": 15.667200088500977,
+        "inductor": 15.708160400390625
+      },
+      "tensor_over_inductor": 0.723409581717042,
+      "eager_speedup": 0.32053880554905717,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/5e0b5eebb18d4bf293a291a4eef1955a6e533dc4c9fe6f09c553a903d169276b.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.4265724690048955,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    129,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    129,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    129,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 23.606460017617792,
+        "gpu_us": 15.6876802444458
+      }
+    },
+    {
+      "name": "sdpa-1-8-129-64-True",
+      "cold_graph_seconds": 4.0695802140035084,
+      "cached_graph_seconds": 0.04799977399670752,
+      "end_to_end_us": {
+        "tensor": 72.53272997331806,
+        "eager": 23.68256995396223,
+        "inductor": 100.93539000081364
+      },
+      "gpu_us": {
+        "tensor": 6.696959733963013,
+        "eager": 16.383999586105347,
+        "inductor": 16.363519430160522
+      },
+      "tensor_over_inductor": 0.7186055354096652,
+      "eager_speedup": 0.32650873561044946,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/63534ec10ae24133b3386fcd87f0890b09a2ec438311f64307f7139e4d5435da.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.034319890000916,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    129,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    129,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    129,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 24.215279991040006,
+        "gpu_us": 16.363519430160522
+      }
+    },
+    {
+      "name": "sdpa-2-4-257-64-False",
+      "cold_graph_seconds": 4.754853768004978,
+      "cached_graph_seconds": 0.04807767600141233,
+      "end_to_end_us": {
+        "tensor": 72.82193000719417,
+        "eager": 31.462719998671673,
+        "inductor": 114.92026998894289
+      },
+      "gpu_us": {
+        "tensor": 10.383360385894775,
+        "eager": 13.88543963432312,
+        "inductor": 13.844480514526367
+      },
+      "tensor_over_inductor": 0.6336735026310046,
+      "eager_speedup": 0.43205007057027234,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/65f1dff892d960bb588df98e339af0805b9253d4a167ea710c2caff0e0b7ee22.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.719502092004404,
+                "inputs": [
+                  [
+                    2,
+                    4,
+                    257,
+                    64
+                  ],
+                  [
+                    2,
+                    4,
+                    257,
+                    64
+                  ],
+                  [
+                    2,
+                    4,
+                    257,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 31.41362001770176,
+        "gpu_us": 13.844480514526367
+      }
+    },
+    {
+      "name": "sdpa-2-4-257-64-True",
+      "cold_graph_seconds": 4.185684308002237,
+      "cached_graph_seconds": 0.04876956200314453,
+      "end_to_end_us": {
+        "tensor": 71.904810029082,
+        "eager": 31.944930015015416,
+        "inductor": 113.51564004144166
+      },
+      "gpu_us": {
+        "tensor": 10.4038405418396,
+        "eager": 14.192639589309692,
+        "inductor": 14.192639589309692
+      },
+      "tensor_over_inductor": 0.6334352693851825,
+      "eager_speedup": 0.4442669412810526,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/b5159581b1d8e312449b4213f07e7739bb104e329e2e1c64756d16e058832c29.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.150149519002298,
+                "inputs": [
+                  [
+                    2,
+                    4,
+                    257,
+                    64
+                  ],
+                  [
+                    2,
+                    4,
+                    257,
+                    64
+                  ],
+                  [
+                    2,
+                    4,
+                    257,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 31.78091996232979,
+        "gpu_us": 14.172159433364868
+      }
+    },
+    {
+      "name": "sdpa-1-8-512-64-False",
+      "cold_graph_seconds": 4.928338247002102,
+      "cached_graph_seconds": 0.04721378099930007,
+      "end_to_end_us": {
+        "tensor": 70.41628996375948,
+        "eager": 30.195500003173947,
+        "inductor": 108.36852998181712
+      },
+      "gpu_us": {
+        "tensor": 19.824639558792114,
+        "eager": 23.529601097106934,
+        "inductor": 23.490560054779053
+      },
+      "tensor_over_inductor": 0.649785412569262,
+      "eager_speedup": 0.42881412836027566,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/4e9d193cf676ca498c6e0de00dcb24f7f99da849081e607703d08efee91a1328.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.892087531006837,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    512,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 31.58991996315308,
+        "gpu_us": 23.511040210723877
+      }
+    },
+    {
+      "name": "sdpa-1-8-512-64-True",
+      "cold_graph_seconds": 5.669199757001479,
+      "cached_graph_seconds": 0.04913151799701154,
+      "end_to_end_us": {
+        "tensor": 71.22011003957596,
+        "eager": 31.025510033941828,
+        "inductor": 111.7983199947048
+      },
+      "gpu_us": {
+        "tensor": 19.78368043899536,
+        "eager": 22.712318897247314,
+        "inductor": 22.73279905319214
+      },
+      "tensor_over_inductor": 0.6370409684416476,
+      "eager_speedup": 0.4356285045993528,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/1668e19e70ffef390577d5693ab17e69695618d34df927ad14cf068b6e109385.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 5.631850311001472,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    512,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 30.809509989921935,
+        "gpu_us": 22.609920501708984
+      }
+    },
+    {
+      "name": "sdpa-1-8-1024-64-False",
+      "cold_graph_seconds": 4.86553700499644,
+      "cached_graph_seconds": 0.04965888000151608,
+      "end_to_end_us": {
+        "tensor": 71.81811997725163,
+        "eager": 50.24869002227206,
+        "inductor": 99.08635998726822
+      },
+      "gpu_us": {
+        "tensor": 68.97664070129395,
+        "eager": 49.397759437561035,
+        "inductor": 49.47840213775635
+      },
+      "tensor_over_inductor": 0.7248032926679279,
+      "eager_speedup": 0.6996659065732759,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/5a31815a5d7208447e31e7ca119175c85543e5313145096b614699ff01c06a1f.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.829543416002707,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    1024,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    1024,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    1024,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 50.48418999649584,
+        "gpu_us": 49.41823959350586
+      }
+    },
+    {
+      "name": "sdpa-1-8-1024-64-True",
+      "cold_graph_seconds": 5.360395058996801,
+      "cached_graph_seconds": 0.04891109599702759,
+      "end_to_end_us": {
+        "tensor": 70.70889994793106,
+        "eager": 50.71880994364619,
+        "inductor": 98.57245000603143
+      },
+      "gpu_us": {
+        "tensor": 44.85119819641113,
+        "eager": 49.66400146484375,
+        "inductor": 49.6230411529541
+      },
+      "tensor_over_inductor": 0.7173292329003138,
+      "eager_speedup": 0.7172903266914736,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/dedf6893f074110a547b98925e5d1699cd49b0bca5782f0941a3e082a674b9ee.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 5.324422368998057,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    1024,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    1024,
+                    64
+                  ],
+                  [
+                    1,
+                    8,
+                    1024,
+                    64
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 50.82610994577408,
+        "gpu_us": 49.7049617767334
+      }
+    },
+    {
+      "name": "sdpa-1-8-512-128-False",
+      "cold_graph_seconds": 6.355402018001769,
+      "cached_graph_seconds": 0.048833433000254445,
+      "end_to_end_us": {
+        "tensor": 70.83540003804956,
+        "eager": 45.1271899510175,
+        "inductor": 111.35210996144451
+      },
+      "gpu_us": {
+        "tensor": 32.41983890533447,
+        "eager": 42.31167793273926,
+        "inductor": 42.291197776794434
+      },
+      "tensor_over_inductor": 0.6361388218200463,
+      "eager_speedup": 0.6370711526549893,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/681b8139924ba1008fe42be5ee4ccc021e85d5b9ac5a5a4307511d2003abca31.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 6.319001309995656,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    512,
+                    128
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    128
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    128
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 45.354000030783936,
+        "gpu_us": 42.33215808868408
+      }
+    },
+    {
+      "name": "sdpa-1-8-512-128-True",
+      "cold_graph_seconds": 4.994704914999602,
+      "cached_graph_seconds": 0.04886187299416633,
+      "end_to_end_us": {
+        "tensor": 70.25658997008577,
+        "eager": 39.426479997928254,
+        "inductor": 110.9821000136435
+      },
+      "gpu_us": {
+        "tensor": 31.129601001739502,
+        "eager": 36.4134407043457,
+        "inductor": 36.35200023651123
+      },
+      "tensor_over_inductor": 0.6330443374332332,
+      "eager_speedup": 0.5611783893114578,
+      "report": {
+        "regions": [
+          {
+            "nodes": [
+              "scaled_dot_product_attention"
+            ],
+            "specializations": [
+              {
+                "kind": "attention",
+                "target": "sm_86",
+                "artifact": "build/phase4-completion-cache/7cea158f08b5e7b50aa2c0c5f6daf68d0080da08434d1c38f6a3bcb7ad785f14.tbin",
+                "cache_hit": false,
+                "prepare_seconds": 4.958224684000015,
+                "inputs": [
+                  [
+                    1,
+                    8,
+                    512,
+                    128
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    128
+                  ],
+                  [
+                    1,
+                    8,
+                    512,
+                    128
+                  ]
+                ]
+              }
+            ],
+            "fallbacks": []
+          }
+        ],
+        "fallback_nodes": [],
+        "autograd": [],
+        "graphs": 1
+      },
+      "forced_flash": {
+        "end_to_end_us": 39.37286994187161,
+        "gpu_us": 36.4134407043457
+      }
+    }
+  ],
+  "timing": "median 7 batches; warm end-to-end includes Python submission, output allocation and stream completion; GPU times use 50-call CUDA graph replay",
+  "targets": {
+    "max_geomean_inductor_ratio": 1.1,
+    "max_case_inductor_ratio": 1.25,
+    "selected_eager_speedup": 1.25,
+    "prepared_submission_us": 15,
+    "cached_prepare_seconds": 0.1,
+    "cold_pointwise_seconds": 10,
+    "cold_gemm_seconds": 30
+  },
+  "implementation_sha256": {
+    "__init__.py": "fef97c6192997a9e10cdbfa24b7dbe6467a6db824aa66850b452d0747b42fdba",
+    "_launch.abi3.so": "7421706b1868dc723d7b6061723b928f48f7423f35de8a45e31ef10f512cbf44",
+    "backend.py": "049bab883f48ab7b9b7adb22d9bd53491be7d295f6122f45374e32e3adc83497",
+    "bridge.py": "e450f1e15e6197a564fe80e3c00cd9bf1a6e29011a7825daeb33b494615fb0ee",
+    "launch.c": "a9a803f0c800f1506d4187e97e21b085cd5b759215c516f287715ff594304313",
+    "lowering.py": "1e7fff5bf1f20d7f37a71cfaf5b547cb13b16683274ba745837430f38ec1de61",
+    "templates/attention.py": "734e75ae6d41b4289c1f9fd126335cbf9477fbfe2b19d376eb0b187d1eeff9da"
+  },
+  "benchmark_sha256": "5810d44bd568c08e8f39f334bc10a5c3114c8bde416fbf6abf6f84a40f820d98",
+  "prepared_submission_us": 8.745104001718573,
+  "geomean_inductor_ratio": 0.7563380878247512,
+  "max_inductor_ratio": 1.116491469829563,
+  "acceptance": {
+    "geomean": true,
+    "worst_case": true,
+    "selected_eager_speedup": true,
+    "prepared_submission": true,
+    "cached_prepare": true,
+    "cold_pointwise": true,
+    "cold_gemm": true
+  }
+}

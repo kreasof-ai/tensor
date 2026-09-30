@@ -41,7 +41,7 @@ Use an instance for explicit options and observable coverage:
 
 ```python
 compiler = tensor_torch.Backend(cache_dir="build/torch-cache")
-compiled = torch.compile(affine, backend=compiler)
+compiled = torch.compile(lambda a, b: torch.relu(a * 2 + b), backend=compiler)
 # After executing compiled(...):
 print(compiler.report)
 ```
@@ -127,3 +127,7 @@ actual backward multiply region, validates both input gradients, and reports
 PyTorch fallback for detach/threshold-backward operations. This demonstrates
 compiled work in both stages; it is not complete compiled-training coverage.
 Training remains experimental. Tensor does not claim a FlashAttention backward.
+
+The inference-first Phase 4 scope is accepted; see the [exit report](research/phase4-exit.md)
+for the 20-case benchmark, exact performance gates, cross-platform wheels and
+compiler-free GPU transfer evidence.

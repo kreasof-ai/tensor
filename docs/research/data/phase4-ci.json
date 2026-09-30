@@ -1,0 +1,32 @@
+{
+  "run_id": 36658315181,
+  "url": "https://github.com/kreasof-ai/tensor/actions/runs/36658315181",
+  "source_commit": "c700d3315c23a2710ea6f51865b46ca0eed37f81",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "platform": "ubuntu-24.04",
+      "job_id": 109707300062,
+      "tests": {
+        "passed": 100,
+        "skipped": 41
+      },
+      "adapter_wheel": true,
+      "native_submission": true,
+      "compiler_free_consumer": true,
+      "fx_profiles": 3
+    },
+    {
+      "platform": "windows-latest",
+      "job_id": 109707300295,
+      "tests": {
+        "passed": 90,
+        "skipped": 51
+      },
+      "adapter_wheel": true,
+      "native_submission": true,
+      "compiler_free_consumer": true,
+      "fx_profiles": 3
+    }
+  ]
+}

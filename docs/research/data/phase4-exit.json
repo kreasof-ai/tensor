@@ -1,0 +1,539 @@
+{
+  "source_commit": "c700d3315c23a2710ea6f51865b46ca0eed37f81",
+  "scope": "Inference-first FX backend and packaged CUDA custom ops; AOTAutograd evaluation, not full compiled training",
+  "device": "NVIDIA A10G sm_86",
+  "driver": "595.91.07",
+  "runtime_abi": "1.1",
+  "nvrtc": "12.9",
+  "tests": {
+    "command": "TENSOR_P0_CUDA=1 TENSOR_P1_CUDA=1 TENSOR_P2_CUDA=1 TENSOR_P3_CUDA=1 TENSOR_P4_CUDA=1 TENSOR_ATTENTION_CUDA=1 uv run --locked --extra publish python -m pytest -o addopts='' -q",
+    "passed": 141,
+    "skipped": 0,
+    "seconds": 167.15
+  },
+  "metrics": "phase4-metrics.json",
+  "ci": "phase4-ci.json",
+  "acceptance": {
+    "geomean": true,
+    "worst_case": true,
+    "selected_eager_speedup": true,
+    "prepared_submission": true,
+    "cached_prepare": true,
+    "cold_pointwise": true,
+    "cold_gemm": true
+  },
+  "cached_graph_consumer": {
+    "torch": "2.14.0+cu130",
+    "adapter": "0.1.0",
+    "native_submission": true,
+    "entry_point": true,
+    "cpu_fallback": true,
+    "fake_cuda_custom_op": true,
+    "compiler_packages": false,
+    "gpu_cases": [
+      "pointwise-129",
+      "pointwise-257",
+      "pointwise-1048576",
+      "pointwise-4194304",
+      "gemm-33-65-64",
+      "gemm-128-128-128",
+      "gemm-512-512-512",
+      "mlp-128-256-128",
+      "sdpa-1-8-128-64-False",
+      "sdpa-1-8-128-64-True",
+      "sdpa-1-8-129-64-False",
+      "sdpa-1-8-129-64-True",
+      "sdpa-2-4-257-64-False",
+      "sdpa-2-4-257-64-True",
+      "sdpa-1-8-512-64-False",
+      "sdpa-1-8-512-64-True",
+      "sdpa-1-8-1024-64-False",
+      "sdpa-1-8-1024-64-True",
+      "sdpa-1-8-512-128-False",
+      "sdpa-1-8-512-128-True"
+    ],
+    "gpu_execution": "passed"
+  },
+  "native_transfer_checks": {
+    "checks": [
+      "linux-affine",
+      "linux-linear",
+      "linux-attention",
+      "windows-affine",
+      "windows-linear",
+      "windows-attention"
+    ],
+    "native_submission": true,
+    "compiler_imports": false
+  },
+  "transfers": [
+    {
+      "producer_platform": "linux",
+      "artifact_id": 11072389378,
+      "source_commit": "c700d3315c23a2710ea6f51865b46ca0eed37f81",
+      "archive_sha256": "b250d4e0abcda5493bbfa6e9c0113e1d5b60e761fa5b3bc64c53e5ef09ce4202",
+      "wheel": {
+        "name": "tensor_torch-0.1.0-cp312-abi3-linux_x86_64.whl",
+        "bytes": 22791,
+        "sha256": "e6b26efd1561e72d643c8430f149581a918ee7ca4bdc5172df42907c52d9e4d3"
+      },
+      "producer": [
+        {
+          "name": "affine",
+          "kind": "pointwise",
+          "nodes": [
+            "mul",
+            "add",
+            "relu"
+          ],
+          "source_sha256": "dc4bcf7ad156e0cf1453e1827be306f875301b16ccc233b67f7c3d2366c487a4",
+          "artifact_sha256": "372ce9d9eed5538b0e1411e6988b0f0d10d4886faa05b50867e067c6a8f90fc1",
+          "build": {
+            "status": "built",
+            "path": "/home/runner/work/tensor/tensor/build/phase4-transfer/affine.tbin",
+            "bytes": 24926,
+            "target": "sm_86",
+            "entrypoint": "kernel_kernel",
+            "arguments": [
+              {
+                "kind": "buffer",
+                "name": "arg0",
+                "dtype": "float32",
+                "shape": [
+                  129
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "arg1",
+                "dtype": "float32",
+                "shape": [
+                  129
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "out",
+                "dtype": "float32",
+                "shape": [
+                  129
+                ],
+                "alignment": 64
+              }
+            ],
+            "seconds": 1.554582621999998,
+            "compile_seconds": 0.9188550830000111,
+            "compiler": "nvrtc",
+            "nvcc_seconds": 0.0,
+            "cache_hit": false,
+            "cache_key": "c74cbbcea1ac72c4adad912d7c60a315b04406e92b5b8de86cafea831b3a44be",
+            "gpu_execution": "unverified"
+          }
+        },
+        {
+          "name": "linear",
+          "kind": "gemm",
+          "nodes": [
+            "linear",
+            "relu"
+          ],
+          "source_sha256": "15e2441dc62a7a38ce700eb3fd7862b5b2efc60791beb849001cac8eb652a59c",
+          "artifact_sha256": "76bdf5dfc7f7291babeb08ba8de40644b68fc620d0872eec83c02711fca42449",
+          "build": {
+            "status": "built",
+            "path": "/home/runner/work/tensor/tensor/build/phase4-transfer/linear.tbin",
+            "bytes": 39194,
+            "target": "sm_86",
+            "entrypoint": "kernel_kernel",
+            "arguments": [
+              {
+                "kind": "buffer",
+                "name": "arg0",
+                "dtype": "float16",
+                "shape": [
+                  33,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "arg1",
+                "dtype": "float16",
+                "shape": [
+                  65,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "arg2",
+                "dtype": "float16",
+                "shape": [
+                  65
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "out",
+                "dtype": "float16",
+                "shape": [
+                  33,
+                  65
+                ],
+                "alignment": 64
+              }
+            ],
+            "seconds": 2.5119393449999734,
+            "compile_seconds": 1.012859476999978,
+            "compiler": "nvrtc",
+            "nvcc_seconds": 0.0,
+            "cache_hit": false,
+            "cache_key": "5928fb124acc01280fb934912d0db6dfc09b9adf0d2514b8d9c7506159785132",
+            "gpu_execution": "unverified"
+          }
+        },
+        {
+          "name": "attention",
+          "kind": "attention",
+          "nodes": [
+            "scaled_dot_product_attention"
+          ],
+          "source_sha256": "a36b713f8ce5b916b727489d8bf6bc456e41393a5a6917b46d2d46c0b40c813f",
+          "artifact_sha256": "bb8c87ac8b3ceaaf5ff2266a7a47fa14b1dcb920e30571b8bca4e86eb405082a",
+          "build": {
+            "status": "built",
+            "path": "/home/runner/work/tensor/tensor/build/phase4-transfer/attention.tbin",
+            "bytes": 50839,
+            "target": "sm_86",
+            "entrypoint": "flash_attention_kernel",
+            "arguments": [
+              {
+                "kind": "buffer",
+                "name": "q",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "k",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "v",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "out",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              }
+            ],
+            "seconds": 3.4383702740000217,
+            "compile_seconds": 1.1478571939999824,
+            "compiler": "nvrtc",
+            "nvcc_seconds": 0.0,
+            "cache_hit": false,
+            "cache_key": "e9f90a5cb81adfe603fea46143fb7fe7df962c28df1300d7500fe8789b4c48f2",
+            "gpu_execution": "unverified"
+          }
+        }
+      ],
+      "gpu_consumer": {
+        "torch": "2.14.0+cu130",
+        "adapter": "0.1.0",
+        "native_submission": true,
+        "entry_point": true,
+        "cpu_fallback": true,
+        "fake_cuda_custom_op": true,
+        "compiler_packages": false,
+        "gpu_cases": [
+          "pointwise-129",
+          "pointwise-257",
+          "pointwise-1048576",
+          "pointwise-4194304",
+          "gemm-33-65-64",
+          "gemm-128-128-128",
+          "gemm-512-512-512",
+          "mlp-128-256-128",
+          "sdpa-1-8-128-64-False",
+          "sdpa-1-8-128-64-True",
+          "sdpa-1-8-129-64-False",
+          "sdpa-1-8-129-64-True",
+          "sdpa-2-4-257-64-False",
+          "sdpa-2-4-257-64-True",
+          "sdpa-1-8-512-64-False",
+          "sdpa-1-8-512-64-True",
+          "sdpa-1-8-1024-64-False",
+          "sdpa-1-8-1024-64-True",
+          "sdpa-1-8-512-128-False",
+          "sdpa-1-8-512-128-True",
+          "transferred-affine",
+          "transferred-linear",
+          "transferred-attention"
+        ],
+        "gpu_execution": "passed"
+      }
+    },
+    {
+      "producer_platform": "windows",
+      "artifact_id": 11072189694,
+      "source_commit": "c700d3315c23a2710ea6f51865b46ca0eed37f81",
+      "archive_sha256": "c09fee4ebbe3a7c82844a3c348011fee1027f43209e46bcc4be4ef33eb01178f",
+      "wheel": {
+        "name": "tensor_torch-0.1.0-cp312-abi3-win_amd64.whl",
+        "bytes": 22158,
+        "sha256": "3fedcaa3e8df5b349d059f59238b88f6104f9a4f82d4c58a77027782fe9ef89b"
+      },
+      "producer": [
+        {
+          "name": "affine",
+          "kind": "pointwise",
+          "nodes": [
+            "mul",
+            "add",
+            "relu"
+          ],
+          "source_sha256": "dc4bcf7ad156e0cf1453e1827be306f875301b16ccc233b67f7c3d2366c487a4",
+          "artifact_sha256": "4d719ff338e1ab6ad88360f5d7f27684c68f4ddc150470195ff80cb1c4a82afa",
+          "build": {
+            "status": "built",
+            "path": "D:\\a\\tensor\\tensor\\build\\phase4-transfer\\affine.tbin",
+            "bytes": 24849,
+            "target": "sm_86",
+            "entrypoint": "kernel_kernel",
+            "arguments": [
+              {
+                "kind": "buffer",
+                "name": "arg0",
+                "dtype": "float32",
+                "shape": [
+                  129
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "arg1",
+                "dtype": "float32",
+                "shape": [
+                  129
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "out",
+                "dtype": "float32",
+                "shape": [
+                  129
+                ],
+                "alignment": 64
+              }
+            ],
+            "seconds": 1.9435660999997708,
+            "compile_seconds": 1.0590354999999363,
+            "compiler": "nvrtc",
+            "nvcc_seconds": 0.0,
+            "cache_hit": false,
+            "cache_key": "d62e19c1a9e5cca3620f09ec97fc416cc317a3e9764b2b3769f974f58da5b99c",
+            "gpu_execution": "unverified"
+          }
+        },
+        {
+          "name": "linear",
+          "kind": "gemm",
+          "nodes": [
+            "linear",
+            "relu"
+          ],
+          "source_sha256": "15e2441dc62a7a38ce700eb3fd7862b5b2efc60791beb849001cac8eb652a59c",
+          "artifact_sha256": "74bfffe2a71d2b29d3cd10ce023ed96c55affce5c812e58839ec0fd7d6639cb2",
+          "build": {
+            "status": "built",
+            "path": "D:\\a\\tensor\\tensor\\build\\phase4-transfer\\linear.tbin",
+            "bytes": 39109,
+            "target": "sm_86",
+            "entrypoint": "kernel_kernel",
+            "arguments": [
+              {
+                "kind": "buffer",
+                "name": "arg0",
+                "dtype": "float16",
+                "shape": [
+                  33,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "arg1",
+                "dtype": "float16",
+                "shape": [
+                  65,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "arg2",
+                "dtype": "float16",
+                "shape": [
+                  65
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "out",
+                "dtype": "float16",
+                "shape": [
+                  33,
+                  65
+                ],
+                "alignment": 64
+              }
+            ],
+            "seconds": 3.5277916999998524,
+            "compile_seconds": 1.1848583999999391,
+            "compiler": "nvrtc",
+            "nvcc_seconds": 0.0,
+            "cache_hit": false,
+            "cache_key": "dc5daa740612716ec57ae475d3ec6db1c6f6b61a66fa8d7472b10fd027c99712",
+            "gpu_execution": "unverified"
+          }
+        },
+        {
+          "name": "attention",
+          "kind": "attention",
+          "nodes": [
+            "scaled_dot_product_attention"
+          ],
+          "source_sha256": "a36b713f8ce5b916b727489d8bf6bc456e41393a5a6917b46d2d46c0b40c813f",
+          "artifact_sha256": "e4bab5ac922f762e2dd343900be9d1487abfba8d9cff1faa1f604d01e46901f6",
+          "build": {
+            "status": "built",
+            "path": "D:\\a\\tensor\\tensor\\build\\phase4-transfer\\attention.tbin",
+            "bytes": 50740,
+            "target": "sm_86",
+            "entrypoint": "flash_attention_kernel",
+            "arguments": [
+              {
+                "kind": "buffer",
+                "name": "q",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "k",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "v",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              },
+              {
+                "kind": "buffer",
+                "name": "out",
+                "dtype": "float16",
+                "shape": [
+                  1,
+                  2,
+                  129,
+                  64
+                ],
+                "alignment": 64
+              }
+            ],
+            "seconds": 4.360201999999845,
+            "compile_seconds": 1.2918397000003097,
+            "compiler": "nvrtc",
+            "nvcc_seconds": 0.0,
+            "cache_hit": false,
+            "cache_key": "caaaa563f1d222302213e5562b7a98399734d54dc3164a90f709817929166139",
+            "gpu_execution": "unverified"
+          }
+        }
+      ],
+      "gpu_consumer": {
+        "torch": "2.14.0+cu130",
+        "adapter": "0.1.0",
+        "native_submission": true,
+        "entry_point": true,
+        "cpu_fallback": true,
+        "fake_cuda_custom_op": true,
+        "compiler_packages": false,
+        "gpu_cases": [
+          "transferred-affine",
+          "transferred-linear",
+          "transferred-attention"
+        ],
+        "gpu_execution": "passed"
+      }
+    }
+  ],
+  "limitations": [
+    "Only A10G GPU execution measured",
+    "Windows wheel installation/native import/FakeTensor/backend discovery verified; Windows GPU execution not measured",
+    "Native Torch optimization helpers tested on PyTorch 2.14; metadata permits 2.8-2.14 with public API fallbacks",
+    "Forward attention GPU kernel slower than forced Flash SDPA at noncausal sequence 1024",
+    "Most small end-to-end calls remain slower than eager; the selected 4M-element fused graph meets the eager speedup target",
+    "Training uses compiled supported regions and PyTorch fallback; FlashAttention backward unsupported"
+  ]
+}

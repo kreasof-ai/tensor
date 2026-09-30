@@ -264,7 +264,7 @@ NVRTC remains the default; direct PTX stays experimental after Tensor v1.
 
 ---
 
-## Phase 4 — PyTorch backend *(in validation)*
+## Phase 4 — PyTorch backend *(complete: inference-first scope)*
 
 `torch.compile(..., backend="tensor")`, inference-oriented FX graphs first. E8 informs the
 representation choice. Keep graph breaks working — PyTorch owns the gap.
@@ -289,8 +289,13 @@ and clean adapter wheels on Linux/Windows. Performance acceptance uses 20 A10G
 inference cases: end-to-end geometric mean at most 1.10× Inductor, no case above
 1.25×, selected fused graphs at least 1.25× eager, prepared submission at most
 15 µs, cached preparation at most 100 ms, and cold pointwise/GEMM preparation
-at most 10/30 s. Acceptance results are being collected; GPU execution and host
-submission are measured separately. The compact submission shim needs Python
+at most 10/30 s. All gates pass in the final 20-case run: 0.756× Inductor geometric mean,
+1.116× worst case, 8.75 µs prepared submission, and 57.30 ms maximum cached
+preparation. GPU execution and host submission are measured separately.
+The full GPU suite passes 141 tests with zero skips, both Linux and Windows
+CI pass, and their actual FX-produced profiles execute on the A10G in a clean
+compiler-free consumer. Exact scope, limitations and evidence are recorded in
+[the Phase 4 exit report](../research/phase4-exit.md). The compact submission shim needs Python
 headers to build its wheel and no CUDA toolkit; installed consumers need no
 host compiler. NVRTC remains the only automatic kernel compiler.
 
