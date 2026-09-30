@@ -90,6 +90,12 @@ jobs:
           uv run --locked --no-sync python tools/phase4_producer.py --out build/phase4-transfer --target sm_86
       - name: Build the separate PyTorch adapter wheel
         run: uv build --wheel packages/tensor-torch --out-dir build/torch-wheel
+      - name: Build the C++ executor against the pinned PyTorch without a toolkit
+        env:
+          TENSOR_TORCH_BUILD_NATIVE: "1"
+        run: |
+          uv pip install "setuptools>=68" torch==2.14.0
+          uv build --wheel --no-build-isolation packages/tensor-torch --out-dir build/torch-native-wheel
       - name: Check installed PyTorch backend without compiler packages or GPU
         shell: bash
         run: |
@@ -101,6 +107,18 @@ jobs:
           fi
           uv pip install --python "$torch_python" dist/tensor_workspace-0.1.0-py3-none-any.whl build/torch-wheel/tensor_torch-0.1.0-*.whl torch==2.14.0
           "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer
+          uv pip install --python "$torch_python" --reinstall-package tensor-torch build/torch-native-wheel/tensor_torch-0.1.0-*.whl
+          "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer --require-native
+          TENSOR_TORCH_NATIVE=0 "$torch_python" tools/phase4_consumer_check.py build/phase2-transfer
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-torch-native-${{ matrix.os }}
+          path: |
+            build/torch-native-wheel/*.whl
+            build/phase4-transfer/*.tbin
+            build/phase4-transfer/producer.json
+          if-no-files-found: error
+          retention-days: 30
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-torch-${{ matrix.os }}

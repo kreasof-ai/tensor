@@ -5,6 +5,8 @@ import atexit
 from contextlib import nullcontext
 from collections import OrderedDict
 import ctypes as c
+import importlib
+import os
 import threading
 from pathlib import Path
 
@@ -14,6 +16,37 @@ try:
     from ._launch import submit as _submit
 except ImportError:
     _submit = None
+
+_executor = None
+if os.environ.get('TENSOR_TORCH_NATIVE', '1') != '0':
+    # The C++ executor uses Torch's non-stable ABI: only load a module built for
+    # this major/minor. Portable adapter wheels have no such module.
+    version = '_'.join(torch.__version__.split('.')[:2])
+    try:
+        _executor = importlib.import_module('._executor_' + version, __package__)
+    except ImportError:
+        pass
+
+
+def _native_plan(prepared, args, outputs, *, fixed):
+    if _executor is None:
+        return None
+    manifest = prepared.executable.manifest
+    names = manifest['outputs']
+    inputs = [d for d in manifest['arguments'] if d['name'] not in names]
+    tensors = tuple(v for d, v in zip(inputs, args) if buffer_argument(d))
+    positions = {d['name']: i for i, d in enumerate(d for d in inputs if buffer_argument(d))}
+    positions.update((name, len(tensors) + i) for i, name in enumerate(names))
+    bindings = []
+    for argument, descriptor in zip(prepared.arguments, manifest.get('abi', manifest['arguments'])):
+        if buffer_argument(descriptor):
+            bindings.append((positions[descriptor['name']], descriptor.get('alignment', 256)))
+        else:
+            bindings.append(c.string_at(c.addressof(argument) + type(argument).scalar.offset,
+                                        c.sizeof(SCALAR_TYPES[descriptor['dtype']])))
+    return _executor.Plan(prepared.executable.function.value,
+        (*prepared.launch['grid'], *prepared.launch['block'], prepared.launch['shared_memory_bytes']),
+        tensors, tuple(outputs), bindings, fixed)
 
 
 def _enqueue(executable, launch, stream, parameters):
@@ -335,10 +368,14 @@ class Prepared:
         self.streams = {stream.cuda_stream: stream}
         self.lock = threading.RLock()
         self.metadata = [(tuple(t.shape), tuple(t.stride()), t.dtype, t.device, t.data_ptr()) for t in self.tensors]
+        self._native = _native_plan(self, args, outputs, fixed=True)
 
     def __call__(self):
         if not self.device._open or self.executable._released:
             raise RuntimeError('prepared call belongs to a closed session')
+        if self._native is not None:
+            self._native()
+            return
         for tensor, (shape, stride, dtype, device, pointer) in zip(self.tensors, self.metadata):
             if (tensor.data_ptr() != pointer or tuple(tensor.shape) != shape or tuple(tensor.stride()) != stride
                     or tensor.dtype != dtype or tensor.device != device):
@@ -365,15 +402,21 @@ class LaunchPlan:
         self.positions = {d['name']:i for i,d in enumerate(self.inputs)}
         self.output_positions = {d['name']:i for i,d in enumerate(self.outputs)}
         self.kernel = kernel
+        self._native = _native_plan(self.prepared, args, self.prepared.outputs, fixed=False)
         # Plans rebind all pointers before launch; retain descriptors, not the
         # first invocation's PyTorch input/output allocations.
         self.prepared.args = self.prepared.tensors = self.prepared.outputs = ()
         self.prepared.metadata = []
+        # FX plans must not retain the initial tensors through the fixed executor.
+        self.prepared._native = None
 
     def __call__(self, *args):
         prepared = self.prepared
         if not prepared.device._open or prepared.executable._released:
             raise RuntimeError('launch plan belongs to a closed session')
+        if self._native is not None:
+            output = self._native(*args)
+            return self.fallback(*args) if output is None else output
         with prepared.lock, (torch.cuda.device(prepared.device.ordinal) if torch.cuda.current_device() != prepared.device.ordinal else nullcontext()):
             outputs = [self.allocate(shape,stride,dtype) if self.allocate is not None
                        else torch.empty(shape,dtype=dtype,device=device)

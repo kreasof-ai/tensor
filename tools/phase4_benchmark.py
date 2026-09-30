@@ -64,13 +64,13 @@ def main():
     torch.manual_seed(42)
     torch.cuda.init()
     stream=torch.cuda.Stream()
-    from tensor_torch.bridge import _submit
-    report={'native_submission':_submit is not None,'torch':torch.__version__,'device':torch.cuda.get_device_name(),'cases':[],
+    from tensor_torch.bridge import _submit, _executor
+    report={'native_submission':_submit is not None,'native_executor':_executor is not None,'torch':torch.__version__,'device':torch.cuda.get_device_name(),'cases':[],
             'timing':'median 7 batches; warm end-to-end includes Python submission, output allocation and stream completion; GPU times use 50-call CUDA graph replay',
             'targets':{'max_geomean_inductor_ratio':1.10,'max_case_inductor_ratio':1.25,'selected_eager_speedup':1.25,'prepared_submission_us':15,'cached_prepare_seconds':.1,'cold_pointwise_seconds':10,'cold_gemm_seconds':30}}
     package=Path(tt.__file__).parent
     report['implementation_sha256']={str(p.relative_to(package)):hashlib.sha256(p.read_bytes()).hexdigest()
-        for p in sorted(package.rglob('*')) if p.is_file() and p.suffix in {'.py','.c','.so','.pyd'}}
+        for p in sorted(package.rglob('*')) if p.is_file() and p.suffix in {'.py','.c','.cpp','.so','.pyd'}}
     report['benchmark_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     opts.out.parent.mkdir(parents=True,exist_ok=True)
     with torch.inference_mode(),torch.cuda.stream(stream):

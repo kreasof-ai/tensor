@@ -11,10 +11,46 @@ pip install dist/tensor_workspace-0.1.0-py3-none-any.whl build/torch-wheel/tenso
 
 The validated environment is Python 3.12, PyTorch 2.14, CUDA driver 595.91.07,
 and NVIDIA A10G (`sm_86`). Metadata permits PyTorch 2.8–2.14; other versions
-need their own execution validation. No PyTorch wheel is bundled with Tensor. The adapter wheel includes an optional
-small native CUDA submission shim built using Python headers alone; no CUDA
-headers or libraries are linked. A ctypes fallback remains available. Consumers
-never build the shim. Performance acceptance applies to wheels with the shim.
+need their own execution validation. No PyTorch wheel is bundled with Tensor.
+Portable adapter wheels include a small native CUDA submission shim built using
+Python headers alone. An additional C++ executor can be built against PyTorch
+2.14 to move allocation and tensor/stream handling out of Python. Neither build
+needs CUDA toolkit headers or libraries. Installed wheels need no host compiler.
+A Python/ctypes fallback remains available. The original Phase 4 performance
+acceptance applies to portable wheels with the submission shim.
+
+## Native execution
+
+On a builder with Python 3.12, PyTorch 2.14, setuptools, and a C++20 compiler:
+
+```sh
+TENSOR_TORCH_BUILD_NATIVE=1 uv build --wheel --no-build-isolation \
+  packages/tensor-torch --out-dir build/torch-native-wheel
+pip install build/torch-native-wheel/tensor_torch-0.1.0-*.whl
+```
+
+The installed adapter automatically selects the matching executor. Set
+`TENSOR_TORCH_NATIVE=0` before importing the adapter to use the portable path.
+The C++ wheel uses CPython and PyTorch's version-specific ABIs; it has a
+`cp312-cp312` tag, rather than the portable wheel's `cp312-abi3` tag. Other
+supported PyTorch versions use the portable path. CI builds and imports both
+variants on Linux and Windows, without a system CUDA toolkit.
+
+For compiled FX regions, the executor checks tensor metadata and alignment,
+allocates outputs through ATen, rebinds kernel pointers, selects the current
+PyTorch stream, records allocator usage, and submits through the driver.
+Fixed `kernel.prepare(...)` calls also use C++, including storage/metadata
+checks and copied scalar arguments. Their input and output tensors remain
+retained. FX launch plans retain descriptors and shape specifications, rather
+than the tensors from the first invocation. Argument storage is serialized
+across concurrent calls; the GIL is released during allocation and submission.
+
+Initial artifact loading, DLPack/ABI validation, graph specialization, and
+functional custom-operator registration remain in Python. Ordinary custom-op
+calls still use the Python bridge; use compiled FX regions or prepared calls
+for the native executor. The outer Dynamo call wrapper also remains in Python.
+The executor uses PyTorch's [generic device/stream interface](https://github.com/pytorch/pytorch/blob/v2.14.0/c10/core/impl/DeviceGuardImplInterface.h)
+to access the current stream without CUDA toolkit headers.
 
 ## Inference graphs
 

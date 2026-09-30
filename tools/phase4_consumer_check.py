@@ -10,6 +10,7 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('artifacts',type=Path)
 parser.add_argument('--gpu-cache',type=Path)
 parser.add_argument('--gpu-profiles',type=Path)
+parser.add_argument('--require-native',action='store_true')
 opts=parser.parse_args()
 
 original_import = builtins.__import__
@@ -24,8 +25,10 @@ import tensor_torch as tt
 from torch._dynamo.backends.registry import lookup_backend
 
 assert lookup_backend('tensor') is tt.backend
-from tensor_torch.bridge import _submit
+from tensor_torch.bridge import _submit, _executor
 assert _submit is not None, 'CI must produce the native submission shim'
+if opts.require_native:
+    assert _executor is not None, 'native wheel must import its matching C++ executor'
 with torch.inference_mode():
     args=(torch.randn(129),torch.randn(129))
     f=torch.compile(lambda a,b:torch.relu(a*2+b),backend='tensor',fullgraph=True)
@@ -58,13 +61,20 @@ if opts.gpu_profiles is not None:
     with torch.inference_mode():
         for name,function,shapes,dtype in profiles:
             args=[torch.randn(shape,device='cuda',dtype=dtype) for shape in shapes]
-            result=tt.load(opts.gpu_profiles/(name+'.tbin'))(*args)
+            kernel=tt.load(opts.gpu_profiles/(name+'.tbin'))
+            result=kernel(*args)
             torch.testing.assert_close(result,function(*args),atol=.002,rtol=.02)
             gpu_cases.append('transferred-'+name)
+            prepared=kernel.prepare(*args)
+            if opts.require_native:
+                assert prepared._native is not None
+            prepared()
+            torch.testing.assert_close(prepared.outputs[0],function(*args),atol=.002,rtol=.02)
+            gpu_cases.append('transferred-prepared-'+name)
 assert not {'tilelang','tvm','tvm_ffi'} & sys.modules.keys()
 installed={d.metadata['Name'].lower() for d in metadata.distributions()}
 assert not installed & {'tilelang','apache-tvm-ffi'}
 print(json.dumps({'torch':torch.__version__,'adapter':tt.__version__,
-                  'native_submission':True,'entry_point':True,'cpu_fallback':True,'fake_cuda_custom_op':True,
+                  'native_submission':True,'native_executor':_executor is not None,'entry_point':True,'cpu_fallback':True,'fake_cuda_custom_op':True,
                   'compiler_packages':False,'gpu_cases':gpu_cases,
                   'gpu_execution':'passed' if gpu_cases else 'not available on CI'}))
