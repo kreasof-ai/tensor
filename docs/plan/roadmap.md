@@ -4,7 +4,10 @@ Derived from proposal §22, reordered by what the Phase 0 evidence actually supp
 The proposal's phase list is sound; the changes below are about *sequencing* and about
 being explicit about which work is blocked on hardware.
 
-Current status: **Phases 0–3 complete within their measured profiles.**
+Current status: **Phases 0–6 complete within their measured profiles.**
+Phase 6 closes the agreed standalone CUDA nanoGPT training profile, with manual
+backward, bounded fusion and explicit autotuning. Standalone autograd and general
+tensor algebra remain deferred; see the [training report](../research/phase6-nanogpt.md).
 [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) selects NVRTC as the default
 CUDA compiler and the independent v3 module envelope.
 [ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md) completes
@@ -329,14 +332,33 @@ WebGPU capabilities rather than the native TileLang ROCm path.
 
 ---
 
-## Phase 6 — Ecosystem
+## Phase 6 — Ecosystem *(complete: standalone CUDA nanoGPT training profile)*
 
-Only after the core works. As §22 says.
+At the user's request, scope is a concrete ten-update training workload and a
+public manual backward interface; standalone autograd remains deferred.
+`ManualFunction` defines saved-buffer lifetime, gradient metadata and context
+consumption without Torch. `tensor.nn.NanoGPT` executes the 12-layer/12-head/
+width-768 model, including embedding/scatter gradients, tied weights, LayerNorm,
+linear and dense causal attention backward, GELU, cross-entropy, clipping and
+AdamW, using only Tensor and NumPy on the consumer.
 
-The **tensor algebra and `nn` layers** discussed as a Bun-style "batteries included" surface
-were explicitly *deferred*, not rejected — see ADR 0006. They are gated on E4, because
-without fusible modules a from-scratch tensor library would be slower than PyTorch eager.
-The prototyping surface is the version of that idea that survives a negative E4.
+The NVRTC producer builds 54 specializations and searches three schedules for
+each of 18 GEMM/fused-GEMM shapes. Static buffer reuse and projection/GELU and
+projection/residual epilogues provide bounded fusion. Ten full-model updates
+pass independent parameter-gradient checks, optimizer checks on identical
+gradients, independent eager loss trajectories and a clean installed consumer.
+The A10G benchmark measures 36.58 ms/update versus 38.34 ms/update for compiled
+Torch with native SDPA and fused AdamW, or 1.048× speedup. No universal speed
+gate or convergence claim is adopted.
+
+[ADR 0016](../adr/0016-manual-training-and-bounded-autotuning.md), the
+[manual interface guide](../manual-backward.md),
+[workload contract](phase6-nanogpt.md) and
+[acceptance report](../research/phase6-nanogpt.md) define the evidence and limits.
+The general tensor algebra/`nn` surface from ADR 0006, arbitrary user-module
+fusion, standalone autograd, FlashAttention backward and WebGPU training remain
+separate extensions. This completion does not expand Phase 4's inference-first
+Torch adapter or Phase 5's portable inference profile.
 
 ---
 

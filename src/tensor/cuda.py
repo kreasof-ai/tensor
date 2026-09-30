@@ -40,6 +40,7 @@ class _Driver:
             "cuStreamDestroy_v2": [ptr],
             "cuStreamGetCtx": [ptr, c.POINTER(ptr)],
             "cuEventCreate": [c.POINTER(ptr), uint], "cuEventRecord": [ptr, ptr],
+            "cuEventSynchronize": [ptr], "cuEventElapsedTime": [c.POINTER(c.c_float), ptr, ptr],
             "cuEventDestroy_v2": [ptr], "cuStreamWaitEvent": [ptr, ptr, uint],
             "cuPointerGetAttribute": [ptr, integer, address],
             "cuMemAlloc_v2": [c.POINTER(address), size], "cuMemFree_v2": [address],

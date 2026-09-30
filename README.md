@@ -5,7 +5,7 @@ a capability-based provider model, and first-class compiled tensor modules.
 
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
-**Status: Phases 0–3 complete within their measured profiles.**
+**Status: Phases 0–6 complete within their measured profiles.**
 CUDA builds default to a pinned NVRTC bundle, with no installed CUDA toolkit
 or host compiler required. CUDA and a CPU validation provider share call ABI
 1.1, including executable/event identities and zero external workspace;
@@ -57,6 +57,16 @@ the required FP16 feature. The [Linux-to-Windows AMD artifact transfer](docs/res
 passes all 33 checks and the strict audit, closing the two-host acceptance gate. Linux/Windows
 GPU-free producers and Windows-to-Linux execution CI pass; see the
 [Phase 5 validation report](docs/research/phase5-webgpu.md).
+
+Phase 6 adds a public [manual backward interface](docs/manual-backward.md) and
+standalone CUDA nanoGPT training: ten complete updates of a 124M-parameter model
+with only Tensor and NumPy installed. NVRTC builds 54 kernel specializations;
+bounded fusion and explicit autotuning yield **36.58 ms/update on A10G**, versus
+**38.34 ms/update** for compiled Torch with native SDPA and fused AdamW.
+Numerical gradients, optimizer state and clean-consumer execution pass. See the
+[training report](docs/research/phase6-nanogpt.md) for all baselines and exact scope.
+Standalone autograd, general graph fusion, FlashAttention backward and WebGPU
+training remain deferred.
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.

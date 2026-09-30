@@ -1,0 +1,85 @@
+name: Manual training artifact producers
+
+on:
+  push:
+    paths: ['src/**', 'tools/phase6_*.py', 'tests/test_manual.py', 'tests/test_tuning.py', 'tests/test_phase6.py', 'pyproject.toml', 'uv.lock', '.github/workflows/phase6-training.yml']
+  pull_request:
+    paths: ['src/**', 'tools/phase6_*.py', 'tests/test_manual.py', 'tests/test_tuning.py', 'tests/test_phase6.py', 'pyproject.toml', 'uv.lock', '.github/workflows/phase6-training.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  producer:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            python: build/consumer/bin/python
+          - os: windows-latest
+            python: build/consumer/Scripts/python.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      TENSOR_NVRTC_HOME: ${{ github.workspace }}/build/nvrtc-12.9
+      CUDA_HOME: ${{ github.workspace }}/build/no-system-toolkit
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: '0.12.9'
+      - name: Install pinned producer and local NVRTC
+        run: |
+          uv sync --locked
+          uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
+      - name: Check manual contracts and compiler-free imports
+        run: uv run --locked python -m pytest tests/test_manual.py tests/test_tuning.py tests/test_phase6.py -o addopts='' -q
+      - name: Compile all diagnostic training operators without a GPU
+        run: uv run --locked python tools/phase6_producer.py --diagnostic --target sm_86 --out build/phase6-training
+      - name: Build matching runtime wheel
+        run: uv build --wheel --out-dir build/wheel
+      - name: Check clean installed runtime and artifact coverage
+        shell: bash
+        run: |
+          uv venv --python 3.12 build/consumer
+          uv pip install --python '${{ matrix.python }}' build/wheel/tensor_workspace-0.1.0-py3-none-any.whl
+          '${{ matrix.python }}' - <<'PY'
+          from pathlib import Path
+          from importlib.metadata import distributions
+          import hashlib
+          import importlib.abc
+          import json
+          import sys
+          class Guard(importlib.abc.MetaPathFinder):
+              def find_spec(self, fullname, path=None, target=None):
+                  if fullname.split('.')[0] in {'torch','tilelang','tvm','tvm_ffi','triton'}:
+                      raise ImportError(fullname)
+          sys.meta_path.insert(0, Guard())
+          import tensor
+          from tensor.nn import GPTConfig, NanoGPT, ManualFunction
+          from tensor.nn.nanogpt import requirements
+          from tensor.artifact import read_artifact
+          root=Path('build/phase6-training')
+          manifest=json.loads((root/'training.json').read_text())
+          assert set(requirements(GPTConfig(**manifest['config'])))==set(manifest['kernels'])
+          for name, expected in manifest['runtime_source_sha256'].items():
+              assert hashlib.sha256((Path(tensor.__file__).parent/name).read_bytes()).hexdigest()==expected
+          for record in manifest['kernels'].values():
+              path=root/record['artifact']
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==record['sha256']
+              metadata,_=read_artifact(path)
+              assert metadata['kind']=='cubin' and metadata['compiler']['name']=='nvrtc'
+          assert {d.metadata['Name'].lower() for d in distributions()}=={'tensor-workspace','numpy'}
+          PY
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-phase6-${{ matrix.os }}
+          path: |
+            build/phase6-training/training.json
+            build/phase6-training/training.tpack
+            build/phase6-training/module/artifacts/*.tbin
+            build/wheel/*.whl
+          if-no-files-found: error
+          retention-days: 30

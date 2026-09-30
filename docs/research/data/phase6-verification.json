@@ -1,0 +1,54 @@
+{
+  "schema": "tensor.phase6-verification.v1",
+  "status": "passed",
+  "base_commit": "8400c2c27d04cf7d00d81cc5376b07b2db4f23f5",
+  "source_state": "implementation files measured before commit; source hashes identify exact contents",
+  "source_sha256": {
+    ".github/workflows/phase6-training.yml": "519f0ce3b54abc23b7f74ef4936b8ee9a7aa992674ed80cc5eb29b0946752601",
+    "src/tensor/__init__.py": "8ef379ef1cbdba4ee48f519c989568b01257f8f5f4a4259264569521a15e9b4f",
+    "src/tensor/cuda.py": "82e1097b138534d6b225fc7258210d07795510f3e17986e560e58aa00124d230",
+    "src/tensor/manual.py": "5adfea9f30c1099b45446f24fa41e13c0dc6a30133ee6df1efe82e4ffed3435a",
+    "src/tensor/nn/__init__.py": "c905835d1db67ca6cf9d81147accf606c988ac75a07fa007db158c0a5dbec542",
+    "src/tensor/nn/kernels.py": "2d208ac951e41f0e80e164939b2bff25dc8657c4bc6a828fbe1717d60be875f3",
+    "src/tensor/nn/nanogpt.py": "33b559def94202409d10bf9363f682bad4159fa240bba9782b43bc9708565f74",
+    "src/tensor/tuning.py": "3c18f82f8ce914302c3b4d8f40e80bba336142154c497596c0dfc851c8e23b0f",
+    "tests/test_manual.py": "f452bfd9341c1fc21f4f752a54bb035c877c29b0c9f70cae88d06e9601d0e9f2",
+    "tests/test_phase6.py": "83347ae5c34dd277139fb56750b7f08eac34f4dba3cde22f892d51e7088c64e2",
+    "tests/test_tuning.py": "0ca9ec656cf9f3ac5f3ff955e2e2e3432808458552d18f72bab8772c4258efbc",
+    "tools/phase6_benchmark.py": "202615b1b13a4502e3b5d1c1b5be5a63a6a824422cde740e181ee6628d4cd7da",
+    "tools/phase6_consumer.py": "f8c281ac7e6c9bb4b69a40076f9406ddf4347d84cd235a58fecb5c41fac5d9d6",
+    "tools/phase6_producer.py": "c5fda16be927a7c0a7a1f0ae3cb04ad1c438c2fefb0e0935777735defdafa21d",
+    "tools/phase6_reference.py": "5ba2f1a1dc60c8239b8aa232617da7dda67173024e9857c080b0a95dba978c0b",
+    "tools/phase6_validate.py": "aa5a91a055b04ed08442982e57515602bf95f9a64d074cb28705a3bd59b8823f",
+    "tools/plot_phase6_training.py": "5611f0934ebbe390acd8b0512aa3aa91fa16e7bce8771b7d6084d3a61e5b4eac"
+  },
+  "regression": {
+    "passed": 195,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 185.78,
+    "all_opt_in_flags_enabled": true
+  },
+  "kernel_sources_regenerated_and_matched": 54,
+  "gemm_shapes_tuned": 18,
+  "schedules_per_shape": 3,
+  "runtime_wheel_sha256": "fa155ede36071ff686939e3a4f30832e9cc31e2df95f00769b257981e0f36d6e",
+  "runtime_wheel_source_fingerprints_match": true,
+  "training_tpack_sha256": "408ff0e89e25f9f0eac0473e4e7e2f667946df67a8d9e6830ea3abf0ba76d19b",
+  "training_manifest_sha256": "f4b139ced0d59065d7a2109b282920927611178b4406396b9b7387de2f937b97",
+  "validation_precision_flags": {
+    "allow_tf32": false,
+    "allow_fp16_reduced_precision_reduction": false
+  },
+  "retained_evidence_sha256": {
+    "phase6-clean-consumer.json": "af7f405d0581c5e29711ecc261344295b1f335bbd17b00ce886a37cca71e1eff",
+    "phase6-diagnostic-validation.json": "a09b700d9033269fe4c08742e0f34879ef30ac16c1f441f691138c3ac4f2ab7b",
+    "phase6-nanogpt-benchmark.json": "3db4ee88fa19ab9ffa14ed4d27f6e97774a3d17c08a97ccec4a57916dde0fa56",
+    "phase6-nanogpt-latency.png": "2cc3ab5ad8e399e39bdcd09d974c1c34aeaba2fb7779386b89327cfd5c524f6b",
+    "phase6-nanogpt-latency.svg": "3999f30bf9c46c76fe9d23a4522ae0691a74711548f1f62d0dbcee0284971730",
+    "phase6-nanogpt-producer.json": "f4b139ced0d59065d7a2109b282920927611178b4406396b9b7387de2f937b97",
+    "phase6-nanogpt-validation.json": "a742043fe97bd11052224272f999c9b0aed30c36e8da156294a5f1b1bb43e2dc",
+    "phase6-regression.xml": "30ad3cda803c0a70617e251bff3a44b495881cb45d5f0aa1287ae3507544759a"
+  }
+}
