@@ -284,7 +284,10 @@ def test_attention_shared_operand_and_unaligned_storage_fallback(tmp_path):
     backend=tt.Backend(cache_dir=tmp_path)
     function=lambda q:torch.nn.functional.scaled_dot_product_attention(q,q,q)
     shape=(1,2,128,64)
-    with torch.inference_mode():
+    from torch.nn.attention import sdpa_kernel,SDPBackend
+    # Flash SDPA itself assumes vector-aligned pointers; use its math provider
+    # to validate framework fallback for a deliberately unaligned view.
+    with torch.inference_mode(),sdpa_kernel(SDPBackend.MATH):
         compiled=torch.compile(function,backend=backend,fullgraph=True,dynamic=False)
         aligned=torch.randn(shape,device='cuda',dtype=torch.float16)
         torch.testing.assert_close(compiled(aligned),function(aligned),atol=.002,rtol=.02)
