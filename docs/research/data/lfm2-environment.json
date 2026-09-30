@@ -1,0 +1,39 @@
+{
+  "schema": "tensor.lfm2-environment.v1",
+  "date_utc": "2026-09-30T23:12:57Z",
+  "platform": "Linux-6.12.103-127.188.amzn2023.x86_64-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "nvidia_smi": "NVIDIA A10G, 595.91.07, 23028 MiB",
+  "producer_versions": {
+    "tilelang": "0.1.14",
+    "apache-tvm-ffi": "0.1.12",
+    "numpy": "2.5.3",
+    "torch": "2.14.0",
+    "regex": "2026.9.29",
+    "nvidia-cublas-cu12": "12.9.2.10",
+    "nvidia-cuda-nvrtc-cu12": "12.9.86"
+  },
+  "llama_cpp_commit": "f7b384c1e5c5b2c5b321a4a7cefea04b15b54cb7",
+  "llama_libraries_sha256": {
+    "libggml-base.so": "ba9cd5e79e75b37f03b855a4562129d39e9fd6972b8e85e4dad26eba28006bba",
+    "libggml-cpu.so": "3204147640ea4761eae872cc73b4e7603de673f5e1a2b0708799113370fe3a3c",
+    "libggml-cuda.so": "24180561587d255aca5749f86b73319537ea714fa1c9bde35dd6564ff73aad8e",
+    "libggml.so": "bbdc9a0be3c48a7fd1e7de62b6b42b59ad7b5ad5b54e2a79685c4e9498ff6f9d",
+    "libllama.so": "8c533bc3f9c7c2bcbff0db4376ee8c4fb40787233dec567deec319e3beb09861",
+    "libllama-common.so": "97c7ff948f72099c9d086b90be8eebe969c79f6a8e401aef8946929f4b5dd5d8",
+    "libmtmd.so": "5a1f77d8e4d110b76fc2460dfe684ef880ec6c5200bfed6155e9cb209fd99307",
+    "libllama-server-impl.so": "ec783752a10dd751503ad84ca08e47609e17068b8b6cb38e69027004971ddcae",
+    "libllama-cli-impl.so": "83175b8cffcd07bcffc1fac58bf3979402f36bbcc30c0c2c557300e4dee7ce97",
+    "libllama-bench-impl.so": "3eda0b5aa0f009d95a2fb904145d1c12a1d6b10c4f5445a420cc8bf516dd8cda"
+  },
+  "llama_build": {
+    "type": "Release",
+    "CUDA_ARCHITECTURES": "86",
+    "GGML_CUDA": true,
+    "GGML_NATIVE": true,
+    "flash_attention": true,
+    "cuda_graphs": true,
+    "cpu_threads": 4
+  },
+  "helper_sha256": "85dc02320538c13b311a1b037a56b0a4ca9e3214a08fe7d2f444c1e25dd2778a"
+}

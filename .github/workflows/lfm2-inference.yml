@@ -1,0 +1,70 @@
+name: Standalone LFM2 package and NVRTC plans
+on:
+  push:
+    paths: ["packages/tensor-llm/**", "benchmarks/lfm2/**", "src/**", "pyproject.toml", "uv.lock", ".github/workflows/lfm2-inference.yml"]
+  pull_request:
+    paths: ["packages/tensor-llm/**", "benchmarks/lfm2/**", "src/**", "pyproject.toml", "uv.lock", ".github/workflows/lfm2-inference.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  producer:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      TENSOR_NVRTC_HOME: ${{ github.workspace }}/build/nvrtc-12.9
+      CUDA_HOME: ${{ github.workspace }}/build/no-system-toolkit
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: "0.12.9"
+      - run: uv sync --locked
+      - run: uv run --locked python -m pytest packages/tensor-llm/tests -o addopts='' -q
+      - run: uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
+      - run: uv run --locked python benchmarks/lfm2/diagnostic.py --out build/lfm2-diagnostic.gguf
+      - run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-diagnostic --context 384 --target sm_86
+      - run: uv build --wheel --out-dir build/lfm2-wheels
+      - run: uv build --wheel packages/tensor-llm --out-dir build/lfm2-wheels
+      - name: Inspect in an isolated consumer with four distributions
+        shell: bash
+        run: |
+          uv venv --python 3.12 build/consumer
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            consumer_python=build/consumer/Scripts/python.exe
+          else
+            consumer_python=build/consumer/bin/python
+          fi
+          uv pip install --python "$consumer_python" build/lfm2-wheels/*.whl
+          "$consumer_python" - <<'PY'
+          import importlib.metadata as metadata
+          import sys
+          from tensor_llm import GGUF, Tokenizer
+          from tensor_llm.config import Config
+          from tensor_llm.provenance import implementation_hashes
+          import json
+          from pathlib import Path
+          g=GGUF('build/lfm2-diagnostic.gguf')
+          assert len(Config.from_gguf(g).layers)==2
+          t=Tokenizer(g.metadata)
+          assert t.decode(t.encode('Hello, 世界!',add_bos=False))=='Hello, 世界!'
+          manifest=json.loads(Path('build/lfm2-diagnostic/inference.json').read_text())
+          assert manifest['implementation']==implementation_hashes()
+          assert {d.metadata['Name'].lower() for d in metadata.distributions()}=={'tensor-workspace','tensor-llm','numpy','regex'}
+          assert not {'tilelang','tvm','tvm_ffi','torch','triton','wgpu'} & sys.modules.keys()
+          PY
+          "$consumer_python" -m tensor_llm inspect --model build/lfm2-diagnostic.gguf
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-lfm2-${{ matrix.os }}
+          path: |
+            build/lfm2-diagnostic.gguf
+            build/lfm2-diagnostic/inference.json
+            build/lfm2-diagnostic/artifacts/*.tbin
+            build/lfm2-wheels/*.whl
+          if-no-files-found: error
+          retention-days: 30

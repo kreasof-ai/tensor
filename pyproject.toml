@@ -35,14 +35,16 @@ p0 = [
 dev = [
     "pytest>=8.0",
     "tensor-nn==0.1.0",
+    "tensor-llm==0.1.0",
 ]
 
 [tool.uv.workspace]
-members = ["packages/tensor-nn"]
+members = ["packages/tensor-nn", "packages/tensor-llm"]
 
 [tool.uv.sources]
 tensor-workspace = { workspace = true }
 tensor-nn = { workspace = true }
+tensor-llm = { workspace = true }
 
 [tool.uv]
 # TileLang's transitive dependencies are recorded in uv.lock. The compiler-free
@@ -50,6 +52,6 @@ tensor-nn = { workspace = true }
 default-groups = ["p0", "dev"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "packages/tensor-nn/tests", "packages/tensor-torch/tests"]
+testpaths = ["tests", "packages/tensor-nn/tests", "packages/tensor-torch/tests", "packages/tensor-llm/tests"]
 addopts = "-q"
 pythonpath = ["."]

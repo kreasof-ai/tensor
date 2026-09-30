@@ -372,3 +372,24 @@ Torch adapter or Phase 5's portable inference profile.
   questions were guesses for long enough.
 - **Re-verify ground truth at each phase boundary.** The proposal already had one stale
   claim. Knowledge of this stack has a shelf life measured in weeks.
+
+## Standalone inference workload — LFM2.5-2.6B
+
+The next concrete workload runs LiquidAI LFM2.5-2.6B GGUF checkpoints with the
+optional `tensor-llm` package and compares the complete single-sequence API with
+llama.cpp CUDA. The initial profile covers F16, Q4_0 and Q4_K_M, including mixed
+Q6_K matrices, the tokenizer, convolution history, attention caches, batched
+prompt prefill, one-token decode and greedy generation. NVRTC produces matching
+SM86 `.tbin` kernels; an installed four-distribution consumer replays CUDA graphs
+without Torch or compiler packages.
+
+The [workload report](../research/lfm2-inference.md) retains independent GGML
+block checks, native tokenization, llama.cpp logit comparisons, an independent
+mixed-precision reference, reset/chunk/cache boundary checks and latency through
+8K prompt tokens. Quantized activation arithmetic differs from llama.cpp, so
+numerical validation distinguishes those precision contracts. Performance is
+measured rather than assumed; there is no parity speed gate for this initial
+engine. Persistent megakernels, arbitrary GGUF architectures, continuous batching,
+multi-turn/tools, stochastic sampling and CPU/WebGPU model execution remain
+separate extensions. This milestone does not change the completed Phase 0–6
+profiles or their historical evidence.

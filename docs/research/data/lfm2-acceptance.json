@@ -1,0 +1,44 @@
+{
+  "schema": "tensor.lfm2-acceptance.v1",
+  "status": "passed",
+  "full_regression": {
+    "passed": 229,
+    "skipped": 0,
+    "seconds": 195.57,
+    "command": "python -m pytest -o addopts= -q",
+    "enabled_flags": {
+      "TENSOR_P0_CUDA": "1",
+      "TENSOR_P1_CUDA": "1",
+      "TENSOR_P2_CUDA": "1",
+      "TENSOR_P3_CUDA": "1",
+      "TENSOR_P4_CUDA": "1",
+      "TENSOR_ATTENTION_CUDA": "1",
+      "TENSOR_DIRECT_CUDA": "1",
+      "TENSOR_WEBGPU": "1",
+      "TENSOR_PHASE6": "1",
+      "TENSOR_LFM2_CUDA": "1"
+    },
+    "phase6_diagnostic_bundle": "build/reorg-diagnostic",
+    "log_sha256": "417a260c889a3c2ff8189089630796601bc68047192f414fc6c275a34757ab86"
+  },
+  "formats": [
+    "F16",
+    "Q4_0",
+    "Q4_K_M"
+  ],
+  "logit_steps_per_format": 23,
+  "clean_consumer_distributions": [
+    "numpy",
+    "regex",
+    "tensor-llm",
+    "tensor-workspace"
+  ],
+  "independent_reference_relative_rms_limit": 0.01,
+  "independent_reference_cosine_minimum": 0.9999,
+  "max_observed_relative_rms": 0.0014456354547291994,
+  "diagnostic_producer_kernels": 31,
+  "generation_eos_all_formats": true,
+  "performance_cases_per_format": 4,
+  "performance_repeats": 5,
+  "forced_decode_tokens": 256
+}

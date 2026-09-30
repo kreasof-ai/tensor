@@ -18,10 +18,12 @@ src/tensor/
 packages/
   tensor-torch/  PyTorch adapter, native submission code and adapter tests
   tensor-nn/     manual training templates, nanoGPT plan and training tests
+  tensor-llm/    GGUF/tokenizer and standalone LFM2 inference templates
 
 benchmarks/
   inference/    Torch/TileLang/Triton comparisons, attention and WebGPU scaling
   nanogpt/      producer, independent reference, validation, consumer, benchmark
+  lfm2/         pinned GGUF download, producer, references, consumer, comparison
 
 scripts/
   validation/   artifact transfer, registry and provider acceptance commands
@@ -53,9 +55,9 @@ uv sync --locked
 uv run --locked python -m pytest
 ```
 
-The uv workspace includes `packages/tensor-nn`, installed through the development
-group. Compiler packages retain the existing pinned versions. Torch/Triton and
-native wgpu are separately installed dependencies for their opt-in validation
+The uv workspace includes `packages/tensor-nn` and `packages/tensor-llm`, installed
+through the development group. Compiler packages retain the existing pinned
+versions. Torch/Triton and native wgpu are separately installed dependencies for their opt-in validation
 paths. Use `uv run --no-sync` when preserving those development additions.
 The Torch adapter remains independently installable:
 
@@ -64,7 +66,7 @@ uv pip install --no-deps -e packages/tensor-torch
 ```
 
 Core tests mirror the core groups. Package tests live beside their implementation;
-the root pytest configuration includes both optional packages. Phase 0 contracts
+the root pytest configuration includes all optional packages. Phase 0 contracts
 are grouped under `tests/legacy`, with the experiments themselves preserved.
 
 ## Wheels and standalone training
@@ -108,3 +110,12 @@ lists replacements for retired imports and commands.
 Historical reports retain the distribution counts and source hashes they
 actually measured. Their original wheels remain the reproducible consumer for
 fingerprint-bound artifacts; import cleanup does not rewrite past evidence.
+
+## Standalone GGUF inference
+
+The optional [Tensor LLM package](../packages/tensor-llm/README.md) runs the
+LFM2.5-2.6B hybrid convolution/attention architecture from packed GGUF weights
+and an NVRTC-produced kernel bundle. Its consumer has four distributions:
+Tensor, Tensor LLM, NumPy and regex. Workload recipes and the independent
+llama.cpp/Torch references stay under `benchmarks/lfm2`; neither enters core.
+See the [inference comparison](research/lfm2-inference.md) for the measured profile.

@@ -1,0 +1,456 @@
+{
+  "schema": "tensor.lfm2-validation.v1",
+  "status": "passed",
+  "model_sha256": "e1a61bf937bc60726e18626e97f7ee9bfd2574d95744c2ed909de98b78006fbe",
+  "block_checks": [
+    {
+      "type": "Q4_0",
+      "tensor": "blk.0.ffn_down.weight",
+      "row": 0,
+      "max_error": 0.0
+    },
+    {
+      "type": "Q4_0",
+      "tensor": "blk.0.ffn_down.weight",
+      "row": 1,
+      "max_error": 0.0
+    },
+    {
+      "type": "Q4_0",
+      "tensor": "blk.0.ffn_down.weight",
+      "row": 2047,
+      "max_error": 0.0
+    },
+    {
+      "type": "Q6_K",
+      "tensor": "token_embd.weight",
+      "row": 0,
+      "max_error": 0.0
+    },
+    {
+      "type": "Q6_K",
+      "tensor": "token_embd.weight",
+      "row": 1,
+      "max_error": 0.0
+    },
+    {
+      "type": "Q6_K",
+      "tensor": "token_embd.weight",
+      "row": 127999,
+      "max_error": 0.0
+    }
+  ],
+  "tokenization_cases": 5,
+  "steps": [
+    {
+      "step": 0,
+      "position": 20,
+      "max_error": 0.5190343856811523,
+      "rmse": 0.09754807502031326,
+      "reference_top1": 597,
+      "tensor_top1": 597,
+      "cosine": 0.9996815550533386
+    },
+    {
+      "step": 1,
+      "position": 21,
+      "max_error": 1.9198665618896484,
+      "rmse": 0.38708701729774475,
+      "reference_top1": 4695,
+      "tensor_top1": 4695,
+      "cosine": 0.989311477867984
+    },
+    {
+      "step": 2,
+      "position": 22,
+      "max_error": 0.598324179649353,
+      "rmse": 0.10127837210893631,
+      "reference_top1": 1027,
+      "tensor_top1": 1027,
+      "cosine": 0.99959655160038
+    },
+    {
+      "step": 3,
+      "position": 23,
+      "max_error": 0.6429710388183594,
+      "rmse": 0.11775561422109604,
+      "reference_top1": 48771,
+      "tensor_top1": 48771,
+      "cosine": 0.9989084269873097
+    },
+    {
+      "step": 4,
+      "position": 24,
+      "max_error": 0.5817925930023193,
+      "rmse": 0.10375452041625977,
+      "reference_top1": 17913,
+      "tensor_top1": 17913,
+      "cosine": 0.9993544671795908
+    },
+    {
+      "step": 5,
+      "position": 25,
+      "max_error": 0.7809691429138184,
+      "rmse": 0.10177085548639297,
+      "reference_top1": 2292,
+      "tensor_top1": 2292,
+      "cosine": 0.9994036801439561
+    },
+    {
+      "step": 6,
+      "position": 26,
+      "max_error": 0.7485713958740234,
+      "rmse": 0.13168540596961975,
+      "reference_top1": 708,
+      "tensor_top1": 708,
+      "cosine": 0.9989609445661334
+    },
+    {
+      "step": 7,
+      "position": 27,
+      "max_error": 0.6142349243164062,
+      "rmse": 0.11333082616329193,
+      "reference_top1": 898,
+      "tensor_top1": 898,
+      "cosine": 0.9995531116170844
+    },
+    {
+      "step": 8,
+      "position": 28,
+      "max_error": 0.5704460144042969,
+      "rmse": 0.12826751172542572,
+      "reference_top1": 898,
+      "tensor_top1": 898,
+      "cosine": 0.9994033831030494
+    },
+    {
+      "step": 9,
+      "position": 29,
+      "max_error": 1.1717610359191895,
+      "rmse": 0.2692699432373047,
+      "reference_top1": 440,
+      "tensor_top1": 440,
+      "cosine": 0.9949428318026526
+    },
+    {
+      "step": 10,
+      "position": 127,
+      "max_error": 0.2957630157470703,
+      "rmse": 0.05139748379588127,
+      "reference_top1": 2628,
+      "tensor_top1": 2628,
+      "cosine": 0.9998182342034736
+    },
+    {
+      "step": 11,
+      "position": 128,
+      "max_error": 0.740694522857666,
+      "rmse": 0.16317985951900482,
+      "reference_top1": 1542,
+      "tensor_top1": 1542,
+      "cosine": 0.9997762399501995
+    },
+    {
+      "step": 12,
+      "position": 128,
+      "max_error": 0.2819347381591797,
+      "rmse": 0.056893207132816315,
+      "reference_top1": 309,
+      "tensor_top1": 309,
+      "cosine": 0.999945933413726
+    },
+    {
+      "step": 13,
+      "position": 129,
+      "max_error": 0.6472086906433105,
+      "rmse": 0.13968515396118164,
+      "reference_top1": 1542,
+      "tensor_top1": 1542,
+      "cosine": 0.9997301839992321
+    },
+    {
+      "step": 14,
+      "position": 129,
+      "max_error": 0.4261314868927002,
+      "rmse": 0.10102353990077972,
+      "reference_top1": 59338,
+      "tensor_top1": 59338,
+      "cosine": 0.9991700628173054
+    },
+    {
+      "step": 15,
+      "position": 130,
+      "max_error": 0.5754222869873047,
+      "rmse": 0.1208798885345459,
+      "reference_top1": 1542,
+      "tensor_top1": 1542,
+      "cosine": 0.9998724331103818
+    },
+    {
+      "step": 16,
+      "position": 512,
+      "max_error": 0.26822733879089355,
+      "rmse": 0.07199861854314804,
+      "reference_top1": 309,
+      "tensor_top1": 309,
+      "cosine": 0.9998996596945822
+    },
+    {
+      "step": 17,
+      "position": 513,
+      "max_error": 0.7783832550048828,
+      "rmse": 0.21893629431724548,
+      "reference_top1": 1542,
+      "tensor_top1": 1542,
+      "cosine": 0.9994909887627507
+    },
+    {
+      "step": 18,
+      "position": 2048,
+      "max_error": 0.21039724349975586,
+      "rmse": 0.043215230107307434,
+      "reference_top1": 309,
+      "tensor_top1": 309,
+      "cosine": 0.9999289340353964
+    },
+    {
+      "step": 19,
+      "position": 2049,
+      "max_error": 1.0606911182403564,
+      "rmse": 0.286062628030777,
+      "reference_top1": 1542,
+      "tensor_top1": 1542,
+      "cosine": 0.9977992623779531
+    },
+    {
+      "step": 20,
+      "position": 8192,
+      "max_error": 0.3138008117675781,
+      "rmse": 0.07981773465871811,
+      "reference_top1": 309,
+      "tensor_top1": 309,
+      "cosine": 0.9999095234245678
+    },
+    {
+      "step": 21,
+      "position": 8193,
+      "max_error": 0.8981428146362305,
+      "rmse": 0.1731877475976944,
+      "reference_top1": 1542,
+      "tensor_top1": 1542,
+      "cosine": 0.9983011590494673
+    },
+    {
+      "step": 22,
+      "position": 20,
+      "max_error": 0.6677989959716797,
+      "rmse": 0.10634640604257584,
+      "reference_top1": 597,
+      "tensor_top1": 597,
+      "cosine": 0.9996254757163673
+    }
+  ],
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "owned_device_bytes": 1754810892,
+  "launches_per_decode": 359,
+  "independent_reference": [
+    {
+      "step": 0,
+      "position": 20,
+      "normalized_rmse": 0.0010450751287862659,
+      "cosine": 0.999999478702803,
+      "max_error": 0.026250839233398438,
+      "top1_equal": true
+    },
+    {
+      "step": 1,
+      "position": 21,
+      "normalized_rmse": 0.0013837910955771804,
+      "cosine": 0.9999990426233887,
+      "max_error": 0.01965475082397461,
+      "top1_equal": true
+    },
+    {
+      "step": 2,
+      "position": 22,
+      "normalized_rmse": 0.0002842017565853894,
+      "cosine": 0.9999999618008375,
+      "max_error": 0.0072727203369140625,
+      "top1_equal": true
+    },
+    {
+      "step": 3,
+      "position": 23,
+      "normalized_rmse": 0.00032848824048414826,
+      "cosine": 0.9999999462506143,
+      "max_error": 0.006656169891357422,
+      "top1_equal": true
+    },
+    {
+      "step": 4,
+      "position": 24,
+      "normalized_rmse": 0.0003519028250593692,
+      "cosine": 0.9999999439575771,
+      "max_error": 0.005818068981170654,
+      "top1_equal": true
+    },
+    {
+      "step": 5,
+      "position": 25,
+      "normalized_rmse": 0.00034872491960413754,
+      "cosine": 0.9999999413217896,
+      "max_error": 0.006876945495605469,
+      "top1_equal": true
+    },
+    {
+      "step": 6,
+      "position": 26,
+      "normalized_rmse": 0.0005864190170541406,
+      "cosine": 0.9999998450748911,
+      "max_error": 0.006826162338256836,
+      "top1_equal": true
+    },
+    {
+      "step": 7,
+      "position": 27,
+      "normalized_rmse": 0.00031219315133057535,
+      "cosine": 0.9999999596727515,
+      "max_error": 0.005904674530029297,
+      "top1_equal": true
+    },
+    {
+      "step": 8,
+      "position": 28,
+      "normalized_rmse": 0.0006255939370021224,
+      "cosine": 0.9999998473701139,
+      "max_error": 0.008026838302612305,
+      "top1_equal": true
+    },
+    {
+      "step": 9,
+      "position": 29,
+      "normalized_rmse": 0.0005267343367449939,
+      "cosine": 0.9999998618760847,
+      "max_error": 0.010531425476074219,
+      "top1_equal": true
+    },
+    {
+      "step": 10,
+      "position": 127,
+      "normalized_rmse": 0.0012423796579241753,
+      "cosine": 0.9999992406097384,
+      "max_error": 0.014711856842041016,
+      "top1_equal": true
+    },
+    {
+      "step": 11,
+      "position": 128,
+      "normalized_rmse": 0.0010065714595839381,
+      "cosine": 0.9999998789271395,
+      "max_error": 0.014734268188476562,
+      "top1_equal": true
+    },
+    {
+      "step": 12,
+      "position": 128,
+      "normalized_rmse": 0.0006779105751775205,
+      "cosine": 0.9999998832314321,
+      "max_error": 0.013230323791503906,
+      "top1_equal": true
+    },
+    {
+      "step": 13,
+      "position": 129,
+      "normalized_rmse": 0.0009513620752841234,
+      "cosine": 0.9999998687104927,
+      "max_error": 0.014720439910888672,
+      "top1_equal": true
+    },
+    {
+      "step": 14,
+      "position": 129,
+      "normalized_rmse": 0.0009420026326552033,
+      "cosine": 0.9999995606964318,
+      "max_error": 0.008161872625350952,
+      "top1_equal": true
+    },
+    {
+      "step": 15,
+      "position": 130,
+      "normalized_rmse": 0.0004869051917921752,
+      "cosine": 0.9999999598681903,
+      "max_error": 0.010361671447753906,
+      "top1_equal": true
+    },
+    {
+      "step": 16,
+      "position": 512,
+      "normalized_rmse": 0.0004128181026317179,
+      "cosine": 0.9999999147989713,
+      "max_error": 0.008227348327636719,
+      "top1_equal": true
+    },
+    {
+      "step": 17,
+      "position": 513,
+      "normalized_rmse": 0.00033891721977852285,
+      "cosine": 0.9999999434675192,
+      "max_error": 0.008687973022460938,
+      "top1_equal": true
+    },
+    {
+      "step": 18,
+      "position": 2048,
+      "normalized_rmse": 0.0007007193053141236,
+      "cosine": 0.9999998571276941,
+      "max_error": 0.0110321044921875,
+      "top1_equal": true
+    },
+    {
+      "step": 19,
+      "position": 2049,
+      "normalized_rmse": 0.0008325835806317627,
+      "cosine": 0.9999997696874764,
+      "max_error": 0.012575149536132812,
+      "top1_equal": true
+    },
+    {
+      "step": 20,
+      "position": 8192,
+      "normalized_rmse": 0.00032560460385866463,
+      "cosine": 0.9999999483295682,
+      "max_error": 0.00738525390625,
+      "top1_equal": true
+    },
+    {
+      "step": 21,
+      "position": 8193,
+      "normalized_rmse": 0.0009824446169659495,
+      "cosine": 0.9999995741610076,
+      "max_error": 0.014258861541748047,
+      "top1_equal": true
+    },
+    {
+      "step": 22,
+      "position": 20,
+      "normalized_rmse": 0.0010450751287862659,
+      "cosine": 0.999999478702803,
+      "max_error": 0.026250839233398438,
+      "top1_equal": true
+    }
+  ],
+  "gates": {
+    "finite_logits": true,
+    "reset_bitwise_equal": true,
+    "independent_normalized_rmse_max": 0.01,
+    "independent_cosine_min": 0.9999,
+    "ggml_block_rtol": 1e-06,
+    "ggml_block_atol": 1e-07,
+    "llama_logits": "reported, not an equality gate: different activation quantization"
+  }
+}

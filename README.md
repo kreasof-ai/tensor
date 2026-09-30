@@ -6,7 +6,7 @@ a capability-based provider model, and first-class compiled tensor modules.
 The full architectural proposal lives in [`proposal.md`](proposal.md).
 
 The [development guide](docs/development.md) describes the grouped core layout,
-optional `tensor-torch`/`tensor-nn` packages, benchmark commands and canonical
+optional `tensor-torch`/`tensor-nn`/`tensor-llm` packages, benchmark commands and canonical
 imports. Standalone training now installs the separate `tensor-nn` wheel alongside
 Tensor and NumPy; the Phase 6 report retains the original measured distribution.
 
@@ -72,6 +72,15 @@ Numerical gradients, optimizer state and clean-consumer execution pass. See the
 [training report](docs/research/phase6-nanogpt.md) for all baselines and exact scope.
 Standalone autograd, general graph fusion, FlashAttention backward and WebGPU
 training remain deferred.
+
+An optional [Tensor LLM package](packages/tensor-llm/README.md) now executes
+LiquidAI LFM2.5-2.6B from F16, Q4_0 and Q4_K_M GGUF weights with an AOT CUDA
+Graph plan. Its consumer needs Tensor, Tensor LLM, NumPy and regex; Torch,
+GGML and compiler packages stay in independent producer/reference environments.
+The [full-model comparison](docs/research/lfm2-inference.md) reports correctness
+and matched single-sequence latency against llama.cpp CUDA through 8K prompt
+tokens. This first engine is a bounded hybrid convolution/attention workload;
+general GGUF model coverage and persistent megakernels remain future work.
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.
