@@ -53,6 +53,9 @@ The executor uses PyTorch's [generic device/stream interface](https://github.com
 to access the current stream without CUDA toolkit headers.
 See the [measured C++ executor results](research/native-executor.md) for full-call
 and isolated launch timings and validation evidence.
+The [direct backend comparison](research/direct-backend-comparison.md) measures
+native TileLang and Triton alongside Tensor, separating GPU execution, prepared
+submission, allocating kernel calls, and the outer `torch.compile` wrapper.
 
 ## Inference graphs
 
