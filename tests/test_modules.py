@@ -241,3 +241,26 @@ def test_packaged_binary_build_reference_is_compiler_free(cpu_image,tmp_path,cap
     assert json.loads(capsys.readouterr().out)['selection']=='packaged'
     with pytest.raises(SystemExit):main(['build','lib::affine',*common,'--out',str(output)])
     assert output.read_bytes()==cpu_image.read_bytes()
+
+
+def test_legacy_and_current_artifacts_share_a_logical_module_signature(tmp_path):
+    lib=module(tmp_path/'lib','lib',exports={'kernel':{'artifacts':['legacy.tbin','current.tbin']}})
+    files={'kernel.cubin':b'\x7fELFmetadata-only','kernel.tirx.json':b'{"nodes":[]}'}
+    old={'format':'tensor.cuda','format_version':1,'kind':'cubin','target':'sm_86','entrypoint':'kernel',
+        'launch':{'grid':[1,1,1],'block':[32,1,1],'shared_memory_bytes':0},
+        'arguments':[{'name':'out','dtype':'float32','shape':[32]}],'outputs':['out'],
+        'source_sha256':'0'*64,'tilelang_version':'0.1.14','tvm_ffi_version':'0.1.12','op_set':[],
+        'files':{n:hashlib.sha256(v).hexdigest() for n,v in files.items()}}
+    new={**old,'format':'tensor.module','format_version':3,'provider':'cuda','target':'sm_80',
+        'arguments':[{'kind':'buffer','name':'out','dtype':'float32','shape':[32],'alignment':64}],
+        'abi':[{'kind':'buffer','name':'out','dtype':'float32'}],'symbols':{},
+        'compiler':{'name':'nvrtc','version':'12.9.86'},'workspace':{'bytes':0,'alignment':1},
+        'runtime_abi':{'major':1,'minor':1,'required_capabilities':['contiguous','executable_descriptors','no_external_workspace']}}
+    for name,manifest in [('legacy',old),('current',new)]:
+        with zipfile.ZipFile(lib/f'{name}.tbin','w') as bundle:
+            bundle.writestr('manifest.json',json.dumps(manifest))
+            for member,contents in files.items():bundle.writestr(member,contents)
+    cache=tmp_path/'cache';install(lib,cache_dir=cache)
+    mod=Project(lib,cache_dir=cache).module()
+    assert mod.resolve('kernel',target='sm_86')['path'].endswith('legacy.tbin')
+    assert mod.resolve('kernel',target='sm_80')['path'].endswith('current.tbin')

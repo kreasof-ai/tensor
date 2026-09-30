@@ -149,6 +149,12 @@ class _Data:
     origin: Path | None = None
 
 
+def _logical(manifest):
+    return {"arguments": [{**{k:v for k,v in a.items() if k != "alignment"},
+                           "kind": a.get("kind", "buffer")} for a in manifest["arguments"]],
+            "outputs": manifest.get("outputs", []), "symbols": manifest.get("symbols", {})}
+
+
 def _data(manifest, files, origin=None):
     manifest = _manifest(manifest)
     files = {**files, "tensor.json": _canonical(manifest)}
@@ -158,8 +164,7 @@ def _data(manifest, files, origin=None):
         signatures, targets = set(), set()
         for name in dict.fromkeys([*spec.get("artifacts", []), *([spec["portable"]] if "portable" in spec else [])]):
             artifact, _ = read_artifact(io.BytesIO(files[name]))
-            logical = {"arguments": [{k:v for k,v in a.items() if k != "alignment"} for a in artifact["arguments"]],
-                       "outputs": artifact.get("outputs", []), "symbols": artifact.get("symbols", {})}
+            logical = _logical(artifact)
             signatures.add(_canonical(logical))
             if "source" in spec and artifact["source_sha256"] != hashlib.sha256(files[spec["source"]]).hexdigest():
                 raise ModuleError("export artifact does not match its packaged source")
@@ -530,8 +535,7 @@ class Module:
         signature = None
         for name in dict.fromkeys([*spec.get("artifacts", []), *([spec["portable"]] if "portable" in spec else [])]):
             manifest, files = read_artifact(root / name)
-            logical = {"arguments": [{k:v for k,v in a.items() if k != "alignment"} for a in manifest["arguments"]],
-                       "outputs": manifest.get("outputs", []), "symbols": manifest.get("symbols", {})}
+            logical = _logical(manifest)
             if signature is not None and signature != logical:
                 raise ModuleError("export artifact signatures disagree")
             signature = logical
@@ -560,8 +564,7 @@ class Module:
                 raise ModuleError("cached export target mismatch")
             if "source" in spec and cached["source_sha256"] != hashlib.sha256(data.files[spec["source"]]).hexdigest():
                 raise ModuleError("cached export source mismatch")
-            logical = {"arguments": [{k:v for k,v in a.items() if k != "alignment"} for a in cached["arguments"]],
-                       "outputs": cached.get("outputs", []), "symbols": cached.get("symbols", {})}
+            logical = _logical(cached)
             if signature is not None and signature != logical:
                 raise ModuleError("cached export signature mismatch")
             return {"path": str(output), "selection": "cached", "module_sha256": self.digest,
@@ -580,8 +583,7 @@ class Module:
             result = build_artifact(root / source, temporary, provider=provider, target=target,
                                     compiler=compiler, nvcc=nvcc, nvrtc_home=nvrtc_home, cache_dir=cache_dir)
             built, _ = read_artifact(temporary)
-            logical = {"arguments": [{k:v for k,v in a.items() if k != "alignment"} for a in built["arguments"]],
-                       "outputs": built.get("outputs", []), "symbols": built.get("symbols", {})}
+            logical = _logical(built)
             if signature is not None and signature != logical:
                 raise ModuleError("compiled export signature differs from its portable contract")
             _atomic(output, temporary.read_bytes())
