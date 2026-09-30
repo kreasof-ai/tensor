@@ -25,3 +25,11 @@ The full CUDA/WebGPU suite passes **199 tests, zero skips, in 186.84 s**. This
 includes NVRTC compilation, CUDA and WebGPU execution, manual training, Torch
 stream/capture behavior and the rebuilt native executor.
 [JUnit results](data/canonical-regression.xml) retain the complete run.
+
+All three workflows pass for cleanup commit `e350fe1`: Linux/Windows
+[training producers](https://github.com/kreasof-ai/tensor/actions/runs/36781618581),
+[NVRTC/module/native Torch builds](https://github.com/kreasof-ai/tensor/actions/runs/36781618584),
+and [WebGPU transfer](https://github.com/kreasof-ai/tensor/actions/runs/36781618591).
+The installed core check asserts that retired imports are absent and the public
+build entry point remains callable. [CI records](data/canonical-ci.json) include
+all job and step conclusions.
