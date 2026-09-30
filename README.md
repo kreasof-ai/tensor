@@ -51,7 +51,9 @@ Phase 5 adds an optional [native WebGPU provider](docs/webgpu.md), Tensor-owned
 TIRx GEMM/reduction lowering and WGSL artifacts. Elementwise, FP16/FP32 linear,
 MLP composition and batched FP16 forward attention pass the software Vulkan
 suite in an isolated Tensor/NumPy/wgpu environment. Physical AMD/Apple validation
-and performance measurements remain the Phase 5 exit gate.
+and performance measurements remain the Phase 5 exit gate. Linux/Windows
+GPU-free producers and Windows-to-Linux execution CI pass; see the
+[Phase 5 validation report](docs/research/phase5-webgpu.md).
 
 **Phase 0 two-host executable transfer passed:** GitHub Actions built five opaque
 artifacts and an A10G (`sm_86`) runs them in fifteen fresh NumPy-only processes.

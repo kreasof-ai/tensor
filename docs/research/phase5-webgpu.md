@@ -46,5 +46,12 @@ Implementation details and the transfer command are in the [WebGPU guide](../web
 The acceptance bundle contains the Tensor wheel, original-TIRx WGSL artifacts,
 module closure, consumer script and evidence auditor. The dedicated workflow
 builds on Linux/Windows and executes Windows-produced WGSL on a separate Linux
-software consumer. Physical GPU results and workflow outcomes must be recorded
-before marking the corresponding gates passed.
+software consumer. That [workflow passed](https://github.com/kreasof-ai/tensor/actions/runs/36740570767)
+on source `1d21ce91193b4f01dbf9c58a5034b786ac28f6d3`: both GPU-free producers,
+all 33 Windows-to-Linux consumer checks and the evidence audit succeeded. See
+[CI metadata](data/webgpu-ci.json) and the [transfer result](data/webgpu-transfer-windows-linux.json).
+The existing [NVRTC/Torch workflow also passed](https://github.com/kreasof-ai/tensor/actions/runs/36739977375)
+on Linux and Windows for the implementation's source parent; the follow-up only
+normalized transfer-manifest paths. Its [metadata](data/webgpu-nvrtc-regression-ci.json)
+records both jobs. **Physical AMD/Apple execution and its performance assessment
+remain open.**
