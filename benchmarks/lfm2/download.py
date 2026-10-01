@@ -12,17 +12,27 @@ FILES = {
     'Q4_0': ('e1a61bf937bc60726e18626e97f7ee9bfd2574d95744c2ed909de98b78006fbe', 1593894912),
     'Q4_K_M': ('02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed', 1674455040),
 }
+PROFILES = {
+    '2.6B': (REPOSITORY, REVISION, FILES),
+    '230M': ('LiquidAI/LFM2.5-230M-GGUF', '03502067c64ce32ac4fe87b0cec0310a1a13d3e9', {
+        'F16': ('4d364976c7ae1b85bd380f743155aa2d532f7a10291beaa6b27a7d6c9b10527f', 461884256),
+        'Q4_0': ('430fbec5b1b355e9bb12cd0638c9f2a8f21fedd6eafb4103e42c7e88887daa73', 149080928),
+        'Q4_K_M': ('7bbd90384d3deffe4c646ec9643b212802d32d4ce417c90a1ec9282100650062', 153406304),
+    }),
+}
 
 
-def download(out, kinds):
+def download(out, kinds, *, model_size='2.6B'):
+    repository, revision, files = PROFILES[model_size]
     out.mkdir(parents=True, exist_ok=True)
     records = []
     for kind in kinds:
-        expected, size = FILES[kind]
-        name = f'LFM2.5-2.6B-{kind}.gguf'; path = out / name
+        expected, size = files[kind]
+        name = f'LFM2.5-{model_size}-{kind}.gguf'; path = out / name
         if not path.exists():
             partial = path.with_suffix('.partial')
-            url = f'https://huggingface.co/{REPOSITORY}/resolve/{REVISION}/{name}?download=true'
+            url = f'https://huggingface.co/{repository}/resolve/{revision}/{name}?download=true'
+            print(f'downloading {name} ({size:,} bytes)', flush=True)
             with urllib.request.urlopen(url, timeout=120) as response, partial.open('wb') as target:
                 while block := response.read(8 * 1024 * 1024):
                     target.write(block)
@@ -38,11 +48,15 @@ def download(out, kinds):
         records.append({'file': name, 'bytes': size, 'sha256': actual})
         print(f'verified {name}', flush=True)
     (out / 'provenance.json').write_text(json.dumps(
-        {'repository': REPOSITORY, 'revision': REVISION, 'files': records}, indent=2) + '\n')
+        {'repository': repository, 'revision': revision, 'files': records}, indent=2) + '\n')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--out', type=Path, default=Path('build/lfm2-models'))
+    parser.add_argument('--out', type=Path)
+    parser.add_argument('--model-size', choices=PROFILES, default='2.6B',
+                        help='use 230M for faster local GPU iterations')
     parser.add_argument('--formats', nargs='+', choices=FILES, default=list(FILES))
-    args = parser.parse_args(); download(args.out, args.formats)
+    args = parser.parse_args()
+    out = args.out or Path('build/lfm2-230m-models' if args.model_size == '230M' else 'build/lfm2-models')
+    download(out, args.formats, model_size=args.model_size)

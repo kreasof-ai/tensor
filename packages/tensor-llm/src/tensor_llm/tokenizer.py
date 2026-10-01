@@ -16,6 +16,16 @@ class Tokenizer:
         self.ranks={tuple(pair.split(' ')):i for i,pair in enumerate(metadata['tokenizer.ggml.merges'])}
         self.special={token:i for i,token in enumerate(self.tokens) if metadata['tokenizer.ggml.token_type'][i] in (3,4)}
         self.bos=metadata['tokenizer.ggml.bos_token_id'];self.eos=metadata['tokenizer.ggml.eos_token_id']
+        # Recognize the two released LFM2 single-user generation suffixes without
+        # interpreting arbitrary Jinja. Thinking in historical assistant messages
+        # does not imply that a new generation should start with <think>.
+        template=metadata.get('tokenizer.chat_template')
+        self.generation_prefix='<|im_start|>assistant\n<think>' if template is None else None
+        if isinstance(template,str):
+            match=regex.search(
+                r'''\{%-?\s*if add_generation_prompt\s*-?%\}\s*\{\{-?\s*(["'])(<\|im_start\|>assistant\\n(?:<think>)?)\1\s*-?\}\}\s*\{%-?\s*endif\s*-?%\}\s*\Z''',
+                template)
+            if match:self.generation_prefix=match[2].replace('\\n','\n')
         values=list(range(33,127))+list(range(161,173))+list(range(174,256));characters=values.copy();extra=0
         for b in range(256):
             if b not in values:values.append(b);characters.append(256+extra);extra+=1
@@ -60,8 +70,9 @@ class Tokenizer:
 
     def chat(self,text):
         if not isinstance(text,str):raise TypeError('text must be a string')
+        if self.generation_prefix is None:raise GGUFError('unsupported LFM2 chat generation prefix')
         # Initial profile: a single user turn, no tool declarations/history.
         # User text is encoded literally, so control strings cannot create roles.
         prefix=[self.bos,self.special['<|im_start|>']]+self.encode('user\n'+text,add_bos=False)
-        suffix=self.encode('<|im_end|>\n<|im_start|>assistant\n<think>',add_bos=False,parse_special=True)
+        suffix=self.encode('<|im_end|>\n'+self.generation_prefix,add_bos=False,parse_special=True)
         return prefix+suffix

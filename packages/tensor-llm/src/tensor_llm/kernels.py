@@ -13,15 +13,21 @@ def emit(args,body):
             +'\n'.join('    '+line for line in body.splitlines())+'\n\ndef tensor_export():\n    return {"kernel": kernel}\n')
 
 
-def weight(kind,row,col,k,buffer='w'):
+def weight(kind,row,col,k,buffer='w',*,packed_words=False):
     """Expression reading one exact GGML value; packed buffers are unsigned bytes."""
     if kind in (0,1):return f'T.cast({buffer}[({row}) * {k} + ({col})], "float32")'
     _,block,size=TYPES[kind]
     base=f'((({row}) * {k} + ({col})) // {block} * {size})';j=f'(({col}) % {block})'
     u=lambda offset:f'T.cast({buffer}[{base} + ({offset})], "uint32")'
     half=lambda offset:f'T.cast(T.reinterpret("float16", T.cast({u(offset)} | ({u(str(offset)+" + 1")} << 8), "uint16")), "float32")'
+    if packed_words:
+        u=lambda offset:f'(({buffer}[({base} + ({offset})) // 4] >> (({base} + ({offset})) % 4 * 8)) & T.uint32(255))'
+        def half(offset):
+            bits=f'({u(offset)} | ({u(str(offset)+" + 1")} << 8))'
+            return f'T.call_extern("float32", "tensor_unpack_f16", {bits})'
+    signed=lambda expr:f'T.cast(T.reinterpret("int8", T.cast({expr}, "uint8")), "float32")' if not packed_words else f'T.cast(T.cast({expr}, "int32") - T.if_then_else({expr} >= 128, 256, 0), "float32")'
     if kind==2:return f'{half(0)} * (T.cast(({u("2 + "+j+" % 16")} >> (4 * ({j} // 16))) & 15, "float32") - 8)'
-    if kind==8:return f'{half(0)} * T.cast(T.reinterpret("int8", T.cast({u("2 + "+j)}, "uint8")), "float32")'
+    if kind==8:return f'{half(0)} * {signed(u("2 + "+j))}'
     if kind==12:
         group=f'({j} // 32)'
         scale=f'T.if_then_else({group} < 4, {u("4 + "+group)} & 63, ({u("8 + "+group)} & 15) | (({u(group)} >> 6) << 4))'
@@ -34,7 +40,7 @@ def weight(kind,row,col,k,buffer='w'):
         high=u('128 + '+j+' // 128 * 32 + '+j+' % 32')
         scale=u('192 + '+j+' // 16')
         q=f'((({low} >> (4 * ({group} // 2))) & 15) | ((({high} >> (2 * {group})) & 3) << 4))'
-        return f'{half(208)} * T.cast(T.reinterpret("int8", T.cast({scale}, "uint8")), "float32") * (T.cast({q}, "float32") - 32)'
+        return f'{half(208)} * {signed(scale)} * (T.cast({q}, "float32") - 32)'
     raise ValueError('unsupported GGML encoding')
 
 

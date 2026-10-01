@@ -1,0 +1,14 @@
+[
+  {
+    "model_size": "230M",
+    "generation_prefix": "<|im_start|>assistant\n",
+    "single_user_template_checks": 5,
+    "status": "passed"
+  },
+  {
+    "model_size": "2.6B",
+    "generation_prefix": "<|im_start|>assistant\n<think>",
+    "single_user_template_checks": 5,
+    "status": "passed"
+  }
+]

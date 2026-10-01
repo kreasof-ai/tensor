@@ -1,0 +1,250 @@
+{
+  "status": "rejected",
+  "replaced": [
+    "blk.0.ffn_down.weight",
+    "blk.1.ffn_down.weight",
+    "blk.2.ffn_down.weight",
+    "blk.3.ffn_down.weight",
+    "blk.4.ffn_down.weight",
+    "blk.5.ffn_down.weight",
+    "blk.6.ffn_down.weight",
+    "blk.7.ffn_down.weight",
+    "blk.8.ffn_down.weight",
+    "blk.9.ffn_down.weight",
+    "blk.10.ffn_down.weight",
+    "blk.11.ffn_down.weight",
+    "blk.12.ffn_down.weight",
+    "blk.13.ffn_down.weight"
+  ],
+  "cases": [
+    {
+      "name": "chat",
+      "metrics": {
+        "relative_rms": 0.0009403459860484691,
+        "cosine": 0.9999995641996943,
+        "argmax": [
+          3097,
+          3097
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "chat_decode_0",
+      "metrics": {
+        "relative_rms": 0.008149107878979777,
+        "cosine": 0.9999669733030392,
+        "argmax": [
+          2001,
+          2001
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "chat_decode_1",
+      "metrics": {
+        "relative_rms": 0.007593750195614998,
+        "cosine": 0.9999714871178328,
+        "argmax": [
+          779,
+          779
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "chat_decode_2",
+      "metrics": {
+        "relative_rms": 0.00673441324580499,
+        "cosine": 0.9999774969561782,
+        "argmax": [
+          10133,
+          10133
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "prefix_31",
+      "metrics": {
+        "relative_rms": 0.0003395738340166748,
+        "cosine": 0.9999999423587552,
+        "argmax": [
+          2,
+          2
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "cached_31",
+      "metrics": {
+        "relative_rms": 0.008742031886355866,
+        "cosine": 0.9999618228832036,
+        "argmax": [
+          2001,
+          2001
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "prefix_32",
+      "metrics": {
+        "relative_rms": 0.0028182350714897894,
+        "cosine": 0.9999960724636024,
+        "argmax": [
+          509,
+          509
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "cached_32",
+      "metrics": {
+        "relative_rms": 0.011295985928859812,
+        "cosine": 0.9999378875825032,
+        "argmax": [
+          2001,
+          2001
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "prefix_33",
+      "metrics": {
+        "relative_rms": 0.005530485149603437,
+        "cosine": 0.9999853566132267,
+        "argmax": [
+          1,
+          1
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "cached_33",
+      "metrics": {
+        "relative_rms": 0.01620612864102416,
+        "cosine": 0.9998794485811573,
+        "argmax": [
+          5642,
+          5642
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "prefix_127",
+      "metrics": {
+        "relative_rms": 0.0010984293669391023,
+        "cosine": 0.9999994466618617,
+        "argmax": [
+          2011,
+          2011
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "cached_127",
+      "metrics": {
+        "relative_rms": 0.009749931071800286,
+        "cosine": 0.9999524711145856,
+        "argmax": [
+          730,
+          730
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "prefix_128",
+      "metrics": {
+        "relative_rms": 0.0009650422198668481,
+        "cosine": 0.9999995636536292,
+        "argmax": [
+          730,
+          730
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "cached_128",
+      "metrics": {
+        "relative_rms": 0.011786784901677083,
+        "cosine": 0.9999319534155295,
+        "argmax": [
+          874,
+          874
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "prefix_129",
+      "metrics": {
+        "relative_rms": 0.010343098175935204,
+        "cosine": 0.9999510535356205,
+        "argmax": [
+          527,
+          527
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "cached_129",
+      "metrics": {
+        "relative_rms": 0.010733380961234024,
+        "cosine": 0.9999424904843981,
+        "argmax": [
+          1620,
+          1620
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "prefix_511",
+      "metrics": {
+        "relative_rms": 0.003399113069223162,
+        "cosine": 0.9999942442109785,
+        "argmax": [
+          1098,
+          1098
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "cached_511",
+      "metrics": {
+        "relative_rms": 0.012520442774796215,
+        "cosine": 0.9999256581220607,
+        "argmax": [
+          6187,
+          6187
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "reset_chat",
+      "metrics": {
+        "relative_rms": 0.0009403459860484691,
+        "cosine": 0.9999995641996943,
+        "argmax": [
+          3097,
+          3097
+        ]
+      },
+      "passed": true
+    }
+  ],
+  "note": "benchmark-only FFN-down activation quantization; not selected by the installed LFM2 producer"
+}

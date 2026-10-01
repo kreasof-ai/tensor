@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "test_suite": {
+    "tests": 62,
+    "failures": 0
+  },
+  "sha256": {
+    "benchmarks/lfm2/build_reference.py": "99974c1d2dd09c521c9bf0f2a835b4ed9037b26c651e70bdd20eefdd97344b69",
+    "benchmarks/lfm2/numpy_reference.py": "71e8d27305f924c900659dcfb17debeacdfc2511eb5b99dd0fe5f408761dda17",
+    "benchmarks/lfm2/torch_reference.py": "404a0d7be6cbdf2d97aafb264e37a600aa25bb7e042f5e6f919009685f345b7c",
+    "benchmarks/lfm2/vulkan_reference.py": "087848515bba85f41a23cee2de45802626e4f51faa6a67f0d13def042d92f496",
+    "benchmarks/lfm2/webgpu_run.py": "ad38ac294ee9202123f48bc46006b9744f10e352e58b8873f1a880e487cdac6c",
+    "benchmarks/lfm2/webgpu_consumer.py": "f069d8c73dac7b7bbd595aeda2da6935ef6efd0386bd0bc3f21decefe4019b79",
+    "benchmarks/lfm2/fetch_vulkan.py": "512de148a00305f78493750e8c74763ca1ecfd7820ef82fcb32fbd9dab0037b3",
+    "benchmarks/lfm2/producer.py": "72509a048acc7867c504a756c2ecbc084fc6d5385695ea3c6c079616dfd46d40",
+    "build/lfm2-230m-wheels/tensor_llm-0.1.0-py3-none-any.whl": "d90603952e1ea3378e922dae2ad607ffcdf4caa6f66060073cb42691dfa51467",
+    "build/lfm2-230m-wheels/tensor_workspace-0.1.0-py3-none-any.whl": "f72523c2f7e7f1e9d4bb39ebe2beac91aee89470f15566fd19d566f99b5281de"
+  }
+}

@@ -6,6 +6,8 @@ packages/tensor-torch/src/tensor_torch/_launch*.so
 packages/tensor-torch/src/tensor_torch/_launch*.pyd
 packages/tensor-torch/src/tensor_torch/_executor*.so
 packages/tensor-torch/src/tensor_torch/_executor*.pyd
+src/tensor/providers/_webgpu_native*.so
+src/tensor/providers/_webgpu_native*.pyd
 *.egg-info/
 .eggs/
 build/

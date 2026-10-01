@@ -1,0 +1,231 @@
+{
+  "status": "passed",
+  "model": "build\\lfm2-230m-models\\LFM2.5-230M-Q4_0.gguf",
+  "bundle": "build\\lfm2-230m-q4_0-compiler-portable",
+  "implementation": {
+    "tensor.runtime.abi": "a44db858b1aff1ed531b3bf0f1b9134e07f4763fdfcb76742f5f29d9764b40f2",
+    "tensor.runtime.signature": "40f571ab70593e651129075d07e9222b2aa58295162bf405e5c8290de4d9360e",
+    "tensor.providers.webgpu": "77cdd0b06e10a0621984cea42814f3d57a9ebe22526dda167ef902af5fc4dc9c",
+    "tensor.providers.webgpu_contract": "89f00a82447adf8f447250b06f4994fe89de4122696236f68ea1fbec246c0c28",
+    "tensor.artifacts.format": "b4d7ceb4061b8b21d138a667b77256748746d51524dd51e2c57b94ac81da1a9d",
+    "tensor_llm.model": "79ef520bc494990a7c9d04087826faa4567c7d3dc10281bdffd0385a94ac9dbd",
+    "tensor_llm.config": "af2c43cb0cf44d8160a3750f30045f380fefa3129693e700fca80a5c0e7d20c5",
+    "tensor_llm.kernels": "3ecfc61318c98fab80fe98749fa488fdb38aa8e0a8131f09c3ce433425952228",
+    "tensor_llm.gguf": "563ddb25a7b7c8f4939a9edae6961e7146b8ab60e8b5fd68e9732480a4407df7",
+    "tensor_llm.tokenizer": "468fe7f35349a28a3d33a6c27736f397ee0528611ff1c043e3a596058a2644da",
+    "tensor_llm.provenance": "d49c73261ea735d03611492e5f0f8c2efe7f2124fada744237ec67ad7932e9d0",
+    "tensor_llm.webgpu_kernels": "4ab73b76f97a7267f3a630e6c0c1b5627034052fe461e6c398aba0e666f4147d",
+    "tensor.native.webgpu_plan": "d9833bd483d3cb5acf7d2febb571718aea8ebce44d4f43eeba891fb89564bc81"
+  },
+  "validation": [
+    {
+      "name": "chat",
+      "numpy": {
+        "relative_rms": 0.0010830116489029496,
+        "cosine": 0.9999994160579303,
+        "argmax": [
+          3097,
+          3097
+        ]
+      }
+    },
+    {
+      "name": "chat_decode_0",
+      "numpy": {
+        "relative_rms": 0.0006281288988763969,
+        "cosine": 0.9999998174115532,
+        "argmax": [
+          2001,
+          2001
+        ]
+      }
+    },
+    {
+      "name": "chat_decode_1",
+      "numpy": {
+        "relative_rms": 0.0005485524712062528,
+        "cosine": 0.999999849597505,
+        "argmax": [
+          779,
+          779
+        ]
+      }
+    },
+    {
+      "name": "chat_decode_2",
+      "numpy": {
+        "relative_rms": 0.00041348061817561387,
+        "cosine": 0.9999999165162657,
+        "argmax": [
+          10133,
+          10133
+        ]
+      }
+    },
+    {
+      "name": "prefix_31",
+      "numpy": {
+        "relative_rms": 0.0003849340624202469,
+        "cosine": 0.9999999268104148,
+        "argmax": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "cached_31",
+      "numpy": {
+        "relative_rms": 0.0006106163830546259,
+        "cosine": 0.9999998319670973,
+        "argmax": [
+          2001,
+          2001
+        ]
+      }
+    },
+    {
+      "name": "prefix_32",
+      "numpy": {
+        "relative_rms": 0.0024370859848472076,
+        "cosine": 0.9999973000251148,
+        "argmax": [
+          509,
+          509
+        ]
+      }
+    },
+    {
+      "name": "cached_32",
+      "numpy": {
+        "relative_rms": 0.0005811052531625537,
+        "cosine": 0.9999998327991483,
+        "argmax": [
+          2001,
+          2001
+        ]
+      }
+    },
+    {
+      "name": "prefix_33",
+      "numpy": {
+        "relative_rms": 0.00010058854342916246,
+        "cosine": 0.9999999950203442,
+        "argmax": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "name": "cached_33",
+      "numpy": {
+        "relative_rms": 0.0005570579114246694,
+        "cosine": 0.9999998448432309,
+        "argmax": [
+          5642,
+          5642
+        ]
+      }
+    },
+    {
+      "name": "prefix_127",
+      "numpy": {
+        "relative_rms": 0.0011921036100050438,
+        "cosine": 0.999999389681187,
+        "argmax": [
+          2011,
+          2011
+        ]
+      }
+    },
+    {
+      "name": "cached_127",
+      "numpy": {
+        "relative_rms": 0.0007107191775816608,
+        "cosine": 0.9999997569226033,
+        "argmax": [
+          730,
+          730
+        ]
+      }
+    },
+    {
+      "name": "prefix_128",
+      "numpy": {
+        "relative_rms": 0.0009509158360011825,
+        "cosine": 0.9999996113233823,
+        "argmax": [
+          730,
+          730
+        ]
+      }
+    },
+    {
+      "name": "cached_128",
+      "numpy": {
+        "relative_rms": 0.00047511192065957013,
+        "cosine": 0.9999998924364244,
+        "argmax": [
+          874,
+          874
+        ]
+      }
+    },
+    {
+      "name": "prefix_129",
+      "numpy": {
+        "relative_rms": 0.0007868512093148294,
+        "cosine": 0.9999997624448859,
+        "argmax": [
+          527,
+          527
+        ]
+      }
+    },
+    {
+      "name": "cached_129",
+      "numpy": {
+        "relative_rms": 0.0006666124654492486,
+        "cosine": 0.999999777820178,
+        "argmax": [
+          1620,
+          1620
+        ]
+      }
+    },
+    {
+      "name": "prefix_511",
+      "numpy": {
+        "relative_rms": 0.0045548139437973515,
+        "cosine": 0.9999896292383283,
+        "argmax": [
+          1098,
+          1098
+        ]
+      }
+    },
+    {
+      "name": "cached_511",
+      "numpy": {
+        "relative_rms": 0.000567424297460649,
+        "cosine": 0.9999998392367495,
+        "argmax": [
+          6187,
+          6187
+        ]
+      }
+    },
+    {
+      "name": "reset_chat",
+      "numpy": {
+        "relative_rms": 0.0010830116489029496,
+        "cosine": 0.9999994160579303,
+        "argmax": [
+          3097,
+          3097
+        ]
+      }
+    }
+  ]
+}

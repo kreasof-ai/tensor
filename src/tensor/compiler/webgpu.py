@@ -27,7 +27,7 @@ def build_webgpu(source_path, output_path, *, target=None, cache_dir=None, compi
     import tilelang
     import tvm
     from tensor.compiler.lowering import frontend_arguments, integer_expression
-    from tensor.compiler.webgpu_lowering import lower_simt_gemm, verify_uniform_barriers
+    from tensor.compiler.webgpu_lowering import lower_simt_gemm, lower_wgsl_intrinsics, verify_uniform_barriers
     try:
         spec = export_spec(source_path, checked)
         if not isinstance(spec, dict) or "kernel" not in spec or set(spec) - {"kernel", "outputs"}:
@@ -43,7 +43,7 @@ def build_webgpu(source_path, output_path, *, target=None, cache_dir=None, compi
         if any(dtype not in ("int32", "uint32") for dtype in symbols.values()):
             raise BuildError("unsupported WebGPU dimension dtype: use int32 or uint32")
         ir = tvm.ir.save_json(tvm.IRModule({str(original.attrs["global_symbol"]): original}))
-        identity = {"name": "wgsl", "version": "tensor-simt-v1", "tilelang": version("tilelang"),
+        identity = {"name": "wgsl", "version": "tensor-simt-v2", "tilelang": version("tilelang"),
                     "lowering_sha256": hashlib.sha256(Path(__file__).with_name("webgpu_lowering.py").read_bytes()).hexdigest(),
                     "producer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
         key = hashlib.sha256(json.dumps({"ir": ir, "identity": identity, "outputs": spec.get("outputs", [])}, sort_keys=True).encode()).hexdigest()
@@ -83,7 +83,7 @@ def build_webgpu(source_path, output_path, *, target=None, cache_dir=None, compi
             launch = {"grid": [integer_expression(extents.get(f"blockIdx.{axis}", 1), symbols) for axis in "xyz"],
                       "block": [integer_expression(extents.get(f"threadIdx.{axis}", 1), symbols) for axis in "xyz"],
                       "shared_memory_bytes": 0}
-            wgsl = str(lowered.kernel_source)
+            wgsl = lower_wgsl_intrinsics(str(lowered.kernel_source))
             metadata = reflect(wgsl, entrypoint, abi, launch)
             requirement = runtime_requirement(arguments, symbols)
             requirement["minor"] = 2

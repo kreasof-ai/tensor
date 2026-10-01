@@ -1,0 +1,134 @@
+{
+  "status": "passed",
+  "model": "build\\lfm2-230m-models\\LFM2.5-230M-F16.gguf",
+  "adapter": {
+    "ordinal": 0,
+    "provider": "webgpu",
+    "arch": "webgpu-portable-v1",
+    "name": "AMD Radeon RX 6700 XT",
+    "adapter": {
+      "vendor": "AMD proprietary driver",
+      "architecture": "",
+      "device": "AMD Radeon RX 6700 XT",
+      "description": "26.6.2 (AMD proprietary shader compiler)",
+      "stackgroup_min_size": 4,
+      "stackgroup_max_size": 128,
+      "vendor_id": 4098,
+      "device_id": 29663,
+      "adapter_type": "DiscreteGPU",
+      "backend_type": "Vulkan"
+    },
+    "features": [
+      "shader-f16",
+      "subgroup"
+    ],
+    "limits": {
+      "max-bind-groups": 8,
+      "max-bind-groups-plus-vertex-buffers": 0,
+      "max-bindings-per-bind-group": 1000,
+      "max-buffer-size": 134217728,
+      "max-color-attachment-bytes-per-sample": 0,
+      "max-color-attachments": 0,
+      "max-compute-invocations-per-workgroup": 1024,
+      "max-compute-workgroup-size-x": 1024,
+      "max-compute-workgroup-size-y": 1024,
+      "max-compute-workgroup-size-z": 1024,
+      "max-compute-workgroup-storage-size": 32768,
+      "max-compute-workgroups-per-dimension": 65535,
+      "max-dynamic-storage-buffers-per-pipeline-layout": 8,
+      "max-dynamic-uniform-buffers-per-pipeline-layout": 8,
+      "max-inter-stage-shader-variables": 0,
+      "max-non-sampler-bindings": 1000000,
+      "max-push-constant-size": 256,
+      "max-sampled-textures-per-shader-stage": 16,
+      "max-samplers-per-shader-stage": 16,
+      "max-storage-buffer-binding-size": 134217728,
+      "max-storage-buffers-per-shader-stage": 8,
+      "max-storage-textures-per-shader-stage": 4,
+      "max-texture-array-layers": 8192,
+      "max-texture-dimension-1d": 16384,
+      "max-texture-dimension-2d": 16384,
+      "max-texture-dimension-3d": 8192,
+      "max-uniform-buffer-binding-size": 2147483647,
+      "max-uniform-buffers-per-shader-stage": 12,
+      "max-vertex-attributes": 64,
+      "max-vertex-buffer-array-stride": 16383,
+      "max-vertex-buffers": 16,
+      "min-storage-buffer-offset-alignment": 32,
+      "min-uniform-buffer-offset-alignment": 32
+    },
+    "prepared_encoding": "native"
+  },
+  "samples": {
+    "native": [
+      {
+        "prefill_seconds": 0.07242300000507385,
+        "decode_seconds": 0.24264359998051077
+      },
+      {
+        "prefill_seconds": 0.07229599996935576,
+        "decode_seconds": 0.2424883000785485
+      },
+      {
+        "prefill_seconds": 0.07317350001540035,
+        "decode_seconds": 0.24510719999670982
+      },
+      {
+        "prefill_seconds": 0.07363810006063432,
+        "decode_seconds": 0.2482750000199303
+      },
+      {
+        "prefill_seconds": 0.07255810010246933,
+        "decode_seconds": 0.24283499992452562
+      }
+    ],
+    "python": [
+      {
+        "prefill_seconds": 0.07330559997353703,
+        "decode_seconds": 0.2759484000271186
+      },
+      {
+        "prefill_seconds": 0.07326440000906587,
+        "decode_seconds": 0.27549399994313717
+      },
+      {
+        "prefill_seconds": 0.07279729994479567,
+        "decode_seconds": 0.2749316000845283
+      },
+      {
+        "prefill_seconds": 0.07262280001305044,
+        "decode_seconds": 0.2756875000195578
+      },
+      {
+        "prefill_seconds": 0.07337780005764216,
+        "decode_seconds": 0.27640730002895
+      }
+    ]
+  },
+  "implementation": {
+    "tensor.runtime.abi": "a44db858b1aff1ed531b3bf0f1b9134e07f4763fdfcb76742f5f29d9764b40f2",
+    "tensor.runtime.signature": "40f571ab70593e651129075d07e9222b2aa58295162bf405e5c8290de4d9360e",
+    "tensor.providers.webgpu": "77cdd0b06e10a0621984cea42814f3d57a9ebe22526dda167ef902af5fc4dc9c",
+    "tensor.providers.webgpu_contract": "89f00a82447adf8f447250b06f4994fe89de4122696236f68ea1fbec246c0c28",
+    "tensor.artifacts.format": "b4d7ceb4061b8b21d138a667b77256748746d51524dd51e2c57b94ac81da1a9d",
+    "tensor_llm.model": "79ef520bc494990a7c9d04087826faa4567c7d3dc10281bdffd0385a94ac9dbd",
+    "tensor_llm.config": "af2c43cb0cf44d8160a3750f30045f380fefa3129693e700fca80a5c0e7d20c5",
+    "tensor_llm.kernels": "3ecfc61318c98fab80fe98749fa488fdb38aa8e0a8131f09c3ce433425952228",
+    "tensor_llm.gguf": "563ddb25a7b7c8f4939a9edae6961e7146b8ab60e8b5fd68e9732480a4407df7",
+    "tensor_llm.tokenizer": "468fe7f35349a28a3d33a6c27736f397ee0528611ff1c043e3a596058a2644da",
+    "tensor_llm.provenance": "d49c73261ea735d03611492e5f0f8c2efe7f2124fada744237ec67ad7932e9d0",
+    "tensor_llm.webgpu_kernels": "4ab73b76f97a7267f3a630e6c0c1b5627034052fe461e6c398aba0e666f4147d",
+    "tensor.native.webgpu_plan": "d9833bd483d3cb5acf7d2febb571718aea8ebce44d4f43eeba891fb89564bc81"
+  },
+  "protocol": "identical shaders/state/inputs, alternate encoders, five repetitions after warmup, prefix 128 plus 64 forced decode, completed host FP32 logits, bitwise final-logit equality",
+  "tokens_per_second": {
+    "native": {
+      "prefill": 1764.1035228214837,
+      "decode": 263.5534417192395
+    },
+    "python": {
+      "prefill": 1747.096816245831,
+      "decode": 232.14690544714477
+    }
+  }
+}

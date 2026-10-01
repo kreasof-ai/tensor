@@ -35,6 +35,43 @@ The default limit and shader workgroup-storage limit remain unchanged.
 Dispatch x can be packed over x/z with the verified POD grid bound;
 batch/head dimensions are flattened onto y. Subgroup width 32 is never assumed.
 
+The compiler uses 2×2 register microtiles for `T.gemm`. Set the function attribute
+`tensor.webgpu.gemm_microtile` to 1, 2 or 4 to tune a schedule; dimensions that
+cannot be divided into that microtile fall back to one along that axis. FP32
+sum/max tile reductions retain ordered summation by default. The attribute
+`tensor.webgpu.reduction="tree"` selects parallel shared-memory reduction with
+identity padding for odd extents. It changes floating-point summation order and
+must be validated against the application's numerical contract. For schedules
+that retain accumulators across every K tile, the producer-only
+`tensor.compiler.webgpu_lowering.register_matmul_schedule` helper supplies a
+reusable guarded SIMT schedule with configurable tile sizes and shared padding.
+It also offers `lhs_pad`, `lhs_transpose`, `dot_width=1|4` and explicit loop
+unrolling. Four-wide dots alter accumulation order and require application
+accuracy checks. LFM2 selects them for F16 prefill and large-K Q4 projections.
+
+Optional subgroup builtins are reflected into artifact feature requirements;
+consumers reject unsupported adapters. Tensor requests `subgroup` when available.
+The LFM2 producer exposes `--webgpu-profile subgroup`, with segmented reductions
+that check the runtime subgroup size and use shared-memory fallbacks for smaller
+groups. Packed half unpacking and byte alignment lower to typed WGSL helpers.
+Packed integer-dot emission is supported, but the LFM2 activation-quantization
+experiment failed its full-logit gate and is not selected for inference. See the
+[compiler optimization report](../research/lfm2-230m-webgpu-compiler-optimization.md).
+
+Prepared plans check each distinct resource on every launch, cache bind groups,
+and skip repeated pipeline bindings. Readback staging buffers are retained until
+their source buffer is released; returned NumPy arrays own their memory. The
+prepared binding fast path uses the pinned wgpu 0.29 native safe FFI entrypoint
+with no dynamic offsets. An upgrade of that dependency requires revalidation.
+Setting `TENSOR_BUILD_WEBGPU_NATIVE=1` when building Tensor's wheel adds the
+optional C prepared-plan encoder. It resolves function pointers from the loaded
+wgpu 0.29 library, captures native validation errors around the full encoding
+call, and checks resource lifetimes before entering C. Fresh command encoders and
+buffers are still created each launch. Without the extension the Python path
+remains available. MSVC is needed on the Windows producer only; the measured
+consumer uses a CPython 3.12 Windows x64 wheel. See the
+[native submission report](../research/lfm2-230m-native-submission.md).
+
 The artifact target is `webgpu-portable-v1`, kind `wgsl`. Portability comes from
 WGSL plus explicit adapter feature/limit negotiation, rather than a CUDA SM or
 toolkit version. Native wgpu still compiles/translates the shader when creating a

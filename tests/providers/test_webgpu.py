@@ -16,6 +16,39 @@ ROOT = Path(__file__).resolve().parents[2]
 NATIVE = pytest.mark.skipif(os.environ.get("TENSOR_WEBGPU") != "1", reason="set TENSOR_WEBGPU=1 for native adapter tests")
 
 
+@NATIVE
+@pytest.mark.parametrize('encoding',['python','native'])
+def test_prepared_plan_replay_scalar_isolation_and_released_resources(tmp_path,encoding):
+    if encoding=='native':pytest.importorskip('tensor.providers._webgpu_native')
+    from tensor.runtime import TensorRuntimeError
+    source=tmp_path/'affine.py'
+    source.write_text('''import tilelang.language as T
+@T.prim_func
+def kernel(x:T.Tensor((4,), "float32"), y:T.Tensor((4,), "float32"), scale:T.float32):
+    with T.Kernel(1, threads=4):
+        for i in T.Parallel(4):
+            y[i]=x[i]*scale
+def tensor_export():return {"kernel":kernel}
+''')
+    artifact=tmp_path/'affine.tbin';tx.build(source,artifact,provider='webgpu')
+    with tx.Device(provider='webgpu') as device:
+        kernel=device.load(artifact);x=device.from_numpy(np.arange(4,dtype=np.float32));y=device.zeros(4);z=device.zeros(4)
+        calls=[]
+        for inputs in ((x,y,2.),(y,z,3.)):
+            values,symbols,launch=kernel._bind(inputs,{},include_outputs=True)
+            calls.append((kernel,BoundCall(device,kernel.manifest,values,symbols,launch,validated=True)))
+        plan=device.prepare_plan(calls)
+        if encoding=='python':plan._encode=None
+        else:assert plan._encode is not None
+        for multiplier in (1.,4.):
+            device.write(x,np.arange(4,dtype=np.float32)*multiplier);plan.launch()
+            np.testing.assert_array_equal(z.to_numpy(),np.arange(4,dtype=np.float32)*multiplier*6)
+        x.release()
+        with pytest.raises(TensorRuntimeError,match='released'):plan.launch()
+        plan.close();plan.close()
+        with pytest.raises(TensorRuntimeError,match='closed'):plan.launch()
+
+
 @pytest.mark.parametrize("size", [True, 0, 3, 4.0])
 def test_invalid_buffer_limit_is_rejected_before_adapter_creation(size):
     with pytest.raises(ValueError, match="max_buffer_size"):
@@ -196,6 +229,47 @@ def test_native_fp16_tail_and_adapter_feature_gate(artifacts):
     fake._gpu = SimpleNamespace(features=set())
     with pytest.raises(ArtifactError,match="required features"):
         fake.load(artifacts["webgpu_gemm"])
+
+
+@NATIVE
+def test_cached_readback_reuses_staging_and_returns_owned_arrays():
+    with tx.Device(provider="webgpu") as device:
+        buffer=device.arange(129)
+        first=buffer.to_numpy()
+        staging=buffer._readback
+        device.write(buffer,np.full(129,7,dtype=np.float32))
+        second=buffer.to_numpy()
+        assert buffer._readback is staging
+        np.testing.assert_array_equal(first,np.arange(129,dtype=np.float32))
+        np.testing.assert_array_equal(second,np.full(129,7,dtype=np.float32))
+        buffer.release()
+        assert buffer._readback is None
+
+
+@NATIVE
+def test_native_prepared_encoder_captures_validation_errors(artifacts):
+    import struct,wgpu
+    pytest.importorskip('tensor.providers._webgpu_native')
+    with tx.Device(provider='webgpu') as device:
+        kernel=device.load(artifacts['dynamic_affine'])
+        x=device.arange(128);y=device.ones(128);out=device.zeros(128)
+        values,symbols,launch=kernel._bind((x,y,out),{'scale':2.},include_outputs=True)
+        plan=device.prepare_plan([(kernel,BoundCall(device,kernel.manifest,values,symbols,launch,validated=True))])
+        assert plan._encode is not None and device.info['prepared_encoding']=='native'
+        saved=plan._records
+        bad=bytearray(saved);struct.pack_into('<I',bad,16,device._gpu.limits['max-compute-workgroups-per-dimension']+1)
+        plan._records=bytes(bad)
+        with pytest.raises(wgpu.GPUValidationError):plan.launch()
+        plan._records=saved;plan.launch()
+        np.testing.assert_array_equal(out.to_numpy(),np.arange(128,dtype=np.float32)*2+1)
+        plan.close()
+
+
+def test_native_prepared_encoder_rejects_malformed_records():
+    native=pytest.importorskip('tensor.providers._webgpu_native')
+    for records in (b'x',bytes(32)):
+        with pytest.raises(ValueError,match='native WebGPU'):
+            native.encode(1,records,1,1,1)
 
 
 @NATIVE

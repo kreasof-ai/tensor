@@ -15,10 +15,20 @@ from .tokenizer import Tokenizer
 from .provenance import implementation_hashes
 
 
-def requirements(gguf,capacity,rows=(1,128)):
+def paired_ffn(rows,gate,up):
+    # Quantized decode benefits from shared unpack/input work; the measured
+    # F16 decode pair loses occupancy. Prefill benefits from register reuse.
+    return gate.type==up.type and (rows>1 or gate.type not in (0,1))
+
+
+def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='portable'):
     cfg=Config.from_gguf(gguf);c=cfg.width
     values={}
-    def add(kind,**p):values[identity(kind,p)]=(kind,p)
+    if webgpu_profile not in ('portable','subgroup'):raise ValueError('unsupported WebGPU kernel profile')
+    def add(kind,**p):
+        if provider=='webgpu' and webgpu_profile=='subgroup' and kind in ('linear','ffn','attention','attention_scores','rms','add_rms'):
+            p['sg']=True
+        values[identity(kind,p)]=(kind,p)
     for r in rows:
         for info in gguf.tensors.values():
             if len(info.shape)==2 and not info.name.endswith('conv.weight'):
@@ -29,11 +39,20 @@ def requirements(gguf,capacity,rows=(1,128)):
                 elif info.name=='output.weight':add('linear',r=1,k=k,o=o,type=info.type)
                 else:add('linear',r=r,k=k,o=o,type=info.type)
         add('rms',r=r,c=c,eps=cfg.epsilon)
+        if provider=='webgpu':
+            if r==1:add('add_rms',r=r,c=c,eps=cfg.epsilon)
+            for i in range(len(cfg.layers)):
+                gate,up=(gguf.tensors[f'blk.{i}.ffn_{name}.weight'] for name in ('gate','up'))
+                if paired_ffn(r,gate,up):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type)
         add('add',r=r,c=c);add('swiglu',r=r,c=cfg.ff);add('conv',r=r,c=c)
-        add('qkv',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,eps=cfg.epsilon,theta=cfg.theta)
+        for kind in (('qnorm','kvnorm') if provider=='webgpu' else ('qkv',)):
+            add(kind,r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,eps=cfg.epsilon,theta=cfg.theta)
+        if provider=='webgpu' and webgpu_profile=='subgroup' and r==1:
+            add('attention_scores',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
         add('attention',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
         add('last',r=r,c=c);add('advance',r=r)
     add('rms',r=1,c=c,eps=cfg.epsilon)
+    if provider=='webgpu':add('argmax',n=cfg.vocab)
     return values
 
 
@@ -47,17 +66,20 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         self.gguf=GGUF(model);self.config=Config.from_gguf(self.gguf)
         self.tokenizer=Tokenizer(self.gguf.metadata);self.device=device;self.directory=Path(bundle)
         self.manifest=json.loads((self.directory/'inference.json').read_text())
-        if device.info['provider']!='cuda':raise ValueError('LFM2 currently requires CUDA')
+        self.provider=device.info['provider']
+        if self.provider not in ('cuda','webgpu'):raise ValueError('LFM2 requires CUDA or WebGPU')
+        if self.manifest.get('provider','cuda')!=self.provider:raise ValueError('LFM2 bundle requires a different provider')
         if self.manifest.get('schema')!='tensor.lfm2-inference.v1':raise ValueError('unsupported LFM2 bundle schema')
         if self.manifest['config']!=json.loads(json.dumps(asdict(self.config))):raise ValueError('bundle belongs to a different LFM2 architecture')
-        if self.manifest.get('implementation') != implementation_hashes():
+        if self.manifest.get('implementation') != implementation_hashes(self.provider):
             raise ValueError('LFM2 bundle implementation mismatch; rebuild with the installed producer')
         self.capacity=self.manifest['capacity'];self.rows=tuple(self.manifest['rows'])
-        if self.rows != (1,128) or self.capacity % 64:
+        if self.rows != ((1,32) if self.provider=='webgpu' else (1,128)) or self.capacity % 64:
             raise ValueError('unsupported LFM2 prefill/capacity profile')
         if not 1<=context<=min(self.capacity-max(self.rows),self.config.max_context):raise ValueError('context exceeds the compiled capacity')
         self.context=context;self.graphs_enabled=graphs;self.position=0;self.closed=False
-        expected=requirements(self.gguf,self.capacity,self.rows)
+        self.webgpu_profile=self.manifest.get('webgpu_profile','portable')
+        expected=requirements(self.gguf,self.capacity,self.rows,provider=self.provider,webgpu_profile=self.webgpu_profile)
         if set(expected)!=set(self.manifest['kernels']):raise ValueError('incomplete/incompatible LFM2 kernel coverage')
         for record in self.manifest['kernels'].values():
             path=(self.directory/record['artifact']).resolve()
@@ -66,13 +88,14 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             with path.open('rb') as image:
                 if hashlib.file_digest(image,'sha256').hexdigest()!=record['sha256']:
                     raise ValueError('LFM2 kernel checksum mismatch')
-        self.kernels={};self.graphs={};self.plans={};self.buffers=[]
+        self.kernels={};self.graphs={};self.plans={};self.buffers=[];self.prepared={};self.greedy={}
         def upload(host):
             b=device.from_numpy(np.ascontiguousarray(host));self.buffers.append(b);return b
         self.weights={}
         for name,info in self.gguf.tensors.items():
             raw=self.gguf.packed(name)
             if info.type in (0,1):raw=raw.view(np.float32 if info.type==0 else np.float16)
+            elif self.provider=='webgpu':raw=raw.view(np.uint32)
             self.weights[name]=upload(raw)
         self.control=upload(np.array([0,1],np.int32));self.logits=upload(np.zeros(self.config.vocab,np.float32))
         self.states={};self.caches={}
@@ -89,18 +112,31 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                     'qo':(r*c,np.float32),'attn':(r*c,np.float32),'gate':(r*f,np.float32),
                     'up':(r*f,np.float32),'activated':(r*f,np.float32),'last':(c,np.float32),'final':(c,np.float32)}
             self.workspaces[r]={name:upload(np.zeros(count,dtype)) for name,(count,dtype) in shapes.items()}
+            if self.provider=='webgpu':self.workspaces[r]['hidden2']=upload(np.zeros(r*c,np.float32))
+            if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and r==1:
+                self.workspaces[r]['scores']=upload(np.zeros(self.config.heads*self.capacity,np.float32))
         for key,record in self.manifest['kernels'].items():
             path=self.directory/record['artifact']
             self.kernels[key]=device.load(path)
         for r in self.rows:self.plans[r]=self._plan(r)
-        if graphs:
+        if self.provider=='webgpu':
+            for r,plan in self.plans.items():self.prepared[r]=device.prepare_plan(plan)
+            sample=self.kernels[identity('argmax',dict(n=self.config.vocab))]
+            values,symbols,launch=sample._bind((self.logits,self.workspaces[1]['tokens'],self.control),{},include_outputs=True)
+            call=BoundCall(device,sample.manifest,values,symbols,launch,validated=True)
+            for r,plan in self.plans.items():self.greedy[r]=device.prepare_plan((*plan,(sample,call)))
+            self.graphs_enabled=False
+        elif graphs:
             for r,plan in self.plans.items():
                 self.graphs[r]=CudaGraph(device,lambda plan=plan:self._submit(plan),resources=(*self.buffers,*self.kernels.values()))
         self.allocated_bytes=sum(b.nbytes for b in self.buffers)
 
     def _plan(self,r):
         cfg=self.config;c=cfg.width;ws=self.workspaces[r];plan=[]
+        hidden=ws['hidden'];other=ws.get('hidden2',hidden)
         def add(kind,p,*args):
+            if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and kind in ('linear','ffn','attention','attention_scores','rms','add_rms'):
+                p={**p,'sg':True}
             executable=self.kernels[identity(kind,p)]
             values,symbols,launch=executable._bind(args,{},include_outputs=True)
             plan.append((executable,BoundCall(self.device,executable.manifest,values,symbols,launch,validated=True)))
@@ -108,10 +144,10 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             info=self.gguf.tensors[name];o,k=info.shape
             add('linear',dict(r=rows,k=k,o=o,type=info.type),x,self.weights[name],out)
         def rms(name,x,out,rows=r):add('rms',dict(r=rows,c=c,eps=cfg.epsilon),x,self.weights[name],out)
-        add('embedding',dict(r=r,c=c,v=cfg.vocab,type=self.gguf.tensors['token_embd.weight'].type),ws['tokens'],self.weights['token_embd.weight'],ws['hidden'])
+        add('embedding',dict(r=r,c=c,v=cfg.vocab,type=self.gguf.tensors['token_embd.weight'].type),ws['tokens'],self.weights['token_embd.weight'],hidden)
         for i,kind in enumerate(cfg.layers):
             prefix=f'blk.{i}.'
-            rms(prefix+'attn_norm.weight',ws['hidden'],ws['normal'])
+            rms(prefix+'attn_norm.weight',hidden,ws['normal'])
             if kind=='conv':
                 linear(prefix+'shortconv.in_proj.weight',ws['normal'],ws['project'])
                 add('conv',dict(r=r,c=c),ws['project'],self.weights[prefix+'shortconv.conv.weight'],self.states[i],ws['convout'],self.control)
@@ -119,17 +155,36 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             else:
                 for name in ('q','k','v'):linear(prefix+'attn_'+name+'.weight',ws['normal'],ws[name])
                 kc,vc=self.caches[i]
-                add('qkv',dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity,eps=cfg.epsilon,theta=cfg.theta),
-                    ws['q'],ws['k'],ws['v'],self.weights[prefix+'attn_q_norm.weight'],self.weights[prefix+'attn_k_norm.weight'],ws['qo'],kc,vc,self.control)
-                add('attention',dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity),ws['qo'],kc,vc,ws['attn'],self.control)
+                p=dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity,eps=cfg.epsilon,theta=cfg.theta)
+                if self.provider=='webgpu':
+                    add('qnorm',p,ws['q'],self.weights[prefix+'attn_q_norm.weight'],ws['qo'],self.control)
+                    add('kvnorm',p,ws['k'],ws['v'],self.weights[prefix+'attn_k_norm.weight'],kc,vc,self.control)
+                else:
+                    add('qkv',p,ws['q'],ws['k'],ws['v'],self.weights[prefix+'attn_q_norm.weight'],self.weights[prefix+'attn_k_norm.weight'],ws['qo'],kc,vc,self.control)
+                attention_input=ws['qo']
+                if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and r==1:
+                    add('attention_scores',dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity),ws['qo'],kc,ws['scores'],self.control)
+                    attention_input=ws['scores']
+                arguments=(attention_input,vc,ws['attn'],self.control) if attention_input is not ws['qo'] else (attention_input,kc,vc,ws['attn'],self.control)
+                add('attention',dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity),*arguments)
                 linear(prefix+'attn_output.weight',ws['attn'],ws['mixed'])
-            add('add',dict(r=r,c=c),ws['hidden'],ws['mixed'],ws['hidden'])
-            rms(prefix+'ffn_norm.weight',ws['hidden'],ws['normal'])
-            linear(prefix+'ffn_gate.weight',ws['normal'],ws['gate']);linear(prefix+'ffn_up.weight',ws['normal'],ws['up'])
-            add('swiglu',dict(r=r,c=cfg.ff),ws['gate'],ws['up'],ws['activated'])
+            if self.provider=='webgpu' and r==1:
+                add('add_rms',dict(r=r,c=c,eps=cfg.epsilon),hidden,ws['mixed'],other,self.weights[prefix+'ffn_norm.weight'],ws['normal'])
+                hidden,other=other,hidden
+            else:
+                add('add',dict(r=r,c=c),hidden,ws['mixed'],other)
+                hidden,other=other,hidden
+                rms(prefix+'ffn_norm.weight',hidden,ws['normal'])
+            gate,up=(self.gguf.tensors[prefix+'ffn_'+name+'.weight'] for name in ('gate','up'))
+            if self.provider=='webgpu' and paired_ffn(r,gate,up):
+                add('ffn',dict(r=r,k=c,o=cfg.ff,type=gate.type),ws['normal'],self.weights[gate.name],self.weights[up.name],ws['activated'])
+            else:
+                linear(prefix+'ffn_gate.weight',ws['normal'],ws['gate']);linear(prefix+'ffn_up.weight',ws['normal'],ws['up'])
+                add('swiglu',dict(r=r,c=cfg.ff),ws['gate'],ws['up'],ws['activated'])
             linear(prefix+'ffn_down.weight',ws['activated'],ws['mixed'])
-            add('add',dict(r=r,c=c),ws['hidden'],ws['mixed'],ws['hidden'])
-        add('last',dict(r=r,c=c),ws['hidden'],ws['last'],self.control)
+            add('add',dict(r=r,c=c),hidden,ws['mixed'],other)
+            hidden,other=other,hidden
+        add('last',dict(r=r,c=c),hidden,ws['last'],self.control)
         rms('token_embd_norm.weight',ws['last'],ws['final'],rows=1)
         linear('output.weight' if 'output.weight' in self.weights else 'token_embd.weight',ws['final'],self.logits,rows=1)
         add('advance',dict(r=r),self.control)
@@ -142,15 +197,17 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         host=np.ascontiguousarray(host,dtype=buffer.dtype)
         if host.nbytes!=buffer.nbytes:raise ValueError('host write shape mismatch')
         self.device._check();buffer._check()
-        self.device.driver.call('cuMemcpyHtoD_v2',buffer.pointer,host.ctypes.data,host.nbytes)
+        if self.provider=='webgpu':self.device.write(buffer,host.reshape(buffer.shape))
+        else:self.device.driver.call('cuMemcpyHtoD_v2',buffer.pointer,host.ctypes.data,host.nbytes)
 
     def reset(self):
         if self.closed:raise RuntimeError('LFM2 is closed')
-        self.device.synchronize();self.position=0
+        if self.provider!='webgpu':self.device.synchronize()
+        self.position=0
         self._write(self.control,np.array([0,1],np.int32))
         for state in self.states.values():self._write(state,np.zeros(state.shape,np.float32))
 
-    def forward(self,tokens,*,read=True):
+    def forward(self,tokens,*,read=True,_greedy=False):
         if self.closed:raise RuntimeError('LFM2 is closed')
         tokens=np.asarray(tokens)
         if tokens.ndim!=1 or not tokens.size or tokens.dtype.kind not in 'iu':raise ValueError('requires nonempty integer token IDs')
@@ -160,18 +217,27 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         for start in range(0,len(tokens),chunk):
             values=tokens[start:start+chunk];r=1 if len(values)==1 else chunk
             host=np.zeros(r,np.int32);host[:len(values)]=values
-            self.device.synchronize()
+            if self.provider!='webgpu':self.device.synchronize()
             self._write(self.workspaces[r]['tokens'],host)
             self._write(self.control,np.array([self.position,len(values)],np.int32))
-            if self.graphs_enabled:self.graphs[r].launch()
+            if self.provider=='webgpu':
+                (self.greedy if _greedy and start+len(values)==len(tokens) else self.prepared)[r].launch()
+            elif self.graphs_enabled:self.graphs[r].launch()
             else:self._submit(self.plans[r])
             self.position+=len(values)
         return self.logits.to_numpy() if read else None
 
-    def generate(self,prompt,*,max_tokens=128,chat=True):
+    def generate(self,prompt,*,max_tokens=128,chat=True,gpu_greedy=True):
         if type(max_tokens)!=int or max_tokens<1:raise ValueError('max_tokens must be positive')
         tokens=self.tokenizer.chat(prompt) if chat else self.tokenizer.encode(prompt)
         if len(tokens)+max_tokens>self.context:raise ValueError('generation exceeds context capacity')
+        if self.provider=='webgpu' and gpu_greedy:
+            self.reset();self.forward(tokens,read=False,_greedy=True);generated=[]
+            for _ in range(max_tokens):
+                token=int(self.workspaces[1]['tokens'].to_numpy()[0]);generated.append(token)
+                if token==self.tokenizer.eos:break
+                self.greedy[1].launch();self.position+=1
+            return {'prompt_tokens':tokens,'generated_tokens':generated,'text':self.tokenizer.decode(generated)}
         self.reset();logits=self.forward(tokens);generated=[]
         for _ in range(max_tokens):
             token=int(np.argmax(logits));generated.append(token)
@@ -183,6 +249,8 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         if self.closed:return
         self.device.synchronize()
         for graph in self.graphs.values():graph.close()
+        for plan in self.prepared.values():plan.close()
+        for plan in self.greedy.values():plan.close()
         for kernel in self.kernels.values():kernel.release()
         for buffer in self.buffers:buffer.release()
         self.closed=True

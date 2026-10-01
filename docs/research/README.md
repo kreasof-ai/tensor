@@ -10,6 +10,10 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
+| [LFM2.5-230M native submission](lfm2-230m-native-submission.md) | Optional native prepared-plan encoder, four-wide prefill dots, Python fallback and further Vulkan gains |
+| [LFM2.5-230M WebGPU compiler optimization](lfm2-230m-webgpu-compiler-optimization.md) | Register microtiles, parallel reductions, subgroup decode/attention, tuned prefill and matched Vulkan benchmarks |
+| [LFM2.5-230M Vulkan optimization](lfm2-230m-vulkan-optimization.md) | Timestamp profiling, packed decode, register-tiled prefill, fusion and GPU greedy generation with fresh before/after measurements |
+| [LFM2.5-230M on Radeon Vulkan](lfm2-230m-vulkan.md) | Portable wgpu F16/Q4_0 generation, independent numerical validation and matched native llama.cpp Vulkan timings on RX 6700 XT |
 | [LFM2 decode optimization](lfm2-decode-optimization.md) | Latest experimental split-KV attention and packed-weight loading, ablations, and matched llama.cpp CUDA results through 8K context |
 | [LFM2 packed FP16 decode](lfm2-fp16-decode.md) | Half2 arithmetic, numerical validation, and alternatives to unpacking all weights |
 | [Standalone LFM2 GGUF inference](lfm2-inference.md) | Default engine, model/tokenizer contract, F16/Q4_0/Q4_K_M correctness, and original llama.cpp comparison |

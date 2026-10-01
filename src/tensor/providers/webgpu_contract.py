@@ -42,7 +42,10 @@ def reflect(source, entrypoint, abi, launch):
     enables = re.findall(r"\benable\s+(\w+)\s*;", source)
     if set(enables) - {"f16"}:
         raise ValueError("portable WebGPU shaders cannot require subgroup/vendor extensions")
-    return {"bindings": layout, "required_features": ["shader-f16"] if "f16" in enables else [],
+    features = ["shader-f16"] if "f16" in enables else []
+    if re.search(r"\bsubgroup\w*\s*\(|@builtin\(subgroup_", source):
+        features.append("subgroup")
+    return {"bindings": layout, "required_features": features,
             "workgroup_storage_bytes": storage}
 
 
@@ -50,7 +53,7 @@ def validate_metadata(metadata, abi):
     if not isinstance(metadata, dict) or set(metadata) != {"bindings", "required_features", "workgroup_storage_bytes"}:
         raise ValueError("invalid WebGPU contract")
     features = metadata["required_features"]
-    if features not in ([], ["shader-f16"]):
+    if features not in ([], ["shader-f16"], ["subgroup"], ["shader-f16", "subgroup"]):
         raise ValueError("invalid WebGPU features")
     if any(arg["dtype"] == "float16" for arg in abi) and "shader-f16" not in features:
         raise ValueError("FP16 WebGPU buffers require shader-f16")

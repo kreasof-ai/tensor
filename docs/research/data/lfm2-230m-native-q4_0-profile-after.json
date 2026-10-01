@@ -1,0 +1,1937 @@
+{
+  "adapter": {
+    "ordinal": 0,
+    "provider": "webgpu",
+    "arch": "webgpu-portable-v1",
+    "name": "AMD Radeon RX 6700 XT",
+    "adapter": {
+      "vendor": "AMD proprietary driver",
+      "architecture": "",
+      "device": "AMD Radeon RX 6700 XT",
+      "description": "26.6.2 (AMD proprietary shader compiler)",
+      "stackgroup_min_size": 4,
+      "stackgroup_max_size": 128,
+      "vendor_id": 4098,
+      "device_id": 29663,
+      "adapter_type": "DiscreteGPU",
+      "backend_type": "Vulkan"
+    },
+    "features": [
+      "shader-f16",
+      "subgroup",
+      "timestamp-query",
+      "timestamp-query-inside-passes"
+    ],
+    "limits": {
+      "max-bind-groups": 8,
+      "max-bind-groups-plus-vertex-buffers": 0,
+      "max-bindings-per-bind-group": 1000,
+      "max-buffer-size": 134217728,
+      "max-color-attachment-bytes-per-sample": 0,
+      "max-color-attachments": 0,
+      "max-compute-invocations-per-workgroup": 1024,
+      "max-compute-workgroup-size-x": 1024,
+      "max-compute-workgroup-size-y": 1024,
+      "max-compute-workgroup-size-z": 1024,
+      "max-compute-workgroup-storage-size": 32768,
+      "max-compute-workgroups-per-dimension": 65535,
+      "max-dynamic-storage-buffers-per-pipeline-layout": 8,
+      "max-dynamic-uniform-buffers-per-pipeline-layout": 8,
+      "max-inter-stage-shader-variables": 0,
+      "max-non-sampler-bindings": 1000000,
+      "max-push-constant-size": 256,
+      "max-sampled-textures-per-shader-stage": 16,
+      "max-samplers-per-shader-stage": 16,
+      "max-storage-buffer-binding-size": 134217728,
+      "max-storage-buffers-per-shader-stage": 8,
+      "max-storage-textures-per-shader-stage": 4,
+      "max-texture-array-layers": 8192,
+      "max-texture-dimension-1d": 16384,
+      "max-texture-dimension-2d": 16384,
+      "max-texture-dimension-3d": 8192,
+      "max-uniform-buffer-binding-size": 2147483647,
+      "max-uniform-buffers-per-shader-stage": 12,
+      "max-vertex-attributes": 64,
+      "max-vertex-buffer-array-stride": 16383,
+      "max-vertex-buffers": 16,
+      "min-storage-buffer-offset-alignment": 32,
+      "min-uniform-buffer-offset-alignment": 32
+    },
+    "prepared_encoding": "native"
+  },
+  "timestamp_period_ns": 10.0,
+  "repeats": 7,
+  "profile": [
+    {
+      "rows": 1,
+      "position": 128,
+      "dispatches": 147,
+      "host_median": {
+        "pre_sync_ms": 0.0849999487400055,
+        "upload_ms": 0.07159996312111616,
+        "encode_submit_ms": 0.39900001138448715,
+        "completion_logits_ms": 2.3150999331846833
+      },
+      "whole_gpu_ms": 1.72512,
+      "instrumented_dispatch_sum_ms": 1.7678,
+      "gpu_by_kind_ms": {
+        "linear": 0.7146000000000001,
+        "attention": 0.28404,
+        "ffn": 0.25792,
+        "rms": 0.16879999999999998,
+        "add_rms": 0.16036000000000003,
+        "attention_scores": 0.04284,
+        "kvnorm": 0.03944,
+        "qnorm": 0.03596,
+        "add": 0.031479999999999994,
+        "conv": 0.023880000000000002,
+        "embedding": 0.00396,
+        "last": 0.00228,
+        "advance": 0.00224
+      },
+      "nodes": [
+        {
+          "index": 0,
+          "kind": "embedding",
+          "weight": "token_embd.weight",
+          "gpu_ms": 0.00396
+        },
+        {
+          "index": 1,
+          "kind": "rms",
+          "weight": "blk.0.attn_norm.weight",
+          "gpu_ms": 0.01156
+        },
+        {
+          "index": 2,
+          "kind": "linear",
+          "weight": "blk.0.shortconv.in_proj.weight",
+          "gpu_ms": 0.013
+        },
+        {
+          "index": 3,
+          "kind": "conv",
+          "weight": "blk.0.shortconv.conv.weight",
+          "gpu_ms": 0.00308
+        },
+        {
+          "index": 4,
+          "kind": "linear",
+          "weight": "blk.0.shortconv.out_proj.weight",
+          "gpu_ms": 0.00676
+        },
+        {
+          "index": 5,
+          "kind": "add_rms",
+          "weight": "blk.0.ffn_norm.weight",
+          "gpu_ms": 0.01172
+        },
+        {
+          "index": 6,
+          "kind": "ffn",
+          "weight": "blk.0.ffn_gate.weight",
+          "gpu_ms": 0.01816
+        },
+        {
+          "index": 7,
+          "kind": "linear",
+          "weight": "blk.0.ffn_down.weight",
+          "gpu_ms": 0.0116
+        },
+        {
+          "index": 8,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00228
+        },
+        {
+          "index": 9,
+          "kind": "rms",
+          "weight": "blk.1.attn_norm.weight",
+          "gpu_ms": 0.01132
+        },
+        {
+          "index": 10,
+          "kind": "linear",
+          "weight": "blk.1.shortconv.in_proj.weight",
+          "gpu_ms": 0.01336
+        },
+        {
+          "index": 11,
+          "kind": "conv",
+          "weight": "blk.1.shortconv.conv.weight",
+          "gpu_ms": 0.00308
+        },
+        {
+          "index": 12,
+          "kind": "linear",
+          "weight": "blk.1.shortconv.out_proj.weight",
+          "gpu_ms": 0.00636
+        },
+        {
+          "index": 13,
+          "kind": "add_rms",
+          "weight": "blk.1.ffn_norm.weight",
+          "gpu_ms": 0.01144
+        },
+        {
+          "index": 14,
+          "kind": "ffn",
+          "weight": "blk.1.ffn_gate.weight",
+          "gpu_ms": 0.01912
+        },
+        {
+          "index": 15,
+          "kind": "linear",
+          "weight": "blk.1.ffn_down.weight",
+          "gpu_ms": 0.01144
+        },
+        {
+          "index": 16,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 17,
+          "kind": "rms",
+          "weight": "blk.2.attn_norm.weight",
+          "gpu_ms": 0.01124
+        },
+        {
+          "index": 18,
+          "kind": "linear",
+          "weight": "blk.2.attn_q.weight",
+          "gpu_ms": 0.00676
+        },
+        {
+          "index": 19,
+          "kind": "linear",
+          "weight": "blk.2.attn_k.weight",
+          "gpu_ms": 0.0056
+        },
+        {
+          "index": 20,
+          "kind": "linear",
+          "weight": "blk.2.attn_v.weight",
+          "gpu_ms": 0.00516
+        },
+        {
+          "index": 21,
+          "kind": "qnorm",
+          "weight": "blk.2.attn_q_norm.weight",
+          "gpu_ms": 0.00592
+        },
+        {
+          "index": 22,
+          "kind": "kvnorm",
+          "weight": "blk.2.attn_k_norm.weight",
+          "gpu_ms": 0.00656
+        },
+        {
+          "index": 23,
+          "kind": "attention_scores",
+          "weight": null,
+          "gpu_ms": 0.00728
+        },
+        {
+          "index": 24,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.04804
+        },
+        {
+          "index": 25,
+          "kind": "linear",
+          "weight": "blk.2.attn_output.weight",
+          "gpu_ms": 0.00612
+        },
+        {
+          "index": 26,
+          "kind": "add_rms",
+          "weight": "blk.2.ffn_norm.weight",
+          "gpu_ms": 0.01152
+        },
+        {
+          "index": 27,
+          "kind": "ffn",
+          "weight": "blk.2.ffn_gate.weight",
+          "gpu_ms": 0.01832
+        },
+        {
+          "index": 28,
+          "kind": "linear",
+          "weight": "blk.2.ffn_down.weight",
+          "gpu_ms": 0.01144
+        },
+        {
+          "index": 29,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00228
+        },
+        {
+          "index": 30,
+          "kind": "rms",
+          "weight": "blk.3.attn_norm.weight",
+          "gpu_ms": 0.01128
+        },
+        {
+          "index": 31,
+          "kind": "linear",
+          "weight": "blk.3.shortconv.in_proj.weight",
+          "gpu_ms": 0.01292
+        },
+        {
+          "index": 32,
+          "kind": "conv",
+          "weight": "blk.3.shortconv.conv.weight",
+          "gpu_ms": 0.00308
+        },
+        {
+          "index": 33,
+          "kind": "linear",
+          "weight": "blk.3.shortconv.out_proj.weight",
+          "gpu_ms": 0.0068
+        },
+        {
+          "index": 34,
+          "kind": "add_rms",
+          "weight": "blk.3.ffn_norm.weight",
+          "gpu_ms": 0.01156
+        },
+        {
+          "index": 35,
+          "kind": "ffn",
+          "weight": "blk.3.ffn_gate.weight",
+          "gpu_ms": 0.01928
+        },
+        {
+          "index": 36,
+          "kind": "linear",
+          "weight": "blk.3.ffn_down.weight",
+          "gpu_ms": 0.01108
+        },
+        {
+          "index": 37,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 38,
+          "kind": "rms",
+          "weight": "blk.4.attn_norm.weight",
+          "gpu_ms": 0.01104
+        },
+        {
+          "index": 39,
+          "kind": "linear",
+          "weight": "blk.4.attn_q.weight",
+          "gpu_ms": 0.0066
+        },
+        {
+          "index": 40,
+          "kind": "linear",
+          "weight": "blk.4.attn_k.weight",
+          "gpu_ms": 0.00568
+        },
+        {
+          "index": 41,
+          "kind": "linear",
+          "weight": "blk.4.attn_v.weight",
+          "gpu_ms": 0.00572
+        },
+        {
+          "index": 42,
+          "kind": "qnorm",
+          "weight": "blk.4.attn_q_norm.weight",
+          "gpu_ms": 0.00592
+        },
+        {
+          "index": 43,
+          "kind": "kvnorm",
+          "weight": "blk.4.attn_k_norm.weight",
+          "gpu_ms": 0.00664
+        },
+        {
+          "index": 44,
+          "kind": "attention_scores",
+          "weight": null,
+          "gpu_ms": 0.00708
+        },
+        {
+          "index": 45,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.0478
+        },
+        {
+          "index": 46,
+          "kind": "linear",
+          "weight": "blk.4.attn_output.weight",
+          "gpu_ms": 0.00592
+        },
+        {
+          "index": 47,
+          "kind": "add_rms",
+          "weight": "blk.4.ffn_norm.weight",
+          "gpu_ms": 0.01124
+        },
+        {
+          "index": 48,
+          "kind": "ffn",
+          "weight": "blk.4.ffn_gate.weight",
+          "gpu_ms": 0.01828
+        },
+        {
+          "index": 49,
+          "kind": "linear",
+          "weight": "blk.4.ffn_down.weight",
+          "gpu_ms": 0.01196
+        },
+        {
+          "index": 50,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00212
+        },
+        {
+          "index": 51,
+          "kind": "rms",
+          "weight": "blk.5.attn_norm.weight",
+          "gpu_ms": 0.01128
+        },
+        {
+          "index": 52,
+          "kind": "linear",
+          "weight": "blk.5.shortconv.in_proj.weight",
+          "gpu_ms": 0.01316
+        },
+        {
+          "index": 53,
+          "kind": "conv",
+          "weight": "blk.5.shortconv.conv.weight",
+          "gpu_ms": 0.0028
+        },
+        {
+          "index": 54,
+          "kind": "linear",
+          "weight": "blk.5.shortconv.out_proj.weight",
+          "gpu_ms": 0.00616
+        },
+        {
+          "index": 55,
+          "kind": "add_rms",
+          "weight": "blk.5.ffn_norm.weight",
+          "gpu_ms": 0.01148
+        },
+        {
+          "index": 56,
+          "kind": "ffn",
+          "weight": "blk.5.ffn_gate.weight",
+          "gpu_ms": 0.01788
+        },
+        {
+          "index": 57,
+          "kind": "linear",
+          "weight": "blk.5.ffn_down.weight",
+          "gpu_ms": 0.01156
+        },
+        {
+          "index": 58,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 59,
+          "kind": "rms",
+          "weight": "blk.6.attn_norm.weight",
+          "gpu_ms": 0.01104
+        },
+        {
+          "index": 60,
+          "kind": "linear",
+          "weight": "blk.6.attn_q.weight",
+          "gpu_ms": 0.00656
+        },
+        {
+          "index": 61,
+          "kind": "linear",
+          "weight": "blk.6.attn_k.weight",
+          "gpu_ms": 0.00592
+        },
+        {
+          "index": 62,
+          "kind": "linear",
+          "weight": "blk.6.attn_v.weight",
+          "gpu_ms": 0.00548
+        },
+        {
+          "index": 63,
+          "kind": "qnorm",
+          "weight": "blk.6.attn_q_norm.weight",
+          "gpu_ms": 0.00596
+        },
+        {
+          "index": 64,
+          "kind": "kvnorm",
+          "weight": "blk.6.attn_k_norm.weight",
+          "gpu_ms": 0.00652
+        },
+        {
+          "index": 65,
+          "kind": "attention_scores",
+          "weight": null,
+          "gpu_ms": 0.00728
+        },
+        {
+          "index": 66,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.0476
+        },
+        {
+          "index": 67,
+          "kind": "linear",
+          "weight": "blk.6.attn_output.weight",
+          "gpu_ms": 0.00604
+        },
+        {
+          "index": 68,
+          "kind": "add_rms",
+          "weight": "blk.6.ffn_norm.weight",
+          "gpu_ms": 0.01148
+        },
+        {
+          "index": 69,
+          "kind": "ffn",
+          "weight": "blk.6.ffn_gate.weight",
+          "gpu_ms": 0.0182
+        },
+        {
+          "index": 70,
+          "kind": "linear",
+          "weight": "blk.6.ffn_down.weight",
+          "gpu_ms": 0.01164
+        },
+        {
+          "index": 71,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00208
+        },
+        {
+          "index": 72,
+          "kind": "rms",
+          "weight": "blk.7.attn_norm.weight",
+          "gpu_ms": 0.01128
+        },
+        {
+          "index": 73,
+          "kind": "linear",
+          "weight": "blk.7.shortconv.in_proj.weight",
+          "gpu_ms": 0.01328
+        },
+        {
+          "index": 74,
+          "kind": "conv",
+          "weight": "blk.7.shortconv.conv.weight",
+          "gpu_ms": 0.00276
+        },
+        {
+          "index": 75,
+          "kind": "linear",
+          "weight": "blk.7.shortconv.out_proj.weight",
+          "gpu_ms": 0.00676
+        },
+        {
+          "index": 76,
+          "kind": "add_rms",
+          "weight": "blk.7.ffn_norm.weight",
+          "gpu_ms": 0.01108
+        },
+        {
+          "index": 77,
+          "kind": "ffn",
+          "weight": "blk.7.ffn_gate.weight",
+          "gpu_ms": 0.01868
+        },
+        {
+          "index": 78,
+          "kind": "linear",
+          "weight": "blk.7.ffn_down.weight",
+          "gpu_ms": 0.01156
+        },
+        {
+          "index": 79,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 80,
+          "kind": "rms",
+          "weight": "blk.8.attn_norm.weight",
+          "gpu_ms": 0.01124
+        },
+        {
+          "index": 81,
+          "kind": "linear",
+          "weight": "blk.8.attn_q.weight",
+          "gpu_ms": 0.00684
+        },
+        {
+          "index": 82,
+          "kind": "linear",
+          "weight": "blk.8.attn_k.weight",
+          "gpu_ms": 0.00548
+        },
+        {
+          "index": 83,
+          "kind": "linear",
+          "weight": "blk.8.attn_v.weight",
+          "gpu_ms": 0.00552
+        },
+        {
+          "index": 84,
+          "kind": "qnorm",
+          "weight": "blk.8.attn_q_norm.weight",
+          "gpu_ms": 0.00612
+        },
+        {
+          "index": 85,
+          "kind": "kvnorm",
+          "weight": "blk.8.attn_k_norm.weight",
+          "gpu_ms": 0.0066
+        },
+        {
+          "index": 86,
+          "kind": "attention_scores",
+          "weight": null,
+          "gpu_ms": 0.00704
+        },
+        {
+          "index": 87,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.04756
+        },
+        {
+          "index": 88,
+          "kind": "linear",
+          "weight": "blk.8.attn_output.weight",
+          "gpu_ms": 0.00608
+        },
+        {
+          "index": 89,
+          "kind": "add_rms",
+          "weight": "blk.8.ffn_norm.weight",
+          "gpu_ms": 0.01176
+        },
+        {
+          "index": 90,
+          "kind": "ffn",
+          "weight": "blk.8.ffn_gate.weight",
+          "gpu_ms": 0.01848
+        },
+        {
+          "index": 91,
+          "kind": "linear",
+          "weight": "blk.8.ffn_down.weight",
+          "gpu_ms": 0.0114
+        },
+        {
+          "index": 92,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00208
+        },
+        {
+          "index": 93,
+          "kind": "rms",
+          "weight": "blk.9.attn_norm.weight",
+          "gpu_ms": 0.01128
+        },
+        {
+          "index": 94,
+          "kind": "linear",
+          "weight": "blk.9.shortconv.in_proj.weight",
+          "gpu_ms": 0.01296
+        },
+        {
+          "index": 95,
+          "kind": "conv",
+          "weight": "blk.9.shortconv.conv.weight",
+          "gpu_ms": 0.003
+        },
+        {
+          "index": 96,
+          "kind": "linear",
+          "weight": "blk.9.shortconv.out_proj.weight",
+          "gpu_ms": 0.00628
+        },
+        {
+          "index": 97,
+          "kind": "add_rms",
+          "weight": "blk.9.ffn_norm.weight",
+          "gpu_ms": 0.01152
+        },
+        {
+          "index": 98,
+          "kind": "ffn",
+          "weight": "blk.9.ffn_gate.weight",
+          "gpu_ms": 0.01832
+        },
+        {
+          "index": 99,
+          "kind": "linear",
+          "weight": "blk.9.ffn_down.weight",
+          "gpu_ms": 0.011
+        },
+        {
+          "index": 100,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 101,
+          "kind": "rms",
+          "weight": "blk.10.attn_norm.weight",
+          "gpu_ms": 0.01104
+        },
+        {
+          "index": 102,
+          "kind": "linear",
+          "weight": "blk.10.attn_q.weight",
+          "gpu_ms": 0.00664
+        },
+        {
+          "index": 103,
+          "kind": "linear",
+          "weight": "blk.10.attn_k.weight",
+          "gpu_ms": 0.00568
+        },
+        {
+          "index": 104,
+          "kind": "linear",
+          "weight": "blk.10.attn_v.weight",
+          "gpu_ms": 0.00548
+        },
+        {
+          "index": 105,
+          "kind": "qnorm",
+          "weight": "blk.10.attn_q_norm.weight",
+          "gpu_ms": 0.00616
+        },
+        {
+          "index": 106,
+          "kind": "kvnorm",
+          "weight": "blk.10.attn_k_norm.weight",
+          "gpu_ms": 0.0066
+        },
+        {
+          "index": 107,
+          "kind": "attention_scores",
+          "weight": null,
+          "gpu_ms": 0.00688
+        },
+        {
+          "index": 108,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.04524
+        },
+        {
+          "index": 109,
+          "kind": "linear",
+          "weight": "blk.10.attn_output.weight",
+          "gpu_ms": 0.00616
+        },
+        {
+          "index": 110,
+          "kind": "add_rms",
+          "weight": "blk.10.ffn_norm.weight",
+          "gpu_ms": 0.01128
+        },
+        {
+          "index": 111,
+          "kind": "ffn",
+          "weight": "blk.10.ffn_gate.weight",
+          "gpu_ms": 0.01832
+        },
+        {
+          "index": 112,
+          "kind": "linear",
+          "weight": "blk.10.ffn_down.weight",
+          "gpu_ms": 0.01188
+        },
+        {
+          "index": 113,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 114,
+          "kind": "rms",
+          "weight": "blk.11.attn_norm.weight",
+          "gpu_ms": 0.01132
+        },
+        {
+          "index": 115,
+          "kind": "linear",
+          "weight": "blk.11.shortconv.in_proj.weight",
+          "gpu_ms": 0.01316
+        },
+        {
+          "index": 116,
+          "kind": "conv",
+          "weight": "blk.11.shortconv.conv.weight",
+          "gpu_ms": 0.00304
+        },
+        {
+          "index": 117,
+          "kind": "linear",
+          "weight": "blk.11.shortconv.out_proj.weight",
+          "gpu_ms": 0.00684
+        },
+        {
+          "index": 118,
+          "kind": "add_rms",
+          "weight": "blk.11.ffn_norm.weight",
+          "gpu_ms": 0.01152
+        },
+        {
+          "index": 119,
+          "kind": "ffn",
+          "weight": "blk.11.ffn_gate.weight",
+          "gpu_ms": 0.0176
+        },
+        {
+          "index": 120,
+          "kind": "linear",
+          "weight": "blk.11.ffn_down.weight",
+          "gpu_ms": 0.01116
+        },
+        {
+          "index": 121,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 122,
+          "kind": "rms",
+          "weight": "blk.12.attn_norm.weight",
+          "gpu_ms": 0.01112
+        },
+        {
+          "index": 123,
+          "kind": "linear",
+          "weight": "blk.12.attn_q.weight",
+          "gpu_ms": 0.0066
+        },
+        {
+          "index": 124,
+          "kind": "linear",
+          "weight": "blk.12.attn_k.weight",
+          "gpu_ms": 0.00548
+        },
+        {
+          "index": 125,
+          "kind": "linear",
+          "weight": "blk.12.attn_v.weight",
+          "gpu_ms": 0.00548
+        },
+        {
+          "index": 126,
+          "kind": "qnorm",
+          "weight": "blk.12.attn_q_norm.weight",
+          "gpu_ms": 0.00588
+        },
+        {
+          "index": 127,
+          "kind": "kvnorm",
+          "weight": "blk.12.attn_k_norm.weight",
+          "gpu_ms": 0.00652
+        },
+        {
+          "index": 128,
+          "kind": "attention_scores",
+          "weight": null,
+          "gpu_ms": 0.00728
+        },
+        {
+          "index": 129,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.0478
+        },
+        {
+          "index": 130,
+          "kind": "linear",
+          "weight": "blk.12.attn_output.weight",
+          "gpu_ms": 0.00596
+        },
+        {
+          "index": 131,
+          "kind": "add_rms",
+          "weight": "blk.12.ffn_norm.weight",
+          "gpu_ms": 0.01108
+        },
+        {
+          "index": 132,
+          "kind": "ffn",
+          "weight": "blk.12.ffn_gate.weight",
+          "gpu_ms": 0.01908
+        },
+        {
+          "index": 133,
+          "kind": "linear",
+          "weight": "blk.12.ffn_down.weight",
+          "gpu_ms": 0.01124
+        },
+        {
+          "index": 134,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00208
+        },
+        {
+          "index": 135,
+          "kind": "rms",
+          "weight": "blk.13.attn_norm.weight",
+          "gpu_ms": 0.01148
+        },
+        {
+          "index": 136,
+          "kind": "linear",
+          "weight": "blk.13.shortconv.in_proj.weight",
+          "gpu_ms": 0.01316
+        },
+        {
+          "index": 137,
+          "kind": "conv",
+          "weight": "blk.13.shortconv.conv.weight",
+          "gpu_ms": 0.00304
+        },
+        {
+          "index": 138,
+          "kind": "linear",
+          "weight": "blk.13.shortconv.out_proj.weight",
+          "gpu_ms": 0.0064
+        },
+        {
+          "index": 139,
+          "kind": "add_rms",
+          "weight": "blk.13.ffn_norm.weight",
+          "gpu_ms": 0.01168
+        },
+        {
+          "index": 140,
+          "kind": "ffn",
+          "weight": "blk.13.ffn_gate.weight",
+          "gpu_ms": 0.0182
+        },
+        {
+          "index": 141,
+          "kind": "linear",
+          "weight": "blk.13.ffn_down.weight",
+          "gpu_ms": 0.0114
+        },
+        {
+          "index": 142,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00232
+        },
+        {
+          "index": 143,
+          "kind": "last",
+          "weight": null,
+          "gpu_ms": 0.00228
+        },
+        {
+          "index": 144,
+          "kind": "rms",
+          "weight": "token_embd_norm.weight",
+          "gpu_ms": 0.01128
+        },
+        {
+          "index": 145,
+          "kind": "linear",
+          "weight": "token_embd.weight",
+          "gpu_ms": 0.25392
+        },
+        {
+          "index": 146,
+          "kind": "advance",
+          "weight": null,
+          "gpu_ms": 0.00224
+        }
+      ]
+    },
+    {
+      "rows": 32,
+      "position": 96,
+      "dispatches": 155,
+      "host_median": {
+        "pre_sync_ms": 0.08230004459619522,
+        "upload_ms": 0.07760000880807638,
+        "encode_submit_ms": 0.40089990943670273,
+        "completion_logits_ms": 21.964300074614584
+      },
+      "whole_gpu_ms": 20.75016,
+      "instrumented_dispatch_sum_ms": 24.52929,
+      "gpu_by_kind_ms": {
+        "linear": 17.616609999999994,
+        "ffn": 4.31904,
+        "rms": 1.82204,
+        "attention": 0.47188,
+        "add": 0.10256,
+        "conv": 0.09955999999999998,
+        "qnorm": 0.045880000000000004,
+        "kvnorm": 0.04168,
+        "embedding": 0.0042,
+        "last": 0.0034,
+        "advance": 0.00244
+      },
+      "nodes": [
+        {
+          "index": 0,
+          "kind": "embedding",
+          "weight": "token_embd.weight",
+          "gpu_ms": 0.0042
+        },
+        {
+          "index": 1,
+          "kind": "rms",
+          "weight": "blk.0.attn_norm.weight",
+          "gpu_ms": 0.06168
+        },
+        {
+          "index": 2,
+          "kind": "linear",
+          "weight": "blk.0.shortconv.in_proj.weight",
+          "gpu_ms": 0.25936
+        },
+        {
+          "index": 3,
+          "kind": "conv",
+          "weight": "blk.0.shortconv.conv.weight",
+          "gpu_ms": 0.01164
+        },
+        {
+          "index": 4,
+          "kind": "linear",
+          "weight": "blk.0.shortconv.out_proj.weight",
+          "gpu_ms": 0.20692
+        },
+        {
+          "index": 5,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00296
+        },
+        {
+          "index": 6,
+          "kind": "rms",
+          "weight": "blk.0.ffn_norm.weight",
+          "gpu_ms": 0.06004
+        },
+        {
+          "index": 7,
+          "kind": "ffn",
+          "weight": "blk.0.ffn_gate.weight",
+          "gpu_ms": 0.285
+        },
+        {
+          "index": 8,
+          "kind": "linear",
+          "weight": "blk.0.ffn_down.weight",
+          "gpu_ms": 0.4296
+        },
+        {
+          "index": 9,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00284
+        },
+        {
+          "index": 10,
+          "kind": "rms",
+          "weight": "blk.1.attn_norm.weight",
+          "gpu_ms": 0.0602
+        },
+        {
+          "index": 11,
+          "kind": "linear",
+          "weight": "blk.1.shortconv.in_proj.weight",
+          "gpu_ms": 0.25548
+        },
+        {
+          "index": 12,
+          "kind": "conv",
+          "weight": "blk.1.shortconv.conv.weight",
+          "gpu_ms": 0.01096
+        },
+        {
+          "index": 13,
+          "kind": "linear",
+          "weight": "blk.1.shortconv.out_proj.weight",
+          "gpu_ms": 0.20376
+        },
+        {
+          "index": 14,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00284
+        },
+        {
+          "index": 15,
+          "kind": "rms",
+          "weight": "blk.1.ffn_norm.weight",
+          "gpu_ms": 0.06
+        },
+        {
+          "index": 16,
+          "kind": "ffn",
+          "weight": "blk.1.ffn_gate.weight",
+          "gpu_ms": 0.28556
+        },
+        {
+          "index": 17,
+          "kind": "linear",
+          "weight": "blk.1.ffn_down.weight",
+          "gpu_ms": 0.43048
+        },
+        {
+          "index": 18,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00272
+        },
+        {
+          "index": 19,
+          "kind": "rms",
+          "weight": "blk.2.attn_norm.weight",
+          "gpu_ms": 0.06016
+        },
+        {
+          "index": 20,
+          "kind": "linear",
+          "weight": "blk.2.attn_q.weight",
+          "gpu_ms": 0.20016
+        },
+        {
+          "index": 21,
+          "kind": "linear",
+          "weight": "blk.2.attn_k.weight",
+          "gpu_ms": 0.19772
+        },
+        {
+          "index": 22,
+          "kind": "linear",
+          "weight": "blk.2.attn_v.weight",
+          "gpu_ms": 0.19816
+        },
+        {
+          "index": 23,
+          "kind": "qnorm",
+          "weight": "blk.2.attn_q_norm.weight",
+          "gpu_ms": 0.00728
+        },
+        {
+          "index": 24,
+          "kind": "kvnorm",
+          "weight": "blk.2.attn_k_norm.weight",
+          "gpu_ms": 0.00684
+        },
+        {
+          "index": 25,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.07532
+        },
+        {
+          "index": 26,
+          "kind": "linear",
+          "weight": "blk.2.attn_output.weight",
+          "gpu_ms": 0.20104
+        },
+        {
+          "index": 27,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00288
+        },
+        {
+          "index": 28,
+          "kind": "rms",
+          "weight": "blk.2.ffn_norm.weight",
+          "gpu_ms": 0.05972
+        },
+        {
+          "index": 29,
+          "kind": "ffn",
+          "weight": "blk.2.ffn_gate.weight",
+          "gpu_ms": 0.28428
+        },
+        {
+          "index": 30,
+          "kind": "linear",
+          "weight": "blk.2.ffn_down.weight",
+          "gpu_ms": 0.42112
+        },
+        {
+          "index": 31,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.0028
+        },
+        {
+          "index": 32,
+          "kind": "rms",
+          "weight": "blk.3.attn_norm.weight",
+          "gpu_ms": 0.05996
+        },
+        {
+          "index": 33,
+          "kind": "linear",
+          "weight": "blk.3.shortconv.in_proj.weight",
+          "gpu_ms": 0.2556
+        },
+        {
+          "index": 34,
+          "kind": "conv",
+          "weight": "blk.3.shortconv.conv.weight",
+          "gpu_ms": 0.01124
+        },
+        {
+          "index": 35,
+          "kind": "linear",
+          "weight": "blk.3.shortconv.out_proj.weight",
+          "gpu_ms": 0.20416
+        },
+        {
+          "index": 36,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.0028
+        },
+        {
+          "index": 37,
+          "kind": "rms",
+          "weight": "blk.3.ffn_norm.weight",
+          "gpu_ms": 0.05996
+        },
+        {
+          "index": 38,
+          "kind": "ffn",
+          "weight": "blk.3.ffn_gate.weight",
+          "gpu_ms": 0.28156
+        },
+        {
+          "index": 39,
+          "kind": "linear",
+          "weight": "blk.3.ffn_down.weight",
+          "gpu_ms": 0.42708
+        },
+        {
+          "index": 40,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.0028
+        },
+        {
+          "index": 41,
+          "kind": "rms",
+          "weight": "blk.4.attn_norm.weight",
+          "gpu_ms": 0.05984
+        },
+        {
+          "index": 42,
+          "kind": "linear",
+          "weight": "blk.4.attn_q.weight",
+          "gpu_ms": 0.2
+        },
+        {
+          "index": 43,
+          "kind": "linear",
+          "weight": "blk.4.attn_k.weight",
+          "gpu_ms": 0.198
+        },
+        {
+          "index": 44,
+          "kind": "linear",
+          "weight": "blk.4.attn_v.weight",
+          "gpu_ms": 0.19844
+        },
+        {
+          "index": 45,
+          "kind": "qnorm",
+          "weight": "blk.4.attn_q_norm.weight",
+          "gpu_ms": 0.00704
+        },
+        {
+          "index": 46,
+          "kind": "kvnorm",
+          "weight": "blk.4.attn_k_norm.weight",
+          "gpu_ms": 0.00648
+        },
+        {
+          "index": 47,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.07528
+        },
+        {
+          "index": 48,
+          "kind": "linear",
+          "weight": "blk.4.attn_output.weight",
+          "gpu_ms": 0.19376
+        },
+        {
+          "index": 49,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00272
+        },
+        {
+          "index": 50,
+          "kind": "rms",
+          "weight": "blk.4.ffn_norm.weight",
+          "gpu_ms": 0.05984
+        },
+        {
+          "index": 51,
+          "kind": "ffn",
+          "weight": "blk.4.ffn_gate.weight",
+          "gpu_ms": 0.27956
+        },
+        {
+          "index": 52,
+          "kind": "linear",
+          "weight": "blk.4.ffn_down.weight",
+          "gpu_ms": 0.42752
+        },
+        {
+          "index": 53,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.0028
+        },
+        {
+          "index": 54,
+          "kind": "rms",
+          "weight": "blk.5.attn_norm.weight",
+          "gpu_ms": 0.06008
+        },
+        {
+          "index": 55,
+          "kind": "linear",
+          "weight": "blk.5.shortconv.in_proj.weight",
+          "gpu_ms": 0.2554
+        },
+        {
+          "index": 56,
+          "kind": "conv",
+          "weight": "blk.5.shortconv.conv.weight",
+          "gpu_ms": 0.01116
+        },
+        {
+          "index": 57,
+          "kind": "linear",
+          "weight": "blk.5.shortconv.out_proj.weight",
+          "gpu_ms": 0.20216
+        },
+        {
+          "index": 58,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00276
+        },
+        {
+          "index": 59,
+          "kind": "rms",
+          "weight": "blk.5.ffn_norm.weight",
+          "gpu_ms": 0.05996
+        },
+        {
+          "index": 60,
+          "kind": "ffn",
+          "weight": "blk.5.ffn_gate.weight",
+          "gpu_ms": 0.28384
+        },
+        {
+          "index": 61,
+          "kind": "linear",
+          "weight": "blk.5.ffn_down.weight",
+          "gpu_ms": 0.42876
+        },
+        {
+          "index": 62,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00304
+        },
+        {
+          "index": 63,
+          "kind": "rms",
+          "weight": "blk.6.attn_norm.weight",
+          "gpu_ms": 0.06144
+        },
+        {
+          "index": 64,
+          "kind": "linear",
+          "weight": "blk.6.attn_q.weight",
+          "gpu_ms": 0.19996
+        },
+        {
+          "index": 65,
+          "kind": "linear",
+          "weight": "blk.6.attn_k.weight",
+          "gpu_ms": 0.1984
+        },
+        {
+          "index": 66,
+          "kind": "linear",
+          "weight": "blk.6.attn_v.weight",
+          "gpu_ms": 0.20676
+        },
+        {
+          "index": 67,
+          "kind": "qnorm",
+          "weight": "blk.6.attn_q_norm.weight",
+          "gpu_ms": 0.00736
+        },
+        {
+          "index": 68,
+          "kind": "kvnorm",
+          "weight": "blk.6.attn_k_norm.weight",
+          "gpu_ms": 0.00644
+        },
+        {
+          "index": 69,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.08036
+        },
+        {
+          "index": 70,
+          "kind": "linear",
+          "weight": "blk.6.attn_output.weight",
+          "gpu_ms": 0.21032
+        },
+        {
+          "index": 71,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00308
+        },
+        {
+          "index": 72,
+          "kind": "rms",
+          "weight": "blk.6.ffn_norm.weight",
+          "gpu_ms": 0.0618
+        },
+        {
+          "index": 73,
+          "kind": "ffn",
+          "weight": "blk.6.ffn_gate.weight",
+          "gpu_ms": 0.37832
+        },
+        {
+          "index": 74,
+          "kind": "linear",
+          "weight": "blk.6.ffn_down.weight",
+          "gpu_ms": 0.4512
+        },
+        {
+          "index": 75,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00324
+        },
+        {
+          "index": 76,
+          "kind": "rms",
+          "weight": "blk.7.attn_norm.weight",
+          "gpu_ms": 0.06444
+        },
+        {
+          "index": 77,
+          "kind": "linear",
+          "weight": "blk.7.shortconv.in_proj.weight",
+          "gpu_ms": 0.37516
+        },
+        {
+          "index": 78,
+          "kind": "conv",
+          "weight": "blk.7.shortconv.conv.weight",
+          "gpu_ms": 0.01396
+        },
+        {
+          "index": 79,
+          "kind": "linear",
+          "weight": "blk.7.shortconv.out_proj.weight",
+          "gpu_ms": 0.21324
+        },
+        {
+          "index": 80,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00336
+        },
+        {
+          "index": 81,
+          "kind": "rms",
+          "weight": "blk.7.ffn_norm.weight",
+          "gpu_ms": 0.0616
+        },
+        {
+          "index": 82,
+          "kind": "ffn",
+          "weight": "blk.7.ffn_gate.weight",
+          "gpu_ms": 0.37576
+        },
+        {
+          "index": 83,
+          "kind": "linear",
+          "weight": "blk.7.ffn_down.weight",
+          "gpu_ms": 0.54111
+        },
+        {
+          "index": 84,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00444
+        },
+        {
+          "index": 85,
+          "kind": "rms",
+          "weight": "blk.8.attn_norm.weight",
+          "gpu_ms": 0.06516
+        },
+        {
+          "index": 86,
+          "kind": "linear",
+          "weight": "blk.8.attn_q.weight",
+          "gpu_ms": 0.20488
+        },
+        {
+          "index": 87,
+          "kind": "linear",
+          "weight": "blk.8.attn_k.weight",
+          "gpu_ms": 0.20612
+        },
+        {
+          "index": 88,
+          "kind": "linear",
+          "weight": "blk.8.attn_v.weight",
+          "gpu_ms": 0.20672
+        },
+        {
+          "index": 89,
+          "kind": "qnorm",
+          "weight": "blk.8.attn_q_norm.weight",
+          "gpu_ms": 0.00748
+        },
+        {
+          "index": 90,
+          "kind": "kvnorm",
+          "weight": "blk.8.attn_k_norm.weight",
+          "gpu_ms": 0.00744
+        },
+        {
+          "index": 91,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.08104
+        },
+        {
+          "index": 92,
+          "kind": "linear",
+          "weight": "blk.8.attn_output.weight",
+          "gpu_ms": 0.20788
+        },
+        {
+          "index": 93,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00328
+        },
+        {
+          "index": 94,
+          "kind": "rms",
+          "weight": "blk.8.ffn_norm.weight",
+          "gpu_ms": 0.06196
+        },
+        {
+          "index": 95,
+          "kind": "ffn",
+          "weight": "blk.8.ffn_gate.weight",
+          "gpu_ms": 0.2986
+        },
+        {
+          "index": 96,
+          "kind": "linear",
+          "weight": "blk.8.ffn_down.weight",
+          "gpu_ms": 0.44756
+        },
+        {
+          "index": 97,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00284
+        },
+        {
+          "index": 98,
+          "kind": "rms",
+          "weight": "blk.9.attn_norm.weight",
+          "gpu_ms": 0.06532
+        },
+        {
+          "index": 99,
+          "kind": "linear",
+          "weight": "blk.9.shortconv.in_proj.weight",
+          "gpu_ms": 0.267
+        },
+        {
+          "index": 100,
+          "kind": "conv",
+          "weight": "blk.9.shortconv.conv.weight",
+          "gpu_ms": 0.01204
+        },
+        {
+          "index": 101,
+          "kind": "linear",
+          "weight": "blk.9.shortconv.out_proj.weight",
+          "gpu_ms": 0.21368
+        },
+        {
+          "index": 102,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00328
+        },
+        {
+          "index": 103,
+          "kind": "rms",
+          "weight": "blk.9.ffn_norm.weight",
+          "gpu_ms": 0.06196
+        },
+        {
+          "index": 104,
+          "kind": "ffn",
+          "weight": "blk.9.ffn_gate.weight",
+          "gpu_ms": 0.29556
+        },
+        {
+          "index": 105,
+          "kind": "linear",
+          "weight": "blk.9.ffn_down.weight",
+          "gpu_ms": 0.4474
+        },
+        {
+          "index": 106,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00336
+        },
+        {
+          "index": 107,
+          "kind": "rms",
+          "weight": "blk.10.attn_norm.weight",
+          "gpu_ms": 0.06476
+        },
+        {
+          "index": 108,
+          "kind": "linear",
+          "weight": "blk.10.attn_q.weight",
+          "gpu_ms": 0.20892
+        },
+        {
+          "index": 109,
+          "kind": "linear",
+          "weight": "blk.10.attn_k.weight",
+          "gpu_ms": 0.20652
+        },
+        {
+          "index": 110,
+          "kind": "linear",
+          "weight": "blk.10.attn_v.weight",
+          "gpu_ms": 0.20676
+        },
+        {
+          "index": 111,
+          "kind": "qnorm",
+          "weight": "blk.10.attn_q_norm.weight",
+          "gpu_ms": 0.0078
+        },
+        {
+          "index": 112,
+          "kind": "kvnorm",
+          "weight": "blk.10.attn_k_norm.weight",
+          "gpu_ms": 0.007
+        },
+        {
+          "index": 113,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.07844
+        },
+        {
+          "index": 114,
+          "kind": "linear",
+          "weight": "blk.10.attn_output.weight",
+          "gpu_ms": 0.2098
+        },
+        {
+          "index": 115,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00328
+        },
+        {
+          "index": 116,
+          "kind": "rms",
+          "weight": "blk.10.ffn_norm.weight",
+          "gpu_ms": 0.06176
+        },
+        {
+          "index": 117,
+          "kind": "ffn",
+          "weight": "blk.10.ffn_gate.weight",
+          "gpu_ms": 0.29692
+        },
+        {
+          "index": 118,
+          "kind": "linear",
+          "weight": "blk.10.ffn_down.weight",
+          "gpu_ms": 0.58708
+        },
+        {
+          "index": 119,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00496
+        },
+        {
+          "index": 120,
+          "kind": "rms",
+          "weight": "blk.11.attn_norm.weight",
+          "gpu_ms": 0.06508
+        },
+        {
+          "index": 121,
+          "kind": "linear",
+          "weight": "blk.11.shortconv.in_proj.weight",
+          "gpu_ms": 0.267
+        },
+        {
+          "index": 122,
+          "kind": "conv",
+          "weight": "blk.11.shortconv.conv.weight",
+          "gpu_ms": 0.01272
+        },
+        {
+          "index": 123,
+          "kind": "linear",
+          "weight": "blk.11.shortconv.out_proj.weight",
+          "gpu_ms": 0.31072
+        },
+        {
+          "index": 124,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.0042
+        },
+        {
+          "index": 125,
+          "kind": "rms",
+          "weight": "blk.11.ffn_norm.weight",
+          "gpu_ms": 0.08696
+        },
+        {
+          "index": 126,
+          "kind": "ffn",
+          "weight": "blk.11.ffn_gate.weight",
+          "gpu_ms": 0.29788
+        },
+        {
+          "index": 127,
+          "kind": "linear",
+          "weight": "blk.11.ffn_down.weight",
+          "gpu_ms": 0.57198
+        },
+        {
+          "index": 128,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00488
+        },
+        {
+          "index": 129,
+          "kind": "rms",
+          "weight": "blk.12.attn_norm.weight",
+          "gpu_ms": 0.06564
+        },
+        {
+          "index": 130,
+          "kind": "linear",
+          "weight": "blk.12.attn_q.weight",
+          "gpu_ms": 0.20824
+        },
+        {
+          "index": 131,
+          "kind": "linear",
+          "weight": "blk.12.attn_k.weight",
+          "gpu_ms": 0.26244
+        },
+        {
+          "index": 132,
+          "kind": "linear",
+          "weight": "blk.12.attn_v.weight",
+          "gpu_ms": 0.26012
+        },
+        {
+          "index": 133,
+          "kind": "qnorm",
+          "weight": "blk.12.attn_q_norm.weight",
+          "gpu_ms": 0.00892
+        },
+        {
+          "index": 134,
+          "kind": "kvnorm",
+          "weight": "blk.12.attn_k_norm.weight",
+          "gpu_ms": 0.00748
+        },
+        {
+          "index": 135,
+          "kind": "attention",
+          "weight": null,
+          "gpu_ms": 0.08144
+        },
+        {
+          "index": 136,
+          "kind": "linear",
+          "weight": "blk.12.attn_output.weight",
+          "gpu_ms": 0.20984
+        },
+        {
+          "index": 137,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.003
+        },
+        {
+          "index": 138,
+          "kind": "rms",
+          "weight": "blk.12.ffn_norm.weight",
+          "gpu_ms": 0.06196
+        },
+        {
+          "index": 139,
+          "kind": "ffn",
+          "weight": "blk.12.ffn_gate.weight",
+          "gpu_ms": 0.29448
+        },
+        {
+          "index": 140,
+          "kind": "linear",
+          "weight": "blk.12.ffn_down.weight",
+          "gpu_ms": 0.5962
+        },
+        {
+          "index": 141,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.0072
+        },
+        {
+          "index": 142,
+          "kind": "rms",
+          "weight": "blk.13.attn_norm.weight",
+          "gpu_ms": 0.08508
+        },
+        {
+          "index": 143,
+          "kind": "linear",
+          "weight": "blk.13.shortconv.in_proj.weight",
+          "gpu_ms": 0.37552
+        },
+        {
+          "index": 144,
+          "kind": "conv",
+          "weight": "blk.13.shortconv.conv.weight",
+          "gpu_ms": 0.01584
+        },
+        {
+          "index": 145,
+          "kind": "linear",
+          "weight": "blk.13.shortconv.out_proj.weight",
+          "gpu_ms": 0.30712
+        },
+        {
+          "index": 146,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00708
+        },
+        {
+          "index": 147,
+          "kind": "rms",
+          "weight": "blk.13.ffn_norm.weight",
+          "gpu_ms": 0.08444
+        },
+        {
+          "index": 148,
+          "kind": "ffn",
+          "weight": "blk.13.ffn_gate.weight",
+          "gpu_ms": 0.38172
+        },
+        {
+          "index": 149,
+          "kind": "linear",
+          "weight": "blk.13.ffn_down.weight",
+          "gpu_ms": 0.59948
+        },
+        {
+          "index": 150,
+          "kind": "add",
+          "weight": null,
+          "gpu_ms": 0.00712
+        },
+        {
+          "index": 151,
+          "kind": "last",
+          "weight": null,
+          "gpu_ms": 0.0034
+        },
+        {
+          "index": 152,
+          "kind": "rms",
+          "weight": "token_embd_norm.weight",
+          "gpu_ms": 0.02124
+        },
+        {
+          "index": 153,
+          "kind": "linear",
+          "weight": "token_embd.weight",
+          "gpu_ms": 1.6368
+        },
+        {
+          "index": 154,
+          "kind": "advance",
+          "weight": null,
+          "gpu_ms": 0.00244
+        }
+      ]
+    }
+  ],
+  "protocol": "same-pass native timestamp instrumentation; each sample replays a fresh prefix; host completion includes GPU execution"
+}

@@ -77,6 +77,8 @@ class Device(Session):
                      "max-storage-buffer-binding-size": buffer_size,
                      "max-buffer-size": buffer_size}
         features = ["shader-f16"] if "shader-f16" in self._adapter.features else []
+        if "subgroup" in self._adapter.features:
+            features.append("subgroup")
         try:
             self._gpu = self._adapter.request_device_sync(required_features=features, required_limits=requested)
         except Exception as exc:
@@ -88,6 +90,7 @@ class Device(Session):
         self._generation += 1
         self._start_session()
         self._buffers, self._buffer_handles, self._events = set(), {}, set()
+        self._prepared_plans = set()
         self._open = True
         return self
 
@@ -125,6 +128,7 @@ class Device(Session):
         buffer = OpaqueBuffer(self, 0, shape, dtype)
         buffer._handle = next(_handles)
         buffer._allocated = allocated
+        buffer._readback = None
         buffer._storage = self._gpu.create_buffer(size=allocated,
             usage=wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST)
         self._buffers.add(buffer)
@@ -147,10 +151,23 @@ class Device(Session):
 
     def _download(self, buffer):
         import numpy as np
-        data = self._gpu.queue.read_buffer(buffer._storage, 0, buffer._allocated)
-        return np.frombuffer(data, dtype=buffer.dtype, count=math.prod(buffer.shape)).reshape(buffer.shape).copy()
+        import wgpu
+        if buffer._readback is None:
+            buffer._readback=self._gpu.create_buffer(size=buffer._allocated,
+                usage=wgpu.BufferUsage.COPY_DST|wgpu.BufferUsage.MAP_READ)
+        staging=buffer._readback
+        encoder=self._gpu.create_command_encoder()
+        encoder.copy_buffer_to_buffer(buffer._storage,0,staging,0,buffer._allocated)
+        self._gpu.queue.submit([encoder.finish()])
+        staging.map_sync(wgpu.MapMode.READ)
+        try:
+            data=staging.read_mapped(copy=False)
+            return np.frombuffer(data,dtype=buffer.dtype,count=math.prod(buffer.shape)).reshape(buffer.shape).copy()
+        finally:staging.unmap()
 
     def _dispose_buffer(self, buffer):
+        if buffer._readback is not None:
+            buffer._readback.destroy();buffer._readback=None
         buffer._storage.destroy()
         buffer._storage = None
         self._buffer_handles.pop(buffer._handle, None)
@@ -208,6 +225,24 @@ class Device(Session):
         executable.module.destroy()
 
     def _launch(self, executable, call):
+        bindings, pod, grid = self._prepare_dispatch(executable, call)
+        dimension = self._gpu.limits["max-compute-workgroups-per-dimension"]
+        self._gpu.queue.write_buffer(executable.module, 0, pod)
+        bindings.append({"binding": len(bindings), "resource": {"buffer": executable.module}})
+        try:
+            group = self._gpu.create_bind_group(layout=executable.function.get_bind_group_layout(0), entries=bindings)
+            encoder = self._gpu.create_command_encoder()
+            compute = encoder.begin_compute_pass()
+            compute.set_pipeline(executable.function)
+            compute.set_bind_group(0, group)
+            width = min(grid[0], dimension)
+            compute.dispatch_workgroups(width, grid[1], (grid[0]+width-1)//width)
+            compute.end()
+            self._gpu.queue.submit([encoder.finish()])
+        except Exception as exc:
+            raise self.error(f"WebGPU dispatch failed: {exc}") from exc
+
+    def _prepare_dispatch(self, executable, call):
         self._check()
         descriptor = call.descriptor
         if descriptor.abi_version != 1 or descriptor.struct_size < c.sizeof(CallDescriptor):
@@ -255,20 +290,19 @@ class Device(Session):
         if any(size > limit for size, limit in zip(grid, self.limits["grid"])):
             raise self.error("WebGPU launch exceeds adapter dispatch limits")
         pod.extend(struct.pack("<I", grid[0]-1))
-        self._gpu.queue.write_buffer(executable.module, 0, pod)
-        bindings.append({"binding": len(bindings), "resource": {"buffer": executable.module}})
-        try:
-            group = self._gpu.create_bind_group(layout=executable.function.get_bind_group_layout(0), entries=bindings)
-            encoder = self._gpu.create_command_encoder()
-            compute = encoder.begin_compute_pass()
-            compute.set_pipeline(executable.function)
-            compute.set_bind_group(0, group)
-            width = min(grid[0], dimension)
-            compute.dispatch_workgroups(width, grid[1], (grid[0]+width-1)//width)
-            compute.end()
-            self._gpu.queue.submit([encoder.finish()])
-        except Exception as exc:
-            raise self.error(f"WebGPU dispatch failed: {exc}") from exc
+        return bindings, pod, grid
+
+    def prepare_plan(self, calls):
+        """Validate and cache bindings; encode ordered dispatches once per replay."""
+        return PreparedPlan(self, calls)
+
+    def write(self, buffer, array):
+        import numpy as np
+        self._check();buffer._check()
+        if buffer.device is not self:raise self.error("WebGPU write belongs to another device")
+        array = np.ascontiguousarray(array, dtype=buffer.dtype)
+        if array.shape != buffer.shape:raise ValueError("WebGPU write shape mismatch")
+        self._gpu.queue.write_buffer(buffer._storage, 0, array.tobytes()+b"\0"*(buffer._allocated-buffer.nbytes))
 
     def record_event(self):
         self._check()
@@ -288,6 +322,7 @@ class Device(Session):
         try:
             self.synchronize()
         finally:
+            for plan in list(self._prepared_plans):plan.close()
             for executable in list(self._executables.values()):
                 executable._dispose()
             for event in list(self._events):
@@ -296,3 +331,81 @@ class Device(Session):
                 buffer._dispose()
             self._gpu.destroy()
             self._open = False
+
+
+class PreparedPlan:
+    """Owned POD buffers and cached bindings for a fixed device-resident plan.
+
+    Command buffers are freshly encoded per launch, as WebGPU consumes them on
+    submission. This is batching, not CUDA-style captured graph replay.
+    """
+    def __init__(self, device, calls):
+        import wgpu
+        self.device=device;self.calls=tuple(calls);self.nodes=[];self.uniforms=[];self.closed=False
+        self.resources=tuple(dict.fromkeys(resource for executable,call in self.calls for resource in (executable,*call.storage)))
+        self.generation=device._generation
+        # wgpu 0.29 native's ordinary set_bind_group allocates an empty C array
+        # at every dispatch. These plans have no dynamic offsets and own groups.
+        from wgpu.backends.wgpu_native._ffi import ffi,lib
+        from wgpu.backends.wgpu_native._api import libf
+        self._native_bind=libf.wgpuComputePassEncoderSetBindGroup
+        self._null_offsets=ffi.NULL
+        self._encode=None;self._records=b''
+        try:
+            from tensor.providers import _webgpu_native
+        except ImportError:
+            pass
+        else:
+            if wgpu.__version__=='0.29.0' and ffi.sizeof('void *')==8:
+                self._encode=libf._make_proxy_func('tensorEncodePreparedPlan',_webgpu_native.encode)
+                self._function_pointers=tuple(int(ffi.cast('uintptr_t',ffi.addressof(lib,name))) for name in (
+                    'wgpuComputePassEncoderSetPipeline','wgpuComputePassEncoderSetBindGroup','wgpuComputePassEncoderDispatchWorkgroups'))
+        device.info['prepared_encoding']='native' if self._encode else 'python'
+        try:
+            for executable,call in self.calls:
+                if executable.device is not device:raise device.error("WebGPU plan belongs to another device")
+                executable._check()
+                bindings,pod,grid=device._prepare_dispatch(executable,call)
+                uniform=device._gpu.create_buffer(size=(len(pod)+15)//16*16,
+                    usage=wgpu.BufferUsage.UNIFORM|wgpu.BufferUsage.COPY_DST)
+                self.uniforms.append(uniform)
+                device._gpu.queue.write_buffer(uniform,0,pod)
+                bindings.append({"binding":len(bindings),"resource":{"buffer":uniform}})
+                group=device._gpu.create_bind_group(layout=executable.function.get_bind_group_layout(0),entries=bindings)
+                self.nodes.append((executable.function,group,grid))
+            if self._encode:
+                dimension=device._gpu.limits['max-compute-workgroups-per-dimension']
+                self._records=b''.join(struct.pack('<QQIIII',int(ffi.cast('uintptr_t',pipeline._internal)),
+                    int(ffi.cast('uintptr_t',group._internal)),min(grid[0],dimension),grid[1],
+                    (grid[0]+dimension-1)//dimension,0) for pipeline,group,grid in self.nodes)
+            device._prepared_plans.add(self)
+        except BaseException:
+            self.close();raise
+
+    def launch(self):
+        device=self.device;device._check()
+        if self.closed or self.generation!=device._generation:raise device.error("WebGPU plan is closed or belongs to a prior session")
+        # Resource lifetime remains checked even though descriptors are bound once.
+        for resource in self.resources:resource._check()
+        dimension=device._gpu.limits['max-compute-workgroups-per-dimension']
+        encoder=device._gpu.create_command_encoder()
+        compute=encoder.begin_compute_pass()
+        if self._encode:
+            from wgpu.backends.wgpu_native._ffi import ffi
+            self._encode(int(ffi.cast('uintptr_t',compute._internal)),self._records,*self._function_pointers)
+        else:
+            previous=None
+            for pipeline,group,grid in self.nodes:
+                if pipeline is not previous:compute.set_pipeline(pipeline)
+                previous=pipeline
+                self._native_bind(compute._internal,0,group._internal,0,self._null_offsets)
+                width=min(grid[0],dimension)
+                compute.dispatch_workgroups(width,grid[1],(grid[0]+width-1)//width)
+        compute.end()
+        device._gpu.queue.submit([encoder.finish()])
+
+    def close(self):
+        if self.closed:return
+        for uniform in self.uniforms:uniform.destroy()
+        self.uniforms.clear();self.nodes.clear();self.resources=();self._records=b'';self.closed=True
+        self.device._prepared_plans.discard(self)

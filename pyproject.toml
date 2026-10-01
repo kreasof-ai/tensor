@@ -22,7 +22,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-tensor = ["include/tensor/*.h", "native/*.cpp", "native/*.rs"]
+tensor = ["include/tensor/*.h", "native/*.cpp", "native/*.rs", "native/*.c"]
 
 # Keep the historical p0 group as the pinned producer stack. Ordinary runtime
 # dependencies stay minimal; optional training templates are a workspace member.

@@ -1,11 +1,92 @@
 """Portable SIMT tile lowering for the bounded WebGPU inference profile.
 
-This producer-only pass expands GEMM and sum/max reductions into TIRx parallel
-output loops and serial FP32 accumulation. TileLang still owns layout inference, copies,
-reductions, synchronization and WGSL code generation.
+This producer-only pass expands GEMM into register microtiles and offers ordered
+or parallel-tree sum/max reductions. TileLang owns layout inference, copies,
+synchronization and WGSL generation; typed helpers cover packed loads.
 """
 
 from __future__ import annotations
+
+
+def lower_wgsl_intrinsics(source):
+    """Small typed WGSL operations absent from TileLang's scalar codegen.
+
+    Keep packed byte alignment out of TIR's signed/unsigned index arithmetic.
+    The WGSL backend then owns exact unsigned shifts and half unpacking.
+    """
+    helpers = {
+        "tensor_byte_align_u32": '''fn tensor_byte_align_u32(lo:u32, hi:u32, byte:u32)->u32 {
+  let shift=byte*8u;
+  return (lo>>shift) | select(0u,hi<<((32u-shift)&31u),shift!=0u);
+}''',
+        "tensor_unpack_f16": '''fn tensor_unpack_f16(bits:u32)->f32 {
+  return unpack2x16float(bits).x;
+}''',
+    }
+    for name, helper in helpers.items():
+        if name+'(' in source:
+            source += '\n'+helper+'\n'
+    if "dot4I8Packed(" in source:
+        source = 'requires packed_4x8_integer_dot_product;\n'+source
+    if "tensor_subgroup_size()" in source:
+        source = source.replace("threadIdx : vec3<u32>", "threadIdx : vec3<u32>,\n  @builtin(subgroup_size) tensorSubgroupSize : u32")
+        source = source.replace("tensor_subgroup_size()", "tensorSubgroupSize")
+    return source
+
+
+def register_matmul_schedule(rows, depth, columns, lhs_value, rhs_value, *,
+                             tile_m=16, tile_n=32, tile_k=32, threads=128, pad=0,
+                             lhs_pad=0, lhs_transpose=False, dot_width=1, unroll=False):
+    """Reusable SIMT schedule with accumulators retained across all K tiles.
+
+    Producers supply load/rounding expressions; this schedule owns distribution,
+    shared layout, barriers and register microtiles. No GPU/compiler imports.
+    """
+    if any(type(v) is not int or v<=0 for v in (rows,depth,columns,tile_m,tile_n,tile_k,threads)) or type(pad) is not int or pad<0:
+        raise ValueError('register matmul dimensions must be positive integers')
+    if type(lhs_pad) is not int or lhs_pad<0 or type(lhs_transpose) is not bool or type(unroll) is not bool or dot_width not in (1,4) or tile_k%dot_width:
+        raise ValueError('invalid register matmul shared layout or dot width')
+    nr=tile_n//2
+    if nr==0:raise ValueError('invalid register matmul tile')
+    if tile_n%2 or threads%nr or tile_m%(threads//nr) or depth%tile_k:
+        raise ValueError('invalid register matmul tile')
+    row_stride=threads//nr
+    micro_m=tile_m//row_stride
+    initialize='\n'.join(f'    acc{i}{j} = T.alloc_var("float32")\n    acc{i}{j} = 0' for i in range(micro_m) for j in range(2))
+    def lhs_index(row,k):return f'[{k}, {row}]' if lhs_transpose else f'[{row}, {k}]'
+    if dot_width==1:
+        loads='\n'.join(f'            left{i} = T.cast(lhs{lhs_index(f"mr + {i*row_stride}","kk")}, "float32")' for i in range(micro_m))
+        loads+='\n'+'\n'.join(f'            right{j} = T.cast(rhs[kk, nr + {j*nr}], "float32")' for j in range(2))
+        multiply='\n'.join(f'            acc{i}{j} = acc{i}{j} + left{i} * right{j}' for i in range(micro_m) for j in range(2))
+    else:
+        loads='\n'.join(f'            left{i} = T.call_extern("float32x4", "vec4<f32>", '+', '.join(f'T.cast(lhs{lhs_index(f"mr + {i*row_stride}",f"kk * 4 + {lane}")}, "float32")' for lane in range(4))+')' for i in range(micro_m))
+        loads+='\n'+'\n'.join(f'            right{j} = T.call_extern("float32x4", "vec4<f32>", '+', '.join(f'T.cast(rhs[kk * 4 + {lane}, nr + {j*nr}], "float32")' for lane in range(4))+')' for j in range(2))
+        multiply='\n'.join(f'            acc{i}{j} = acc{i}{j} + T.call_extern("float32", "dot", left{i}, right{j})' for i in range(micro_m) for j in range(2))
+    lhs_shape=(tile_k,tile_m+lhs_pad) if lhs_transpose else (tile_m,tile_k+lhs_pad)
+    stores='\n'.join(f'''    if by * {tile_m} + mr + {i*row_stride} < {rows}:
+        if bx * {tile_n} + nr + {j*nr} < {columns}:
+            out[(by * {tile_m} + mr + {i*row_stride}) * {columns} + bx * {tile_n} + nr + {j*nr}] = acc{i}{j}''' for i in range(micro_m) for j in range(2))
+    return f'''with T.Kernel(T.ceildiv({rows}, {tile_m}), T.ceildiv({columns}, {tile_n}), threads={threads}) as (by, bx):
+    tx = T.get_thread_binding()
+    mr = tx // {nr}
+    nr = tx % {nr}
+    lhs = T.alloc_shared({lhs_shape}, "float16")
+    rhs = T.alloc_shared(({tile_k}, {tile_n+pad}), "float16")
+    value = T.alloc_var("float32")
+{initialize}
+    for tile in T.serial({depth//tile_k}):
+        for i, j in T.Parallel({tile_m}, {tile_k}):
+            value = T.if_then_else(by * {tile_m} + i < {rows}, x[(by * {tile_m} + i) * {depth} + tile * {tile_k} + j], 0)
+            lhs{lhs_index('i','j')} = {lhs_value}
+        for i, j in T.Parallel({tile_n}, {tile_k}):
+            value = {rhs_value}
+            rhs[j, i] = value
+        T.sync_threads()
+        for kk in T.{'unroll' if unroll else 'serial'}({tile_k//dot_width}):
+{loads}
+{multiply}
+        T.sync_threads()
+{stores}'''
 
 
 def lower_simt_gemm(kernel):
@@ -13,6 +94,9 @@ def lower_simt_gemm(kernel):
     ir = tvm.tirx
     counter = 0
     buffers = {}
+    reduction_mode = str(kernel.attrs.get("tensor.webgpu.reduction", "ordered"))
+    if reduction_mode not in ("ordered", "tree"):
+        raise ValueError("WebGPU reduction must be ordered or tree")
 
     def collect(node):
         if isinstance(node, ir.SBlock):
@@ -67,11 +151,12 @@ def lower_simt_gemm(kernel):
             source, destination, operation, dimension, clear = call.args
             a, c = source.args[0], destination.args[0]
             axis = int(dimension)
-            if len(a.indices) != 2 or len(c.indices) != 1 or axis not in (0, 1) or str(operation.value) not in ("max", "sum"):
-                raise ValueError("WebGPU reduction supports sum/max of two-dimensional tiles along one axis")
+            rank = len(a.indices)
+            if rank not in (1, 2) or len(c.indices) != 1 or not 0 <= axis < rank or str(operation.value) not in ("max", "sum"):
+                raise ValueError("WebGPU reduction supports sum/max of one/two-dimensional tiles along one axis")
             counter += 1
             row, reduction = [ir.Var(f"wgpu_{name}_{counter}", "int32") for name in ("row", "reduce")]
-            source_index = [row, reduction] if axis == 1 else [reduction, row]
+            source_index = [reduction] if rank == 1 else [row, reduction] if axis == 1 else [reduction, row]
             value = ir.BufferLoad(a.buffer, [x+y for x,y in zip(a.indices, source_index)])
             index = [c.indices[0]+row]
             is_max = str(operation.value) == "max"
@@ -79,7 +164,36 @@ def lower_simt_gemm(kernel):
             initial = ir.if_then_else(clear, initial, ir.BufferLoad(c.buffer, index))
             body = local_accumulator(f"wgpu_reduce_acc_{counter}", initial, reduction, source.args[axis+2],
                                      lambda acc: ir.max(acc, value) if is_max else acc+value, c.buffer, index)
-            return ir.SeqStmt([barrier(), ir.For(row, 0, source.args[3-axis], ir.ForKind.PARALLEL, body), barrier()])
+            rows = 1 if rank == 1 else source.args[3-axis]
+            if reduction_mode == "tree":
+                extent = int(source.args[axis+2])
+                count = int(rows)
+                padded = 1 << (extent-1).bit_length()
+                scratch = ir.decl_buffer((count, padded), "float32", f"wgpu_tree_{counter}", scope="shared")
+                identity = ir.reinterpret("float32", ir.const(0xff800000, "uint32")) if is_max else ir.const(0, "float32")
+                stage = ir.BufferStore(scratch, ir.if_then_else(reduction < extent, value, identity), [row, reduction])
+                steps = [barrier(), ir.For(row, 0, count, ir.ForKind.PARALLEL,
+                         ir.For(reduction, 0, padded, ir.ForKind.PARALLEL, stage)), barrier()]
+                stride = padded//2
+                while stride:
+                    lhs = ir.BufferLoad(scratch, [row, reduction])
+                    rhs = ir.BufferLoad(scratch, [row, reduction+stride])
+                    update = ir.BufferStore(scratch, ir.max(lhs,rhs) if is_max else lhs+rhs, [row,reduction])
+                    rr,kk=ir.Var(f"wgpu_tree_row_{counter}_{stride}","int32"),ir.Var(f"wgpu_tree_lane_{counter}_{stride}","int32")
+                    update=ir.stmt_functor.substitute(update,{row:rr,reduction:kk})
+                    steps.extend([ir.For(rr, 0, count, ir.ForKind.PARALLEL,
+                                  ir.For(kk, 0, stride, ir.ForKind.PARALLEL, update)), barrier()])
+                    stride //= 2
+                result = ir.BufferLoad(scratch,[row,0])
+                previous = ir.BufferLoad(c.buffer,index)
+                result = ir.if_then_else(clear,result,ir.max(previous,result) if is_max else previous+result)
+                rr=ir.Var(f"wgpu_tree_output_{counter}","int32")
+                store=ir.stmt_functor.substitute(ir.BufferStore(c.buffer,result,index),{row:rr})
+                steps.append(ir.For(rr,0,count,ir.ForKind.PARALLEL,store))
+                steps.append(barrier())
+                block = ir.SBlock([],[],[],f"wgpu_tree_reduce_{counter}",ir.SeqStmt(steps),alloc_buffers=[scratch])
+                return ir.SBlockRealize([],True,block)
+            return ir.SeqStmt([barrier(), ir.For(row, 0, rows, ir.ForKind.PARALLEL, body), barrier()])
         if str(call.op.name) != "tl.tileop.gemm":
             return None
         args = call.args
@@ -105,10 +219,32 @@ def lower_simt_gemm(kernel):
         bv = ir.BufferLoad(b.buffer, [x + y for x, y in zip(b.indices, bi)])
         ci = [c.indices[0] + i, c.indices[1] + j]
         initial = ir.if_then_else(args[9], ir.const(0, "float32"), ir.BufferLoad(c.buffer, ci))
-        dot = local_accumulator(f"wgpu_gemm_acc_{counter}", initial, k, depth,
-                                lambda acc: acc+ir.Cast("float32", av)*ir.Cast("float32", bv), c.buffer, ci)
-        return ir.SeqStmt([barrier(), ir.For(i, 0, m, ir.ForKind.PARALLEL,
-                      ir.For(j, 0, n, ir.ForKind.PARALLEL, dot)), barrier()])
+        micro = int(kernel.attrs.get("tensor.webgpu.gemm_microtile", 2))
+        if micro not in (1, 2, 4):
+            raise ValueError("WebGPU GEMM microtile must be 1, 2 or 4")
+        tm, tn = (micro if extent % micro == 0 else 1 for extent in (m, n))
+        local = ir.decl_buffer((tm*tn,), "float32", f"wgpu_gemm_acc_{counter}", scope="local")
+        initialize, updates, finish = [], [], []
+        for row_offset in range(tm):
+            for col_offset in range(tn):
+                slot = row_offset*tn+col_offset
+                ii, jj = i*tm+row_offset, j*tn+col_offset
+                indices = [c.indices[0]+ii,c.indices[1]+jj]
+                initial = ir.if_then_else(args[9],ir.const(0,"float32"),ir.BufferLoad(c.buffer,indices))
+                aa = [k,ii] if int(args[3]) else [ii,k]
+                bb = [jj,k] if int(args[4]) else [k,jj]
+                lhs = ir.Cast("float32",ir.BufferLoad(a.buffer,[x+y for x,y in zip(a.indices,aa)]))
+                rhs = ir.Cast("float32",ir.BufferLoad(b.buffer,[x+y for x,y in zip(b.indices,bb)]))
+                acc = ir.BufferLoad(local,[slot])
+                initialize.append(ir.BufferStore(local,initial,[slot]))
+                updates.append(ir.BufferStore(local,acc+lhs*rhs,[slot]))
+                finish.append(ir.BufferStore(c.buffer,acc,indices))
+        inner=updates[0] if len(updates)==1 else ir.SeqStmt(updates)
+        body = ir.SeqStmt([*initialize,ir.For(k,0,depth,ir.ForKind.SERIAL,inner),*finish])
+        block = ir.SBlock([],[],[],f"wgpu_gemm_register_tile_{counter}",body,alloc_buffers=[local])
+        dot = ir.SBlockRealize([],True,block)
+        return ir.SeqStmt([barrier(), ir.For(i, 0, m//tm, ir.ForKind.PARALLEL,
+                      ir.For(j, 0, n//tn, ir.ForKind.PARALLEL, dot)), barrier()])
 
     body = ir.stmt_functor.ir_transform(kernel.body, None, rewrite, ["tirx.Evaluate"])
     blocks = {}
