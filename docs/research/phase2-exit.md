@@ -4,7 +4,7 @@ Phase 2 is complete for the contiguous, positive-extent, single-device profile.
 Acceptance on 2026-09-29 used implementation commit
 `1a5a904112dcb439fe90ec854cc12aa6748894b3`, Linux x86-64 and NVIDIA A10G
 (`sm_86`). The consumer checkout was clean at acceptance. The
-[contract](../runtime-abi.md), [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md)
+[contract](../reference/runtime-abi.md), [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md)
 and [ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md) define
 the compiler/runtime/provider boundary.
 

@@ -7,7 +7,7 @@ Tensor now publishes a verified closed `.tpack` as a data-only wheel using
 optional Twine and installs exact versions through a Python Simple Index.
 Registry dependencies pin both transport and module hashes; frozen installation
 can restore an empty cache and offline installation avoids registry requests.
-The [module guide](../modules.md) documents usage and
+The [module guide](../guides/modules.md) documents usage and
 [ADR 0014](../adr/0014-pypi-module-transport.md) describes the transport profile.
 
 ## Results

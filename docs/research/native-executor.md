@@ -6,7 +6,7 @@ optionally executes compiled FX regions and fixed prepared calls in C++.
 On A10G, the isolated allocating launch path is **2.13× faster** and the
 20-case full-call suite is **1.27× faster** than the Python adapter path.
 
-[Build and use the native wheel](../pytorch.md#native-execution).
+[Build and use the native wheel](../guides/pytorch.md#native-execution).
 [Raw timings, source/binary hashes, tests and CI](data/native-executor-metrics.json).
 The original [Phase 4 acceptance](phase4-exit.md) remains a record of the
 portable adapter; these measurements cover the subsequent C++ optimization.

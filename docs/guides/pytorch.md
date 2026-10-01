@@ -1,5 +1,7 @@
 # PyTorch adapter
 
+[Documentation](../README.md) · [Quickstart](quickstart.md)
+
 `tensor-torch` is a separate wheel. Core `tensor-workspace` still depends only
 on NumPy. Install the adapter beside your existing compatible PyTorch install:
 
@@ -51,12 +53,12 @@ calls still use the Python bridge; use compiled FX regions or prepared calls
 for the native executor. The outer Dynamo call wrapper also remains in Python.
 The executor uses PyTorch's [generic device/stream interface](https://github.com/pytorch/pytorch/blob/main/c10/core/impl/DeviceGuardImplInterface.h)
 to access the current stream without CUDA toolkit headers.
-See the [measured C++ executor results](research/native-executor.md) for full-call
+See the [measured C++ executor results](../research/native-executor.md) for full-call
 and isolated launch timings and validation evidence.
-The [direct backend comparison](research/direct-backend-comparison.md) measures
+The [direct backend comparison](../research/direct-backend-comparison.md) measures
 native TileLang and Triton alongside Tensor, separating GPU execution, prepared
 submission, allocating kernel calls, and the outer `torch.compile` wrapper.
-The [larger-shape sweep](research/latency-scaling.md) shows how wrapper cost and
+The [larger-shape sweep](../research/latency-scaling.md) shows how wrapper cost and
 kernel execution scale, with separate synchronized single-call measurements.
 
 ## Inference graphs
@@ -171,6 +173,6 @@ PyTorch fallback for detach/threshold-backward operations. This demonstrates
 compiled work in both stages; it is not complete compiled-training coverage.
 Training remains experimental. Tensor does not claim a FlashAttention backward.
 
-The inference-first Phase 4 scope is accepted; see the [exit report](research/phase4-exit.md)
+The inference-first Phase 4 scope is accepted; see the [exit report](../research/phase4-exit.md)
 for the 20-case benchmark, exact performance gates, cross-platform wheels and
 compiler-free GPU transfer evidence.

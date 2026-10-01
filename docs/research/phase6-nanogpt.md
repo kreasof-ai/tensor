@@ -34,7 +34,7 @@ is fixed at 128. AdamW uses learning rate 0.0006, betas (0.9, 0.95), epsilon 1e-
 matrix decay 0.1, no normalization decay, and global gradient-norm limit 1.
 Non-finite gradients fail before optimizer mutation.
 
-The [manual backward API](../manual-backward.md) is public and independent of
+The [manual backward API](../guides/manual-backward.md) is public and independent of
 Torch. `tensor.nn.NanoGPT` uses it to implement an explicit reverse tape and tied
 weight accumulation. Ordinary TileLang/TIRx templates cover embeddings/scatter,
 linear forward/input/weight gradients, LayerNorm, GELU, residual branches, causal

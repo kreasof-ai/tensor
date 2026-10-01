@@ -192,7 +192,7 @@ and consumer execution remains toolkit free.
 
 On the pinned producer environment with the optional Torch/native adapters
 and WebGPU extra, use a working NVIDIA Vulkan ICD. The
-[headless Vulkan setup](../webgpu.md#headless-nvidia-vulkan-in-a-compute-container)
+[headless Vulkan setup](../guides/webgpu.md#headless-nvidia-vulkan-in-a-compute-container)
 records how this compute-only workspace loaded the matching driver locally.
 
 ```sh

@@ -1,17 +1,48 @@
 # Native WebGPU provider
 
-Phase 5 implements portable inference through native wgpu. The physical
-[Windows RX 6700 XT validation](research/webgpu-rx6700xt.md) passes all 33
-inference/composition checks through Vulkan, plus 28 native-enabled contract/audit
-tests. Its D3D12 backend rejects FP16 artifacts because `shader-f16` is absent in
-the measured configuration. **Phase 5 is complete:** the subsequent
-[Linux-to-Windows AMD transfer](research/webgpu-rx6700xt-transfer.md) passes all
-33 checks and the strict two-host audit. Software Vulkan validates compiler-free
-consumption in CI. The [latency comparison](research/latency-scaling.md) runs
-matched workloads on the physical NVIDIA A10G through CUDA and native WebGPU/Vulkan.
-The [RX 6700 XT scaling follow-up](research/latency-scaling.md#windows-rx-6700-xt-at-the-same-workload-sizes)
-passes all 17 of those workload sizes, with identical WGSL, including 64M
-pointwise, GEMM 4096³ and attention S=8192, and records a cross-system Vulkan comparison.
+[Documentation](../README.md) · [Quickstart](quickstart.md)
+
+Build portable WGSL artifacts on a GPU-free producer, then execute them through
+native wgpu. The consumer needs Tensor, NumPy, and the optional wgpu dependency;
+shader compilation happens when the runtime creates a pipeline. Tensor maintains
+the TIRx lowering for the inference profiles below.
+
+## Supported scope
+
+| Profile | Coverage |
+|---|---|
+| Elementwise | FP32 dynamic affine/ReLU and FP16 affine/ReLU; 32-bit scalars and symbolic dimensions |
+| GEMM/linear | FP16/FP32 inputs, FP32 accumulation, FP16/FP32 outputs, transpose-B, M/N/K tails, optional bias/ReLU |
+| Composition | Device-resident two-layer MLP, shared executable/event lifetime rules |
+| Attention | FP16 Q/K/V/output, FP32 online softmax, causal/noncausal, batching/heads, sequence tails, D=64/128 |
+
+These are bounded inference profiles, not arbitrary TileLang/TIRx compatibility.
+There is no dropout, custom attention mask, GQA, backward pass, vendor matrix
+instruction lowering, external stream or DLPack pointer borrowing in this profile.
+The CUDA PyTorch adapter continues to use CUDA buffers and its existing C++ executor.
+
+`examples/webgpu_gemm.py` uses 32×32 output tiles and K=16. The suite specializes
+the existing attention source to query tiles of 8 and key tiles of 16, preserving
+its online-softmax algorithm without a global score matrix. A large CUDA schedule
+can exceed WebGPU workgroup limits even for the same logical operation. Tensor
+rejects schedules above 32 KiB of workgroup storage; smaller adapter limits are
+also checked. Buffer bindings are limited to the requested/device maximum, up to
+128 MiB each by default. Native applications can explicitly negotiate a larger
+limit, for example `tx.Device(provider="webgpu", max_buffer_size=268435456)`
+for the 64M-element FP32 benchmark. Both the adapter's buffer allocation and
+storage-binding limits must support the request; unsupported requests fail.
+The default limit and shader workgroup-storage limit remain unchanged.
+Dispatch x can be packed over x/z with the verified POD grid bound;
+batch/head dimensions are flattened onto y. Subgroup width 32 is never assumed.
+
+The artifact target is `webgpu-portable-v1`, kind `wgsl`. Portability comes from
+WGSL plus explicit adapter feature/limit negotiation, rather than a CUDA SM or
+toolkit version. Native wgpu still compiles/translates the shader when creating a
+pipeline. Pipeline creation is reported separately from warm execution. The
+Python binding is pinned to wgpu 0.29.0, bundling wgpu-native 27.0.2.0; it is an
+optional consumer dependency, with its own transitive dependencies and native
+library footprint. The previously measured wgpu-native v29 stripped-library size
+is not a measurement of this entire Python distribution.
 
 ## Build and consume
 
@@ -20,8 +51,30 @@ NVRTC or native host compiler is needed to emit WGSL:
 
 ```bash
 uv sync --locked
-uv run --locked tensor build examples/webgpu_gemm.py --provider webgpu --out linear.tbin
+uv run --locked tensor build examples/webgpu_gemm.py --provider webgpu --out build/webgpu-linear.tbin
 uv run --locked tensor inspect examples/webgpu_gemm.py --provider webgpu --stage target
+uv build --wheel --out-dir build/webgpu-wheels
+```
+
+For a local consumer, install the wheel and its WebGPU extra into a separate
+Python 3.12 environment:
+
+```sh
+uv venv --python 3.12 build/webgpu-consumer
+uv pip install --python build/webgpu-consumer/bin/python \
+  'build/webgpu-wheels/tensor_workspace-0.1.0-py3-none-any.whl[webgpu]'
+build/webgpu-consumer/bin/tensor doctor --provider webgpu --json
+```
+
+On Windows use executables under `build/webgpu-consumer/Scripts/`. The Python
+runtime selects this provider with `tx.Device(provider="webgpu")`. CUDA and
+WebGPU artifacts are separate builds; this example uses WebGPU-specific tiling.
+
+## Transfer the validation suite
+
+Build the acceptance workload bundle on the producer:
+
+```sh
 uv run --locked python scripts/validation/webgpu_validation.py --build build/webgpu-transfer
 ```
 
@@ -64,7 +117,7 @@ On the tested Windows RX 6700 XT, ordinal 0 selected Vulkan with `shader-f16`;
 ordinal 1 selected D3D12 without it. Recheck ordinals with `tensor doctor` before
 selection. If the suite is on another drive from the Windows temporary directory,
 set `TEMP` and `TMP` to a directory on the suite's drive before consumption; the
-[Windows report](research/webgpu-rx6700xt.md#reproduce-on-windows) records the
+[Windows report](../research/webgpu-rx6700xt.md#reproduce-on-windows) records the
 cross-drive module-path error and complete PowerShell reproduction commands.
 
 Consumers import only Tensor, NumPy and wgpu. The validation command blocks
@@ -74,46 +127,9 @@ identity/features/limits, package versions, producer and artifact hashes, cold
 pipeline creation, host enqueue and completed-call timing. MLP intermediates stay
 on the device. Timing uses preallocated outputs and excludes uploads/downloads
 and first pipeline creation. It measures host submission plus queue completion,
-not isolated GPU timestamps. The [matched A10G scaling benchmark](research/latency-scaling.md)
+not isolated GPU timestamps. The [matched A10G scaling benchmark](../research/latency-scaling.md)
 instead allocates each output inside the timed call, matching the CUDA baseline
 protocol, and compares copies of the same input tensors.
-
-## Supported scope
-
-| Profile | Coverage |
-|---|---|
-| Elementwise | FP32 dynamic affine/ReLU and FP16 affine/ReLU; 32-bit scalars and symbolic dimensions |
-| GEMM/linear | FP16/FP32 inputs, FP32 accumulation, FP16/FP32 outputs, transpose-B, M/N/K tails, optional bias/ReLU |
-| Composition | Device-resident two-layer MLP, shared executable/event lifetime rules |
-| Attention | FP16 Q/K/V/output, FP32 online softmax, causal/noncausal, batching/heads, sequence tails, D=64/128 |
-
-These are bounded inference profiles, not arbitrary TileLang/TIRx compatibility.
-There is no dropout, custom attention mask, GQA, backward pass, vendor matrix
-instruction lowering, external stream or DLPack pointer borrowing in this profile.
-The CUDA PyTorch adapter continues to use CUDA buffers and its existing C++ executor.
-
-`examples/webgpu_gemm.py` uses 32×32 output tiles and K=16. The suite specializes
-the existing attention source to query tiles of 8 and key tiles of 16, preserving
-its online-softmax algorithm without a global score matrix. A large CUDA schedule
-can exceed WebGPU workgroup limits even for the same logical operation. Tensor
-rejects schedules above 32 KiB of workgroup storage; smaller adapter limits are
-also checked. Buffer bindings are limited to the requested/device maximum, up to
-128 MiB each by default. Native applications can explicitly negotiate a larger
-limit, for example `tx.Device(provider="webgpu", max_buffer_size=268435456)`
-for the 64M-element FP32 benchmark. Both the adapter's buffer allocation and
-storage-binding limits must support the request; unsupported requests fail.
-The default limit and shader workgroup-storage limit remain unchanged.
-Dispatch x can be packed over x/z with the verified POD grid bound;
-batch/head dimensions are flattened onto y. Subgroup width 32 is never assumed.
-
-The artifact target is `webgpu-portable-v1`, kind `wgsl`. Portability comes from
-WGSL plus explicit adapter feature/limit negotiation, rather than a CUDA SM or
-toolkit version. Native wgpu still compiles/translates the shader when creating a
-pipeline. Pipeline creation is reported separately from warm execution. The
-Python binding is pinned to wgpu 0.29.0, bundling wgpu-native 27.0.2.0; it is an
-optional consumer dependency, with its own transitive dependencies and native
-library footprint. The previously measured wgpu-native v29 stripped-library size
-is not a measurement of this entire Python distribution.
 
 ## Headless NVIDIA Vulkan in a compute container
 
@@ -163,9 +179,9 @@ Windows-produced package to a separate Linux software consumer. Software success
 does not close the physical GPU gate. Run the transferred suite with
 `--require-second-gpu` on AMD or Apple and retain `webgpu-result.json` as acceptance
 evidence; performance and vendor-specific issues must be assessed from that run.
-The initial [RX 6700 XT result](research/webgpu-rx6700xt.md) verifies physical AMD
+The initial [RX 6700 XT result](../research/webgpu-rx6700xt.md) verifies physical AMD
 execution and records timings. The subsequent
-[Linux-to-Windows transfer](research/webgpu-rx6700xt-transfer.md) satisfies the
+[Linux-to-Windows transfer](../research/webgpu-rx6700xt-transfer.md) satisfies the
 auditor's distinct-host requirement and closes Phase 5 acceptance. Its retained
 suite and result reproduce the strict audit without `--allow-software`.
 
@@ -173,3 +189,18 @@ The portable SIMT lowering prioritizes complete profile correctness. No CUDA,
 native TileLang, Triton or vendor-library performance parity is claimed. Kernel
 tuning and subgroup/matrix acceleration can build on this provider after real
 hardware measurements establish a baseline.
+
+## Hardware evidence
+
+Phase 5 implements portable inference through native wgpu. The physical
+[Windows RX 6700 XT validation](../research/webgpu-rx6700xt.md) passes all 33
+inference/composition checks through Vulkan, plus 28 native-enabled contract/audit
+tests. Its D3D12 backend rejects FP16 artifacts because `shader-f16` is absent in
+the measured configuration. **Phase 5 is complete:** the subsequent
+[Linux-to-Windows AMD transfer](../research/webgpu-rx6700xt-transfer.md) passes all
+33 checks and the strict two-host audit. Software Vulkan validates compiler-free
+consumption in CI. The [latency comparison](../research/latency-scaling.md) runs
+matched workloads on the physical NVIDIA A10G through CUDA and native WebGPU/Vulkan.
+The [RX 6700 XT scaling follow-up](../research/latency-scaling.md#windows-rx-6700-xt-at-the-same-workload-sizes)
+passes all 17 of those workload sizes, with identical WGSL, including 64M
+pointwise, GEMM 4096³ and attention S=8192, and records a cross-system Vulkan comparison.

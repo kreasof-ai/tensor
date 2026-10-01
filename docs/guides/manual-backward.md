@@ -1,5 +1,7 @@
 # Manual forward and backward
 
+[Documentation](../README.md) · [Python runtime](runtime.md)
+
 `tensor.ManualFunction` pairs two callbacks without importing a framework or
 constructing an automatic differentiation graph. Each callback launches normal
 Tensor executables. The application supplies output gradients and chooses the
@@ -58,6 +60,6 @@ stream rules still apply.
 `tensor_nn.NanoGPT`, from the optional `tensor-nn` distribution, demonstrates an
 explicit reverse tape using this interface. Its static buffers and precompiled kernels execute embedding gradients, linear
 and attention backward, LayerNorm, GELU, cross-entropy, clipping and AdamW.
-See the [Phase 6 report](research/phase6-nanogpt.md) for compilation, clean
+See the [Phase 6 report](../research/phase6-nanogpt.md) for compilation, clean
 consumer execution and numerical checks. This is a bounded training template;
 the manual interface is available independently of that template.

@@ -10,7 +10,7 @@ The initial local run used an uncommitted working tree; its retained reports
 identify the base revision, lock hash, artifact hashes, compiler libraries and
 consumer wheel. Subsequent remote CI results are recorded below.
 [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) records the decision and
-[the runtime contract](../runtime-abi.md) specifies the supported profile.
+[the runtime contract](../reference/runtime-abi.md) specifies the supported profile.
 
 ## Implemented boundary
 

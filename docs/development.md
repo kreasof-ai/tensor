@@ -1,5 +1,7 @@
 # Repository layout and development
 
+[Documentation](README.md) · [Quickstart](guides/quickstart.md)
+
 The runtime wheel contains reusable execution, compilation entry points and
 artifact/module tooling. Optional framework adapters and training templates have
 separate distributions. Benchmark workloads and acceptance scripts stay in the
@@ -35,6 +37,12 @@ examples/        small kernels and modules
 experiments/p0/  historical architecture experiments
 docs/research/   historical measurements and their original evidence
 ```
+
+Documentation is organized by purpose: `docs/guides` for current usage,
+`docs/reference` for contracts, `docs/architecture` for the original proposal,
+`docs/adr` for numbered decisions, `docs/plan` for scope and validation plans,
+and `docs/research` for measurements and retained data. The
+[documentation index](README.md) is the entry point.
 
 Use the grouped implementation paths: `tensor.runtime.abi`,
 `tensor.providers.cuda`, `tensor.compiler.build` and `tensor.artifacts.modules`.
@@ -119,3 +127,31 @@ and an NVRTC-produced kernel bundle. Its consumer has four distributions:
 Tensor, Tensor LLM, NumPy and regex. Workload recipes and the independent
 llama.cpp/Torch references stay under `benchmarks/lfm2`; neither enters core.
 See the [inference comparison](research/lfm2-inference.md) for the measured profile.
+
+## Retained Phase 0 experiments
+
+The initial architecture harness stays under `experiments/p0`. These commands
+exercise historical experiments; current product builds use the NVRTC
+[quickstart](guides/quickstart.md).
+
+```sh
+uv run --locked python -m experiments.p0.harness --list
+uv run --locked python -m experiments.p0.harness --only codegen
+uv run --locked python -m experiments.p0.validation --out experiments/p0/out/new-validation-run
+```
+
+Use a fresh output directory for each validation run. Reports record the Git
+revision, source and lock hashes, and installed package versions. The historical
+native CUDA probes require nvcc and a host compiler; the C++/Rust host probes
+also need their respective compilers. Follow the
+[original validation runbook](plan/opaque-artifact-validation.md) and
+[Phase 0 exit report](research/e16-phase0-exit.md) for the full setup and commands.
+
+## Documentation changes
+
+Keep current setup and API instructions in the guides. Link benchmarks to their
+retained data and specify the hardware, precision, and timing protocol behind
+performance claims. When moving a document, update inbound links and relative
+links inside it. Update the relevant index when adding a report or decision.
+Preserve historical measurements and provenance rather than rewriting them to
+look like results for the current revision.

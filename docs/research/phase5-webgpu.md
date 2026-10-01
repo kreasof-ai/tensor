@@ -68,7 +68,7 @@ with CUDA, native TileLang, Triton or optimized attention libraries. Numerical
 tolerances are recorded per case; absolute GEMM error alone does not express the
 relative error at large output magnitudes.
 
-Implementation details and the transfer command are in the [WebGPU guide](../webgpu.md).
+Implementation details and the transfer command are in the [WebGPU guide](../guides/webgpu.md).
 The acceptance bundle contains the Tensor wheel, original-TIRx WGSL artifacts,
 module closure, consumer script and evidence auditor. The dedicated workflow
 builds on Linux/Windows and executes Windows-produced WGSL on a separate Linux

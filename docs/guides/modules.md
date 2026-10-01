@@ -1,5 +1,7 @@
 # Tensor modules
 
+[Documentation](../README.md) · [Quickstart](quickstart.md)
+
 A module names reusable kernel exports. `tensor.json` describes them;
 `tensor.lock` pins the complete installed dependency graph. Package operations
 need only Tensor and NumPy. Source or portable-TIRx compilation requires the
@@ -87,10 +89,12 @@ tensor publish ./my-ops --dry-run --out-dir build/pypi-preview
 tensor inspect build/pypi-preview/tensor_module_my_ops-0.1.0-py3-none-any.whl
 ```
 
-Install the optional publisher dependencies, then upload to TestPyPI or PyPI:
+From a checkout, build the core wheel and install its optional publisher
+dependencies, then upload to TestPyPI or PyPI:
 
 ```bash
-pip install 'tensor-workspace[publish]'
+uv build --wheel --out-dir build/wheels
+python -m pip install 'build/wheels/tensor_workspace-0.1.0-py3-none-any.whl[publish]'
 # Configure Twine credentials using its environment variables or keyring.
 tensor publish ./my-ops --repository testpypi --out-dir build/testpypi
 tensor publish ./my-ops --repository pypi --out-dir build/pypi
@@ -196,10 +200,10 @@ with tx.Device() as device:
 Use `compile=True` on `load()` or `resolve()` when local compilation is intended.
 `resolve()` returns the selected path, target, module identity and whether the
 image was packaged, cached or newly compiled. Kernel and buffer lifetimes remain
-the [runtime contract](runtime-abi.md).
+the [runtime contract](../reference/runtime-abi.md).
 
 This implementation supports local paths, PyPI transport, exact versions and
 opaque one-kernel exports. Version ranges, fusion, autotuning and multi-image
 CUDA compatibility remain extensions. The original
-[offline decision](adr/0013-phase3-offline-module-system.md) and
-[PyPI transport decision](adr/0014-pypi-module-transport.md) state the boundaries.
+[offline decision](../adr/0013-phase3-offline-module-system.md) and
+[PyPI transport decision](../adr/0014-pypi-module-transport.md) state the boundaries.

@@ -5,7 +5,7 @@ Acceptance on 2026-09-30 used implementation commit
 `fce946c651a38cebe2d1b7361159f0c9c312b956`, Linux x86-64 and A10G `sm_86`.
 The producer and consumer recorded clean checkouts at the same revision.
 [ADR 0013](../adr/0013-phase3-offline-module-system.md) defines the boundary;
-the [module guide](../modules.md) describes the API and CLI.
+the [module guide](../guides/modules.md) describes the API and CLI.
 
 ## Delivered gates
 

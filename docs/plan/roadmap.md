@@ -1,82 +1,30 @@
-# Tensor — Roadmap
+# Tensor roadmap
 
-Derived from proposal §22, reordered by what the Phase 0 evidence actually supports.
-The proposal's phase list is sound; the changes below are about *sequencing* and about
-being explicit about which work is blocked on hardware.
+[Documentation](../README.md) · [Validation plans](README.md) · [Research evidence](../research/README.md)
 
-Current status: **Phases 0–6 complete within their measured profiles.**
-Phase 6 closes the agreed standalone CUDA nanoGPT training profile, with manual
-backward, bounded fusion and explicit autotuning. Standalone autograd and general
-tensor algebra remain deferred; see the [training report](../research/phase6-nanogpt.md).
-[ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) selects NVRTC as the default
-CUDA compiler and the independent v3 module envelope.
-[ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md) completes
-runtime ABI 1.1 with executable/event identities, lifetime rules and zero
-external workspace. CUDA and a CPU validation provider share the workbench;
-native C++/Rust hosts exercise the descriptors without Python or TVM FFI.
-A driver/toolchain-free container builds all five NVRTC profiles. Fresh remote
-Linux and Windows CI artifacts and their wheels each pass GPU execution on a
-separate A10G with only Tensor and NumPy. The full GPU suite passes 89 tests
-with zero skips. Details and limits are in
-[the Phase 2 exit report](../research/phase2-exit.md).
+**Phases 0–6 are complete within their measured profiles.** The phase sections
+below define what was accepted and what remains outside each profile. Test counts
+and benchmark numbers record milestone evidence, rather than the current total
+suite or a general performance guarantee.
 
-Phase 3 adds the offline module system: manifests, pinned closures, deterministic
-packages, verified caches and named exports. Linux and Windows CI packages each
-execute through installed exports on the separate A10G without compiler imports.
-The full GPU suite passes 104 tests with zero skips. See
-[ADR 0013](../adr/0013-phase3-offline-module-system.md), the
-[module guide](../modules.md) and [Phase 3 exit report](../research/phase3-exit.md).
-The [PyPI transport adapter](../adr/0014-pypi-module-transport.md) extends that
-profile with publishing and exact-version registry retrieval, retaining the
-offline package format and existing runtime compatibility checks.
-Its [acceptance report](../research/phase3-pypi.md) records 116 GPU-enabled tests,
-Linux/Windows CI and execution of both producers' registry packages on A10G.
+The [original proposal](../architecture/proposal.md) supplies the longer-term
+architecture. CUDA compilation defaults to NVRTC; direct PTX remains experimental
+work after v1. Standalone autograd and general tensor algebra remain deferred.
 
-Phase 1 baseline: `doctor`, `build`,
-`inspect`, `run`, `bench`, cache inspection and the CUDA workbench are validated
-on the A10G. Product v2 artifacts support typed scalar arguments and symbolic
-dimensions. CPU/GPU DLPack imports and foreign CUDA stream ordering work, with
-primary-context and resource ownership preserved. A NumPy-only consumer passes
-22 numerical/compatibility cases with transferred product artifacts from a
-GPU-free GitHub Actions host. Installation and inspection pass on Ubuntu and
-Windows runners. The full GPU-enabled suite passes 72 tests with zero skips.
-Phase 1 scope, installation counts, latency, diagnostics and transfer evidence
-are recorded in [the exit report](../research/phase1-exit.md) and accepted by
-[ADR 0010](../adr/0010-complete-phase1-cuda-cli.md). GPU execution beyond A10G
-remains outside the measured single-device scope. Two-host Phase 0 opaque
-executable transfer passes from GitHub Actions to an A10G. Cache behavior,
-independent CPU provider execution, C++/Rust hosting, bounded composition,
-symbolic dimensions, frontend contracts, foreign CUDA stream ordering, full
-compilation and A10G baselines are measured in
-[E15](../research/e15-phase0-validation.md) and
-[E16](../research/e16-phase0-exit.md). Negative results and deferred hardware
-scope remain explicit.
+| Phase | Accepted scope | Evidence |
+|---|---|---|
+| 0 | Architecture, executable transfer, provider and composition probes | [Exit](../research/e16-phase0-exit.md) |
+| 1 | Single-device CUDA CLI and workbench | [Exit](../research/phase1-exit.md) |
+| 2 | Independent runtime ABI and bundled NVRTC | [Exit](../research/phase2-exit.md) |
+| 3 | Offline modules and PyPI transport | [Modules](../research/phase3-exit.md), [PyPI](../research/phase3-pypi.md) |
+| 4 | PyTorch inference integration | [Exit](../research/phase4-exit.md) |
+| 5 | Portable WebGPU inference and physical AMD transfer | [Acceptance](../research/webgpu-rx6700xt-transfer.md) |
+| 6 | Manual backward and ten-update standalone nanoGPT training | [Acceptance](../research/phase6-nanogpt.md) |
 
----
-
-## What Phase 0 has already changed about the plan
-
-Four findings move work earlier or change its shape:
-
-1. **Codegen research is not blocked on the GPU.** Source emission, IR inspection, pass
-   counting, diagnostics, and packaging all run on a no-GPU machine. The proposal assumed
-   Phase 0 needed a target; it does not. *Effect: start the module-system experiments now,
-   in parallel, not after the GPU box is set up.*
-
-2. **Inspection, backend registration, and several §26 comparison targets already exist.**
-   `lower_trace` gives IR at every pass; `register_backend` gives a provider manifest; the
-   `cutedsl` backend means CuTe DSL is reachable from TileLang. *Effect: do not build a
-   competing IR dumper or a competing backend registry. Build the product surface over them.*
-
-3. **E4 demonstrated re-lowerable frontend IR** within a pinned toolchain and
-   across CUDA architectures. Versioning and cache identity can now be designed
-   against a real artifact. Fusion and cross-provider portability remain open.
-
-4. **A torch-free compiler is a candidate.** `tvm_compiler.dll` and `tvm_runtime.dll` have *no*
-   torch in their PE import tables — the dependency is entirely Python-layer, and traces to
-   one `import torch  # preload torch to avoid dlopen errors` line. PyTorch support therefore
-   ships as a client-side adapter (ADR 0005). The current producer still imports
-   PyTorch; the opaque executable consumer has now run without it on NVIDIA.
+Standalone LFM2.5-2.6B GGUF inference is the subsequent concrete workload.
+Its [default engine report](../research/lfm2-inference.md) and
+[experimental decode follow-up](../research/lfm2-decode-optimization.md) record
+correctness and comparisons with llama.cpp CUDA.
 
 ---
 
@@ -206,7 +154,7 @@ a gate for this single-device phase.
 
 **Goal:** separate compiler, runtime, and provider.
 
-Implemented: the [runtime contract](../runtime-abi.md) and packaged C header
+Implemented: the [runtime contract](../reference/runtime-abi.md) and packaged C header
 freeze buffer, scalar, resolved-call, stream and error layouts, plus executable,
 event and workspace descriptors, as runtime ABI 1.1. Executable/event tokens
 are session-qualified, never reused and invalidated by release or session close.
@@ -277,7 +225,7 @@ BHSD, causal/non-causal, tail sequences, batching and head dimensions 64/128.
 Compare with forced PyTorch FlashAttention SDPA and measure GPU execution and
 host submission separately. The current
 [attention demonstration](../research/flash-attention-demo.md) uses Tensor's
-existing NVRTC artifacts/runtime. The separate [tensor-torch adapter](../pytorch.md)
+existing NVRTC artifacts/runtime. The separate [tensor-torch adapter](../guides/pytorch.md)
 now lowers inference FX regions for pointwise operations, rank-two FP16 GEMM
 with epilogues, and this SDPA profile. Installed exports also have functional
 and mutable-output custom-op registrations with symbolic FakeTensor shapes.
@@ -307,7 +255,7 @@ host compiler. NVRTC remains the only automatic kernel compiler.
 ## Phase 5 — Second provider
 
 **Complete: native WebGPU through wgpu.** See [ADR 0015](../adr/0015-webgpu-provider.md)
-and the [implementation/validation guide](../webgpu.md). Tensor maintains portable
+and the [implementation/validation guide](../guides/webgpu.md). Tensor maintains portable
 TIRx GEMM/reduction lowering, while TileLang owns the existing SIMT pipeline and
 WGSL code generation. Runtime shader translation uses the bundled native wgpu
 implementation, with no TileLang/TVM or vendor toolkit on the consumer.
@@ -354,13 +302,42 @@ Torch with native SDPA and fused AdamW, or 1.048× speedup. No universal speed
 gate or convergence claim is adopted.
 
 [ADR 0016](../adr/0016-manual-training-and-bounded-autotuning.md), the
-[manual interface guide](../manual-backward.md),
+[manual interface guide](../guides/manual-backward.md),
 [workload contract](phase6-nanogpt.md) and
 [acceptance report](../research/phase6-nanogpt.md) define the evidence and limits.
 The general tensor algebra/`nn` surface from ADR 0006, arbitrary user-module
 fusion, standalone autograd, FlashAttention backward and WebGPU training remain
 separate extensions. This completion does not expand Phase 4's inference-first
 Torch adapter or Phase 5's portable inference profile.
+
+---
+
+## What Phase 0 has already changed about the plan
+
+These historical sequencing notes explain how the initial experiments changed
+the proposal. Their observations apply to the recorded Phase 0 environment.
+
+Four findings moved work earlier or changed its shape:
+
+1. **Codegen research is not blocked on the GPU.** Source emission, IR inspection, pass
+   counting, diagnostics, and packaging all run on a no-GPU machine. The proposal assumed
+   Phase 0 needed a target; it does not. *Effect: start the module-system experiments now,
+   in parallel, not after the GPU box is set up.*
+
+2. **Inspection, backend registration, and several §26 comparison targets already exist.**
+   `lower_trace` gives IR at every pass; `register_backend` gives a provider manifest; the
+   `cutedsl` backend means CuTe DSL is reachable from TileLang. *Effect: do not build a
+   competing IR dumper or a competing backend registry. Build the product surface over them.*
+
+3. **E4 demonstrated re-lowerable frontend IR** within a pinned toolchain and
+   across CUDA architectures. Versioning and cache identity can now be designed
+   against a real artifact. Fusion and cross-provider portability remain open.
+
+4. **A torch-free compiler is a candidate.** `tvm_compiler.dll` and `tvm_runtime.dll` have *no*
+   torch in their PE import tables — the dependency is entirely Python-layer, and traces to
+   one `import torch  # preload torch to avoid dlopen errors` line. PyTorch support therefore
+   ships as a client-side adapter (ADR 0005). The current producer still imports
+   PyTorch; the opaque executable consumer has now run without it on NVIDIA.
 
 ---
 
@@ -375,7 +352,7 @@ Torch adapter or Phase 5's portable inference profile.
 
 ## Standalone inference workload — LFM2.5-2.6B
 
-The next concrete workload runs LiquidAI LFM2.5-2.6B GGUF checkpoints with the
+The standalone workload runs LiquidAI LFM2.5-2.6B GGUF checkpoints with the
 optional `tensor-llm` package and compares the complete single-sequence API with
 llama.cpp CUDA. The initial profile covers F16, Q4_0 and Q4_K_M, including mixed
 Q6_K matrices, the tokenizer, convolution history, attention caches, batched
@@ -393,3 +370,9 @@ engine. Persistent megakernels, arbitrary GGUF architectures, continuous batchin
 multi-turn/tools, stochastic sampling and CPU/WebGPU model execution remain
 separate extensions. This milestone does not change the completed Phase 0–6
 profiles or their historical evidence.
+
+The later [packed FP16 decode](../research/lfm2-fp16-decode.md) and
+[split-KV attention experiments](../research/lfm2-decode-optimization.md) evaluate
+bounded optimizations through 8K prompt tokens. They remain benchmark variants
+outside the default runner; the reports distinguish their precision contracts,
+correctness checks, and matched native comparisons.

@@ -1,5 +1,9 @@
 # Tensor: A Simple, Extensible Runtime and Compiler Environment for Tensor Programs
 
+This is the original design proposal. Current implementation scope is in the
+[roadmap](../plan/roadmap.md); current usage is in the
+[documentation index](../README.md).
+
 **Status:** Draft proposal  
 **Working project name:** Tensor  
 **Primary executable:** `tensor`  

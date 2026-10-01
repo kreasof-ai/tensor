@@ -7,7 +7,7 @@ partial fallback, graph breaks, guarded shape specializations, compiler-free
 cached execution, and AOTAutograd forward/backward lowering evaluation.
 Full compiled training remains experimental and is not a Phase 4 completion claim.
 
-[Usage and contracts](../pytorch.md), [raw metrics](data/phase4-metrics.json),
+[Usage and contracts](../guides/pytorch.md), [raw metrics](data/phase4-metrics.json),
 [acceptance and transfer records](data/phase4-exit.json), and
 [CI evidence](data/phase4-ci.json) provide reproducible details.
 

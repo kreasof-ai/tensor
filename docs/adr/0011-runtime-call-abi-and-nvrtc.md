@@ -16,7 +16,7 @@ Runtime ABI version 1 is distinct from that future product release.
 ## Decision
 
 1. Introduce Tensor runtime **call ABI 1.0**, specified in
-   [the runtime contract](../runtime-abi.md) and the packaged
+   [the runtime contract](../reference/runtime-abi.md) and the packaged
    [`tensor/abi.h`](../../src/tensor/include/tensor/abi.h). It describes buffers,
    scalar bits, resolved calls, provider-tagged streams and errors, with fixed
    widths, sizes, borrowing rules and explicit version rejection. Compiler IR
