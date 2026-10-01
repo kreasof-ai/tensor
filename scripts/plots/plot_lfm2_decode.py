@@ -29,6 +29,8 @@ def plot(directory,out):
         fig.text(.025,.025,'Same packed weights and token IDs. Resident engines run sequentially in rotating order; five repeats after warmup. Bars span repeat min/max.',fontsize=8)
         fig.tight_layout(rect=(0,.16,1,.94));out.parent.mkdir(parents=True,exist_ok=True)
         fig.savefig(out.with_suffix('.png'),dpi=180);fig.savefig(out.with_suffix('.svg'),metadata={'Date':None});plt.close(fig)
+        svg=out.with_suffix('.svg')
+        svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
 
 
 if __name__=='__main__':
