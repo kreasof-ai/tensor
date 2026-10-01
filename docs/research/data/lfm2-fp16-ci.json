@@ -1,0 +1,362 @@
+{
+  "schema": "tensor.lfm2-fp16-ci.v1",
+  "status": "passed",
+  "implementation_commit": "16c652315eef222d009d6988655dcc1539adc3eb",
+  "scope": "GPU-free Linux/Windows NVRTC compilation of all three experimental schedules, wheel packaging, isolated consumer checks and existing NVRTC/module transfer. GPU execution and numerical checks are retained separately.",
+  "runs": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-10-01T00:20:22Z",
+      "databaseId": 36795676107,
+      "headSha": "16c652315eef222d009d6988655dcc1539adc3eb",
+      "jobs": [
+        {
+          "name": "producer (ubuntu-24.04)",
+          "conclusion": "success",
+          "startedAt": "2026-10-01T00:20:24Z",
+          "completedAt": "2026-10-01T00:22:53Z",
+          "url": "https://github.com/kreasof-ai/tensor/actions/runs/36795676107/job/110158431285",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv sync --locked",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python -m pytest packages/tensor-llm/tests -o addopts='' -q",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python benchmarks/lfm2/diagnostic.py --out build/lfm2-diagnostic.gguf",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-diagnostic --context 384 --target sm_86",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile experimental FP16 decode schedules with NVRTC",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv build --wheel --out-dir build/lfm2-wheels",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv build --wheel packages/tensor-llm --out-dir build/lfm2-wheels",
+              "conclusion": "success"
+            },
+            {
+              "name": "Inspect in an isolated consumer with four distributions",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "name": "producer (windows-latest)",
+          "conclusion": "success",
+          "startedAt": "2026-10-01T00:20:26Z",
+          "completedAt": "2026-10-01T00:24:01Z",
+          "url": "https://github.com/kreasof-ai/tensor/actions/runs/36795676107/job/110158431628",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv sync --locked",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python -m pytest packages/tensor-llm/tests -o addopts='' -q",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python benchmarks/lfm2/diagnostic.py --out build/lfm2-diagnostic.gguf",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-diagnostic --context 384 --target sm_86",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile experimental FP16 decode schedules with NVRTC",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv build --wheel --out-dir build/lfm2-wheels",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run uv build --wheel packages/tensor-llm --out-dir build/lfm2-wheels",
+              "conclusion": "success"
+            },
+            {
+              "name": "Inspect in an isolated consumer with four distributions",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ],
+      "updatedAt": "2026-10-01T00:24:02Z",
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36795676107",
+      "workflowName": "Standalone LFM2 package and NVRTC plans"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-10-01T00:20:22Z",
+      "databaseId": 36795676105,
+      "headSha": "16c652315eef222d009d6988655dcc1539adc3eb",
+      "jobs": [
+        {
+          "name": "producer (ubuntu-24.04, build/consumer/bin/python)",
+          "conclusion": "success",
+          "startedAt": "2026-10-01T00:20:26Z",
+          "completedAt": "2026-10-01T00:23:17Z",
+          "url": "https://github.com/kreasof-ai/tensor/actions/runs/36795676105/job/110158431612",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Install the pinned producer and local NVRTC components",
+              "conclusion": "success"
+            },
+            {
+              "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile the five CUDA profiles and audit cache recovery",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile the FlashAttention demonstration with NVRTC",
+              "conclusion": "success"
+            },
+            {
+              "name": "Package a deterministic module and its pinned dependency",
+              "conclusion": "success"
+            },
+            {
+              "name": "Prepare the PyPI transport wheel without uploading",
+              "conclusion": "success"
+            },
+            {
+              "name": "Build the compiler-free consumer wheel",
+              "conclusion": "success"
+            },
+            {
+              "name": "Install and inspect with only Tensor and NumPy",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile actual FX adapter profiles without a GPU",
+              "conclusion": "success"
+            },
+            {
+              "name": "Build the separate PyTorch adapter wheel",
+              "conclusion": "success"
+            },
+            {
+              "name": "Build the C++ executor against the pinned PyTorch without a toolkit",
+              "conclusion": "success"
+            },
+            {
+              "name": "Check installed PyTorch backend without compiler packages or GPU",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "name": "producer (windows-latest, build/consumer/Scripts/python.exe)",
+          "conclusion": "success",
+          "startedAt": "2026-10-01T00:20:24Z",
+          "completedAt": "2026-10-01T00:23:19Z",
+          "url": "https://github.com/kreasof-ai/tensor/actions/runs/36795676105/job/110158431816",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Install the pinned producer and local NVRTC components",
+              "conclusion": "success"
+            },
+            {
+              "name": "Check shared descriptors, diagnostics, CPU provider and native C++ hosting",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile the five CUDA profiles and audit cache recovery",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile the FlashAttention demonstration with NVRTC",
+              "conclusion": "success"
+            },
+            {
+              "name": "Package a deterministic module and its pinned dependency",
+              "conclusion": "success"
+            },
+            {
+              "name": "Prepare the PyPI transport wheel without uploading",
+              "conclusion": "success"
+            },
+            {
+              "name": "Build the compiler-free consumer wheel",
+              "conclusion": "success"
+            },
+            {
+              "name": "Install and inspect with only Tensor and NumPy",
+              "conclusion": "success"
+            },
+            {
+              "name": "Compile actual FX adapter profiles without a GPU",
+              "conclusion": "success"
+            },
+            {
+              "name": "Build the separate PyTorch adapter wheel",
+              "conclusion": "success"
+            },
+            {
+              "name": "Build the C++ executor against the pinned PyTorch without a toolkit",
+              "conclusion": "success"
+            },
+            {
+              "name": "Check installed PyTorch backend without compiler packages or GPU",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run astral-sh/setup-uv@v10.2.0",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7.0.1",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ],
+      "updatedAt": "2026-10-01T00:23:20Z",
+      "url": "https://github.com/kreasof-ai/tensor/actions/runs/36795676105",
+      "workflowName": "NVRTC runtime and module transfer"
+    }
+  ]
+}

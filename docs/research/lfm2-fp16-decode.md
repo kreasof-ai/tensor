@@ -120,7 +120,11 @@ complete greedy generation to EOS. Consumer reports:
 [F16](data/lfm2-f16-half2-consumer.json), [Q4_0](data/lfm2-q4_0-half2-consumer.json),
 [Q4_K_M](data/lfm2-q4_k_m-half2-consumer.json).
 The [acceptance record](data/lfm2-fp16-acceptance.json) retains test commands,
-hardware, timing counts and the precision/default boundary.
+hardware, timing counts and the precision/default boundary. Linux and Windows
+[experimental-schedule compilation](https://github.com/kreasof-ai/tensor/actions/runs/36795676107)
+and the existing [NVRTC/module transfer workflow](https://github.com/kreasof-ai/tensor/actions/runs/36795676105)
+both pass for `16c6523`; the [CI record](data/lfm2-fp16-ci.json) retains each job
+and step. These GPU-free CI jobs supplement the local A10G execution checks.
 
 ## Reproduce
 
