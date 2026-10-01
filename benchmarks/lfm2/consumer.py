@@ -13,7 +13,7 @@ class Guard(importlib.abc.MetaPathFinder):
             raise ImportError('producer/framework import prohibited: '+fullname)
 
 
-def consume(model,bundle,reference,out):
+def consume(model,bundle,reference,out,*,engine_cls=None):
     sys.meta_path.insert(0,Guard())
     distributions=sorted(d.metadata['Name'].lower() for d in importlib.metadata.distributions())
     assert set(distributions)=={'tensor-workspace','tensor-llm','numpy','regex'},distributions
@@ -24,7 +24,7 @@ def consume(model,bundle,reference,out):
     if validation['status']!='passed':raise ValueError('requires a successful numerical fixture')
     spec=json.loads((reference/'reference-spec.json').read_text())
     observations=[]
-    with tensor.Device() as device,LFM2(model,bundle,device) as network:
+    with tensor.Device() as device,(engine_cls or LFM2)(model,bundle,device) as network:
         # Repeat the complete numerical fixture, including cache and reset boundaries.
         for i,item in enumerate(spec['validation']):
             if item.get('reset'):network.reset()

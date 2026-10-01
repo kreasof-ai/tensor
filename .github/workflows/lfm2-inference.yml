@@ -33,6 +33,20 @@ jobs:
           uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-cast --mode fp16_cast
           uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-half2 --mode fp16_half2
           uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-mma --mode fp16_mma32
+      - name: Compile split-KV and packed-load experiments without a GPU
+        shell: bash
+        run: |
+          uv run --locked python benchmarks/lfm2/decode_optimization.py --base build/lfm2-diagnostic --out build/lfm2-diagnostic-warp-split --splits 16
+          uv run --locked python - <<'PYCODE'
+          from pathlib import Path
+          from benchmarks.lfm2.decode_optimization import compile_source, pipelined_source, prefetch_source
+          out=Path('build/lfm2-packed-load-controls')
+          for encoding in (2,12,14):
+              p={'r':1,'k':2048,'o':128,'type':encoding}
+              for asynchronous in (False,True):
+                  compile_source(pipelined_source(p,async_load=asynchronous),out)
+              compile_source(prefetch_source(p),out)
+          PYCODE
       - run: uv build --wheel --out-dir build/lfm2-wheels
       - run: uv build --wheel packages/tensor-llm --out-dir build/lfm2-wheels
       - name: Inspect in an isolated consumer with four distributions
@@ -72,6 +86,9 @@ jobs:
             build/lfm2-diagnostic/artifacts/*.tbin
             build/lfm2-diagnostic-half2/inference.json
             build/lfm2-diagnostic-half2/artifacts/*.tbin
+            build/lfm2-diagnostic-warp-split/inference.json
+            build/lfm2-diagnostic-warp-split/artifacts/*.tbin
+            build/lfm2-packed-load-controls/*.tbin
             build/lfm2-wheels/*.whl
           if-no-files-found: error
           retention-days: 30
