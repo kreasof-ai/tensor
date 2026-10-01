@@ -1,0 +1,4855 @@
+{
+  "schema": "tensor.clblast-tuning.v1",
+  "status": "completed",
+  "opencl": {
+    "platform": "AMD Accelerated Parallel Processing",
+    "platform_version": "OpenCL 2.1 AMD-APP (3652.0)",
+    "name": "gfx1031",
+    "vendor": "Advanced Micro Devices, Inc.",
+    "version": "OpenCL 2.0 AMD-APP (3652.0)",
+    "driver": "3652.0 (PAL,LC)",
+    "fp16": true
+  },
+  "source": "bounded stock AMD database configuration search; not exhaustive",
+  "library_sha256": "0a58a170d70813772411704670eddb33ccbcb9477e597b6a870f66203df2cff5",
+  "selected": {
+    "small": {
+      "anchor": "small",
+      "index": 19,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.18610002007335424,
+        "samples_ms": [
+          0.18679990898817778,
+          0.18640002235770226,
+          0.1873000292107463,
+          0.18560001626610756,
+          0.18610002007335424,
+          0.18559989985078573,
+          0.1838000025600195
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    "large": {
+      "anchor": "large",
+      "index": 1,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 16.058500041253865,
+        "samples_ms": [
+          16.107500065118074,
+          16.2203999934718,
+          16.070700017735362,
+          16.024000011384487,
+          16.058500041253865,
+          16.013899934478104,
+          16.016499954275787
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    "rectangular": {
+      "anchor": "rectangular",
+      "index": 0,
+      "family": "stock",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 640
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.17280003521591425,
+        "samples_ms": [
+          0.17660006415098906,
+          0.16980001237243414,
+          0.1732999226078391,
+          0.1721000298857689,
+          0.17310003750026226,
+          0.17190002836287022,
+          0.17280003521591425
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    }
+  },
+  "candidates": [
+    {
+      "anchor": "small",
+      "index": 0,
+      "family": "stock",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 640
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.20320003386586905,
+        "samples_ms": [
+          0.27089996729046106,
+          0.21139997988939285,
+          0.20320003386586905,
+          0.24610001128166914,
+          0.19959989003837109,
+          0.18830003682523966,
+          0.18630002159625292
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 1,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.20860007498413324,
+        "samples_ms": [
+          0.21119997836649418,
+          0.22320006974041462,
+          0.20889996085315943,
+          0.20709994714707136,
+          0.20860007498413324,
+          0.20539993420243263,
+          0.20690006203949451
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 2,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 8,
+          "MWG": 16,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 1,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24979992303997278,
+        "samples_ms": [
+          0.2479000249877572,
+          0.3883000463247299,
+          0.3600999480113387,
+          0.26919995434582233,
+          0.24110008962452412,
+          0.24979992303997278,
+          0.23750006221234798
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 3,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 16,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.19920000340789557,
+        "samples_ms": [
+          0.20220002625137568,
+          0.20970008336007595,
+          0.1990000018849969,
+          0.19920000340789557,
+          0.19809999503195286,
+          0.2041999250650406,
+          0.19609997980296612
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 4,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2762000076472759,
+        "samples_ms": [
+          0.26240001898258924,
+          0.2762000076472759,
+          0.2851000754162669,
+          0.44139998499304056,
+          0.27459999546408653,
+          0.26819994673132896,
+          0.28410006780177355
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 5,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.22569997236132622,
+        "samples_ms": [
+          0.22569997236132622,
+          0.21970004308968782,
+          0.21689990535378456,
+          0.21980004385113716,
+          0.27249997947365046,
+          0.2660000463947654,
+          0.24909991770982742
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 6,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 32,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 16,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 1,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.21379999816417694,
+        "samples_ms": [
+          0.21700002253055573,
+          0.2158998977392912,
+          0.21840003319084644,
+          0.21159998141229153,
+          0.21379999816417694,
+          0.20999996922910213,
+          0.2120999852195382
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 7,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 32,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 8
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24120009038597345,
+        "samples_ms": [
+          0.255499966442585,
+          0.27059996500611305,
+          0.2707000821828842,
+          0.24120009038597345,
+          0.2356999320909381,
+          0.2359000500291586,
+          0.23289991077035666
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 8,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 16,
+          "MWG": 128,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 1,
+          "STRN": 1,
+          "VWM": 8,
+          "VWN": 8
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.27870002668350935,
+        "samples_ms": [
+          0.2823000540956855,
+          0.27740001678466797,
+          0.27689989656209946,
+          0.27870002668350935,
+          0.28060004115104675,
+          0.28309994377195835,
+          0.2770000137388706
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 9,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 8,
+          "MWG": 32,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 64,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2340999199077487,
+        "samples_ms": [
+          0.23010000586509705,
+          0.2340999199077487,
+          0.2261000918224454,
+          0.23260002490133047,
+          0.2965000458061695,
+          0.26489992160350084,
+          0.29150000773370266
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 10,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.25129993446171284,
+        "samples_ms": [
+          0.22689998149871826,
+          0.2223000628873706,
+          0.31189993023872375,
+          0.39930001366883516,
+          0.25129993446171284,
+          0.2272001001983881,
+          0.25379995349794626
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 11,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 0,
+          "SB": 1,
+          "STRM": 1,
+          "STRN": 0,
+          "VWM": 1,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.26430003345012665,
+        "samples_ms": [
+          0.26430003345012665,
+          0.2649999223649502,
+          0.23550004698336124,
+          0.27029996272176504,
+          0.2452000044286251,
+          0.269099953584373,
+          0.24580000899732113
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 12,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 32,
+          "MDIMC": 16,
+          "MWG": 128,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 1,
+          "VWM": 2,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24289998691529036,
+        "samples_ms": [
+          0.24369999300688505,
+          0.2432999899610877,
+          0.24159997701644897,
+          0.27089996729046106,
+          0.24019996635615826,
+          0.24289998691529036,
+          0.24070008657872677
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 13,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.18669990822672844,
+        "samples_ms": [
+          0.1914000604301691,
+          0.18669990822672844,
+          0.18670002464205027,
+          0.18279999494552612,
+          0.18339999951422215,
+          0.18470000941306353,
+          0.1868000254034996
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 14,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 32,
+          "NDIMCD": 32,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2142000012099743,
+        "samples_ms": [
+          0.21819991525262594,
+          0.21540001034736633,
+          0.21229998674243689,
+          0.2142000012099743,
+          0.21249998826533556,
+          0.21139997988939285,
+          0.2142000012099743
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 15,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2479000249877572,
+        "samples_ms": [
+          0.25240005925297737,
+          0.24909991770982742,
+          0.25020004250109196,
+          0.24780002422630787,
+          0.2479000249877572,
+          0.24720001965761185,
+          0.24530000519007444
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 16,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 32,
+          "NDIMCD": 32,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 4,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2172000240534544,
+        "samples_ms": [
+          0.2172000240534544,
+          0.21740002557635307,
+          0.24709990248084068,
+          0.21470000501722097,
+          0.2133999951183796,
+          0.21430000197142363,
+          0.22960000205785036
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 17,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 8,
+          "MDIMAD": 8,
+          "MDIMCD": 16,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 2,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.22899999748915434,
+        "samples_ms": [
+          0.23149990011006594,
+          0.22899999748915434,
+          0.229199999012053,
+          0.22709998302161694,
+          0.2261000918224454,
+          0.22469996474683285,
+          0.2836999483406544
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 18,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24890003260225058,
+        "samples_ms": [
+          0.25399995502084494,
+          0.24890003260225058,
+          0.2487999154254794,
+          0.2519000554457307,
+          0.26320002507418394,
+          0.2484999131411314,
+          0.24720001965761185
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 19,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.18610002007335424,
+        "samples_ms": [
+          0.18679990898817778,
+          0.18640002235770226,
+          0.1873000292107463,
+          0.18560001626610756,
+          0.18610002007335424,
+          0.18559989985078573,
+          0.1838000025600195
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 20,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 8,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 32,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 4,
+          "VWND": 1,
+          "WGD": 64
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2025000285357237,
+        "samples_ms": [
+          0.20410004071891308,
+          0.20240002777427435,
+          0.20229991059750319,
+          0.20160002168267965,
+          0.20300003234297037,
+          0.2025000285357237,
+          0.2052999334409833
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 21,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24359999224543571,
+        "samples_ms": [
+          0.3662999952211976,
+          0.4070999566465616,
+          0.2503000432625413,
+          0.24359999224543571,
+          0.242199981585145,
+          0.24319998919963837,
+          0.24039996787905693
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 22,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 4,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.318799982778728,
+        "samples_ms": [
+          0.3146999515593052,
+          0.31910010147839785,
+          0.3201001090928912,
+          0.3193001030012965,
+          0.318799982778728,
+          0.317899975925684,
+          0.31489995308220387
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 23,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 32,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.42399996891617775,
+        "samples_ms": [
+          0.4778000293299556,
+          0.4552999744191766,
+          0.4358000587671995,
+          0.42399996891617775,
+          0.41889993008226156,
+          0.41850004345178604,
+          0.4187000449746847
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "small",
+      "index": 24,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 16,
+          "MDIMAD": 8,
+          "MDIMCD": 16,
+          "NDIMBD": 16,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 2,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2223999472334981,
+        "samples_ms": [
+          0.22680009715259075,
+          0.22379995789378881,
+          0.22149994038045406,
+          0.22330007050186396,
+          0.2223999472334981,
+          0.2207000507041812,
+          0.22149994038045406
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 8.392333984375e-05,
+        "relative_rms": 3.9181632406205504e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "85612f8f810b7cb146b0faab9a271415074ca78dc1cef6d505904c4cecb01349"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 0,
+      "family": "stock",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 640
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 16.08590001706034,
+        "samples_ms": [
+          16.129199997521937,
+          15.995700028724968,
+          16.104500042274594,
+          16.05919993016869,
+          16.08590001706034,
+          16.10929996240884,
+          16.021299990825355
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 1,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 16.058500041253865,
+        "samples_ms": [
+          16.107500065118074,
+          16.2203999934718,
+          16.070700017735362,
+          16.024000011384487,
+          16.058500041253865,
+          16.013899934478104,
+          16.016499954275787
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 2,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 8,
+          "MWG": 16,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 1,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 39.64890004135668,
+        "samples_ms": [
+          38.6884999461472,
+          38.74250000808388,
+          38.86269999202341,
+          39.81180000118911,
+          39.71859999001026,
+          39.64890004135668,
+          39.746199967339635
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 3,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 16,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 20.13789990451187,
+        "samples_ms": [
+          20.09960007853806,
+          20.13789990451187,
+          20.18410002347082,
+          20.037599955685437,
+          20.14540007803589,
+          20.122299902141094,
+          20.740600069984794
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 4,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 30.02200007904321,
+        "samples_ms": [
+          29.900800087489188,
+          28.406299999915063,
+          29.96860002167523,
+          30.157200060784817,
+          30.02200007904321,
+          30.10609990451485,
+          30.06200003437698
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 5,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 30.16079997178167,
+        "samples_ms": [
+          30.26299993507564,
+          30.069399974308908,
+          29.595899977721274,
+          30.16079997178167,
+          30.201700050383806,
+          30.13460000511259,
+          30.2338000619784
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 6,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 32,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 16,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 1,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 19.947599968872964,
+        "samples_ms": [
+          20.045000012032688,
+          19.947599968872964,
+          19.77640006225556,
+          20.08449996355921,
+          19.755400018766522,
+          19.9379000114277,
+          20.668899989686906
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 7,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 32,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 8
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 28.10269990004599,
+        "samples_ms": [
+          28.10269990004599,
+          28.068099985830486,
+          28.142200084403157,
+          28.059400035999715,
+          28.03349995519966,
+          28.18040002603084,
+          28.182500042021275
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 8,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 16,
+          "MWG": 128,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 1,
+          "STRN": 1,
+          "VWM": 8,
+          "VWN": 8
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 20.899199997074902,
+        "samples_ms": [
+          20.867299987003207,
+          20.84480004850775,
+          20.88869991712272,
+          20.938600064255297,
+          20.900200004689395,
+          20.899199997074902,
+          21.006700000725687
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 9,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 8,
+          "MWG": 32,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 64,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 21.50529995560646,
+        "samples_ms": [
+          20.13949991669506,
+          19.956500036641955,
+          20.36760002374649,
+          21.50529995560646,
+          22.13199995458126,
+          22.255599964410067,
+          22.20970008056611
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 10,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 35.061600035987794,
+        "samples_ms": [
+          33.625099924393,
+          34.15880003012717,
+          34.58789992146194,
+          35.061600035987794,
+          35.17970000393689,
+          35.45289998874068,
+          35.07390001323074
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 11,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 0,
+          "SB": 1,
+          "STRM": 1,
+          "STRN": 0,
+          "VWM": 1,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 20.142100052908063,
+        "samples_ms": [
+          20.07259998936206,
+          20.045600016601384,
+          20.057600107975304,
+          20.142100052908063,
+          20.25039994623512,
+          20.844300044700503,
+          21.25769993290305
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 12,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 32,
+          "MDIMC": 16,
+          "MWG": 128,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 1,
+          "VWM": 2,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 18.92589998897165,
+        "samples_ms": [
+          18.931700033135712,
+          18.90969998203218,
+          18.870400032028556,
+          18.92469997983426,
+          18.94059998448938,
+          18.92589998897165,
+          18.94390000961721
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 13,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 48.406100017018616,
+        "samples_ms": [
+          48.19620004855096,
+          48.406100017018616,
+          48.48710005171597,
+          48.27379994094372,
+          48.616699990816414,
+          48.29319997224957,
+          48.47180005162954
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 14,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 32,
+          "NDIMCD": 32,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 59.817600063979626,
+        "samples_ms": [
+          60.06159994285554,
+          59.73360000643879,
+          59.97199995908886,
+          59.77450008504093,
+          59.84000000171363,
+          59.720000019297004,
+          59.817600063979626
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 15,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 104.02060009073466,
+        "samples_ms": [
+          103.96470001433045,
+          104.75339996628463,
+          103.79409999586642,
+          103.64169999957085,
+          104.28129998035729,
+          104.14969990961254,
+          104.02060009073466
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 16,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 32,
+          "NDIMCD": 32,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 4,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 59.74830000195652,
+        "samples_ms": [
+          59.749600011855364,
+          59.30119997356087,
+          60.0051999790594,
+          59.74830000195652,
+          59.749199892394245,
+          59.32310002390295,
+          59.728699969127774
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 17,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 8,
+          "MDIMAD": 8,
+          "MDIMCD": 16,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 2,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 59.734700014814734,
+        "samples_ms": [
+          59.73679991438985,
+          59.734700014814734,
+          59.76009997539222,
+          59.72220003604889,
+          59.680999955162406,
+          59.759899973869324,
+          59.67740004416555
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 18,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 101.28450009506196,
+        "samples_ms": [
+          101.50400002021343,
+          101.28450009506196,
+          101.29920009057969,
+          101.86580009758472,
+          100.90529988519847,
+          100.8390000788495,
+          101.1305000865832
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 19,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 48.76080004032701,
+        "samples_ms": [
+          48.69039996992797,
+          48.579399939626455,
+          48.85430005379021,
+          48.933799960650504,
+          48.64509997423738,
+          48.76080004032701,
+          48.79969998728484
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 20,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 8,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 32,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 4,
+          "VWND": 1,
+          "WGD": 64
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 42.54439997021109,
+        "samples_ms": [
+          40.58499995153397,
+          42.546599986962974,
+          42.498899972997606,
+          42.57980000693351,
+          42.54439997021109,
+          42.63310006354004,
+          41.84019996318966
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 21,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 103.65049995016307,
+        "samples_ms": [
+          102.82190004363656,
+          103.65049995016307,
+          101.98799998033792,
+          104.40599999856204,
+          103.20830007549375,
+          104.41590007394552,
+          104.12749997340143
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 22,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 4,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 71.16719998884946,
+        "samples_ms": [
+          70.72850002441555,
+          71.21600001119077,
+          71.18199998512864,
+          71.032700012438,
+          71.16719998884946,
+          71.27830001991242,
+          71.1180999642238
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 23,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 32,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 144.4105999544263,
+        "samples_ms": [
+          144.45200003683567,
+          144.25819995813072,
+          144.2364000249654,
+          144.43670003674924,
+          144.6599999908358,
+          144.4105999544263,
+          144.40210000611842
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "large",
+      "index": 24,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 16,
+          "MDIMAD": 8,
+          "MDIMCD": 16,
+          "NDIMBD": 16,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 2,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 58.22809995152056,
+        "samples_ms": [
+          58.29369998537004,
+          58.02120000589639,
+          58.094599982723594,
+          58.22809995152056,
+          58.26229997910559,
+          58.14370000734925,
+          58.32199996802956
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.001007080078125,
+        "relative_rms": 1.1852136327832133e-06,
+        "mismatched_elements": 0,
+        "output_sha256": "f681a622f75b728b2a9ca31980fd93cd7c9952d6e7023ebca03eb7330abf63a5"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 0,
+      "family": "stock",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 640
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.17280003521591425,
+        "samples_ms": [
+          0.17660006415098906,
+          0.16980001237243414,
+          0.1732999226078391,
+          0.1721000298857689,
+          0.17310003750026226,
+          0.17190002836287022,
+          0.17280003521591425
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 1,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.3029999788850546,
+        "samples_ms": [
+          0.30590000096708536,
+          0.28849998489022255,
+          0.2805999247357249,
+          0.2791000297293067,
+          0.3029999788850546,
+          0.30399998649954796,
+          0.31160004436969757
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 2,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 8,
+          "MWG": 16,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 1,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.26540004182606936,
+        "samples_ms": [
+          0.2741999924182892,
+          0.2919998951256275,
+          0.2655000425875187,
+          0.26540004182606936,
+          0.25029992684721947,
+          0.24009996559470892,
+          0.2400000812485814
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 3,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 16,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24149997625499964,
+        "samples_ms": [
+          0.26110000908374786,
+          0.2509000478312373,
+          0.24419999681413174,
+          0.24119997397065163,
+          0.24149997625499964,
+          0.2405999694019556,
+          0.23939996026456356
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 4,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2440001117065549,
+        "samples_ms": [
+          0.26629993226379156,
+          0.2533000661060214,
+          0.24580000899732113,
+          0.24339999072253704,
+          0.24349999148398638,
+          0.2427001018077135,
+          0.2440001117065549
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 5,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 64,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.24829991161823273,
+        "samples_ms": [
+          0.2609000075608492,
+          0.24829991161823273,
+          0.24429999757558107,
+          0.2432999899610877,
+          0.24269998539239168,
+          0.29009999707341194,
+          0.2861000830307603
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 6,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 32,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 16,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 1,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.26080000679939985,
+        "samples_ms": [
+          0.2808000426739454,
+          0.2606000052765012,
+          0.2610000083222985,
+          0.26080000679939985,
+          0.25969999842345715,
+          0.2644999185577035,
+          0.26030000299215317
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 7,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 32,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 2,
+          "VWN": 8
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2799999201670289,
+        "samples_ms": [
+          0.28090004343539476,
+          0.28579996433109045,
+          0.2831999445334077,
+          0.27950003277510405,
+          0.27980003505945206,
+          0.2799999201670289,
+          0.2796000335365534
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 8,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 16,
+          "MWG": 128,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 1,
+          "STRN": 1,
+          "VWM": 8,
+          "VWN": 8
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.5511000053957105,
+        "samples_ms": [
+          0.5699999164789915,
+          0.5481000989675522,
+          0.5553999217227101,
+          0.5511000053957105,
+          0.5492999916896224,
+          0.5469999741762877,
+          0.556000042706728
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 9,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 8,
+          "MDIMC": 8,
+          "MWG": 32,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 64,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2989000640809536,
+        "samples_ms": [
+          0.3432000521570444,
+          0.30860002152621746,
+          0.2967999316751957,
+          0.2989000640809536,
+          0.3007999621331692,
+          0.2965000458061695,
+          0.2980999415740371
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 10,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 16,
+          "NDIMC": 16,
+          "NWG": 64,
+          "SA": 0,
+          "SB": 0,
+          "STRM": 0,
+          "STRN": 0,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.2682000631466508,
+        "samples_ms": [
+          0.2759000053629279,
+          0.25589996948838234,
+          0.25749998167157173,
+          0.2584001049399376,
+          0.2831000601872802,
+          0.2848999574780464,
+          0.2682000631466508
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 11,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 32,
+          "KWI": 2,
+          "MDIMA": 16,
+          "MDIMC": 16,
+          "MWG": 64,
+          "NDIMB": 32,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 0,
+          "SB": 1,
+          "STRM": 1,
+          "STRN": 0,
+          "VWM": 1,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.3347001038491726,
+        "samples_ms": [
+          0.33719989005476236,
+          0.3264000406488776,
+          0.33249997068196535,
+          0.3424000460654497,
+          0.32540003303438425,
+          0.3347001038491726,
+          0.34279993269592524
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 12,
+      "family": "Xgemm",
+      "configuration": {
+        "Xgemm": {
+          "GEMMK": 0,
+          "KREG": 1,
+          "KWG": 16,
+          "KWI": 2,
+          "MDIMA": 32,
+          "MDIMC": 16,
+          "MWG": 128,
+          "NDIMB": 8,
+          "NDIMC": 8,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRM": 0,
+          "STRN": 1,
+          "VWM": 2,
+          "VWN": 2
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 0
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.38300000596791506,
+        "samples_ms": [
+          0.36260008346289396,
+          0.3692000173032284,
+          0.37450005766004324,
+          0.40170003194361925,
+          0.3895999398082495,
+          0.39219995960593224,
+          0.38300000596791506
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 13,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "NDIMCD": 16,
+          "VWMD": 2,
+          "NDIMBD": 16,
+          "MDIMAD": 8,
+          "PADA": 1,
+          "MDIMCD": 8,
+          "PADB": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.17690006643533707,
+        "samples_ms": [
+          0.18710002768784761,
+          0.17529993783682585,
+          0.17730006948113441,
+          0.17629994545131922,
+          0.17719995230436325,
+          0.17690006643533707,
+          0.1759999431669712
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 14,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 32,
+          "NDIMCD": 32,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.1949999714270234,
+        "samples_ms": [
+          0.188400037586689,
+          0.18480001017451286,
+          0.18860003910958767,
+          0.2068999456241727,
+          0.22899999748915434,
+          0.21500000730156898,
+          0.1949999714270234
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 15,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.34509995020926,
+        "samples_ms": [
+          0.3600000636652112,
+          0.35470002330839634,
+          0.3146999515593052,
+          0.34509995020926,
+          0.4181000404059887,
+          0.2767000114545226,
+          0.2638999139890075
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 16,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 32,
+          "NDIMCD": 32,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 4,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.18699991051107645,
+        "samples_ms": [
+          0.19020005129277706,
+          0.18639990594238043,
+          0.18550001550465822,
+          0.18500001169741154,
+          0.1876000314950943,
+          0.18710002768784761,
+          0.18699991051107645
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 17,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 8,
+          "MDIMAD": 8,
+          "MDIMCD": 16,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 2,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.1919000642374158,
+        "samples_ms": [
+          0.19829999655485153,
+          0.19449996761977673,
+          0.19159994553774595,
+          0.1919000642374158,
+          0.18839992117136717,
+          0.1938000787049532,
+          0.1898000482469797
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 18,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.28609996661543846,
+        "samples_ms": [
+          0.39659999310970306,
+          0.26279990561306477,
+          0.2864000853151083,
+          0.30509999487549067,
+          0.2587999915704131,
+          0.2711999695748091,
+          0.28609996661543846
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 19,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.17469993326812983,
+        "samples_ms": [
+          0.1832999987527728,
+          0.1724000321701169,
+          0.17469993326812983,
+          0.17360004130750895,
+          0.1697000116109848,
+          0.17610006034374237,
+          0.174800050444901
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 20,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 8,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 32,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 4,
+          "VWND": 1,
+          "WGD": 64
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.3312999615445733,
+        "samples_ms": [
+          0.3349999897181988,
+          0.3562999190762639,
+          0.3399000270292163,
+          0.3312999615445733,
+          0.33110007643699646,
+          0.3226000117138028,
+          0.32380002085119486
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 21,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 16,
+          "NDIMCD": 16,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 16
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.25729998014867306,
+        "samples_ms": [
+          0.3162000793963671,
+          0.2543999580666423,
+          0.2525999443605542,
+          0.2722999779507518,
+          0.28540007770061493,
+          0.25729998014867306,
+          0.2543999580666423
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 22,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 8,
+          "MDIMCD": 8,
+          "NDIMBD": 8,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 1,
+          "VWMD": 2,
+          "VWND": 4,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.34330005291849375,
+        "samples_ms": [
+          0.3559000324457884,
+          0.34330005291849375,
+          0.3581999335438013,
+          0.35009998828172684,
+          0.340700033120811,
+          0.3394000232219696,
+          0.3426999319344759
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 23,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 2,
+          "MDIMAD": 16,
+          "MDIMCD": 16,
+          "NDIMBD": 32,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 1,
+          "VWND": 1,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.3991000121459365,
+        "samples_ms": [
+          0.3991000121459365,
+          0.37150003481656313,
+          0.3739999374374747,
+          0.3816999960690737,
+          0.4016000311821699,
+          0.40749995969235897,
+          0.40719995740801096
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    },
+    {
+      "anchor": "rectangular",
+      "index": 24,
+      "family": "XgemmDirect",
+      "configuration": {
+        "Xgemm": {
+          "KWG": 32,
+          "KREG": 1,
+          "GEMMK": 0,
+          "NDIMC": 16,
+          "KWI": 2,
+          "NDIMB": 32,
+          "MDIMA": 8,
+          "STRM": 1,
+          "MDIMC": 8,
+          "MWG": 128,
+          "NWG": 128,
+          "SA": 1,
+          "SB": 1,
+          "STRN": 1,
+          "VWM": 4,
+          "VWN": 4
+        },
+        "XgemmDirect": {
+          "KWID": 16,
+          "MDIMAD": 8,
+          "MDIMCD": 16,
+          "NDIMBD": 16,
+          "NDIMCD": 8,
+          "PADA": 1,
+          "PADB": 0,
+          "VWMD": 2,
+          "VWND": 2,
+          "WGD": 32
+        },
+        "GemmRoutine": {
+          "XGEMM_MIN_INDIRECT_SIZE": 100000
+        }
+      },
+      "status": "passed",
+      "timing": {
+        "median_ms": 0.20110001787543297,
+        "samples_ms": [
+          0.20509993191808462,
+          0.2004000125452876,
+          0.201700022444129,
+          0.20110001787543297,
+          0.20189990755170584,
+          0.18590001855045557,
+          0.18360000103712082
+        ]
+      },
+      "correctness": {
+        "passed": true,
+        "atol": 0.002,
+        "rtol": 0.02,
+        "maximum_absolute_error": 0.00016021728515625,
+        "relative_rms": 6.053495159481479e-07,
+        "mismatched_elements": 0,
+        "output_sha256": "da973809d8868eb6275f5a225f634f9636f23e8ab04a5a4024ece231dfe60f39"
+      }
+    }
+  ]
+}

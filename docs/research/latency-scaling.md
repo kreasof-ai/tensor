@@ -11,11 +11,22 @@ passes all 17 sizes with byte-identical WebGPU shaders and the same allocating-c
 timing protocol. Its input values, operating system, host and driver differ;
 the cross-system WebGPU comparison is reported separately below.
 
+A fresh [RX 6700 XT before/after repeat](#rx-6700-xt-repeat-after-compiler-optimization)
+measures the subsequent compiler/runtime changes with identical inputs on this
+machine. Large GEMMs and all attention sizes improve; pointwise is essentially
+unchanged and GEMM 512³ regresses. The historical A10G measurements below were
+not rerun and retain their original shaders.
+
+A subsequent [matched FP32 CLBlast/OpenCL comparison](clblast-rx6700xt.md)
+shows substantial remaining headroom in the generic WebGPU GEMM schedule,
+including preallocated and full bias/ReLU calls. Its FP32 storage contract
+differs from the FP16 linear profiles measured here.
+
 The outer CUDA `torch.compile` wrapper becomes a smaller fraction of latency
 as GPU work grows. At 64M pointwise elements, Tensor through `torch.compile`
 is **1.02×** matched TileLang. At GEMM 4096³ the ratio is
 1.01×, but both remain slower than Triton and eager PyTorch.
-The current portable wgpu lowering is slower still: 4.92× Tensor through
+The portable wgpu lowering measured in that A10G run is slower still: 4.92× Tensor through
 `torch.compile` for 64M pointwise, 14.68× for GEMM 4096³, and
 64.44× for non-causal S=8192 attention.
 
@@ -319,7 +330,7 @@ because it lacks `shader-f16` in the measured Windows configuration.
 
 ## RX 6700 XT compute and bandwidth utilization
 
-The current lowering leaves substantial headroom: the largest GEMM achieves
+The original RX measurement leaves substantial headroom: the largest GEMM achieves
 approximately **5.03% of advertised FP32 peak**, while the largest pointwise
 case achieves **5.94% effective useful-data bandwidth utilization**. These
 are derived from the recorded completed allocating-call medians, not a new
@@ -385,3 +396,113 @@ Reproduce the derivation without rerunning the GPU:
 ```powershell
 build/webgpu-rx6700xt-consumer/Scripts/python.exe benchmarks/inference/webgpu_utilization.py docs/research/data/webgpu-rx6700xt-scaling.json --out build/webgpu-rx6700xt-utilization.json
 ```
+
+## RX 6700 XT repeat after compiler optimization
+
+On **2026-10-01**, the full 17-workload sweep and both original repeat cases
+were rerun with the frozen original runtime/artifacts and the current
+runtime/newly compiled artifacts. These are fresh measurements on the same
+RX 6700 XT / Windows Vulkan machine. Both use Python 3.12.13, NumPy 2.5.3,
+wgpu 0.29.0, wgpu-native 27.0.2.0 and the adapter's reported AMD 26.6.2 driver.
+The original run started at 08:45 UTC and the optimized run at 08:47 UTC;
+GPU sweeps ran sequentially.
+
+Each median retains **45 individual allocating calls after 20 warmups**,
+including queue completion, with output release outside the timer. Inputs
+use the original `SeedSequence([42, case_index])`; all input hashes match
+between sweeps and all 17 cases pass the original `atol=0.002, rtol=0.02`
+NumPy reference check. **All 17 output hashes also match bitwise before/after.**
+Uploads/downloads, CPU references, build and pipeline creation remain excluded.
+The producer/consumer source and artifact checksum gates remain active, including
+explicit support for the frozen runtime's earlier flat package layout.
+
+The applicable optimization is the generic `T.gemm` lowering's **2×2 register
+microtiles**, replacing one scalar output accumulator per work item. This affects
+both standalone linear kernels and the QK/PV GEMMs inside streaming attention.
+Output tile sizes, workgroup sizes, shared-memory sizes, FP32 accumulation,
+attention's ordered reductions and online-softmax algorithm remain unchanged.
+The runtime now enables the device's `subgroup` feature in addition to
+`shader-f16`; these generic kernels do not use subgroup intrinsics. The full
+feature lists are retained in both results.
+
+The LFM2-specific packed/vector schedules, subgroup decode kernels and native
+prepared-plan encoder are **outside this benchmark's call path**. In particular,
+the optional C encoder accelerates `PreparedPlan`, while this sweep calls
+`kernel(*inputs)` and allocates its output on every call. These results measure
+the combined current compiler/runtime, rather than an isolated compiler ablation.
+
+| Workload | Fresh original | Optimized | Original / optimized |
+|---|---:|---:|---:|
+| Pointwise 129 | 0.508 ms | 0.544 ms | 0.94× |
+| Pointwise 1M | 0.648 ms | 0.611 ms | 1.06× |
+| Pointwise 4M | 5.280 ms | 5.158 ms | 1.02× |
+| Pointwise 16M | 9.656 ms | 9.674 ms | 1.00× |
+| Pointwise 64M | 28.429 ms | 28.430 ms | 1.00× |
+| Linear 512³ | 1.333 ms | 1.832 ms | **0.73×** |
+| Linear 1024³ | 5.318 ms | 3.722 ms | 1.43× |
+| Linear 2048³ | 26.429 ms | 14.751 ms | 1.79× |
+| Linear 4096³ | 204.620 ms | 108.726 ms | **1.88×** |
+| Attention S1024, noncausal | 5.197 ms | 3.603 ms | 1.44× |
+| Attention S2048, noncausal | 20.111 ms | 13.812 ms | 1.46× |
+| Attention S4096, noncausal | 73.669 ms | 42.473 ms | 1.73× |
+| Attention S8192, noncausal | 267.721 ms | 163.900 ms | **1.63×** |
+| Attention S1024, causal | 3.258 ms | 2.416 ms | 1.35× |
+| Attention S2048, causal | 12.382 ms | 8.628 ms | 1.44× |
+| Attention S4096, causal | 35.220 ms | 22.480 ms | 1.57× |
+| Attention S8192, causal | 134.475 ms | 84.631 ms | **1.59×** |
+
+All five pointwise shaders are byte-identical to the frozen originals, and
+their results show no consistent improvement. The 129-element repeat is
+0.542 ms in both runs. Comparing the new 64M result with the historical
+35.299 ms would overstate an optimization gain: the fresh original shader
+already measures 28.429 ms.
+
+The 4096³ repeat confirms **204.532 → 108.652 ms (1.88×)**. However, the
+512³ regression persists in three separate 45-sample rechecks: original
+**1.355 / 1.298 / 1.270 ms**, optimized **2.261 / 2.140 / 2.158 ms**.
+The exact small-shape latency varies between sessions, but its direction is
+consistent. Shape-dependent microtile selection is therefore a remaining
+optimization target; the 2×2 default does not improve every GEMM shape.
+
+![RX 6700 XT scaling before and after compiler/runtime optimization](data/webgpu-rx6700xt-scaling-optimization.png)
+
+[SVG figure](data/webgpu-rx6700xt-scaling-optimization.svg).
+[Fresh original samples](data/webgpu-rx6700xt-scaling-optimization-before.json).
+[Optimized samples](data/webgpu-rx6700xt-scaling-optimization-after.json).
+[Validated comparison](data/webgpu-rx6700xt-scaling-optimization.json).
+[Original 512³ rechecks](data/webgpu-rx6700xt-scaling-512-before.json) and
+[optimized rechecks](data/webgpu-rx6700xt-scaling-512-after.json).
+[Optimized suite and compiler hashes](data/webgpu-rx6700xt-scaling-optimized-suite.json).
+[Source, wheel and artifact verification](data/webgpu-rx6700xt-scaling-optimization-verification.json).
+
+At 4096³, effective useful-work throughput rises from **0.672 to 1.264 TFLOP/s**,
+or **5.08% to 9.57%** of the same 13.21 TFLOP/s advertised FP32 denominator.
+Optimized S8192 attention reaches **6.35% noncausal / 6.15% causal**. The new
+[derived utilization data](data/webgpu-rx6700xt-scaling-optimized-utilization.json)
+uses the same formulas as the historical utilization section. These remain
+completed-call useful-work estimates; actual DRAM utilization is unmeasured.
+
+To repeat locally, retain the original suite and its matching frozen consumer
+from the earlier Windows run, and use the current clean wheel consumer from
+the [native submission report](lfm2-230m-native-submission.md). A current pure
+Python wheel consumer is also sufficient because prepared encoding is unused.
+Choose a fresh build directory for the optimized suite:
+
+```powershell
+.venv/Scripts/python.exe benchmarks/inference/webgpu_scaling_benchmark.py --build build/webgpu-rx6700xt-scaling-optimized
+$env:OPENBLAS_NUM_THREADS = '6'
+build/webgpu-rx6700xt-consumer/Scripts/python.exe -I benchmarks/inference/webgpu_scaling_benchmark.py --consume build/webgpu-rx6700xt-scaling --compare docs/research/data/latency-scaling.json --repeat-case pointwise-129 --repeat-case gemm-4096-4096-4096 --out build/webgpu-rx6700xt-scaling-optimization-before.json
+build/lfm2-230m-native-consumer/Scripts/python.exe -I benchmarks/inference/webgpu_scaling_benchmark.py --consume build/webgpu-rx6700xt-scaling-optimized --repeat-case pointwise-129 --repeat-case gemm-4096-4096-4096 --out build/webgpu-rx6700xt-scaling-optimization-after.json
+.venv/Scripts/python.exe benchmarks/inference/webgpu_scaling_comparison.py build/webgpu-rx6700xt-scaling-optimization-before.json build/webgpu-rx6700xt-scaling-optimization-after.json --out build/webgpu-rx6700xt-scaling-optimization.json
+uv run --no-project --python 3.12 --with matplotlib==3.11.2 --with numpy==2.5.3 python scripts/plots/plot_webgpu_scaling_optimization.py build/webgpu-rx6700xt-scaling-optimization-before.json build/webgpu-rx6700xt-scaling-optimization-after.json --out build/webgpu-rx6700xt-scaling-optimization
+
+# Recheck the small-GEMM regression separately, with the original case index/inputs.
+build/webgpu-rx6700xt-consumer/Scripts/python.exe -I benchmarks/inference/webgpu_scaling_recheck.py build/webgpu-rx6700xt-scaling --out build/webgpu-rx6700xt-scaling-512-before.json
+build/lfm2-230m-native-consumer/Scripts/python.exe -I benchmarks/inference/webgpu_scaling_recheck.py build/webgpu-rx6700xt-scaling-optimized --out build/webgpu-rx6700xt-scaling-512-after.json
+```
+
+The old `--compare` still requires byte-identical A10G WGSL. It applies to the
+frozen baseline only. The separate before/after comparison checks identical
+inputs, shapes/dtypes, machine/backend/driver, versions and timing protocol,
+and explicitly records shader changes. A10G and its CUDA baselines were not
+remeasured, so their historical ratios cannot be updated from these AMD results.

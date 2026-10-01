@@ -1,0 +1,42 @@
+{
+  "schema": "tensor.webgpu-scaling-optimization-verification.v1",
+  "status": "passed",
+  "timestamp": "2026-10-01T09:38:30.609054+00:00",
+  "checks": {
+    "full_sweeps": 2,
+    "workloads_per_sweep": 17,
+    "repeats_per_sweep": 2,
+    "same_inputs_all_workloads": true,
+    "bitwise_equal_outputs_all_workloads": true,
+    "artifacts_verified": 34,
+    "wgsl_changes": 12,
+    "pointwise_shaders_unchanged": 5,
+    "recheck_samples": 270,
+    "rejects_changed_inputs": true,
+    "rejects_changed_backend": true,
+    "rejects_changed_shape": true,
+    "documentation_links_exist": true
+  },
+  "files": {
+    "docs/research/data/webgpu-rx6700xt-scaling-optimization-after.json": "b927f41706f101a9a5c34b8eff200485c5c8986ad7e3b713b043eaa1806c0df3",
+    "docs/research/data/webgpu-rx6700xt-scaling-optimization-before.json": "27de3da70cac9769492779459518c9b21a831a91d7a744735b7ff2705f5b4f0d",
+    "docs/research/data/webgpu-rx6700xt-scaling-optimization.json": "cda05acbc9dae3c0207fd3666b164a67f1964bfe2ba04340761eded5111504e3",
+    "docs/research/data/webgpu-rx6700xt-scaling-512-after.json": "7df9e752d94a9a438cff6d002db28fc5ce69b3fb77b52d4adabfd2f8198e1363",
+    "docs/research/data/webgpu-rx6700xt-scaling-512-before.json": "82431153646b9fb240c185350362298c7d2cfd2f1d9ba8dbcf67bf28c36288fb",
+    "docs/research/data/webgpu-rx6700xt-scaling-optimized-suite.json": "e9c034d5ebe9ea0c1614bd2d8b0dbe44d973b279d4f60909aa2a9d37bb038f62",
+    "docs/research/data/webgpu-rx6700xt-scaling-optimized-utilization.json": "c50f43e30dc6736b00b9fee5b79838a4aa6c9c7a46c5e91ba153a6fcf048abcb",
+    "docs/research/data/webgpu-rx6700xt-scaling-optimization.png": "b0db17a1216a1cb4357ec27ad059b6f304a0e5ce79f98132baf96348f202af0b",
+    "docs/research/data/webgpu-rx6700xt-scaling-optimization.svg": "9501386d3c9636b405d5eedf273c2cd3bf66a94f8648a0c63d8f09bcbae6c519",
+    "docs/research/data/webgpu-rx6700xt-scaling-suite.json": "28d4235dd710c0d138b353c6c03445a9b46a99d55a78859a81d32fb37a97f41a",
+    "benchmarks/inference/webgpu_scaling_benchmark.py": "bf0c3af5548643271901be3cf684c53914bbc34a03741fbefbe53d0d9d77e3c6",
+    "benchmarks/inference/webgpu_scaling_comparison.py": "a456de7fdce9fce76336b54000748ca6588cb978acf7facfeba0880ea3c8008a",
+    "benchmarks/inference/webgpu_scaling_recheck.py": "9da0525e57fdbd55bd3dc630a3e3efa09ad6d5a23c10435116706de0162be310",
+    "scripts/plots/plot_webgpu_scaling_optimization.py": "1ad9bd0cfc8b023d40f3b2e3f1095d51c2463365a48107d205eca8fab0a3671d",
+    "src/tensor/compiler/webgpu.py": "54446e6bc2f635b6986f8e728a4629b4b0231cb07825c63f7791640f0aa5c203",
+    "src/tensor/compiler/webgpu_lowering.py": "e916654d1e8ae1cc37b6a7294e4f8b4a99523700de96a0b248d3df50027c4c05",
+    "docs/research/latency-scaling.md": "9eaa4ebef3ce33ad583a8c5c9f204d283c4ee1d2c0c35e11cfb3e5af917a4759",
+    "docs/research/README.md": "4155cb97bd479dddc0c6cc4acfcfa47626bfe06fe2f957ee6d20c741f9565a2a",
+    "build/webgpu-rx6700xt/wheel/tensor_workspace-0.1.0-py3-none-any.whl": "c77f5ad5e4aee28f69d0e5535b0fcacd029bee66bb776fe731e7966fd312aab0",
+    "build/lfm2-230m-native-wheels/tensor_workspace-0.1.0-cp312-cp312-win_amd64.whl": "cef3fd1c18bf4c6c70b3b5285d2021eff2290b97130f3a0d30c9118f4ea961bf"
+  }
+}

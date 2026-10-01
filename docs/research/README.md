@@ -27,7 +27,8 @@ establishes that runner's behavior and precision contract.
 
 | Report | Comparison |
 |---|---|
-| [Latency scaling](latency-scaling.md) | Matching pointwise, GEMM, and attention shapes across Tensor, Torch, native TileLang, Triton, and WebGPU; includes A10G and RX 6700 XT measurements |
+| [CLBlast on RX 6700 XT](clblast-rx6700xt.md) | Matched FP32 OpenCL GEMM versus generated WebGPU kernels, full linear epilogues, bounded tuning and precision-gated FP16 observations |
+| [Latency scaling](latency-scaling.md) | Matching pointwise, GEMM, and attention shapes across Tensor, Torch, native TileLang, Triton, and WebGPU; includes A10G, RX 6700 XT and a fresh compiler-optimization repeat |
 | [Direct backend comparison](direct-backend-comparison.md) | Native TileLang/Triton versus Tensor, separating GPU execution, prepared submission, allocating calls, and `torch.compile` |
 | [C++ executor](native-executor.md) | Native PyTorch allocation/submission and its effect on wrapper overhead |
 | [FlashAttention demonstration](flash-attention-demo.md) | NVRTC-produced forward attention versus forced Torch FlashAttention SDPA |

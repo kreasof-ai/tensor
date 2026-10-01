@@ -27,6 +27,15 @@ import time
 from scripts.validation.webgpu_validation import compiler_guard, source_hashes, specialize
 
 ROOT = Path(__file__).resolve().parents[2]
+LEGACY_CONSUMER_FILES = ('webgpu.py', 'webgpu_contract.py', 'abi.py', 'artifact.py',
+                         'runtime.py', 'modules.py', 'providers.py')
+
+
+def consumer_hashes(root, expected):
+    # Retain strict provenance when replaying the frozen pre-package-layout suite.
+    if set(expected) == set(LEGACY_CONSUMER_FILES):
+        return {name: digest((root / name).read_bytes()) for name in LEGACY_CONSUMER_FILES}
+    return source_hashes(root)
 
 
 def digest(value):
@@ -65,7 +74,11 @@ def produce(directory):
              'consumer_source_sha256': source_hashes(ROOT / 'src/tensor'),
              'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
              'producer': {'hostname': socket.gethostname(), 'tilelang': version('tilelang'),
-                          'tvm_ffi': version('apache-tvm-ffi')}}
+                          'tvm_ffi': version('apache-tvm-ffi')},
+             'compiler_source_sha256': {
+                 name: digest((ROOT / 'src/tensor/compiler' / name).read_bytes())
+                 for name in ('webgpu.py', 'webgpu_lowering.py')},
+             'benchmark_source_sha256': digest(Path(__file__).read_bytes())}
     for case in cases():
         folder = directory / case['name']
         folder.mkdir()
@@ -161,7 +174,8 @@ def consume(directory, out, *, ordinal=0, compare=None, repeat_cases=()):
     suite = json.loads(suite_path.read_text())
     if suite['schema'] != 'tensor.webgpu-scaling-suite.v1':
         raise ValueError('unknown scaling suite schema')
-    if suite['consumer_source_sha256'] != source_hashes(Path(tx.__file__).parent):
+    if suite['consumer_source_sha256'] != consumer_hashes(
+            Path(tx.__file__).parent, suite['consumer_source_sha256']):
         raise ValueError('consumer differs from suite producer; install the matching Tensor wheel')
     if [{key: case[key] for key in cases()[0]} for case in suite['cases']] != cases():
         raise ValueError('suite differs from the 17 latency-scaling workloads')

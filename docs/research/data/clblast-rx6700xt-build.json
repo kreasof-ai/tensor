@@ -1,0 +1,27 @@
+{
+  "schema": "tensor.clblast-build.v1",
+  "clblast_version": "1.6.3",
+  "toolchain": {
+    "cmake": "4.3.1-msvc1",
+    "msvc": "19.51.36248.0",
+    "configuration": "Release x64",
+    "visual_studio": "18 2026 BuildTools"
+  },
+  "sources": {
+    "clblast-source": "2a081972b20911ddf76a6b40df717c7d0c181268",
+    "opencl-headers": "30bc20a8e90468e231d7c639805ae61ad1fefa4f",
+    "opencl-icd-source": "5192c84f8059e5f703e5452929b613f9487f6e4c"
+  },
+  "binaries": {
+    "C:/Windows/System32/OpenCL.dll": "d5ed0cfc57cbf8afa6001c37ffba22ec1e93cedeb916a3767fed4e6687524bd3",
+    "build/clblast-build/Release/clblast.dll": "0a58a170d70813772411704670eddb33ccbcb9477e597b6a870f66203df2cff5",
+    "build/clblast-probe-build/Release/tensor_clblast_probe.dll": "92cd277f7da8b12fdbc1437572d3d0644bb94939d626e426ae76705b89643a57",
+    "build/clblast-consumer/Lib/site-packages/pyopencl.libs/opencl-9c0d8560191092a033bc4c662e694988.dll": "9c0d8560191092a033bc4c662e6949881bbea8843d6abca1309d161561396448"
+  },
+  "runtime_loader": "CLBlast imports C:/Windows/System32/OpenCL.dll; PyOpenCL uses its bundled ICD loader; both enumerate the same AMD vendor ICD and exchange opaque contexts/queues/buffers, verified by all FP32 numerical checks",
+  "limits": {
+    "opencl_local_mem_bytes": 65536,
+    "opencl_max_work_group_size": 256,
+    "vulkan_max_workgroup_storage_bytes": 32768
+  }
+}

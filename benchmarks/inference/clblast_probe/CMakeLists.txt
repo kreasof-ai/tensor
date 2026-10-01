@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.20)
+project(tensor_clblast_probe LANGUAGES CXX)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+add_library(tensor_clblast_probe SHARED parameters.cpp)
+target_include_directories(tensor_clblast_probe PRIVATE "${CLBLAST_SOURCE}/include" "${OPENCL_HEADERS}")
+target_link_libraries(tensor_clblast_probe PRIVATE "${CLBLAST_LIBRARY}")
+target_compile_features(tensor_clblast_probe PRIVATE cxx_std_11)
