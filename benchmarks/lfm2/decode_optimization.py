@@ -113,12 +113,11 @@ def prefetch_source(p,ahead=8):
     if p['type'] not in (2,12,14):return text
     from tensor_llm.gguf import TYPES
     _,block,size=TYPES[p['type']]
-    prelude=HALF2+r'''
-__device__ __forceinline__ void prefetch_packed(const unsigned char* p) {
-    asm volatile("prefetch.global.L2 [%0];" :: "l"(p));
-    asm volatile("prefetch.global.L2 [%0];" :: "l"(p+128));
-}
-'''
+    # Hint only bytes belonging to the upcoming block(s), including scale metadata.
+    span=2*size if block==32 else size
+    offsets=(0,span-1) if span<=128 else (0,127,span-1)
+    instructions='\n'.join(f'    asm volatile("prefetch.global.L2 [%0];" :: "l"(p+{offset}));' for offset in offsets)
+    prelude=HALF2+'\n__device__ __forceinline__ void prefetch_packed(const unsigned char* p) {\n'+instructions+'\n}\n'
     text=text.replace(repr(HALF2),repr(prelude))
     marker=f"        for tile in T.serial({p['k']//64}):\n"
     insertion=f'''            if (tile % {max(block//64,1)} == 0) & (tile + {ahead} < {p['k']//64}):
