@@ -134,6 +134,11 @@ optimized quantized dot products and attention scheduling. The growing decode
 gap with context makes parallel attention reductions a concrete next target;
 quantized GEMV scheduling and activation quantization need separate evaluation.
 A persistent megakernel is not established as necessary by these measurements.
+The subsequent [packed-weight FP16 experiment](lfm2-fp16-decode.md) tests scalar
+casts, packed `half2` multiplication and a padded tensor-core GEMV, with fresh
+alternating full-model timings and independent precision checks. Its `half2`
+candidate improves Q4_0 short-context decode by about 21%, while the long-context
+attention penalty remains. The original main table records the FP32 default.
 
 ## Reproduce
 

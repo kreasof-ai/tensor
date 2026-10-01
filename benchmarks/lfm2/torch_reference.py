@@ -11,7 +11,9 @@ from tensor_llm.config import Config
 
 
 class Reference:
-    def __init__(self,path):
+    def __init__(self,path,*,decode_mode="fp32"):
+        if decode_mode not in ("fp32","fp16","half2"):raise ValueError("unknown decode precision")
+        self.decode_mode=decode_mode
         self.gguf=GGUF(path);self.config=Config.from_gguf(self.gguf)
         torch.backends.cuda.matmul.allow_tf32=False
         self.weights={name:torch.from_numpy(np.array(self.gguf.array(name),copy=True)).cuda() for name in self.gguf.tensors}
@@ -29,10 +31,13 @@ class Reference:
     def forward(self,tokens):
         cfg=self.config;r=len(tokens);c,d=cfg.width,cfg.head_dim;start=self.position
         weights=self.weights
-        def linear(name,x):
-            w=weights[name]
-            if r>1:return torch.mm(x.half(),w.half().T,out_dtype=torch.float32)
+        def projection(x,w,single):
+            if not single or self.decode_mode=="fp16":
+                return torch.mm(x.half(),w.half().T,out_dtype=torch.float32)
+            if self.decode_mode=="half2":
+                return (x.half()*w.half()).sum(-1,dtype=torch.float32)[None,:]
             return torch.mm(x,w.T)
+        def linear(name,x):return projection(x,weights[name],r==1)
         def norm(name,x):return x*torch.rsqrt((x*x).mean(-1,keepdim=True)+cfg.epsilon)*weights[name]
         def rotate(x):
             angle=torch.arange(start,start+r,device='cuda')[:,None]*torch.exp(torch.arange(d//2,device='cuda')*(-np.log(cfg.theta)*2/d))
@@ -70,7 +75,7 @@ class Reference:
             gate=linear(p+'ffn_gate.weight',x);up=linear(p+'ffn_up.weight',x)
             hidden=hidden+linear(p+'ffn_down.weight',torch.nn.functional.silu(gate)*up)
         final=norm('token_embd_norm.weight',hidden[-1:])
-        # The output projection is always a single-token FP32 accumulation.
-        logits=final @ weights.get('output.weight',weights['token_embd.weight']).T
+        # Output uses the selected single-token projection even during prefill.
+        logits=projection(final,weights.get('output.weight',weights['token_embd.weight']),True)
         self.position+=r
         return logits[0].cpu().numpy()

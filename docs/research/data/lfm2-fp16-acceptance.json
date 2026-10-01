@@ -1,0 +1,36 @@
+{
+  "schema": "tensor.lfm2-fp16-acceptance.v1",
+  "status": "passed",
+  "baseline_commit": "bbb284d",
+  "affected_gpu_tests": {
+    "passed": 34,
+    "skipped": 0,
+    "seconds": 63.96,
+    "command": "python -m pytest packages/tensor-llm/tests tests/integration/test_lfm2_fp16.py tests/providers/test_cuda_graph.py -o addopts= -q",
+    "flags": {
+      "TENSOR_LFM2_CUDA": "1",
+      "TENSOR_P2_CUDA": "1"
+    },
+    "log_sha256": "93e7cb772d7576620f74f1bdb146a5c6e6a3d274b9b19e236ad70e001c14293f"
+  },
+  "date_utc": "2026-10-01T00:13:29Z",
+  "nvidia_smi": "NVIDIA A10G, 595.91.07, 23028 MiB",
+  "production_runtime_unchanged": true,
+  "precision_default": "fp32",
+  "formats": [
+    "F16",
+    "Q4_0",
+    "Q4_K_M"
+  ],
+  "validation_steps_per_format": 23,
+  "isolated_consumer_distributions": [
+    "numpy",
+    "regex",
+    "tensor-llm",
+    "tensor-workspace"
+  ],
+  "generation_eos_all_formats": true,
+  "benchmark_repeats": 5,
+  "benchmark_decode_tokens": 256,
+  "harness_note": "The two-engine F16 timing was run in a fresh process after retained Torch reference allocations caused an allocation failure before measurement. The benchmark helper now releases unused reference allocations if Torch was already imported."
+}

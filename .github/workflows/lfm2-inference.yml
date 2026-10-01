@@ -28,6 +28,11 @@ jobs:
       - run: uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
       - run: uv run --locked python benchmarks/lfm2/diagnostic.py --out build/lfm2-diagnostic.gguf
       - run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-diagnostic --context 384 --target sm_86
+      - name: Compile experimental FP16 decode schedules with NVRTC
+        run: |
+          uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-cast --mode fp16_cast
+          uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-half2 --mode fp16_half2
+          uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-mma --mode fp16_mma32
       - run: uv build --wheel --out-dir build/lfm2-wheels
       - run: uv build --wheel packages/tensor-llm --out-dir build/lfm2-wheels
       - name: Inspect in an isolated consumer with four distributions
@@ -65,6 +70,8 @@ jobs:
             build/lfm2-diagnostic.gguf
             build/lfm2-diagnostic/inference.json
             build/lfm2-diagnostic/artifacts/*.tbin
+            build/lfm2-diagnostic-half2/inference.json
+            build/lfm2-diagnostic-half2/artifacts/*.tbin
             build/lfm2-wheels/*.whl
           if-no-files-found: error
           retention-days: 30
