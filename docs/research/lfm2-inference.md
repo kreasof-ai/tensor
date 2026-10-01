@@ -140,6 +140,9 @@ alternating full-model timings and independent precision checks. Its `half2`
 candidate improves Q4_0 short-context decode by about 21%, while the long-context
 attention penalty remains. The original main table records the FP32 default.
 
+The follow-up [decode optimization experiment](lfm2-decode-optimization.md) tests
+packed-weight prefetch and partitioned cached attention on the same checkpoints.
+
 ## Reproduce
 
 Start with the [package instructions](../../packages/tensor-llm/README.md) to

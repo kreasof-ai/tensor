@@ -126,6 +126,9 @@ and the existing [NVRTC/module transfer workflow](https://github.com/kreasof-ai/
 both pass for `16c6523`; the [CI record](data/lfm2-fp16-ci.json) retains each job
 and step. These GPU-free CI jobs supplement the local A10G execution checks.
 
+The follow-up [packed-load and split-KV experiment](lfm2-decode-optimization.md)
+retains projection loading controls and full-model attention ablations.
+
 ## Reproduce
 
 Use the existing [model/bundle setup](../../packages/tensor-llm/README.md). The

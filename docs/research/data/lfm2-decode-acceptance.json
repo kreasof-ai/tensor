@@ -1,0 +1,71 @@
+{
+  "schema": "tensor.lfm2-decode-acceptance.v1",
+  "status": "passed",
+  "baseline_commit": "efbdd22",
+  "implementation_commit": "c66476991e7735d6038f14b29d0cfee2b512a447",
+  "date_utc": "2026-10-01T01:21:25.521936+00:00",
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "production_runtime_unchanged": true,
+  "precision_default": "fp32",
+  "affected_gpu_tests": {
+    "passed": 38,
+    "skipped": 0,
+    "seconds": 73.19,
+    "command": "python -m pytest packages/tensor-llm/tests tests/integration/test_lfm2_fp16.py tests/integration/test_lfm2_decode_optimization.py tests/providers/test_cuda_graph.py -o addopts='' -q",
+    "flags": {
+      "TENSOR_LFM2_CUDA": "1",
+      "TENSOR_P2_CUDA": "1"
+    },
+    "log_sha256": "9602e3edac959e5cacff05155d41ef9433c32b73c4feefe257a8b2e203a401cc"
+  },
+  "full_model_validation_steps": 138,
+  "argmax_agreement": {
+    "independent_reference": 138,
+    "original_fp32": 138,
+    "llama_cpp": 138
+  },
+  "maximum_independent_relative_rms": 0.0033983482461436266,
+  "maximum_relative_rms_vs_original": 0.0021769150407561695,
+  "consumer_variants": 6,
+  "isolated_consumer_distributions": [
+    "numpy",
+    "regex",
+    "tensor-llm",
+    "tensor-workspace"
+  ],
+  "consumer_reset_bitwise_equal": true,
+  "generation_eos_all_variants": true,
+  "selected_attention_splits": 16,
+  "additional_device_bytes_per_engine": 135168,
+  "decode_launches": 367,
+  "baseline_decode_launches": 359,
+  "packed_loading_candidates_selected": false,
+  "packed_loading_result": "all tested asynchronous packed staging and L2-prefetch candidates slower than existing half2 on all four checkpoint matrices",
+  "benchmark_repeats": 5,
+  "benchmark_decode_tokens": 256,
+  "benchmark_prompt_depths": [
+    128,
+    512,
+    2048,
+    8192
+  ],
+  "source_sha256": {
+    "decode_optimization.py": "8e5b94d56aac439583cf18b3b7eb43123888cd38931adf35dc2eeaa58e477ba0",
+    "decode_benchmark.py": "11ffba14333edb3fcab1ee53c2da0f5b3b795f599e1a6966060cdc69f66a92fe",
+    "decode_consumer.py": "f70fe863613c77b242bfd931d50301f199d3ba0f522d7c4f6038c7abb83f2d50"
+  },
+  "kernel_scope_note": "Full-model attention/projection artifacts and runner are unchanged from 278539f; 85971dc adds native-comparison selection; c664769 bounds the separately tested L2-prefetch controls.",
+  "log_sha256": {
+    "lfm2-decode-full.log": "949bd62908fb443e019f8541303c9b789b374f4c764867dcb852717a794d7832",
+    "lfm2-decode-consumers.log": "644de66e83eb56b077c41235d33737bbcc6e0ba3b098844bfc9e97abdd270aea",
+    "lfm2-decode-comparison.log": "474d787c963edc60f7c29c5c439a1dc00a075ecee4bcc89c59a191351c4c2662",
+    "lfm2-decode-projection-micro.log": "7c6b520a608697ed3ad611b063ac82f77682f503960bc63c9f05c39826c2c57e"
+  },
+  "baseline_environment_sha256": "f866d536ff5d6259397043742059ca9babb9f6dda21322635e48ad8953cd1a14",
+  "harness_note": "Independent Torch reference allocation retries recovered during validation; unused Torch allocations released before full-model timing. Native comparisons and clean consumers run in separate fresh processes."
+}

@@ -1,0 +1,297 @@
+{
+  "schema": "tensor.lfm2-consumer.v1",
+  "status": "passed",
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "distributions": [
+    "numpy",
+    "regex",
+    "tensor-llm",
+    "tensor-workspace"
+  ],
+  "steps": [
+    {
+      "step": 0,
+      "position": 20,
+      "top1": 597
+    },
+    {
+      "step": 1,
+      "position": 21,
+      "top1": 4695
+    },
+    {
+      "step": 2,
+      "position": 22,
+      "top1": 1027
+    },
+    {
+      "step": 3,
+      "position": 23,
+      "top1": 48771
+    },
+    {
+      "step": 4,
+      "position": 24,
+      "top1": 17913
+    },
+    {
+      "step": 5,
+      "position": 25,
+      "top1": 2292
+    },
+    {
+      "step": 6,
+      "position": 26,
+      "top1": 708
+    },
+    {
+      "step": 7,
+      "position": 27,
+      "top1": 898
+    },
+    {
+      "step": 8,
+      "position": 28,
+      "top1": 898
+    },
+    {
+      "step": 9,
+      "position": 29,
+      "top1": 11881
+    },
+    {
+      "step": 10,
+      "position": 127,
+      "top1": 2628
+    },
+    {
+      "step": 11,
+      "position": 128,
+      "top1": 1542
+    },
+    {
+      "step": 12,
+      "position": 128,
+      "top1": 309
+    },
+    {
+      "step": 13,
+      "position": 129,
+      "top1": 1542
+    },
+    {
+      "step": 14,
+      "position": 129,
+      "top1": 59338
+    },
+    {
+      "step": 15,
+      "position": 130,
+      "top1": 1542
+    },
+    {
+      "step": 16,
+      "position": 512,
+      "top1": 309
+    },
+    {
+      "step": 17,
+      "position": 513,
+      "top1": 1542
+    },
+    {
+      "step": 18,
+      "position": 2048,
+      "top1": 309
+    },
+    {
+      "step": 19,
+      "position": 2049,
+      "top1": 1542
+    },
+    {
+      "step": 20,
+      "position": 8192,
+      "top1": 309
+    },
+    {
+      "step": 21,
+      "position": 8193,
+      "top1": 1542
+    },
+    {
+      "step": 22,
+      "position": 20,
+      "top1": 597
+    }
+  ],
+  "generation": {
+    "prompt_tokens": [
+      124894,
+      124899,
+      5922,
+      207,
+      2992,
+      355,
+      278,
+      5205,
+      302,
+      3980,
+      39,
+      124900,
+      207,
+      124899,
+      63514,
+      207,
+      124901
+    ],
+    "generated_tokens": [
+      597,
+      4695,
+      355,
+      13564,
+      267,
+      90139,
+      1456,
+      650,
+      3451,
+      34,
+      496,
+      2992,
+      355,
+      278,
+      5205,
+      302,
+      3980,
+      39,
+      91528,
+      25,
+      22,
+      229,
+      7575,
+      92080,
+      278,
+      7641,
+      16304,
+      309,
+      16714,
+      28027,
+      440,
+      16304,
+      355,
+      496,
+      37733,
+      10,
+      309,
+      278,
+      16714,
+      355,
+      496,
+      12798,
+      1502,
+      4705,
+      26,
+      22,
+      229,
+      7575,
+      89761,
+      3830,
+      28027,
+      11585,
+      6976,
+      3830,
+      836,
+      30615,
+      22,
+      3980,
+      355,
+      267,
+      2873,
+      296,
+      2699,
+      22,
+      8373,
+      5205,
+      3270,
+      355,
+      4741,
+      318,
+      27,
+      22,
+      229,
+      7575,
+      6014,
+      5903,
+      278,
+      5141,
+      28027,
+      440,
+      5141,
+      355,
+      496,
+      41176,
+      4705,
+      28,
+      22,
+      229,
+      7575,
+      12108,
+      374,
+      7844,
+      2452,
+      28027,
+      1751,
+      912,
+      1022,
+      62624,
+      39,
+      2752,
+      22,
+      4741,
+      355,
+      278,
+      51383,
+      10329,
+      5205,
+      318,
+      29,
+      22,
+      229,
+      7575,
+      24081,
+      38803,
+      29325,
+      28027,
+      3675,
+      278,
+      5141,
+      8369,
+      22,
+      496,
+      597,
+      5205,
+      302,
+      3980,
+      355,
+      4741,
+      2426,
+      124902,
+      597,
+      5205,
+      302,
+      3980,
+      355,
+      7575,
+      41176,
+      88050,
+      124900
+    ],
+    "text": "The user is asking a straightforward factual question: \"What is the capital of France?\".\n\n1.  **Identify the core entity and attribute:** The entity is \"France\" and the attribute is \"capital\".\n2.  **Retrieve knowledge:** Access internal knowledge about geography. France is a country in Europe. Its capital city is Paris.\n3.  **Formulate the answer:** The answer is \"Paris\".\n4.  **Check for nuances:** Is there any ambiguity? No. Paris is the universally recognized capital.\n5.  **Final Output Construction:** State the answer clearly. \"The capital of France is Paris.\"</think>The capital of France is **Paris**.<|im_end|>"
+  },
+  "owned_device_bytes": 5564209676
+}

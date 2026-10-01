@@ -1,0 +1,529 @@
+{
+  "schema": "tensor.lfm2-decode-optimization-validation.v1",
+  "status": "passed",
+  "model_sha256": "e041c231351185eb390f9c417d3bfd1815869a50a8589f3f86e5b9add3c529f1",
+  "bundle_sha256": "60df4c9f559bcfd0ef755165fa84724f276bf2f2a084ab78727d4456eacb3687",
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "owned_device_bytes": 5564209676,
+  "launches_per_decode": 367,
+  "gates": {
+    "finite": true,
+    "reset_bitwise_equal": true,
+    "independent_relative_rms_max": 0.01,
+    "independent_cosine_min": 0.9999,
+    "relative_rms_vs_original_max": 0.01
+  },
+  "steps": [
+    {
+      "step": 0,
+      "position": 20,
+      "original_fp32": {
+        "relative_rms": 0.00014204297482060157,
+        "cosine": 0.9999999903336457,
+        "max_error": 0.0033478736877441406,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.008161857924834268,
+        "cosine": 0.9999722929384611,
+        "max_error": 0.19620132446289062,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0010318585135767747,
+        "cosine": 0.9999994734532772,
+        "max_error": 0.023537158966064453,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 1,
+      "position": 21,
+      "original_fp32": {
+        "relative_rms": 0.0015909074439252858,
+        "cosine": 0.9999988139198238,
+        "max_error": 0.024644851684570312,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.019152516617349576,
+        "cosine": 0.9998356878319681,
+        "max_error": 0.21715927124023438,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0031614633129592312,
+        "cosine": 0.9999953099183685,
+        "max_error": 0.03894472122192383,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 2,
+      "position": 22,
+      "original_fp32": {
+        "relative_rms": 0.0005660923576250011,
+        "cosine": 0.9999998583108267,
+        "max_error": 0.010067462921142578,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.003815043094366327,
+        "cosine": 0.9999940719173832,
+        "max_error": 0.09849357604980469,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0006120104123656172,
+        "cosine": 0.9999998128800812,
+        "max_error": 0.01054602861404419,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 3,
+      "position": 23,
+      "original_fp32": {
+        "relative_rms": 0.0008103191909285936,
+        "cosine": 0.9999997314415483,
+        "max_error": 0.010052204132080078,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.003250496097274636,
+        "cosine": 0.999995957795624,
+        "max_error": 0.03573274612426758,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0010251301689154413,
+        "cosine": 0.999999592973273,
+        "max_error": 0.010721445083618164,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 4,
+      "position": 24,
+      "original_fp32": {
+        "relative_rms": 0.0005640436702074142,
+        "cosine": 0.999999841752542,
+        "max_error": 0.009160280227661133,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.004729578073674257,
+        "cosine": 0.9999904894763453,
+        "max_error": 0.06402778625488281,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0008506370081356273,
+        "cosine": 0.9999996795564872,
+        "max_error": 0.012078523635864258,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 5,
+      "position": 25,
+      "original_fp32": {
+        "relative_rms": 0.0006717865523074752,
+        "cosine": 0.9999997747612862,
+        "max_error": 0.010598897933959961,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.00622044139433737,
+        "cosine": 0.9999832937080515,
+        "max_error": 0.07673358917236328,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0008517334333258279,
+        "cosine": 0.9999996372829716,
+        "max_error": 0.013074398040771484,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 6,
+      "position": 26,
+      "original_fp32": {
+        "relative_rms": 0.0007874567187646186,
+        "cosine": 0.999999691427164,
+        "max_error": 0.011655807495117188,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.016338288819541084,
+        "cosine": 0.9998666038139932,
+        "max_error": 0.11679220199584961,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0013842189995578816,
+        "cosine": 0.9999990456365982,
+        "max_error": 0.018296241760253906,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 7,
+      "position": 27,
+      "original_fp32": {
+        "relative_rms": 0.000541194873302363,
+        "cosine": 0.9999998617203835,
+        "max_error": 0.009535789489746094,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.011541853081989963,
+        "cosine": 0.99994604016294,
+        "max_error": 0.10268783569335938,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.001225310169473357,
+        "cosine": 0.9999993358478271,
+        "max_error": 0.01569223403930664,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 8,
+      "position": 28,
+      "original_fp32": {
+        "relative_rms": 0.0003637636562679466,
+        "cosine": 0.9999999390309015,
+        "max_error": 0.008554458618164062,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.010996270369918251,
+        "cosine": 0.9999710446918754,
+        "max_error": 0.12711507081985474,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0016083450281208882,
+        "cosine": 0.9999994011038249,
+        "max_error": 0.021178245544433594,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 9,
+      "position": 29,
+      "original_fp32": {
+        "relative_rms": 0.0007481544780716823,
+        "cosine": 0.9999997216403261,
+        "max_error": 0.013199806213378906,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.004473293273191899,
+        "cosine": 0.999990004857557,
+        "max_error": 0.06777191162109375,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.001340503932735567,
+        "cosine": 0.9999991037421284,
+        "max_error": 0.019870281219482422,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 10,
+      "position": 127,
+      "original_fp32": {
+        "relative_rms": 0.00018479832922363277,
+        "cosine": 0.9999999829909775,
+        "max_error": 0.0024498701095581055,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0030445905842836907,
+        "cosine": 0.9999953652388731,
+        "max_error": 0.04307746887207031,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0009918951081660187,
+        "cosine": 0.9999995088477263,
+        "max_error": 0.01171886920928955,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 11,
+      "position": 128,
+      "original_fp32": {
+        "relative_rms": 0.00045030595004777013,
+        "cosine": 0.9999999414122398,
+        "max_error": 0.013530731201171875,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0023531587646856674,
+        "cosine": 0.9999972922339108,
+        "max_error": 0.08591175079345703,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0004696306699687157,
+        "cosine": 0.9999999057384047,
+        "max_error": 0.01781463623046875,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 12,
+      "position": 128,
+      "original_fp32": {
+        "relative_rms": 0.00010570439864317917,
+        "cosine": 0.9999999947178445,
+        "max_error": 0.0026645660400390625,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0018516345621815257,
+        "cosine": 0.9999988144616268,
+        "max_error": 0.04725480079650879,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.000531384352717416,
+        "cosine": 0.9999999123531924,
+        "max_error": 0.013553142547607422,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 13,
+      "position": 129,
+      "original_fp32": {
+        "relative_rms": 0.000856576207295194,
+        "cosine": 0.9999998444199388,
+        "max_error": 0.016908645629882812,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0024159105480454457,
+        "cosine": 0.9999977734156508,
+        "max_error": 0.05852699279785156,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.001118808797029933,
+        "cosine": 0.9999997346600312,
+        "max_error": 0.020218849182128906,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 14,
+      "position": 129,
+      "original_fp32": {
+        "relative_rms": 0.00044597281271376916,
+        "cosine": 0.9999999026749937,
+        "max_error": 0.006137847900390625,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0018565041472545602,
+        "cosine": 0.9999983150384048,
+        "max_error": 0.03655409812927246,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0007930904840738439,
+        "cosine": 0.9999997036615913,
+        "max_error": 0.010275840759277344,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 15,
+      "position": 130,
+      "original_fp32": {
+        "relative_rms": 0.0004401233774579432,
+        "cosine": 0.9999999572675995,
+        "max_error": 0.015612602233886719,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0014778450198217378,
+        "cosine": 0.9999993524898197,
+        "max_error": 0.04574394226074219,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0003885167936641162,
+        "cosine": 0.9999999493124607,
+        "max_error": 0.013540267944335938,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 16,
+      "position": 512,
+      "original_fp32": {
+        "relative_rms": 0.0001356825936668136,
+        "cosine": 0.9999999913184697,
+        "max_error": 0.002505779266357422,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.004107803984634429,
+        "cosine": 0.9999955509365834,
+        "max_error": 0.045096397399902344,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0004470949091573498,
+        "cosine": 0.9999999038087287,
+        "max_error": 0.00798797607421875,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 17,
+      "position": 513,
+      "original_fp32": {
+        "relative_rms": 0.001038027852467334,
+        "cosine": 0.9999998092044052,
+        "max_error": 0.01728188991546631,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0022048445817463755,
+        "cosine": 0.9999983029924095,
+        "max_error": 0.06044483184814453,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0007684188085132274,
+        "cosine": 0.9999998148454827,
+        "max_error": 0.016155242919921875,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 18,
+      "position": 2048,
+      "original_fp32": {
+        "relative_rms": 0.00014033211673230436,
+        "cosine": 0.9999999901600182,
+        "max_error": 0.0023772716522216797,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0021696853449945843,
+        "cosine": 0.9999977122689053,
+        "max_error": 0.034928321838378906,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0005898051567667234,
+        "cosine": 0.9999998724743303,
+        "max_error": 0.009644508361816406,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 19,
+      "position": 2049,
+      "original_fp32": {
+        "relative_rms": 0.0009079208510777367,
+        "cosine": 0.999999803690177,
+        "max_error": 0.013792753219604492,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.003738093602447853,
+        "cosine": 0.9999961271512046,
+        "max_error": 0.07205188274383545,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0011299057495811498,
+        "cosine": 0.9999996725425808,
+        "max_error": 0.01979231834411621,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 20,
+      "position": 8192,
+      "original_fp32": {
+        "relative_rms": 0.00015001675407863075,
+        "cosine": 0.9999999894184338,
+        "max_error": 0.0025501251220703125,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.0027302294038078823,
+        "cosine": 0.9999963984969076,
+        "max_error": 0.045800209045410156,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0013835790986098662,
+        "cosine": 0.9999995246547403,
+        "max_error": 0.012392044067382812,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 21,
+      "position": 8193,
+      "original_fp32": {
+        "relative_rms": 0.00047493964014611034,
+        "cosine": 0.999999887218532,
+        "max_error": 0.011251449584960938,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.006073979441660123,
+        "cosine": 0.9999894371553392,
+        "max_error": 0.11380577087402344,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0012106770046526434,
+        "cosine": 0.9999996532129868,
+        "max_error": 0.02053546905517578,
+        "top1_equal": true
+      }
+    },
+    {
+      "step": 22,
+      "position": 20,
+      "original_fp32": {
+        "relative_rms": 0.00014204297482060157,
+        "cosine": 0.9999999903336457,
+        "max_error": 0.0033478736877441406,
+        "top1_equal": true
+      },
+      "llama_cpp": {
+        "relative_rms": 0.007243200860938716,
+        "cosine": 0.9999746403525197,
+        "max_error": 0.1624293327331543,
+        "top1_equal": true
+      },
+      "independent_reference": {
+        "relative_rms": 0.0010318585135767747,
+        "cosine": 0.9999994734532772,
+        "max_error": 0.023537158966064453,
+        "top1_equal": true
+      }
+    }
+  ]
+}
