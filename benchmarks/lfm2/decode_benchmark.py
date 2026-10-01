@@ -175,8 +175,13 @@ if __name__=='__main__':
     for name in ('model','plan','fixture','out'):a.add_argument('--'+name,type=Path,required=True)
     a=sub.add_parser('bench');a.add_argument('--model',type=Path,required=True);a.add_argument('--out',type=Path,required=True)
     a.add_argument('--plan',action='append',required=True,help='label=directory');a.add_argument('--depths',type=int,nargs='+',default=[128,512,2048,8192]);a.add_argument('--generated',type=int,default=256);a.add_argument('--repeats',type=int,default=5)
+    a=sub.add_parser('compare')
+    for name in ('model','bundle','reference','out'):a.add_argument('--'+name,type=Path,required=True)
     args=p.parse_args()
     if args.command=='attention':micro_attention(args.out,implementation=args.implementation)
     elif args.command=='projection':micro_projection(args.models,args.out)
     elif args.command=='validate':validate(args.model,args.plan,args.fixture,args.out)
+    elif args.command=='compare':
+        from benchmarks.lfm2.benchmark import benchmark as matched
+        matched(args.model,args.bundle,args.reference,args.out,engine_cls=OptimizedLFM2)
     else:benchmark(args.model,{name:Path(path) for name,path in (item.split('=',1) for item in args.plan)},args.out,depths=args.depths,generated=args.generated,repeats=args.repeats)

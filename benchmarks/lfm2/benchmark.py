@@ -12,7 +12,7 @@ from tensor_llm.model import LFM2
 from tensor_llm.tokenizer import Tokenizer
 
 
-def benchmark(model,bundle,reference_executable,out,*,depths=(128,512,2048,8192),generated=256,repeats=5):
+def benchmark(model,bundle,reference_executable,out,*,depths=(128,512,2048,8192),generated=256,repeats=5,engine_cls=None):
     if generated < 1 or repeats < 1 or not depths or any(depth < 1 for depth in depths):
         raise ValueError('requires positive depths, decode tokens and repeats')
     out=Path(out);out.mkdir(parents=True,exist_ok=True);(out/'benchmark.json').unlink(missing_ok=True);gguf=GGUF(model);tokenizer=Tokenizer(gguf.metadata)
@@ -27,7 +27,7 @@ def benchmark(model,bundle,reference_executable,out,*,depths=(128,512,2048,8192)
     with (out/'llama.log').open('w') as log:subprocess.run([str(reference_executable.resolve()),str(specfile)],check=True,stderr=log,stdout=log)
     reference=json.loads((out/'llama/reference.json').read_text());results=[]
     if len(reference['benchmarks']) != len(cases):raise ValueError('incomplete llama.cpp benchmark')
-    with tensor.Device() as device,LFM2(model,bundle,device,context=max(depths)+generated) as network:
+    with tensor.Device() as device,(engine_cls or LFM2)(model,bundle,device,context=max(depths)+generated) as network:
         for item,baseline in zip(cases,reference['benchmarks']):
             samples=[]
             for repeat in range(-1,repeats):
