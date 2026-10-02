@@ -170,6 +170,18 @@ def source(kind,p):
                 lines.append(paired(line))
             elif stripped=='value = T.alloc_var("float32")':lines.append(paired(line))
         return '\n'.join(lines)+'\n'
+    if kind=='linear_add':
+        if r!=1:raise ValueError('residual projection fusion requires decode rows')
+        text=source('linear',p)
+        text=text.replace(', out: T.Tensor',f', residual: T.Tensor(({p["o"]},), "float32"), out: T.Tensor')
+        lines=[]
+        for line in text.splitlines():
+            if 'out[' in line and ' = ' in line:
+                destination,value=line.split(' = ',1)
+                index=destination.strip()[4:-1]
+                line=destination+f' = residual[{index}] + ({value})'
+            lines.append(line)
+        return '\n'.join(lines)+'\n'
     if kind=='add_rms':
         c=p['c'];text=source('rms',p)
         text=text.replace(', w: T.Tensor',f', mixed: T.Tensor(({r*c},), "float32"), residual: T.Tensor(({r*c},), "float32"), w: T.Tensor')
@@ -225,21 +237,47 @@ def source(kind,p):
             k,o=p['k'],p['o'];_,block,size=TYPES[q]
             count=k*o if q in (0,1) else k*o//block*size//4
             dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
-            lanes=16 if q==2 else 32;row_count=128//lanes
+            threads=128;lanes=16 if q==2 else 32
+            accumulators=1
+            if q==2 and k%128==0:
+                # The larger streamed matrices benefit from shorter K chains.
+                # Narrow shapes retain their measured 16-lane schedule.
+                wide=p.get('sg') and k%256==0 and min(k,o)>=2048
+                lanes=p.get('gemv_lanes',32 if wide else 16);threads=p.get('gemv_threads',128)
+                accumulators=p.get('gemv_accumulators',1)
+                if lanes not in (8,16,32) or threads not in (64,128,256) or accumulators not in (1,4) or k%(lanes*8):
+                    raise ValueError('unsupported packed Q4 decode schedule')
+            row_count=threads//lanes
             expr=weight(q,f'bx * {row_count} + row','tile * 32 + lane',k,packed_words=True)
             if q==2 and k%128==0:
-                base=f'((bx * {row_count} + row) * {k//32} + tile * 4 + lane // 4) * 18'
+                tile_width=lanes*8
+                base=f'((bx * {row_count} + row) * {k//32} + tile * {lanes//4} + lane // 4) * 18'
                 terms=[]
                 for byte in range(4):
                     low=f'((packed >> {byte*8}) & 15)'
                     high=f'((packed >> {byte*8+4}) & 15)'
-                    index=f'tile * 128 + lane // 4 * 32 + lane % 4 * 4 + {byte}'
-                    terms.extend((f'            accum = accum + x[{index}] * (scale * (T.cast({low}, "float32") - 8))',
-                                  f'            accum = accum + x[{index} + 16] * (scale * (T.cast({high}, "float32") - 8))'))
-                loop=f'''        for tile in T.serial({k//128}):
+                    index=f'tile * {tile_width} + lane // 4 * 32 + lane % 4 * 4 + {byte}'
+                    acc='accum' if accumulators==1 else f'acc{byte}'
+                    terms.extend((f'            {acc} = {acc} + x[{index}] * (scale * (T.cast({low}, "float32") - 8))',
+                                  f'            {acc} = {acc} + x[{index} + 16] * (scale * (T.cast({high}, "float32") - 8))'))
+                loop=f'''        for tile in T.serial({k//tile_width}):
             scale = {packed_half(base)}
             packed = {packed_word(base+' + 2 + lane % 4 * 4')}
 '''+ '\n'.join(terms)
+                if p.get('gemv_dot',wide):
+                    if accumulators!=1:raise ValueError('packed dot schedule uses one accumulator')
+                    loads=[]
+                    index=f'tile * {tile_width} + lane // 4 * 32 + lane % 4 * 4'
+                    for half in range(2):
+                        lhs=', '.join(f'x[{index} + {half*16+byte}]' for byte in range(4))
+                        rhs=', '.join(f'T.cast((packed >> {byte*8+half*4}) & 15, "float32") - 8' for byte in range(4))
+                        loads.extend((f'            left{half} = T.call_extern("float32x4", "vec4<f32>", {lhs})',
+                                      f'            right{half} = T.call_extern("float32x4", "vec4<f32>", {rhs})',
+                                      f'            accum = accum + scale * T.call_extern("float32", "dot", left{half}, right{half})'))
+                    loop=f'''        for tile in T.serial({k//tile_width}):
+            scale = {packed_half(base)}
+            packed = {packed_word(base+' + 2 + lane % 4 * 4')}
+'''+ '\n'.join(loads)
             elif q==14:
                 base=f'((bx * 4 + row) * {k//256} + tile) * 210'
                 reads='\n'.join(f'            low{i} = {packed_byte(base+f" + {i*32} + lane")}' for i in range(4))
@@ -277,15 +315,17 @@ def source(kind,p):
         scratch[tx] = scratch[tx] + scratch[tx + {stride}]
     T.sync_threads()''' for stride in (lanes>>i for i in range(1,lanes.bit_length())))
             reduction = segmented_reduce(lanes) if p.get('sg') else '    scratch[tx] = accum\n    T.sync_threads()\n'+reduction
-            return emit([a('x',k),a('w',count,dtype),a('out',o)],f'''with T.Kernel(T.ceildiv({o}, {row_count}), threads=128) as bx:
+            extra='' if accumulators==1 else '\n'+'\n'.join(f'    acc{i} = T.alloc_var("float32")\n    acc{i} = 0' for i in range(4))
+            combine='' if accumulators==1 else '\n    accum = (acc0 + acc1) + (acc2 + acc3)'
+            return emit([a('x',k),a('w',count,dtype),a('out',o)],f'''with T.Kernel(T.ceildiv({o}, {row_count}), threads={threads}) as bx:
     tx = T.get_thread_binding()
     row = tx // {lanes}
     lane = tx % {lanes}
     accum = T.alloc_var("float32")
-    scratch = T.alloc_shared((128,), "float32")
-    accum = 0
+    scratch = T.alloc_shared(({threads},), "float32")
+    accum = 0{extra}
     if bx * {row_count} + row < {o}:
-{loop}
+{loop}{combine}
 {reduction}
     if (lane == 0) & (bx * {row_count} + row < {o}):
         out[bx * {row_count} + row] = scratch[tx]''')

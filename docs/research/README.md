@@ -10,6 +10,7 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
+| [Further LFM2 WebGPU decode optimization](lfm2-webgpu-decode-push.md) | Packed floating dots, measured row widths and residual fusion: +9.3% 2.6B decode, 1.21x gap to llama.cpp, smaller-model regression checks |
 | [LFM2.5-2.6B Q4_0 matched run](lfm2-2.6b-q4_0-matched-run.md) | The 230M submission protocol re-run on a 2.6B QAD checkpoint, plus two schedule corrections: decode reduction width and prefill staging cost, worth +8.1% decode and +19.0% prefill |
 | [LFM2.5-230M native submission](lfm2-230m-native-submission.md) | Optional native prepared-plan encoder, four-wide prefill dots, Python fallback and further Vulkan gains |
 | [LFM2.5-230M WebGPU compiler optimization](lfm2-230m-webgpu-compiler-optimization.md) | Register microtiles, parallel reductions, subgroup decode/attention, tuned prefill and matched Vulkan benchmarks |
@@ -20,9 +21,9 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 | [Standalone LFM2 GGUF inference](lfm2-inference.md) | Default engine, model/tokenizer contract, F16/Q4_0/Q4_K_M correctness, and original llama.cpp comparison |
 | [Standalone nanoGPT training](phase6-nanogpt.md) | Ten updates of the 124M model, manual backward, bounded autotuning, and the Torch training baseline |
 
-The optimized LFM2 variants live in the benchmark harness. Their results do not
-describe the default `tensor_llm.LFM2` runner. The original inference report
-establishes that runner's behavior and precision contract.
+The experimental CUDA LFM2 optimization variants live in the benchmark harness.
+The WebGPU reports describe changes to the ordinary `tensor_llm.LFM2` runner.
+Each report records its supported profile, implementation and precision contract.
 
 ## Kernel performance and framework overhead
 

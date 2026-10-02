@@ -37,7 +37,7 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
     values={}
     if webgpu_profile not in ('portable','subgroup'):raise ValueError('unsupported WebGPU kernel profile')
     def add(kind,**p):
-        if provider=='webgpu' and webgpu_profile=='subgroup' and kind in ('linear','ffn','attention','attention_scores','rms','add_rms'):
+        if provider=='webgpu' and webgpu_profile=='subgroup' and kind in ('linear','linear_add','ffn','attention','attention_scores','rms','add_rms'):
             p['sg']=True
         values[identity(kind,p)]=(kind,p)
     for r in rows:
@@ -48,7 +48,10 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
                     add('embedding',r=r,c=c,v=cfg.vocab,type=info.type)
                     add('linear',r=1,k=k,o=o,type=info.type)
                 elif info.name=='output.weight':add('linear',r=1,k=k,o=o,type=info.type)
-                else:add('linear',r=r,k=k,o=o,type=info.type,**projection_tile(r,o))
+                else:
+                    add('linear',r=r,k=k,o=o,type=info.type,**projection_tile(r,o))
+                    if provider=='webgpu' and r==1 and info.name.endswith('ffn_down.weight'):
+                        add('linear_add',r=r,k=k,o=o,type=info.type)
         add('rms',r=r,c=c,eps=cfg.epsilon)
         if provider=='webgpu':
             if r==1:add('add_rms',r=r,c=c,eps=cfg.epsilon)
@@ -146,7 +149,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         cfg=self.config;c=cfg.width;ws=self.workspaces[r];plan=[]
         hidden=ws['hidden'];other=ws.get('hidden2',hidden)
         def add(kind,p,*args):
-            if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and kind in ('linear','ffn','attention','attention_scores','rms','add_rms'):
+            if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and kind in ('linear','linear_add','ffn','attention','attention_scores','rms','add_rms'):
                 p={**p,'sg':True}
             executable=self.kernels[identity(kind,p)]
             values,symbols,launch=executable._bind(args,{},include_outputs=True)
@@ -192,11 +195,19 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             else:
                 linear(prefix+'ffn_gate.weight',ws['normal'],ws['gate']);linear(prefix+'ffn_up.weight',ws['normal'],ws['up'])
                 add('swiglu',dict(r=r,c=cfg.ff),ws['gate'],ws['up'],ws['activated'])
-            linear(prefix+'ffn_down.weight',ws['activated'],ws['mixed'])
-            add('add',dict(r=r,c=c),hidden,ws['mixed'],other)
+            if self.provider=='webgpu' and r==1:
+                info=self.gguf.tensors[prefix+'ffn_down.weight'];o,k=info.shape
+                add('linear_add',dict(r=r,k=k,o=o,type=info.type),ws['activated'],self.weights[info.name],hidden,other)
+            else:
+                linear(prefix+'ffn_down.weight',ws['activated'],ws['mixed'])
+                add('add',dict(r=r,c=c),hidden,ws['mixed'],other)
             hidden,other=other,hidden
-        add('last',dict(r=r,c=c),hidden,ws['last'],self.control)
-        rms('token_embd_norm.weight',ws['last'],ws['final'],rows=1)
+        if self.provider=='webgpu' and r==1:
+            final_hidden=hidden
+        else:
+            add('last',dict(r=r,c=c),hidden,ws['last'],self.control)
+            final_hidden=ws['last']
+        rms('token_embd_norm.weight',final_hidden,ws['final'],rows=1)
         linear('output.weight' if 'output.weight' in self.weights else 'token_embd.weight',ws['final'],self.logits,rows=1)
         add('advance',dict(r=r),self.control)
         return plan

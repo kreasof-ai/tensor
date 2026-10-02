@@ -129,6 +129,70 @@ def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup):
         assert np.all(np.abs(out.to_numpy()-expected)<=tolerance)
 
 
+@pytest.mark.parametrize('schedule',[
+    {'gemv_lanes':8,'gemv_threads':64},
+    {'gemv_lanes':16,'gemv_threads':256,'gemv_accumulators':4},
+    {'gemv_lanes':32,'gemv_threads':128,'gemv_accumulators':4},
+    {'gemv_lanes':32,'gemv_threads':128,'gemv_dot':True},
+])
+@pytest.mark.parametrize('subgroup',[False,True,'fallback'])
+@pytest.mark.parametrize('kind',['linear','ffn'])
+def test_q4_decode_schedules_tail_and_paired_accumulators(tmp_path,schedule,subgroup,kind):
+    from tensor_llm.gguf import dequantize
+    from tensor_llm.webgpu_kernels import source
+    k,o=512,11;rng=np.random.default_rng(547)
+    x=(rng.normal(size=k)*.05).astype(np.float32)
+    weights=[];references=[];bounds=[]
+    for _ in range(2 if kind=='ffn' else 1):
+        blocks=rng.integers(0,256,(o*k//32,18),dtype=np.uint8)
+        scales=np.resize(np.array([0.,1.,-1.,2**-24,-2**-24,2**-14,.001,3.],np.float16),len(blocks))
+        blocks[:,:2]=scales.view(np.uint8).reshape(-1,2);raw=blocks.ravel();weights.append(raw)
+        decoded=dequantize(raw,2).reshape(o,k).astype(np.float64)
+        references.append(decoded@x.astype(np.float64))
+        bounds.append(np.sum(np.abs(decoded*x),axis=1)*3e-6+1e-10)
+    expected=references[0];tolerance=bounds[0]
+    if kind=='ffn':
+        activated=expected/(1+np.exp(-expected))
+        tolerance=1.1*bounds[0]*np.abs(references[1])+np.abs(activated)*bounds[1]+1e-7
+        expected=activated*references[1]
+    text=source(kind,dict(r=1,k=k,o=o,type=2,sg=bool(subgroup),**schedule))
+    if subgroup=='fallback':text=text.replace('T.call_extern("uint32", "tensor_subgroup_size")','T.uint32(4)')
+    path=tmp_path/'decode.py';artifact=path.with_suffix('.tbin');path.write_text(text)
+    tensor.build(path,artifact,provider='webgpu')
+    with tensor.Device(provider='webgpu') as device:
+        output=device.zeros(o)
+        device.load(artifact).launch(device.from_numpy(x),*(device.from_numpy(w.view(np.uint32)) for w in weights),output)
+        actual=output.to_numpy()
+        assert np.all(np.isfinite(actual))
+        assert np.all(np.abs(actual-expected)<=tolerance)
+
+
+@pytest.mark.parametrize('encoding',[0,1,2,14])
+@pytest.mark.parametrize('subgroup',[False,True])
+def test_decode_residual_projection_matches_separate_add(tmp_path,encoding,subgroup):
+    from tensor_llm.gguf import TYPES
+    from tensor_llm.webgpu_kernels import source
+    k,o=512,11;rng=np.random.default_rng(829)
+    x=rng.normal(size=k).astype(np.float32);residual=rng.normal(size=o).astype(np.float32)
+    if encoding in (0,1):
+        weights=(rng.normal(size=k*o)*.1).astype(np.float16 if encoding==1 else np.float32)
+    else:
+        _,block,size=TYPES[encoding];packed=rng.integers(0,256,(k*o//block,size),dtype=np.uint8)
+        offset=0 if encoding==2 else 208
+        packed[:,offset:offset+2]=np.full(len(packed),.01,np.float16).view(np.uint8).reshape(-1,2)
+        weights=packed.ravel().view(np.uint32)
+    artifacts=[]
+    for kind in ('linear','linear_add'):
+        path=tmp_path/(kind+'.py');artifact=path.with_suffix('.tbin')
+        path.write_text(source(kind,dict(r=1,k=k,o=o,type=encoding,sg=subgroup)))
+        tensor.build(path,artifact,provider='webgpu');artifacts.append(artifact)
+    with tensor.Device(provider='webgpu') as device:
+        input=device.from_numpy(x);weight=device.from_numpy(weights);base=device.zeros(o);fused=device.zeros(o)
+        device.load(artifacts[0]).launch(input,weight,base)
+        device.load(artifacts[1]).launch(input,weight,device.from_numpy(residual),fused)
+        np.testing.assert_array_equal(fused.to_numpy(),residual+base.to_numpy())
+
+
 def test_native_half_unpack_all_bit_patterns(tmp_path):
     from tensor_llm.kernels import emit
     from tensor_llm.webgpu_kernels import half_bits

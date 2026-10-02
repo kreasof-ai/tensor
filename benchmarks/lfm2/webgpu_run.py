@@ -24,11 +24,31 @@ def metrics(actual,expected):
             'argmax':[int(np.argmax(x)),int(np.argmax(y))]}
 
 
-def run(model,bundle,reference,out,*,repeats=5,decode=64,max_buffer_size=None):
+def cached_reference(directory,model,cases):
+    """Replay independent logits only for an identical model and fixture sequence."""
+    directory=Path(directory);report=json.loads((directory/'report.json').read_text())
+    digest=hashlib.file_digest(Path(model).open('rb'),'sha256').hexdigest()
+    recorded=[{key:case[key] for key in ('name','tokens','reset')} for case in report['validation']]
+    if report['status']!='passed' or report['model_sha256']!=digest or recorded!=cases or report['protocol']['context']!=512:
+        raise ValueError('cached reference must have passed on this exact model, context and fixture sequence')
+    arrays=[];hashes=[]
+    for i,case in enumerate(report['validation']):
+        check=case['numpy']
+        if check['relative_rms']>=.01 or check['cosine']<=.9999 or check['argmax'][0]!=check['argmax'][1]:
+            raise ValueError('cached reference contains a failed independent accuracy gate')
+        path=directory/f'{i}-numpy-logits.npy';array=np.load(path,allow_pickle=False)
+        if array.ndim!=1 or not np.all(np.isfinite(array)):raise ValueError('invalid cached logits')
+        arrays.append(array);hashes.append(hashlib.file_digest(path.open('rb'),'sha256').hexdigest())
+    return arrays,{'mode':'cached independent NumPy logits','directory':str(directory.resolve()),
+                   'report_sha256':hashlib.file_digest((directory/'report.json').open('rb'),'sha256').hexdigest(),
+                   'logits_sha256':hashes,'model_sha256':digest}
+
+
+def run(model,bundle,reference,out,*,repeats=5,decode=64,max_buffer_size=None,numpy_fixtures=None):
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     native=NativeReference(model,reference,context=512)
     try:
-        numpy=NumpyReference(model,context=512)
+        numpy=NumpyReference(model,context=512) if numpy_fixtures is None else None
         with tensor.Device(provider='webgpu',max_buffer_size=max_buffer_size) as device,LFM2(model,bundle,device,context=512) as engine:
             if device.info['adapter']['backend_type']!='Vulkan':raise RuntimeError('this report requires the Vulkan adapter')
             prompt=engine.tokenizer.chat('What is 2 + 2?')
@@ -42,11 +62,13 @@ def run(model,bundle,reference,out,*,repeats=5,decode=64,max_buffer_size=None):
                 cases.extend([{'name':f'prefix_{length}','tokens':np.resize(prompt,length).tolist(),'reset':True},
                               {'name':f'cached_{length}','tokens':[3097],'reset':False}])
             cases.append({'name':'reset_chat','tokens':prompt,'reset':True})
+            cached,reference_info=cached_reference(numpy_fixtures,model,cases) if numpy_fixtures else (None,{'mode':'fresh independent NumPy execution'})
             validation=[];first=None
             for i,case in enumerate(cases):
                 if case['reset']:
-                    engine.reset();numpy.reset();native.reset()
-                actual=engine.forward(case['tokens']);expected=numpy.forward(case['tokens']);baseline=native.forward(case['tokens'])
+                    engine.reset();native.reset()
+                    if numpy is not None:numpy.reset()
+                actual=engine.forward(case['tokens']);expected=numpy.forward(case['tokens']) if numpy is not None else cached[i];baseline=native.forward(case['tokens'])
                 independent=metrics(actual,expected);comparison=metrics(actual,baseline)
                 if not np.all(np.isfinite(actual)) or independent['relative_rms']>=.01 or independent['cosine']<=.9999 or independent['argmax'][0]!=independent['argmax'][1]:
                     raise AssertionError((case['name'],independent))
@@ -94,7 +116,7 @@ def run(model,bundle,reference,out,*,repeats=5,decode=64,max_buffer_size=None):
                     'llama_cpp':{'commit':COMMIT,'release_archive_sha256':RELEASE_SHA256,'cache':'F16','flash_attention':True,'gpu_layers':-1,'threads':6},
                     'protocol':{'context':512,'prefill_chunk':32,'warmups':1,'repeats':repeats,'last_token_logits':'host FP32','sampling':'excluded','loading':'excluded',
                                'max_buffer_size':max_buffer_size},
-                    'validation':validation,'benchmarks':benchmarks,'generation':generation,
+                    'independent_reference':reference_info,'validation':validation,'benchmarks':benchmarks,'generation':generation,
                     'dispatches':{r:len(plan) for r,plan in engine.plans.items()},
                     'generation_timing':{'protocol':'full generate call, including prompt tokenization/prefill, reset, greedy sampling and completion; model loading excluded',
                                          'generated_tokens':len(generation['generated_tokens']),'samples_seconds':generation_samples,
@@ -111,6 +133,7 @@ if __name__=='__main__':
     for name in ('model','bundle','reference','out'):p.add_argument('--'+name,required=True,type=Path)
     p.add_argument('--repeats',type=int,default=5);p.add_argument('--decode',type=int,default=64)
     p.add_argument('--max-buffer-size',type=int)
+    p.add_argument('--numpy-fixtures',type=Path,help='reuse independently computed logits from a passed identical-model report')
     a=p.parse_args()
     if a.repeats<1 or not 1<=a.decode<=128:p.error('requires positive repeats and 1..128 decode tokens')
-    run(a.model,a.bundle,a.reference,a.out,repeats=a.repeats,decode=a.decode,max_buffer_size=a.max_buffer_size)
+    run(a.model,a.bundle,a.reference,a.out,repeats=a.repeats,decode=a.decode,max_buffer_size=a.max_buffer_size,numpy_fixtures=a.numpy_fixtures)

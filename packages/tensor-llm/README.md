@@ -42,6 +42,12 @@ The 230M Q4_0 file contains 82 Q4_0 matrices and one Q6_K tied embedding/output
 matrix; the Vulkan path runs both decoders on packed u32 buffers. The F16
 embedding is exactly 128 MiB and fits the current default WebGPU binding limit.
 
+The latest [decode repeat](../../docs/research/lfm2-webgpu-decode-push.md) measures
+packed floating dots and residual fusion on this GPU: 2.6B Q4_0 reaches
+140 tok/s against llama.cpp's 169 at prefix 128, and 230M Q4_0 improves by 9.5%
+in the same fresh comparison. Prefill is unchanged. Rebuild existing bundles
+after updating the package because implementation fingerprints are enforced.
+
 This profile uses the ordinary post-training-quantized Q4_0 checkpoint. The
 repository also publishes a distinct QAD Q4_0 checkpoint; do not interchange
 them in matched numerical or performance comparisons. Q4_K_M can additionally
