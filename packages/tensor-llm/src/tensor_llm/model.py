@@ -21,6 +21,17 @@ def paired_ffn(rows,gate,up):
     return gate.type==up.type and (rows>1 or gate.type not in (0,1))
 
 
+# A full-width output tile doubles the work per workgroup and halves the launch
+# count. It only pays while enough column tiles remain to fill the device:
+# measured on the 2.6B FFN shape (o=10752), while the narrower ffn_down
+# (o=2048) regresses by 12%. The guard is therefore on column count, not depth.
+WIDE_TILE_COLUMNS=5120
+WIDE_TILE=(32,32,64)
+
+def projection_tile(rows,columns):
+    return {'tile':WIDE_TILE} if rows>1 and columns>=WIDE_TILE_COLUMNS else {}
+
+
 def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='portable'):
     cfg=Config.from_gguf(gguf);c=cfg.width
     values={}
@@ -37,13 +48,13 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
                     add('embedding',r=r,c=c,v=cfg.vocab,type=info.type)
                     add('linear',r=1,k=k,o=o,type=info.type)
                 elif info.name=='output.weight':add('linear',r=1,k=k,o=o,type=info.type)
-                else:add('linear',r=r,k=k,o=o,type=info.type)
+                else:add('linear',r=r,k=k,o=o,type=info.type,**projection_tile(r,o))
         add('rms',r=r,c=c,eps=cfg.epsilon)
         if provider=='webgpu':
             if r==1:add('add_rms',r=r,c=c,eps=cfg.epsilon)
             for i in range(len(cfg.layers)):
                 gate,up=(gguf.tensors[f'blk.{i}.ffn_{name}.weight'] for name in ('gate','up'))
-                if paired_ffn(r,gate,up):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type)
+                if paired_ffn(r,gate,up):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff))
         add('add',r=r,c=c);add('swiglu',r=r,c=cfg.ff);add('conv',r=r,c=c)
         for kind in (('qnorm','kvnorm') if provider=='webgpu' else ('qkv',)):
             add(kind,r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,eps=cfg.epsilon,theta=cfg.theta)
@@ -142,7 +153,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             plan.append((executable,BoundCall(self.device,executable.manifest,values,symbols,launch,validated=True)))
         def linear(name,x,out,rows=r):
             info=self.gguf.tensors[name];o,k=info.shape
-            add('linear',dict(r=rows,k=k,o=o,type=info.type),x,self.weights[name],out)
+            add('linear',dict(r=rows,k=k,o=o,type=info.type,**projection_tile(rows,o)),x,self.weights[name],out)
         def rms(name,x,out,rows=r):add('rms',dict(r=rows,c=c,eps=cfg.epsilon),x,self.weights[name],out)
         add('embedding',dict(r=r,c=c,v=cfg.vocab,type=self.gguf.tensors['token_embd.weight'].type),ws['tokens'],self.weights['token_embd.weight'],hidden)
         for i,kind in enumerate(cfg.layers):
@@ -177,7 +188,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 rms(prefix+'ffn_norm.weight',hidden,ws['normal'])
             gate,up=(self.gguf.tensors[prefix+'ffn_'+name+'.weight'] for name in ('gate','up'))
             if self.provider=='webgpu' and paired_ffn(r,gate,up):
-                add('ffn',dict(r=r,k=c,o=cfg.ff,type=gate.type),ws['normal'],self.weights[gate.name],self.weights[up.name],ws['activated'])
+                add('ffn',dict(r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff)),ws['normal'],self.weights[gate.name],self.weights[up.name],ws['activated'])
             else:
                 linear(prefix+'ffn_gate.weight',ws['normal'],ws['gate']);linear(prefix+'ffn_up.weight',ws['normal'],ws['up'])
                 add('swiglu',dict(r=r,c=cfg.ff),ws['gate'],ws['up'],ws['activated'])

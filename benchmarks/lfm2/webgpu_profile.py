@@ -29,9 +29,9 @@ class TimestampAdapter:
         return self.adapter.request_device_sync(**kwargs)
 
 
-def profile(model,bundle,out,repeats=10,timestamp_period_ns=0):
+def profile(model,bundle,out,repeats=10,timestamp_period_ns=0,max_buffer_size=None):
     if timestamp_period_ns<=0:raise ValueError('requires the measured Vulkan timestampPeriod')
-    device=Device();device._adapter=TimestampAdapter(device._adapter)
+    device=Device(max_buffer_size=max_buffer_size);device._adapter=TimestampAdapter(device._adapter)
     with device,LFM2(model,bundle,device,context=512) as engine:
         prompt=engine.tokenizer.chat('What is 2 + 2?');rows=[]
         for r in (1,32):
@@ -92,4 +92,5 @@ if __name__=='__main__':
     for name in ('model','bundle','out'):p.add_argument('--'+name,required=True,type=Path)
     p.add_argument('--repeats',type=int,default=10)
     p.add_argument('--timestamp-period-ns',required=True,type=float)
-    a=p.parse_args();profile(a.model,a.bundle,a.out,a.repeats,a.timestamp_period_ns)
+    p.add_argument('--max-buffer-size',type=int)
+    a=p.parse_args();profile(a.model,a.bundle,a.out,a.repeats,a.timestamp_period_ns,max_buffer_size=a.max_buffer_size)
