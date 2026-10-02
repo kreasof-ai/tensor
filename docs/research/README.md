@@ -10,7 +10,7 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
-| [LFM2.5-2.6B Q4_0 matched run](lfm2-2.6b-q4_0-matched-run.md) | The 230M submission protocol re-run on a 2.6B QAD checkpoint: decode scales toward the memory roofline while the prefill gap widens |
+| [LFM2.5-2.6B Q4_0 matched run](lfm2-2.6b-q4_0-matched-run.md) | The 230M submission protocol re-run on a 2.6B QAD checkpoint, plus two schedule corrections: decode reduction width and prefill staging cost, worth +8.1% decode and +19.0% prefill |
 | [LFM2.5-230M native submission](lfm2-230m-native-submission.md) | Optional native prepared-plan encoder, four-wide prefill dots, Python fallback and further Vulkan gains |
 | [LFM2.5-230M WebGPU compiler optimization](lfm2-230m-webgpu-compiler-optimization.md) | Register microtiles, parallel reductions, subgroup decode/attention, tuned prefill and matched Vulkan benchmarks |
 | [LFM2.5-230M Vulkan optimization](lfm2-230m-vulkan-optimization.md) | Timestamp profiling, packed decode, register-tiled prefill, fusion and GPU greedy generation with fresh before/after measurements |

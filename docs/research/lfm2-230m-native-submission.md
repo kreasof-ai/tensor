@@ -137,6 +137,41 @@ Build matching bundles/wheels with the [package commands](../../packages/tensor-
 The producer needs the installed MSVC build tools only when opting into the native
 encoder. The consumer needs neither MSVC nor TileLang/TVM. For current validation:
 
+## Superseded by later schedule corrections
+
+The measurements above were taken before two kernel changes that improve this
+checkpoint too. They are not folded into the tables here, because those tables
+document one specific optimization pass and the evidence JSON
+(`data/lfm2-230m-native-{f16,q4_0}-{before,after}.json`) records the code state
+that pass actually measured.
+
+The later changes are a decode reduction that widens the single-workgroup
+`r=1` RMS launch from 64 to 256 threads, a prefill fix that removes two emulated
+unsigned integer divides from the FP16 staging loop, and a prefill output tile
+of `(32,32,64)` selected for projections with 5120 or more columns. All are
+bit-identical or reassociate only the sum-of-squares, and all 19 fixtures keep
+passing the unchanged gates. The 230M checkpoint has no projection above 3,072
+columns, so the tile change does not apply to it by construction.
+
+Fresh matched runs on the same machine and protocol, context 512, prefix 128:
+
+| Format | Prefill, tok/s | Decode, tok/s |
+|---|---:|---:|
+| F16 | 1,768 → 1,777 | 263 → **274** |
+| Q4_0 | 1,639 → **1,729** | 445 → **473** |
+
+Evidence: [post-schedule F16](data/lfm2-230m-post-schedule-f16.json),
+[post-schedule Q4_0](data/lfm2-230m-post-schedule-q4_0.json). The derivation,
+including a rejected weight-layout experiment, is in the
+[2.6B matched run](lfm2-2.6b-q4_0-matched-run.md), where the same changes are
+worth +19.0% prefill and +8.1% decode.
+
+Rebuilding the bundles is required after a kernel change: the implementation
+hash guard rejects them, and `test_real_model_reset_reference_and_capacity`
+compares against a stored bitwise baseline that must be regenerated.
+
+## Reproduction
+
 ```powershell
 $env:TENSOR_WEBGPU='1'
 $env:TENSOR_LFM2_WEBGPU='1'
