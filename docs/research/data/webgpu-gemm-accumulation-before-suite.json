@@ -1,0 +1,820 @@
+{
+  "schema": "tensor.clblast-comparison-suite.v1",
+  "cases": [
+    {
+      "name": "float32-512-512-512-gemm",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-512-512-512-gemm.tbin",
+      "artifact_sha256": "fd08c4f51e4ab3c627f75d316295cc2c4414b74c5c0bf83ae5a647ddbd5263f5",
+      "wgsl_sha256": "e4fdeaa0adf354e496960b7d64ca72ddec613309fb6b644793adc92841c5b109",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          16,
+          16,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-512-512-512-linear",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-512-512-512-linear.tbin",
+      "artifact_sha256": "be0abc873b48783471674c32eb4293a1278eff690a3d3a2d0778befab9761e25",
+      "wgsl_sha256": "c47ee19d1e4156faa3e703d0f004069b976c9b0a54e7bc7bd6c36fef69240678",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          16,
+          16,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-1024-1024-1024-gemm",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-1024-1024-1024-gemm.tbin",
+      "artifact_sha256": "581b4318a4dc2afdca774351047f50fb49da73db302a3b3750c1779a68b59bca",
+      "wgsl_sha256": "52c6588d8a771420de936c71e9342b2c67961cac4397f84e639c16930812e453",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          32,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-1024-1024-1024-linear",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-1024-1024-1024-linear.tbin",
+      "artifact_sha256": "cf950959541ce8e78fbcf9bd5d2be510639f80ce382f6b25276cc38583a54715",
+      "wgsl_sha256": "185cd8b861250c5dd5055be31975a9fdd8769f3a8fbdff2750f60f25dc64e010",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          32,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-2048-2048-2048-gemm",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-2048-2048-2048-gemm.tbin",
+      "artifact_sha256": "05796d6c306242dab032b53e332c8cf5c32c82acfde249b2b0c437568a6a84a0",
+      "wgsl_sha256": "68431778fe783f97d44ef21014e38c47af47b1f4dae81dc8b47ac3a6d4e7f1f3",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          64,
+          64,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-2048-2048-2048-linear",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-2048-2048-2048-linear.tbin",
+      "artifact_sha256": "c19ef6b7903ae92238f7f302e0090d9e224d368dede94973660444e494d1972e",
+      "wgsl_sha256": "41754b0bbe00539f2b3385fe5a3d40cf8cb774d7fea436b8e64733bd254c5f3b",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          64,
+          64,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-4096-4096-4096-gemm",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-4096-4096-4096-gemm.tbin",
+      "artifact_sha256": "05a9b1893e47a92bd1db896f2df3b5be14c3287df488359c4b13d082dae0e2ca",
+      "wgsl_sha256": "0838e7e0eaf75644c28149d3da9167a2baf7bf5d0d42a8f1d8bac7cc1f18adac",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          128,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-4096-4096-4096-linear",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-4096-4096-4096-linear.tbin",
+      "artifact_sha256": "7fb5a9f9dc3ab75e750932afad2139c937bc5068678fa47fd228acc3f1630b6a",
+      "wgsl_sha256": "1dea8afe2192ea355ecd2d068f5a0752cfb8dcf5ea199390fb90906c369fb731",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          128,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-1-2560-1024-gemm",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-1-2560-1024-gemm.tbin",
+      "artifact_sha256": "68dfd139957b206bf508137a0e32142c80a2a172cd8db2d42c8ac5b71c0f665a",
+      "wgsl_sha256": "0294a7b55a267c4abcb5565df423de992ba8533699ce3b114437edab949b86bf",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-1-2560-1024-linear",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-1-2560-1024-linear.tbin",
+      "artifact_sha256": "bc640d3f53657c3bb33245448a7bd80dab68410ca089b841b7346d923208119c",
+      "wgsl_sha256": "12bc032f86cd30c0c8ac21441fc89dc965d3d7052d81e07d6b34ad92c69707ea",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-1-1024-2560-gemm",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-1-1024-2560-gemm.tbin",
+      "artifact_sha256": "843ae0eadf411b10e7cb229411c14cedbc181cb30678ababa78e3e2ac765c2a4",
+      "wgsl_sha256": "15c5703c6144d3d77609f309429b1836b805b937adb9bc06144670939a9cd2e2",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-1-1024-2560-linear",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-1-1024-2560-linear.tbin",
+      "artifact_sha256": "e8517a5d1c3d58dc8899194afd612073fdad54a2f3effd1f4d12d20d0825597c",
+      "wgsl_sha256": "16b8ba258ca83c3cc8b47afa1d29a630eca56c8bb8721eaa0bec138c07319955",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-32-2560-1024-gemm",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-32-2560-1024-gemm.tbin",
+      "artifact_sha256": "872abcbb6c2e76d27891ec6ac65abd89384641fefbd994c73edbdbaab1e5d0ce",
+      "wgsl_sha256": "52f905e5bc404c4abcf2fbdc718d67e01fa2b6589f6daf100dd8e7d177057732",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-32-2560-1024-linear",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-32-2560-1024-linear.tbin",
+      "artifact_sha256": "a05b7a89837f8aaf36e8ea186f69fa77b4159d3b44e01f51571915e65c074da9",
+      "wgsl_sha256": "a0e30d864df5aa26de938f549da6440d0cc2b32477f7ea139878f61ef76396c4",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-32-1024-2560-gemm",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "gemm",
+      "artifact": "float32-32-1024-2560-gemm.tbin",
+      "artifact_sha256": "72a983097ecd58f8e9e14bcb91d2290857815c8ff7c7e2fe8f57e3756d440329",
+      "wgsl_sha256": "4fd090e276c3a628ff223476ae2798e46d506cd7294446462cab04efbeb3b81f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float32-32-1024-2560-linear",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "linear",
+      "artifact": "float32-32-1024-2560-linear.tbin",
+      "artifact_sha256": "2d089f2532479da3bb9731bdaf7fc45989130765bd7ce56d5bd4ed13e864c8cf",
+      "wgsl_sha256": "3d40a5e9e86469041fa482318d4c55c7e8e346570af10a70d1ed74b6185e1a83",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 8192
+    },
+    {
+      "name": "float16-512-512-512-gemm",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-512-512-512-gemm.tbin",
+      "artifact_sha256": "c5cdd8216ccf8ffb321aa0931cedc1ef72a0e198e74d7b52249de6ac3dcad47c",
+      "wgsl_sha256": "b6699ac729803fcb210bf888a60e54bb939247ddc38d07f4f97bbbe2ed98b13a",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          16,
+          16,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-512-512-512-linear",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-512-512-512-linear.tbin",
+      "artifact_sha256": "5afae0b7a9117258c4d8b1b7b9881b194e8f4d9abd63ef1d4fa864a4552b3d21",
+      "wgsl_sha256": "1c8f89d464b1c9bc4195dabb25976c9644824cec57a2374f1694a3c12123265b",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          16,
+          16,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-1024-1024-1024-gemm",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-1024-1024-1024-gemm.tbin",
+      "artifact_sha256": "d42a993730a9381d18a14e80b45a8be97b96dfc76578ec8aee0b0a404f2b9a61",
+      "wgsl_sha256": "646f9584e7ab9622d63492dfa2e90e9b11f87473c9072aff9d66d18d87b7057a",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          32,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-1024-1024-1024-linear",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-1024-1024-1024-linear.tbin",
+      "artifact_sha256": "8a6b4345ef4292e95612d108064c23c29b63d1af6a5b6ae7e215a4150b26eb81",
+      "wgsl_sha256": "3b8faf7b22a41869e97860f632e9f460cf4809e13e94d6494938b71099b42736",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          32,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-2048-2048-2048-gemm",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-2048-2048-2048-gemm.tbin",
+      "artifact_sha256": "3851edc640fe9dfcfc129194983ccf5ccb2a16cab49c031fb0e2ffc5b0ac2e7c",
+      "wgsl_sha256": "058a3144b7d6bd0ff3f62be1313b637ae39b086635308d52b6b618ccc97069a1",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          64,
+          64,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-2048-2048-2048-linear",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-2048-2048-2048-linear.tbin",
+      "artifact_sha256": "1479f7d8444987a18e11049262af2fc473e30fd2a54ea33cb38032aaba0aae5d",
+      "wgsl_sha256": "f59abd7bee75dadae0160453b9040a0d19389af76f5b49f584b28020ca148a76",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          64,
+          64,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-4096-4096-4096-gemm",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-4096-4096-4096-gemm.tbin",
+      "artifact_sha256": "1a07bb0837f164f4d9146cc88ead7834465853e759d897c3db011be4d8b92efc",
+      "wgsl_sha256": "ed1c3611695594f800294419f5ba1877d9ad8866eea8074163b8733dc0b864ad",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          128,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-4096-4096-4096-linear",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-4096-4096-4096-linear.tbin",
+      "artifact_sha256": "dc6bb68a8ca9d4169452238164d4183a3748c3ce2fd245d1a346218c7b879497",
+      "wgsl_sha256": "475445ce01add5d9c653f41afd7de480a5362a95ee1215bf875139c917a2b0eb",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          128,
+          128,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-1-2560-1024-gemm",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-1-2560-1024-gemm.tbin",
+      "artifact_sha256": "07945035a864b0e1fe1e98643de5f43148ec00a391d91bb6184be374f9defc26",
+      "wgsl_sha256": "e5202dae382fe310d633c5be753aaf5f9cfae55f230384a0a5de4b7328e96b5c",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-1-2560-1024-linear",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-1-2560-1024-linear.tbin",
+      "artifact_sha256": "12f524d656fd56f99d07aa1a17d0c171845d7d32834c0e8be5e82492050ee8dc",
+      "wgsl_sha256": "267e272a313452765b0cd53752d85c3dd7e466cceb9773adea0cd73d3a9971cf",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-1-1024-2560-gemm",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-1-1024-2560-gemm.tbin",
+      "artifact_sha256": "1b77f2e6542f61fde7af57b3adbfa5018738a258bbb6e710844fbb2f856d3397",
+      "wgsl_sha256": "26c7608316e6be45c21ba378d962f9ffe7bc9107066ba99e191c5c1db0ce6ca4",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-1-1024-2560-linear",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-1-1024-2560-linear.tbin",
+      "artifact_sha256": "fbbee467f602a495666c86fd5894b49513e7585a04105b90203170c3eb6486f7",
+      "wgsl_sha256": "ae0b9bc3ca679a4250f24e4c0c625eeca47416e755177594825540e902c1bf9f",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-32-2560-1024-gemm",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-32-2560-1024-gemm.tbin",
+      "artifact_sha256": "0fb4924c6fe3adfda5cc8cc512c34389e5d5b44e14dbfdfae9ad714c6ff9b556",
+      "wgsl_sha256": "8ec315f9e14ca63954114e5d8a747221c2ff90eea02a7579df2b3417d7281925",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-32-2560-1024-linear",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-32-2560-1024-linear.tbin",
+      "artifact_sha256": "2deb739fbb14dae781f5d5da589f45fbe145fb545b419443dca6bb9f7ba912e0",
+      "wgsl_sha256": "02c45e64e19b84750b2a2ea2e94de2a2de91e6b5a71c27a27a052d7dbe548b3e",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          80,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-32-1024-2560-gemm",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "gemm",
+      "artifact": "float16-32-1024-2560-gemm.tbin",
+      "artifact_sha256": "fdbe529bedde8d63f1f668089c465b8d266057183f30968f2fe289a418571b97",
+      "wgsl_sha256": "2e8e41a2b2efaab152c216934447f50903abef451b1e47dba67cb5d122648d22",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    },
+    {
+      "name": "float16-32-1024-2560-linear",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "linear",
+      "artifact": "float16-32-1024-2560-linear.tbin",
+      "artifact_sha256": "513447db0d30d99d405d0dbceee554e3cb8a712cab455159211b912965427f00",
+      "wgsl_sha256": "f32fb49120798bbd6d088745c7cdda6a201d1792218b31b18caa040ae241b9d2",
+      "launch": {
+        "block": [
+          128,
+          1,
+          1
+        ],
+        "grid": [
+          32,
+          1,
+          1
+        ],
+        "shared_memory_bytes": 0
+      },
+      "workgroup_storage_bytes": 6144
+    }
+  ],
+  "consumer_source_sha256": {
+    "providers/webgpu.py": "77cdd0b06e10a0621984cea42814f3d57a9ebe22526dda167ef902af5fc4dc9c",
+    "providers/webgpu_contract.py": "89f00a82447adf8f447250b06f4994fe89de4122696236f68ea1fbec246c0c28",
+    "runtime/abi.py": "a44db858b1aff1ed531b3bf0f1b9134e07f4763fdfcb76742f5f29d9764b40f2",
+    "runtime/signature.py": "40f571ab70593e651129075d07e9222b2aa58295162bf405e5c8290de4d9360e",
+    "artifacts/format.py": "b4d7ceb4061b8b21d138a667b77256748746d51524dd51e2c57b94ac81da1a9d",
+    "runtime/__init__.py": "5e2dafd4f4501b5695776be46be9fbe5bfb681c685c983a0b84ecf028a8a581b",
+    "artifacts/modules.py": "26e56c72f41810665783ef35dfb50f20c05ecc632639da1f692c1f239b250f64",
+    "providers/__init__.py": "64f678d628dc13fec226742d2f0d0f276d023db990be66a47dedf8e19679b327"
+  },
+  "compiler_source_sha256": {
+    "webgpu.py": "54446e6bc2f635b6986f8e728a4629b4b0231cb07825c63f7791640f0aa5c203",
+    "webgpu_lowering.py": "e916654d1e8ae1cc37b6a7294e4f8b4a99523700de96a0b248d3df50027c4c05"
+  },
+  "source_commit": "fa27a4e67c89a10b3ae36d115acabad1be1f95ad"
+}

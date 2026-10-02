@@ -202,6 +202,13 @@ CLBlast source references:
 
 ## Reproduce on this machine
 
+The subsequent [whole-loop accumulator ablation](webgpu-gemm-accumulation.md)
+implements the first compiler transfer above. With tile sizes unchanged, the
+fresh FP32 pure-4096 control improves 212.377 → 130.359 ms, reducing its measured
+CLBlast gap to approximately 8×. The original results in this report remain the
+pre-transfer measurements; the ablation also records shorter-K regressions and
+the conservative default that avoids them.
+
 Use a fresh suite directory. The pinned source build uses this machine's
 installed Visual Studio 18 tools and CMake; no driver installation is required.
 The pure Tensor wheel below is the clean fallback wheel from the

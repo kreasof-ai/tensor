@@ -1,0 +1,602 @@
+{
+  "schema": "tensor.webgpu-scaling-optimization.v1",
+  "status": "passed",
+  "adapter": {
+    "ordinal": 0,
+    "provider": "webgpu",
+    "arch": "webgpu-portable-v1",
+    "name": "AMD Radeon RX 6700 XT",
+    "adapter": {
+      "vendor": "AMD proprietary driver",
+      "architecture": "",
+      "device": "AMD Radeon RX 6700 XT",
+      "description": "26.6.2 (AMD proprietary shader compiler)",
+      "stackgroup_min_size": 4,
+      "stackgroup_max_size": 128,
+      "vendor_id": 4098,
+      "device_id": 29663,
+      "adapter_type": "DiscreteGPU",
+      "backend_type": "Vulkan"
+    },
+    "features": [
+      "shader-f16",
+      "subgroup"
+    ],
+    "limits": {
+      "max-bind-groups": 8,
+      "max-bind-groups-plus-vertex-buffers": 0,
+      "max-bindings-per-bind-group": 1000,
+      "max-buffer-size": 268435456,
+      "max-color-attachment-bytes-per-sample": 0,
+      "max-color-attachments": 0,
+      "max-compute-invocations-per-workgroup": 1024,
+      "max-compute-workgroup-size-x": 1024,
+      "max-compute-workgroup-size-y": 1024,
+      "max-compute-workgroup-size-z": 1024,
+      "max-compute-workgroup-storage-size": 32768,
+      "max-compute-workgroups-per-dimension": 65535,
+      "max-dynamic-storage-buffers-per-pipeline-layout": 8,
+      "max-dynamic-uniform-buffers-per-pipeline-layout": 8,
+      "max-inter-stage-shader-variables": 0,
+      "max-non-sampler-bindings": 1000000,
+      "max-push-constant-size": 256,
+      "max-sampled-textures-per-shader-stage": 16,
+      "max-samplers-per-shader-stage": 16,
+      "max-storage-buffer-binding-size": 268435456,
+      "max-storage-buffers-per-shader-stage": 8,
+      "max-storage-textures-per-shader-stage": 4,
+      "max-texture-array-layers": 8192,
+      "max-texture-dimension-1d": 16384,
+      "max-texture-dimension-2d": 16384,
+      "max-texture-dimension-3d": 8192,
+      "max-uniform-buffer-binding-size": 2147483647,
+      "max-uniform-buffers-per-shader-stage": 12,
+      "max-vertex-attributes": 64,
+      "max-vertex-buffer-array-stride": 16383,
+      "max-vertex-buffers": 16,
+      "min-storage-buffer-offset-alignment": 32,
+      "min-uniform-buffer-offset-alignment": 32
+    }
+  },
+  "methodology": {
+    "warmup_calls": 20,
+    "batches": 9,
+    "calls_per_batch": 5,
+    "timing": "one allocating call plus queue completion; release outside timer",
+    "excluded": "uploads/downloads, CPU reference, build, pipeline creation",
+    "provider_order": "one WebGPU provider; workloads in A10G sweep order",
+    "seed": 42,
+    "rng": "NumPy PCG64, SeedSequence([42, case_index])",
+    "same_input_values_as_a10g": false,
+    "reference": "NumPy FP32; attention uses 64-query chunks",
+    "max_buffer_size": 268435456
+  },
+  "same_inputs": true,
+  "same_host_os_driver_versions": true,
+  "shader_changes_allowed": true,
+  "enabled_features_before": [
+    "shader-f16",
+    "subgroup"
+  ],
+  "enabled_features_after": [
+    "shader-f16",
+    "subgroup"
+  ],
+  "scope": "allocating kernel calls; does not exercise prepared-plan native encoding",
+  "cases": [
+    {
+      "name": "pointwise-129",
+      "shapes": [
+        [
+          129
+        ],
+        [
+          129
+        ]
+      ],
+      "dtype": "float32",
+      "before_median_us": 518.7999922782183,
+      "after_median_us": 540.9000441431999,
+      "speedup": 0.9591420779046363,
+      "latency_reduction_percent": -4.259840438303253,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0,
+      "after_maximum_absolute_error": 0.0
+    },
+    {
+      "name": "pointwise-1048576",
+      "shapes": [
+        [
+          1048576
+        ],
+        [
+          1048576
+        ]
+      ],
+      "dtype": "float32",
+      "before_median_us": 606.1000749468803,
+      "after_median_us": 604.2000604793429,
+      "speedup": 1.0031446777182214,
+      "latency_reduction_percent": 0.3134819720495674,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0,
+      "after_maximum_absolute_error": 0.0
+    },
+    {
+      "name": "pointwise-4194304",
+      "shapes": [
+        [
+          4194304
+        ],
+        [
+          4194304
+        ]
+      ],
+      "dtype": "float32",
+      "before_median_us": 5400.19990876317,
+      "after_median_us": 5393.899977207184,
+      "speedup": 1.0011679733741092,
+      "latency_reduction_percent": 0.11666108037524658,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0,
+      "after_maximum_absolute_error": 0.0
+    },
+    {
+      "name": "pointwise-16777216",
+      "shapes": [
+        [
+          16777216
+        ],
+        [
+          16777216
+        ]
+      ],
+      "dtype": "float32",
+      "before_median_us": 10932.100005447865,
+      "after_median_us": 10866.199969314039,
+      "speedup": 1.0060646809666605,
+      "latency_reduction_percent": 0.6028122327913721,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0,
+      "after_maximum_absolute_error": 0.0
+    },
+    {
+      "name": "pointwise-67108864",
+      "shapes": [
+        [
+          67108864
+        ],
+        [
+          67108864
+        ]
+      ],
+      "dtype": "float32",
+      "before_median_us": 35917.900037020445,
+      "after_median_us": 35623.90001025051,
+      "speedup": 1.0082528871539989,
+      "latency_reduction_percent": 0.8185334511953912,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0,
+      "after_maximum_absolute_error": 0.0
+    },
+    {
+      "name": "gemm-512-512-512",
+      "shapes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 2317.5000678747892,
+      "after_median_us": 2357.400022447109,
+      "speedup": 0.9830745931142811,
+      "latency_reduction_percent": -1.7216808372700232,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0625,
+      "after_maximum_absolute_error": 0.0625
+    },
+    {
+      "name": "gemm-1024-1024-1024",
+      "shapes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 3621.1999831721187,
+      "after_median_us": 3595.1000172644854,
+      "speedup": 1.0072598719875094,
+      "latency_reduction_percent": 0.7207546125295727,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.125,
+      "after_maximum_absolute_error": 0.125
+    },
+    {
+      "name": "gemm-2048-2048-2048",
+      "shapes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 14583.999989554286,
+      "after_median_us": 9491.999982856214,
+      "speedup": 1.5364517505156854,
+      "latency_reduction_percent": 34.914975386349354,
+      "same_wgsl": false,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.125,
+      "after_maximum_absolute_error": 0.125
+    },
+    {
+      "name": "gemm-4096-4096-4096",
+      "shapes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [
+          4096
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 108727.50007547438,
+      "after_median_us": 67810.7999265194,
+      "speedup": 1.6033950372697685,
+      "latency_reduction_percent": 37.632337835922115,
+      "same_wgsl": false,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.25,
+      "after_maximum_absolute_error": 0.25
+    },
+    {
+      "name": "sdpa-1-8-1024-64-False",
+      "shapes": [
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 3628.100035712123,
+      "after_median_us": 3544.8999842628837,
+      "speedup": 1.023470352285987,
+      "latency_reduction_percent": 2.293212718235005,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.000244140625,
+      "after_maximum_absolute_error": 0.000244140625
+    },
+    {
+      "name": "sdpa-1-8-1024-64-True",
+      "shapes": [
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ],
+        [
+          1,
+          8,
+          1024,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 2476.499998010695,
+      "after_median_us": 2370.700007304549,
+      "speedup": 1.044628164837456,
+      "latency_reduction_percent": 4.272157916056207,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.001953125,
+      "after_maximum_absolute_error": 0.001953125
+    },
+    {
+      "name": "sdpa-1-8-2048-64-False",
+      "shapes": [
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 13725.199969485402,
+      "after_median_us": 13470.400008372962,
+      "speedup": 1.0189155452662177,
+      "latency_reduction_percent": 1.8564389712275586,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.000244140625,
+      "after_maximum_absolute_error": 0.000244140625
+    },
+    {
+      "name": "sdpa-1-8-2048-64-True",
+      "shapes": [
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ],
+        [
+          1,
+          8,
+          2048,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 8758.699987083673,
+      "after_median_us": 8708.400069735944,
+      "speedup": 1.0057760227992436,
+      "latency_reduction_percent": 0.5742851955416461,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.001953125,
+      "after_maximum_absolute_error": 0.001953125
+    },
+    {
+      "name": "sdpa-1-8-4096-64-False",
+      "shapes": [
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 42402.499937452376,
+      "after_median_us": 42391.99997391552,
+      "speedup": 1.000247687383075,
+      "latency_reduction_percent": 0.024762604922701215,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0001220703125,
+      "after_maximum_absolute_error": 0.0001220703125
+    },
+    {
+      "name": "sdpa-1-8-4096-64-True",
+      "shapes": [
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ],
+        [
+          1,
+          8,
+          4096,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 22562.699974514544,
+      "after_median_us": 22487.200098112226,
+      "speedup": 1.0033574600694133,
+      "latency_reduction_percent": 0.33462252517473257,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.001953125,
+      "after_maximum_absolute_error": 0.001953125
+    },
+    {
+      "name": "sdpa-1-8-8192-64-False",
+      "shapes": [
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 163827.3000717163,
+      "after_median_us": 163777.3000402376,
+      "speedup": 1.0003052928059408,
+      "latency_reduction_percent": 0.03051996306892013,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0001220703125,
+      "after_maximum_absolute_error": 0.0001220703125
+    },
+    {
+      "name": "sdpa-1-8-8192-64-True",
+      "shapes": [
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ],
+        [
+          1,
+          8,
+          8192,
+          64
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 84826.10003557056,
+      "after_median_us": 84602.09995973855,
+      "speedup": 1.002647689311951,
+      "latency_reduction_percent": 0.26406975652314424,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.001953125,
+      "after_maximum_absolute_error": 0.001953125
+    }
+  ],
+  "repeat": [
+    {
+      "name": "pointwise-129",
+      "shapes": [
+        [
+          129
+        ],
+        [
+          129
+        ]
+      ],
+      "dtype": "float32",
+      "before_median_us": 556.9999339058995,
+      "after_median_us": 530.9999687597156,
+      "speedup": 1.0489641556983769,
+      "latency_reduction_percent": 4.667857851232071,
+      "same_wgsl": true,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.0,
+      "after_maximum_absolute_error": 0.0
+    },
+    {
+      "name": "gemm-4096-4096-4096",
+      "shapes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [
+          4096
+        ]
+      ],
+      "dtype": "float16",
+      "before_median_us": 108711.60007081926,
+      "after_median_us": 67828.59994564205,
+      "speedup": 1.6027398495316267,
+      "latency_reduction_percent": 37.60684241474168,
+      "same_wgsl": false,
+      "same_output": true,
+      "before_maximum_absolute_error": 0.25,
+      "after_maximum_absolute_error": 0.25
+    }
+  ],
+  "reports": {
+    "before": {
+      "path": "docs/research/data/webgpu-gemm-accumulation-scaling-before.json",
+      "sha256": "55fc6b29c1575664502d92c868ab83c56dece50485ad10fa0ac343dd113f4cd5"
+    },
+    "after": {
+      "path": "docs/research/data/webgpu-gemm-accumulation-scaling-default.json",
+      "sha256": "4054cac0735b2bd71e1d993cb54917a832848089bb64163c47fa606579e4b623"
+    }
+  },
+  "comparison_source_sha256": "a456de7fdce9fce76336b54000748ca6588cb978acf7facfeba0880ea3c8008a"
+}

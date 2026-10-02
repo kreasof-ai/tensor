@@ -1,0 +1,1189 @@
+{
+  "schema": "tensor.webgpu-gemm-accumulation-comparison.v1",
+  "status": "passed",
+  "methodology": {
+    "warmup_calls": 20,
+    "completed_call_samples": 45,
+    "gpu_samples": 20,
+    "input_rng": "NumPy PCG64 SeedSequence([42, shape_index])",
+    "allocating": "allocate output + submit + completion; release outside timer",
+    "preallocated": "submit + completion; output reused",
+    "gpu_webgpu": "timestamps around one GEMM/linear dispatch inside compute pass",
+    "gpu_opencl": "completed start barrier to end barrier around complete routine including preprocessing/epilogue; includes device idle during host submission and start-wait return",
+    "excluded": "uploads/downloads, correctness reference, cold compilation and tuning",
+    "vulkan_timestamp_period_ns": 10.0,
+    "precision": "Tensor uses FP32 accumulators for both; CLBlast HGEMM uses half accumulators",
+    "epilogue": "Tensor fused; CLBlast extra OpenCL kernel included for linear"
+  },
+  "same_inputs": true,
+  "same_outputs": true,
+  "adapter": {
+    "ordinal": 0,
+    "provider": "webgpu",
+    "arch": "webgpu-portable-v1",
+    "name": "AMD Radeon RX 6700 XT",
+    "adapter": {
+      "vendor": "AMD proprietary driver",
+      "architecture": "",
+      "device": "AMD Radeon RX 6700 XT",
+      "description": "26.6.2 (AMD proprietary shader compiler)",
+      "stackgroup_min_size": 4,
+      "stackgroup_max_size": 128,
+      "vendor_id": 4098,
+      "device_id": 29663,
+      "adapter_type": "DiscreteGPU",
+      "backend_type": "Vulkan"
+    },
+    "features": [
+      "shader-f16",
+      "subgroup",
+      "timestamp-query",
+      "timestamp-query-inside-passes"
+    ],
+    "limits": {
+      "max-bind-groups": 8,
+      "max-bind-groups-plus-vertex-buffers": 0,
+      "max-bindings-per-bind-group": 1000,
+      "max-buffer-size": 268435456,
+      "max-color-attachment-bytes-per-sample": 0,
+      "max-color-attachments": 0,
+      "max-compute-invocations-per-workgroup": 1024,
+      "max-compute-workgroup-size-x": 1024,
+      "max-compute-workgroup-size-y": 1024,
+      "max-compute-workgroup-size-z": 1024,
+      "max-compute-workgroup-storage-size": 32768,
+      "max-compute-workgroups-per-dimension": 65535,
+      "max-dynamic-storage-buffers-per-pipeline-layout": 8,
+      "max-dynamic-uniform-buffers-per-pipeline-layout": 8,
+      "max-inter-stage-shader-variables": 0,
+      "max-non-sampler-bindings": 1000000,
+      "max-push-constant-size": 256,
+      "max-sampled-textures-per-shader-stage": 16,
+      "max-samplers-per-shader-stage": 16,
+      "max-storage-buffer-binding-size": 268435456,
+      "max-storage-buffers-per-shader-stage": 8,
+      "max-storage-textures-per-shader-stage": 4,
+      "max-texture-array-layers": 8192,
+      "max-texture-dimension-1d": 16384,
+      "max-texture-dimension-2d": 16384,
+      "max-texture-dimension-3d": 8192,
+      "max-uniform-buffer-binding-size": 2147483647,
+      "max-uniform-buffers-per-shader-stage": 12,
+      "max-vertex-attributes": 64,
+      "max-vertex-buffer-array-stride": 16383,
+      "max-vertex-buffers": 16,
+      "min-storage-buffer-offset-alignment": 32,
+      "min-uniform-buffer-offset-alignment": 32
+    },
+    "prepared_encoding": "python"
+  },
+  "cases": [
+    {
+      "name": "float32-512-512-512-gemm",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.2626999523490667,
+          "after_ms": 1.5299000078812242,
+          "speedup": 0.8253480265666474,
+          "clblast_after_ms": 0.19509997218847275,
+          "tensor_over_clblast": 7.841620840434013
+        },
+        "preallocated": {
+          "before_ms": 0.9862999431788921,
+          "after_ms": 1.0694999946281314,
+          "speedup": 0.9222065901195556,
+          "clblast_after_ms": 0.1873000292107463,
+          "tensor_over_clblast": 5.710089844272001
+        },
+        "gpu_interval": {
+          "before_ms": 0.85458,
+          "after_ms": 1.3558400000000002,
+          "speedup": 0.6302956101014868,
+          "clblast_after_ms": 0.18775,
+          "tensor_over_clblast": 7.221517976031958
+        }
+      }
+    },
+    {
+      "name": "float32-512-512-512-linear",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.0881000198423862,
+          "after_ms": 0.8838999783620238,
+          "speedup": 1.2310216613635068,
+          "clblast_after_ms": 0.28090004343539476,
+          "tensor_over_clblast": 3.1466708497156755
+        },
+        "preallocated": {
+          "before_ms": 0.9946000063791871,
+          "after_ms": 0.7985999109223485,
+          "speedup": 1.2454296485338534,
+          "clblast_after_ms": 0.2750999992713332,
+          "tensor_over_clblast": 2.902944067748555
+        },
+        "gpu_interval": {
+          "before_ms": 0.53322,
+          "after_ms": 0.27544,
+          "speedup": 1.9358844031367992,
+          "clblast_after_ms": 0.2602,
+          "tensor_over_clblast": 1.0585703305149885
+        }
+      }
+    },
+    {
+      "name": "float32-1024-1024-1024-gemm",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 4.713700036518276,
+          "after_ms": 3.2476000487804413,
+          "speedup": 1.4514410536138505,
+          "clblast_after_ms": 0.47500000800937414,
+          "tensor_over_clblast": 6.837052618989324
+        },
+        "preallocated": {
+          "before_ms": 3.754599951207638,
+          "after_ms": 2.3768999380990863,
+          "speedup": 1.5796205347248904,
+          "clblast_after_ms": 0.46499993186444044,
+          "tensor_over_clblast": 5.111613519100502
+        },
+        "gpu_interval": {
+          "before_ms": 3.18848,
+          "after_ms": 1.94178,
+          "speedup": 1.6420397779357085,
+          "clblast_after_ms": 0.47109999999999996,
+          "tensor_over_clblast": 4.121800042453832
+        }
+      }
+    },
+    {
+      "name": "float32-1024-1024-1024-linear",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 4.610899952240288,
+          "after_ms": 3.2535999780520797,
+          "speedup": 1.417168669579602,
+          "clblast_after_ms": 0.6444000173360109,
+          "tensor_over_clblast": 5.049037694788806
+        },
+        "preallocated": {
+          "before_ms": 3.756800084374845,
+          "after_ms": 2.3876000195741653,
+          "speedup": 1.5734629140457455,
+          "clblast_after_ms": 0.6462999153882265,
+          "tensor_over_clblast": 3.694260145678583
+        },
+        "gpu_interval": {
+          "before_ms": 3.20622,
+          "after_ms": 1.87698,
+          "speedup": 1.7081801617491927,
+          "clblast_after_ms": 0.61785,
+          "tensor_over_clblast": 3.0379218256858462
+        }
+      }
+    },
+    {
+      "name": "float32-2048-2048-2048-gemm",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 25.592199992388487,
+          "after_ms": 14.675599988549948,
+          "speedup": 1.743860558502261,
+          "clblast_after_ms": 2.0728999515995383,
+          "tensor_over_clblast": 7.079743514502775
+        },
+        "preallocated": {
+          "before_ms": 25.254399981349707,
+          "after_ms": 14.564699959009886,
+          "speedup": 1.7339457765985116,
+          "clblast_after_ms": 2.064900007098913,
+          "tensor_over_clblast": 7.053465014740641
+        },
+        "gpu_interval": {
+          "before_ms": 24.926364999999997,
+          "after_ms": 14.050795,
+          "speedup": 1.7740181249530718,
+          "clblast_after_ms": 2.0715000000000003,
+          "tensor_over_clblast": 6.782908520395848
+        }
+      }
+    },
+    {
+      "name": "float32-2048-2048-2048-linear",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 25.642999913543463,
+          "after_ms": 14.767399989068508,
+          "speedup": 1.7364600357900213,
+          "clblast_after_ms": 2.1407000022009015,
+          "tensor_over_clblast": 6.898397708172941
+        },
+        "preallocated": {
+          "before_ms": 25.40400007274002,
+          "after_ms": 14.744999934919178,
+          "speedup": 1.7228891274918317,
+          "clblast_after_ms": 2.1705999970436096,
+          "tensor_over_clblast": 6.7930525914503335
+        },
+        "gpu_interval": {
+          "before_ms": 24.95445,
+          "after_ms": 14.134915,
+          "speedup": 1.7654474752766467,
+          "clblast_after_ms": 2.1514,
+          "tensor_over_clblast": 6.570100864553313
+        }
+      }
+    },
+    {
+      "name": "float32-4096-4096-4096-gemm",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 212.3773000203073,
+          "after_ms": 129.90029994398355,
+          "speedup": 1.6349254013415675,
+          "clblast_after_ms": 16.28549990709871,
+          "tensor_over_clblast": 7.976439205735473
+        },
+        "preallocated": {
+          "before_ms": 197.4509001011029,
+          "after_ms": 112.97779995948076,
+          "speedup": 1.7476964516207452,
+          "clblast_after_ms": 16.333700041286647,
+          "tensor_over_clblast": 6.916852867011583
+        },
+        "gpu_interval": {
+          "before_ms": 197.18766,
+          "after_ms": 112.86255,
+          "speedup": 1.7471487220517345,
+          "clblast_after_ms": 16.24805,
+          "tensor_over_clblast": 6.946221238856356
+        }
+      }
+    },
+    {
+      "name": "float32-4096-4096-4096-linear",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 213.14339991658926,
+          "after_ms": 131.853099912405,
+          "speedup": 1.616521720446379,
+          "clblast_after_ms": 16.609500045888126,
+          "tensor_over_clblast": 7.938414735430087
+        },
+        "preallocated": {
+          "before_ms": 198.53509997483343,
+          "after_ms": 112.81909991521388,
+          "speedup": 1.7597649699743845,
+          "clblast_after_ms": 16.616599983535707,
+          "tensor_over_clblast": 6.789541785142501
+        },
+        "gpu_interval": {
+          "before_ms": 198.1704,
+          "after_ms": 112.68455,
+          "speedup": 1.7586297322924926,
+          "clblast_after_ms": 16.58785,
+          "tensor_over_clblast": 6.793198033500424
+        }
+      }
+    },
+    {
+      "name": "float32-1-2560-1024-gemm",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.33200001437217,
+          "after_ms": 1.7284000059589744,
+          "speedup": 0.7706549466442125,
+          "clblast_after_ms": 0.27199997566640377,
+          "tensor_over_clblast": 6.354412355090731
+        },
+        "preallocated": {
+          "before_ms": 1.090700039640069,
+          "after_ms": 1.0580000234767795,
+          "speedup": 1.0309073869921395,
+          "clblast_after_ms": 0.26659993454813957,
+          "tensor_over_clblast": 3.9684931853790006
+        },
+        "gpu_interval": {
+          "before_ms": 0.56654,
+          "after_ms": 0.6457200000000001,
+          "speedup": 0.8773771913522889,
+          "clblast_after_ms": 0.2839,
+          "tensor_over_clblast": 2.274462839027827
+        }
+      }
+    },
+    {
+      "name": "float32-1-2560-1024-linear",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 0.978600000962615,
+          "after_ms": 0.9028000058606267,
+          "speedup": 1.0839610042201198,
+          "clblast_after_ms": 0.36099995486438274,
+          "tensor_over_clblast": 2.500831353842641
+        },
+        "preallocated": {
+          "before_ms": 0.9249999420717359,
+          "after_ms": 0.8213999681174755,
+          "speedup": 1.1261260993127329,
+          "clblast_after_ms": 0.34529995173215866,
+          "tensor_over_clblast": 2.378801282760146
+        },
+        "gpu_interval": {
+          "before_ms": 0.38744,
+          "after_ms": 0.31335999999999997,
+          "speedup": 1.2364054123053358,
+          "clblast_after_ms": 0.3981,
+          "tensor_over_clblast": 0.7871389098216528
+        }
+      }
+    },
+    {
+      "name": "float32-1-1024-2560-gemm",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.2508999789133668,
+          "after_ms": 0.9255000622943044,
+          "speedup": 1.3515936193590303,
+          "clblast_after_ms": 0.31669996678829193,
+          "tensor_over_clblast": 2.9223244690549146
+        },
+        "preallocated": {
+          "before_ms": 1.1515000369399786,
+          "after_ms": 0.8564000017940998,
+          "speedup": 1.3445820113587859,
+          "clblast_after_ms": 0.31020003370940685,
+          "tensor_over_clblast": 2.7607991899716207
+        },
+        "gpu_interval": {
+          "before_ms": 0.63232,
+          "after_ms": 0.36053999999999997,
+          "speedup": 1.7538137238586566,
+          "clblast_after_ms": 0.30265,
+          "tensor_over_clblast": 1.19127705270114
+        }
+      }
+    },
+    {
+      "name": "float32-1-1024-2560-linear",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.1443999828770757,
+          "after_ms": 0.9570999536663294,
+          "speedup": 1.1956953696353894,
+          "clblast_after_ms": 0.4042000509798527,
+          "tensor_over_clblast": 2.3678867712810754
+        },
+        "preallocated": {
+          "before_ms": 1.1420000810176134,
+          "after_ms": 0.8803000673651695,
+          "speedup": 1.2972850092307042,
+          "clblast_after_ms": 0.3885000478476286,
+          "tensor_over_clblast": 2.2658943602252193
+        },
+        "gpu_interval": {
+          "before_ms": 0.5561,
+          "after_ms": 0.36132,
+          "speedup": 1.5390789328019485,
+          "clblast_after_ms": 0.4854,
+          "tensor_over_clblast": 0.7443757725587145
+        }
+      }
+    },
+    {
+      "name": "float32-32-2560-1024-gemm",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.545800012536347,
+          "after_ms": 0.8217999711632729,
+          "speedup": 1.8809930235799823,
+          "clblast_after_ms": 0.18690002616494894,
+          "tensor_over_clblast": 4.3970029754730575
+        },
+        "preallocated": {
+          "before_ms": 1.0947000700980425,
+          "after_ms": 1.4436000492423773,
+          "speedup": 0.7583125746445889,
+          "clblast_after_ms": 0.17640006262809038,
+          "tensor_over_clblast": 8.183670843053855
+        },
+        "gpu_interval": {
+          "before_ms": 0.6013999999999999,
+          "after_ms": 0.7153400000000001,
+          "speedup": 0.8407190986104508,
+          "clblast_after_ms": 0.1834,
+          "tensor_over_clblast": 3.900436205016358
+        }
+      }
+    },
+    {
+      "name": "float32-32-2560-1024-linear",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 0.9444000897929072,
+          "after_ms": 0.8512999629601836,
+          "speedup": 1.1093623057482478,
+          "clblast_after_ms": 0.265000038780272,
+          "tensor_over_clblast": 3.2124522203034442
+        },
+        "preallocated": {
+          "before_ms": 0.8674999698996544,
+          "after_ms": 0.7772999815642834,
+          "speedup": 1.1160426996972872,
+          "clblast_after_ms": 0.25619997177273035,
+          "tensor_over_clblast": 3.0339581077464364
+        },
+        "gpu_interval": {
+          "before_ms": 0.34722,
+          "after_ms": 0.26339999999999997,
+          "speedup": 1.3182232346241458,
+          "clblast_after_ms": 0.3808,
+          "tensor_over_clblast": 0.6917016806722688
+        }
+      }
+    },
+    {
+      "name": "float32-32-1024-2560-gemm",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "gemm",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.2221001088619232,
+          "after_ms": 0.9358000243082643,
+          "speedup": 1.305941522886035,
+          "clblast_after_ms": 0.5154000828042626,
+          "tensor_over_clblast": 1.8156768994227346
+        },
+        "preallocated": {
+          "before_ms": 1.1572999646887183,
+          "after_ms": 0.8682999759912491,
+          "speedup": 1.3328342700545943,
+          "clblast_after_ms": 0.21199998445808887,
+          "tensor_over_clblast": 4.0957549039957915
+        },
+        "gpu_interval": {
+          "before_ms": 0.6504000000000001,
+          "after_ms": 0.37362,
+          "speedup": 1.740806166693432,
+          "clblast_after_ms": 0.21694999999999998,
+          "tensor_over_clblast": 1.72214796035953
+        }
+      }
+    },
+    {
+      "name": "float32-32-1024-2560-linear",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float32",
+      "mode": "linear",
+      "precision_matched": true,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.1646999046206474,
+          "after_ms": 0.9592000860720873,
+          "speedup": 1.2142408258010895,
+          "clblast_after_ms": 0.5985000170767307,
+          "tensor_over_clblast": 1.6026734481264233
+        },
+        "preallocated": {
+          "before_ms": 1.0999999940395355,
+          "after_ms": 0.8894000202417374,
+          "speedup": 1.2367888115637298,
+          "clblast_after_ms": 0.30999991577118635,
+          "tensor_over_clblast": 2.8690331028935225
+        },
+        "gpu_interval": {
+          "before_ms": 0.5661,
+          "after_ms": 0.37473999999999996,
+          "speedup": 1.510647382184982,
+          "clblast_after_ms": 0.29900000000000004,
+          "tensor_over_clblast": 1.2533110367892975
+        }
+      }
+    },
+    {
+      "name": "float16-512-512-512-gemm",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.4874000335112214,
+          "after_ms": 1.6054000006988645,
+          "speedup": 0.9264980894878067,
+          "clblast_after_ms": 0.2394999610260129,
+          "tensor_over_clblast": 6.703132617731393
+        },
+        "preallocated": {
+          "before_ms": 1.0307999327778816,
+          "after_ms": 1.0380999883636832,
+          "speedup": 0.9929678685409598,
+          "clblast_after_ms": 0.22749998606741428,
+          "tensor_over_clblast": 4.563077151380865
+        },
+        "gpu_interval": {
+          "before_ms": 0.5883,
+          "after_ms": 0.5939000000000001,
+          "speedup": 0.990570803165516,
+          "clblast_after_ms": 0.32445,
+          "tensor_over_clblast": 1.8304823547541995
+        }
+      }
+    },
+    {
+      "name": "float16-512-512-512-linear",
+      "m": 512,
+      "n": 512,
+      "k": 512,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.0433999123051763,
+          "after_ms": 1.0529999854043126,
+          "speedup": 0.9908831213369388,
+          "clblast_after_ms": 0.3744000568985939,
+          "tensor_over_clblast": 2.8124995335925314
+        },
+        "preallocated": {
+          "before_ms": 0.9783999994397163,
+          "after_ms": 0.9695999324321747,
+          "speedup": 1.0090759773316684,
+          "clblast_after_ms": 0.3974999999627471,
+          "tensor_over_clblast": 2.4392451132655184
+        },
+        "gpu_interval": {
+          "before_ms": 0.41596,
+          "after_ms": 0.41566000000000003,
+          "speedup": 1.0007217437328586,
+          "clblast_after_ms": 0.3947,
+          "tensor_over_clblast": 1.0531036230048139
+        }
+      }
+    },
+    {
+      "name": "float16-1024-1024-1024-gemm",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 5.48060005530715,
+          "after_ms": 5.02249994315207,
+          "speedup": 1.0912095803564272,
+          "clblast_after_ms": 0.3370000049471855,
+          "tensor_over_clblast": 14.903560443386919
+        },
+        "preallocated": {
+          "before_ms": 3.75150004401803,
+          "after_ms": 4.964199964888394,
+          "speedup": 0.7557109041844111,
+          "clblast_after_ms": 0.3279999364167452,
+          "tensor_over_clblast": 15.1347589244074
+        },
+        "gpu_interval": {
+          "before_ms": 3.2077999999999998,
+          "after_ms": 3.9317200000000003,
+          "speedup": 0.8158770207441017,
+          "clblast_after_ms": 0.32955,
+          "tensor_over_clblast": 11.930571992110455
+        }
+      }
+    },
+    {
+      "name": "float16-1024-1024-1024-linear",
+      "m": 1024,
+      "n": 1024,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 5.396499997004867,
+          "after_ms": 5.3394000278785825,
+          "speedup": 1.0106940796396877,
+          "clblast_after_ms": 0.5140000721439719,
+          "tensor_over_clblast": 10.38793633939999
+        },
+        "preallocated": {
+          "before_ms": 3.5047000274062157,
+          "after_ms": 5.083799944259226,
+          "speedup": 0.6893859053922498,
+          "clblast_after_ms": 0.5172999808564782,
+          "tensor_over_clblast": 9.827566465094643
+        },
+        "gpu_interval": {
+          "before_ms": 2.94886,
+          "after_ms": 3.68104,
+          "speedup": 0.8010942559711386,
+          "clblast_after_ms": 0.4877,
+          "tensor_over_clblast": 7.547754767274964
+        }
+      }
+    },
+    {
+      "name": "float16-2048-2048-2048-gemm",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 14.949900098145008,
+          "after_ms": 9.36659995932132,
+          "speedup": 1.5960861105493651,
+          "clblast_after_ms": 1.352699939161539,
+          "tensor_over_clblast": 6.924373756627162
+        },
+        "preallocated": {
+          "before_ms": 14.761600061319768,
+          "after_ms": 9.24380007199943,
+          "speedup": 1.5969190101843949,
+          "clblast_after_ms": 1.3448999961838126,
+          "tensor_over_clblast": 6.873224848114317
+        },
+        "gpu_interval": {
+          "before_ms": 14.25058,
+          "after_ms": 8.757845,
+          "speedup": 1.6271788322355556,
+          "clblast_after_ms": 1.35725,
+          "tensor_over_clblast": 6.452639528458279
+        }
+      }
+    },
+    {
+      "name": "float16-2048-2048-2048-linear",
+      "m": 2048,
+      "n": 2048,
+      "k": 2048,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 14.623800059780478,
+          "after_ms": 9.537499980069697,
+          "speedup": 1.5332948980696735,
+          "clblast_after_ms": 1.5579999890178442,
+          "tensor_over_clblast": 6.121630325608725
+        },
+        "preallocated": {
+          "before_ms": 14.799700002186,
+          "after_ms": 9.304699953645468,
+          "speedup": 1.590561767269847,
+          "clblast_after_ms": 1.5499000437557697,
+          "tensor_over_clblast": 6.003419376063767
+        },
+        "gpu_interval": {
+          "before_ms": 14.215409999999999,
+          "after_ms": 8.744299999999999,
+          "speedup": 1.6256772983543566,
+          "clblast_after_ms": 1.4979,
+          "tensor_over_clblast": 5.837706121903998
+        }
+      }
+    },
+    {
+      "name": "float16-4096-4096-4096-gemm",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 107.46530001051724,
+          "after_ms": 68.10300005599856,
+          "speedup": 1.5779818792439764,
+          "clblast_after_ms": 9.603600017726421,
+          "tensor_over_clblast": 7.091403216532692
+        },
+        "preallocated": {
+          "before_ms": 104.25480001140386,
+          "after_ms": 64.93760005105287,
+          "speedup": 1.6054612417065068,
+          "clblast_after_ms": 9.562299936078489,
+          "tensor_over_clblast": 6.791002215486231
+        },
+        "gpu_interval": {
+          "before_ms": 103.96862,
+          "after_ms": 64.968485,
+          "speedup": 1.6002931267367555,
+          "clblast_after_ms": 9.55535,
+          "tensor_over_clblast": 6.799173761296028
+        }
+      }
+    },
+    {
+      "name": "float16-4096-4096-4096-linear",
+      "m": 4096,
+      "n": 4096,
+      "k": 4096,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 108.71559998486191,
+          "after_ms": 68.08430003002286,
+          "speedup": 1.59677928592821,
+          "clblast_after_ms": 9.799699997529387,
+          "tensor_over_clblast": 6.947590237169266
+        },
+        "preallocated": {
+          "before_ms": 105.84909992758185,
+          "after_ms": 65.20670000463724,
+          "speedup": 1.6232856427338644,
+          "clblast_after_ms": 9.854299947619438,
+          "tensor_over_clblast": 6.617080903894103
+        },
+        "gpu_interval": {
+          "before_ms": 105.56226000000001,
+          "after_ms": 64.5621,
+          "speedup": 1.6350499751402139,
+          "clblast_after_ms": 9.7315,
+          "tensor_over_clblast": 6.63434208498176
+        }
+      }
+    },
+    {
+      "name": "float16-1-2560-1024-gemm",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.83269998524338,
+          "after_ms": 1.5082999598234892,
+          "speedup": 1.215076598860252,
+          "clblast_after_ms": 0.2223999472334981,
+          "tensor_over_clblast": 6.781925888857889
+        },
+        "preallocated": {
+          "before_ms": 1.052799983881414,
+          "after_ms": 1.146900001913309,
+          "speedup": 0.9179527265891417,
+          "clblast_after_ms": 0.21359999664127827,
+          "tensor_over_clblast": 5.369382115859408
+        },
+        "gpu_interval": {
+          "before_ms": 0.5969,
+          "after_ms": 0.5009,
+          "speedup": 1.1916550209622678,
+          "clblast_after_ms": 0.21455000000000002,
+          "tensor_over_clblast": 2.334653926823584
+        }
+      }
+    },
+    {
+      "name": "float16-1-2560-1024-linear",
+      "m": 1,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 0.8917000377550721,
+          "after_ms": 0.7660998962819576,
+          "speedup": 1.1639474722326397,
+          "clblast_after_ms": 0.29960006941109896,
+          "tensor_over_clblast": 2.5570751628590136
+        },
+        "preallocated": {
+          "before_ms": 0.817399937659502,
+          "after_ms": 0.6941999308764935,
+          "speedup": 1.1774704970475247,
+          "clblast_after_ms": 0.28879998717457056,
+          "tensor_over_clblast": 2.403739479589628
+        },
+        "gpu_interval": {
+          "before_ms": 0.2925,
+          "after_ms": 0.1807,
+          "speedup": 1.618705035971223,
+          "clblast_after_ms": 0.4172,
+          "tensor_over_clblast": 0.4331255992329818
+        }
+      }
+    },
+    {
+      "name": "float16-1-1024-2560-gemm",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 2.2186998976394534,
+          "after_ms": 0.9619999909773469,
+          "speedup": 2.306340871568365,
+          "clblast_after_ms": 0.2658000448718667,
+          "tensor_over_clblast": 3.6192619585188366
+        },
+        "preallocated": {
+          "before_ms": 2.124299993738532,
+          "after_ms": 0.8913000347092748,
+          "speedup": 2.3833725019784597,
+          "clblast_after_ms": 0.25699997786432505,
+          "tensor_over_clblast": 3.468093818980048
+        },
+        "gpu_interval": {
+          "before_ms": 1.65182,
+          "after_ms": 0.39032,
+          "speedup": 4.2319635171141625,
+          "clblast_after_ms": 0.25815,
+          "tensor_over_clblast": 1.5119891535928724
+        }
+      }
+    },
+    {
+      "name": "float16-1-1024-2560-linear",
+      "m": 1,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.562100020237267,
+          "after_ms": 1.0140000376850367,
+          "speedup": 1.54053250708308,
+          "clblast_after_ms": 0.3475999692454934,
+          "tensor_over_clblast": 2.9171465115087405
+        },
+        "preallocated": {
+          "before_ms": 2.18990002758801,
+          "after_ms": 0.910300062969327,
+          "speedup": 2.405690295620467,
+          "clblast_after_ms": 0.3611999563872814,
+          "tensor_over_clblast": 2.5202108883792227
+        },
+        "gpu_interval": {
+          "before_ms": 1.61062,
+          "after_ms": 0.39122,
+          "speedup": 4.116916313071928,
+          "clblast_after_ms": 0.4617,
+          "tensor_over_clblast": 0.847346761966645
+        }
+      }
+    },
+    {
+      "name": "float16-32-2560-1024-gemm",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.3760000001639128,
+          "after_ms": 0.7499000057578087,
+          "speedup": 1.8349113076394779,
+          "clblast_after_ms": 0.2592999953776598,
+          "tensor_over_clblast": 2.892017042521
+        },
+        "preallocated": {
+          "before_ms": 1.2953999685123563,
+          "after_ms": 1.1829000432044268,
+          "speedup": 1.0951051831929703,
+          "clblast_after_ms": 0.2511999337002635,
+          "tensor_over_clblast": 4.708998230134429
+        },
+        "gpu_interval": {
+          "before_ms": 0.78916,
+          "after_ms": 0.60354,
+          "speedup": 1.3075521092222553,
+          "clblast_after_ms": 0.24780000000000002,
+          "tensor_over_clblast": 2.4355932203389825
+        }
+      }
+    },
+    {
+      "name": "float16-32-2560-1024-linear",
+      "m": 32,
+      "n": 2560,
+      "k": 1024,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.3371999375522137,
+          "after_ms": 0.7681000279262662,
+          "speedup": 1.7409190065549356,
+          "clblast_after_ms": 0.32680004369467497,
+          "tensor_over_clblast": 2.350366968261155
+        },
+        "preallocated": {
+          "before_ms": 1.2530999956652522,
+          "after_ms": 0.6943999323993921,
+          "speedup": 1.8045796625229469,
+          "clblast_after_ms": 0.32210000790655613,
+          "tensor_over_clblast": 2.155851957013436
+        },
+        "gpu_interval": {
+          "before_ms": 0.72282,
+          "after_ms": 0.186,
+          "speedup": 3.8861290322580646,
+          "clblast_after_ms": 0.4334,
+          "tensor_over_clblast": 0.42916474388555603
+        }
+      }
+    },
+    {
+      "name": "float16-32-1024-2560-gemm",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "gemm",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.6314000822603703,
+          "after_ms": 0.9624999947845936,
+          "speedup": 1.694961133610682,
+          "clblast_after_ms": 0.6436000112444162,
+          "tensor_over_clblast": 1.4954940614801675
+        },
+        "preallocated": {
+          "before_ms": 2.1721000084653497,
+          "after_ms": 0.8937000529840589,
+          "speedup": 2.4304575133600155,
+          "clblast_after_ms": 0.27009996119886637,
+          "tensor_over_clblast": 3.30877519943831
+        },
+        "gpu_interval": {
+          "before_ms": 1.671,
+          "after_ms": 0.40198,
+          "speedup": 4.156923230011444,
+          "clblast_after_ms": 0.26745,
+          "tensor_over_clblast": 1.5030099083940922
+        }
+      }
+    },
+    {
+      "name": "float16-32-1024-2560-linear",
+      "m": 32,
+      "n": 1024,
+      "k": 2560,
+      "dtype": "float16",
+      "mode": "linear",
+      "precision_matched": false,
+      "same_output": true,
+      "wgsl_changed": true,
+      "timings": {
+        "allocating": {
+          "before_ms": 1.5773000195622444,
+          "after_ms": 1.000500051304698,
+          "speedup": 1.5765116828383694,
+          "clblast_after_ms": 0.7805000059306622,
+          "tensor_over_clblast": 1.28187065176471
+        },
+        "preallocated": {
+          "before_ms": 2.1871000062674284,
+          "after_ms": 0.9244000539183617,
+          "speedup": 2.3659669825815284,
+          "clblast_after_ms": 0.332699972204864,
+          "tensor_over_clblast": 2.7784795044982786
+        },
+        "gpu_interval": {
+          "before_ms": 1.6439,
+          "after_ms": 0.40264,
+          "speedup": 4.0828034969203255,
+          "clblast_after_ms": 0.32130000000000003,
+          "tensor_over_clblast": 1.2531590413943354
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "before": {
+      "path": "docs/research/data/webgpu-gemm-accumulation-before.json",
+      "sha256": "b19e047b7d22f2d99bc9a910769d9fb944a34ae560730a6762ebf08b8119df59"
+    },
+    "after": {
+      "path": "docs/research/data/webgpu-gemm-accumulation-forced.json",
+      "sha256": "6638a2449280306b71fa2eaff7e5da7676ece17f720a14f25c5084ce61aa6ebf"
+    },
+    "before_suite": {
+      "path": "docs/research/data/webgpu-gemm-accumulation-before-suite.json",
+      "sha256": "868a99de02b30f65ee56197f9e6d8c1ed03d5067cddd60b17a29df9769ee680c"
+    },
+    "after_suite": {
+      "path": "docs/research/data/webgpu-gemm-accumulation-forced-suite.json",
+      "sha256": "55f1b751dda8c337829ab86e3b025ac63f8356f4cce9f213716168007b8cc68f"
+    }
+  },
+  "comparison_source_sha256": "09e6ae5efe9770d98de78042bc4442880647fb406348398b6f53a7bb34d40f1c"
+}

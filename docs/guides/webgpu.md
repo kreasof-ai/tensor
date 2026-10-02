@@ -38,7 +38,20 @@ batch/head dimensions are flattened onto y. Subgroup width 32 is never assumed.
 The compiler uses 2×2 register microtiles for `T.gemm`. Set the function attribute
 `tensor.webgpu.gemm_microtile` to 1, 2 or 4 to tune a schedule; dimensions that
 cannot be divided into that microtile fall back to one along that axis. FP32
-sum/max tile reductions retain ordered summation by default. The attribute
+accumulators stay private across an eligible serial K loop when its statically
+covered reduction has at least 2048 elements. This conservative default avoids
+measured shorter-K regressions on the RX 6700 XT. Set
+`tensor.webgpu.gemm_accumulation="register"` to opt in for other depths, or
+`"shared"` to retain the earlier per-tile accumulation schedule; `"auto"` is the
+default. The loop must end in one ordinary accumulating GEMM with shared inputs,
+a fragment destination, and no intermediate destination consumers or updates.
+The pass preserves FP32 arithmetic order, initializes from the existing fragment,
+and writes it back once after K. Bias/ReLU and the final copy still use that
+materialized fragment. Attention's score reductions and intermediate result
+rescaling retain their existing lowering. See the
+[whole-loop accumulator ablation](../research/webgpu-gemm-accumulation.md).
+
+FP32 sum/max tile reductions retain ordered summation by default. The attribute
 `tensor.webgpu.reduction="tree"` selects parallel shared-memory reduction with
 identity padding for odd extents. It changes floating-point summation order and
 must be validated against the application's numerical contract. For schedules

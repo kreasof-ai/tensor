@@ -135,9 +135,9 @@ def lower_simt_gemm(kernel):
     # Give a thread stable ownership of its output microtiles across the entire
     # serial K loop. Intermediate fragment consumers (notably attention's score
     # reductions) must still use the ordinary materialized tile lowering.
-    accumulation = str(kernel.attrs.get("tensor.webgpu.gemm_accumulation", "auto"))
-    if accumulation not in ("auto", "register", "shared"):
-        raise ValueError("WebGPU GEMM accumulation must be auto, register or shared")
+    accumulation = str(kernel.attrs.get("tensor.webgpu.gemm_accumulation", "register"))
+    if accumulation not in ("register", "shared"):
+        raise ValueError("WebGPU GEMM accumulation must be register or shared")
     micro = int(kernel.attrs.get("tensor.webgpu.gemm_microtile", 2))
     if micro not in (1, 2, 4):
         raise ValueError("WebGPU GEMM microtile must be 1, 2 or 4")
@@ -201,11 +201,6 @@ def lower_simt_gemm(kernel):
             return None
         m, n, depth = (int(args[index]) for index in (5, 6, 7))
         if min(m, n, depth) <= 0:
-            return None
-        # Long reductions recover the cost of a larger private live set. The
-        # RX 6700 XT ablation also found repeatable shorter-K regressions, so
-        # leave those on the existing schedule unless a producer/tuner opts in.
-        if accumulation == "auto" and (not isinstance(node.extent, ir.IntImm) or int(node.extent) * depth < 2048):
             return None
         tm, tn = (micro if extent % micro == 0 else 1 for extent in (m, n))
         threads = int(thread.extent)

@@ -27,6 +27,7 @@ establishes that runner's behavior and precision contract.
 
 | Report | Comparison |
 |---|---|
+| [Whole-loop WebGPU GEMM accumulators](webgpu-gemm-accumulation.md) | About 1.6× gains on large GEMMs, unchanged tile sizes and bitwise outputs; conservative depth selection avoids shorter-K regressions |
 | [CLBlast on RX 6700 XT](clblast-rx6700xt.md) | Matched FP32 OpenCL GEMM versus generated WebGPU kernels, full linear epilogues, bounded tuning and precision-gated FP16 observations |
 | [Latency scaling](latency-scaling.md) | Matching pointwise, GEMM, and attention shapes across Tensor, Torch, native TileLang, Triton, and WebGPU; includes A10G, RX 6700 XT and a fresh compiler-optimization repeat |
 | [Direct backend comparison](direct-backend-comparison.md) | Native TileLang/Triton versus Tensor, separating GPU execution, prepared submission, allocating calls, and `torch.compile` |

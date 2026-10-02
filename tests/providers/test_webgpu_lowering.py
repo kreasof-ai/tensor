@@ -9,6 +9,103 @@ from tensor.artifacts.format import read_artifact
 NATIVE=pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires a native WebGPU adapter')
 
 
+@pytest.mark.parametrize('consumer', ['none', 'read', 'write', 'clear', 'reduce'])
+def test_whole_loop_accumulators_require_exclusive_fragment_ownership(tmp_path, consumer):
+    from tensor.artifacts.portable import export_spec
+    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    root=Path(__file__).resolve().parents[2]
+    source=(root/'examples/webgpu_gemm.py').read_text()
+    gemm='T.gemm(aa, bb, cc, transpose_B=TRANSPOSE_B)'
+    edits={
+        'none':gemm,
+        'read':'out[0, 0] = cc[0, 0]\n            '+gemm,
+        'write':'cc[0, 0] = 1\n            '+gemm,
+        'clear':gemm.replace(')', ', clear_accum=True)'),
+        'reduce':'T.reduce_sum(cc, partial, dim=1)\n            '+gemm,
+    }
+    if consumer=='reduce':
+        source=source.replace('T.clear(cc)', 'partial = T.alloc_fragment((BLOCK,), "float32")\n        T.clear(cc)')
+    path=tmp_path/'ownership.py';path.write_text(source.replace(gemm, edits[consumer]))
+    kernel=export_spec(path, None)['kernel'].with_attr('tensor.webgpu.gemm_accumulation','register')
+    lowered=lower_simt_gemm(kernel).script()
+    assert ('wgpu_gemm_loop_acc_' in lowered)==(consumer=='none')
+    assert 'wgpu_gemm_loop_acc_' not in lower_simt_gemm(
+        kernel.with_attr('tensor.webgpu.gemm_accumulation', 'shared')).script()
+
+
+def test_attention_keeps_shared_intermediates_and_ordered_lowering():
+    import tvm
+    from tensor.artifacts.portable import export_spec
+    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    root=Path(__file__).resolve().parents[2]
+    kernel=export_spec(root/'examples/flash_attention.py',None)['kernel']
+    default=lower_simt_gemm(kernel.with_attr('tensor.webgpu.gemm_accumulation','register'))
+    fallback=lower_simt_gemm(kernel.with_attr('tensor.webgpu.gemm_accumulation','shared'))
+    assert 'wgpu_gemm_loop_acc_' not in default.script()
+    assert tvm.ir.structural_equal(default.body, fallback.body)
+
+
+@pytest.mark.parametrize('depth',[512,1024,2048,2560])
+@pytest.mark.parametrize('mode',['auto','register','shared'])
+def test_whole_loop_default_depth_gate_and_explicit_override(tmp_path,depth,mode):
+    from tensor.artifacts.portable import export_spec
+    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    root=Path(__file__).resolve().parents[2]
+    path=tmp_path/'depth.py'
+    path.write_text((root/'examples/webgpu_gemm.py').read_text().replace('K = 37',f'K = {depth}'))
+    kernel=export_spec(path,None)['kernel'].with_attr('tensor.webgpu.gemm_accumulation',mode)
+    assert ('wgpu_gemm_loop_acc_' in lower_simt_gemm(kernel).script()) == (
+        mode=='register' or mode=='auto' and depth>=2048)
+    with pytest.raises(ValueError,match='accumulation'):
+        lower_simt_gemm(kernel.with_attr('tensor.webgpu.gemm_accumulation','invalid'))
+
+
+@NATIVE
+@pytest.mark.parametrize('transpose_a', [False, True])
+@pytest.mark.parametrize('transpose_b', [False, True])
+@pytest.mark.parametrize('dtype', ['float16', 'float32'])
+def test_whole_loop_accumulators_seeded_transposes_odd_tiles_and_zero_trip(
+        tmp_path, transpose_a, transpose_b, dtype):
+    m,n,k,bm,bn,bk=9,11,13,7,9,5
+    a_shape=(k,m) if transpose_a else (m,k)
+    b_shape=(n,k) if transpose_b else (k,n)
+    aa_shape=(bk,bm) if transpose_a else (bm,bk)
+    bb_shape=(bn,bk) if transpose_b else (bk,bn)
+    a_copy='a[tile * BK, by * BM]' if transpose_a else 'a[by * BM, tile * BK]'
+    b_copy='b[bx * BN, tile * BK]' if transpose_b else 'b[tile * BK, bx * BN]'
+    path=tmp_path/'seeded.py';artifact=path.with_suffix('.tbin')
+    path.write_text(f'''import tilelang.language as T
+BM, BN, BK = {bm}, {bn}, {bk}
+@T.prim_func
+def kernel(a:T.Tensor({a_shape},"{dtype}"),b:T.Tensor({b_shape},"{dtype}"),
+           seed:T.Tensor(({m},{n}),"float32"),out:T.Tensor(({m},{n}),"float32"),tiles:T.int32):
+    T.func_attr({{"tensor.webgpu.gemm_accumulation":"register"}})
+    with T.Kernel(T.ceildiv({n},BN),T.ceildiv({m},BM),threads=32) as (bx,by):
+        aa=T.alloc_shared({aa_shape},"{dtype}")
+        bb=T.alloc_shared({bb_shape},"{dtype}")
+        cc=T.alloc_fragment((BM,BN),"float32")
+        T.copy(seed[by * BM,bx * BN],cc)
+        for tile in T.serial(tiles):
+            T.copy({a_copy},aa)
+            T.copy({b_copy},bb)
+            T.gemm(aa,bb,cc,transpose_A={transpose_a},transpose_B={transpose_b})
+        T.copy(cc,out[by * BM,bx * BN])
+def tensor_export():return {{"kernel":kernel}}
+''')
+    tensor.build(path,artifact,provider='webgpu')
+    assert b'wgpu_gemm_loop_acc_' in read_artifact(artifact)[1]['kernel.wgsl']
+    rng=np.random.default_rng(761)
+    a=rng.normal(size=a_shape).astype(dtype);b=rng.normal(size=b_shape).astype(dtype)
+    seed=rng.normal(size=(m,n)).astype(np.float32)
+    expected=seed+(a.T if transpose_a else a).astype(np.float32)@(b.T if transpose_b else b).astype(np.float32)
+    with tensor.Device(provider='webgpu') as device:
+        aa,bb,ss=[device.from_numpy(x) for x in (a,b,seed)]
+        out=device.zeros((m,n));kernel=device.load(artifact)
+        for tiles,reference in ((3,expected),(0,seed),(3,expected)):
+            kernel.launch(aa,bb,ss,out,tiles)
+            np.testing.assert_allclose(out.to_numpy(),reference,rtol=2e-5,atol=2e-5)
+
+
 @NATIVE
 @pytest.mark.parametrize('operation',['sum','max'])
 @pytest.mark.parametrize('axis',[0,1])
@@ -45,7 +142,7 @@ def test_register_gemm_microtiles_transpose_and_tails(tmp_path,micro,transpose):
     root=Path(__file__).resolve().parents[2]
     text=(root/'examples/webgpu_gemm.py').read_text().replace('TRANSPOSE_B = False',f'TRANSPOSE_B = {transpose}')
     text=text.replace('OUTPUT_DTYPE = "float16"','OUTPUT_DTYPE = "float32"')
-    text=text.replace('kernel = linear',f'kernel = linear.with_attr("tensor.webgpu.gemm_microtile", {micro})')
+    text=text.replace('kernel = linear',f'kernel = linear.with_attr("tensor.webgpu.gemm_microtile", {micro}).with_attr("tensor.webgpu.gemm_accumulation", "register")')
     path=tmp_path/'gemm.py';artifact=tmp_path/'gemm.tbin';path.write_text(text)
     tensor.build(path,artifact,provider='webgpu')
     rng=np.random.default_rng(92);a=rng.normal(size=(33,37)).astype(np.float16)

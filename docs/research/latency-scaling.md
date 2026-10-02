@@ -506,3 +506,42 @@ frozen baseline only. The separate before/after comparison checks identical
 inputs, shapes/dtypes, machine/backend/driver, versions and timing protocol,
 and explicitly records shader changes. A10G and its CUDA baselines were not
 remeasured, so their historical ratios cannot be updated from these AMD results.
+
+## RX 6700 XT repeat after whole-loop accumulator lowering
+
+On 2026-10-02, the compiler transferred the accumulator-lifetime optimization
+identified by the CLBlast comparison. Eligible generic GEMM loops retain private
+FP32 values across the complete K loop and materialize the fragment once at the
+end. Tile sizes, microtiles, launch, shared storage and arithmetic order remain
+unchanged. The final default enables this only when the static reduction covers
+at least 2048 elements, following repeatable shorter-K regressions in the
+unrestricted ablation.
+
+The same compiler-free allocating-call protocol was repeated for all 17 profiles
+plus tiny-pointwise and 4096-linear checks, using fresh controls from the previous
+2×2-microtile compiler. All 19 output hashes are bitwise identical.
+
+| FP16 linear + bias/ReLU | Fresh previous compiler (ms) | Final default (ms) | Speedup |
+|---|---:|---:|---:|
+| 512³ | 2.318 | 2.357 | 0.98× |
+| 1024³ | 3.621 | 3.595 | 1.01× |
+| 2048³ | 14.584 | 9.492 | 1.54× |
+| 4096³ | 108.728 | 67.811 | 1.60× |
+| 4096³ repeat | 108.712 | 67.829 | 1.60× |
+
+Only the 2048 and 4096 linear shaders changed. The five pointwise, eight attention,
+512-linear and 1024-linear shaders are byte-for-byte unchanged; their timing
+variation is not an optimization gain. The unrestricted 1024-linear variant
+regressed to 5.181 ms and was excluded from the final default after three
+independent rechecks confirmed the regression.
+
+The largest linear now achieves 2.027 TFLOP/s of useful work, or 15.34% of the
+advertised 13.21 FP32 TFLOP/s, up from 1.264 TFLOP/s and 9.57% in its fresh control.
+These are completed-call throughput fractions, not GPU occupancy measurements.
+Prepared-plan native encoding and specialized LFM2 schedules are outside this
+change's measured benefit.
+
+[Full report, ablation and reproduction](webgpu-gemm-accumulation.md).
+[Fresh control samples](data/webgpu-gemm-accumulation-scaling-before.json).
+[Final default samples](data/webgpu-gemm-accumulation-scaling-default.json).
+[Validated full comparison](data/webgpu-gemm-accumulation-scaling-comparison.json).
