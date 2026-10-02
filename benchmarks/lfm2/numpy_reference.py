@@ -9,11 +9,27 @@ from tensor_llm.gguf import GGUF
 from tensor_llm.config import Config
 
 
+class _HalfWeights:
+    """FP16-rounded 2-D operands, rounded on demand instead of all at once.
+
+    Every weight is touched at most once per 32-token chunk, so a single-entry
+    cache is enough. Materialising the whole map doubles resident FP32 weights,
+    which does not fit host RAM for multi-billion-parameter checkpoints. The
+    rounded values are identical to the eager dict comprehension.
+    """
+    def __init__(self,weights):
+        self.weights=weights;self.name=None;self.value=None
+    def __getitem__(self,name):
+        if name!=self.name:
+            self.value=self.weights[name].astype(np.float16).astype(np.float32);self.name=name
+        return self.value
+
+
 class Reference:
     def __init__(self,path,*,context=512):
         self.gguf=GGUF(path);self.config=Config.from_gguf(self.gguf);self.context=context
         self.weights={name:np.array(self.gguf.array(name),copy=True) for name in self.gguf.tensors}
-        self.half_weights={name:w.astype(np.float16).astype(np.float32) for name,w in self.weights.items() if w.ndim==2}
+        self.half_weights=_HalfWeights(self.weights)
         self.reset()
 
     def reset(self):

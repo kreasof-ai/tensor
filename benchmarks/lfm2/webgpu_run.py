@@ -24,12 +24,12 @@ def metrics(actual,expected):
             'argmax':[int(np.argmax(x)),int(np.argmax(y))]}
 
 
-def run(model,bundle,reference,out,*,repeats=5,decode=64):
+def run(model,bundle,reference,out,*,repeats=5,decode=64,max_buffer_size=None):
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     native=NativeReference(model,reference,context=512)
     try:
         numpy=NumpyReference(model,context=512)
-        with tensor.Device(provider='webgpu') as device,LFM2(model,bundle,device,context=512) as engine:
+        with tensor.Device(provider='webgpu',max_buffer_size=max_buffer_size) as device,LFM2(model,bundle,device,context=512) as engine:
             if device.info['adapter']['backend_type']!='Vulkan':raise RuntimeError('this report requires the Vulkan adapter')
             prompt=engine.tokenizer.chat('What is 2 + 2?')
             cases=[{'name':'chat','tokens':prompt,'reset':True}]
@@ -92,7 +92,8 @@ def run(model,bundle,reference,out,*,repeats=5,decode=64):
                     'encodings':dict(Counter(t.encoding for t in engine.gguf.tensors.values())),
                     'platform':platform.platform(),'adapter':device.info,'allocated_bytes':engine.allocated_bytes,
                     'llama_cpp':{'commit':COMMIT,'release_archive_sha256':RELEASE_SHA256,'cache':'F16','flash_attention':True,'gpu_layers':-1,'threads':6},
-                    'protocol':{'context':512,'prefill_chunk':32,'warmups':1,'repeats':repeats,'last_token_logits':'host FP32','sampling':'excluded','loading':'excluded'},
+                    'protocol':{'context':512,'prefill_chunk':32,'warmups':1,'repeats':repeats,'last_token_logits':'host FP32','sampling':'excluded','loading':'excluded',
+                               'max_buffer_size':max_buffer_size},
                     'validation':validation,'benchmarks':benchmarks,'generation':generation,
                     'dispatches':{r:len(plan) for r,plan in engine.plans.items()},
                     'generation_timing':{'protocol':'full generate call, including prompt tokenization/prefill, reset, greedy sampling and completion; model loading excluded',
@@ -109,6 +110,7 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('model','bundle','reference','out'):p.add_argument('--'+name,required=True,type=Path)
     p.add_argument('--repeats',type=int,default=5);p.add_argument('--decode',type=int,default=64)
+    p.add_argument('--max-buffer-size',type=int)
     a=p.parse_args()
     if a.repeats<1 or not 1<=a.decode<=128:p.error('requires positive repeats and 1..128 decode tokens')
-    run(a.model,a.bundle,a.reference,a.out,repeats=a.repeats,decode=a.decode)
+    run(a.model,a.bundle,a.reference,a.out,repeats=a.repeats,decode=a.decode,max_buffer_size=a.max_buffer_size)
