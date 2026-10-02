@@ -10,6 +10,7 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
+| [LFM2 and tinygrad schedule search](lfm2-tinygrad-comparison.md) | Matched 230M F16 inference, OpenCL/Vulkan precision checks, bounded BEAM projection search and a producer-side search design |
 | [Further LFM2 WebGPU decode optimization](lfm2-webgpu-decode-push.md) | Packed floating dots, measured row widths and residual fusion: +9.3% 2.6B decode, 1.21x gap to llama.cpp, smaller-model regression checks |
 | [LFM2.5-2.6B Q4_0 matched run](lfm2-2.6b-q4_0-matched-run.md) | The 230M submission protocol re-run on a 2.6B QAD checkpoint, plus two schedule corrections: decode reduction width and prefill staging cost, worth +8.1% decode and +19.0% prefill |
 | [LFM2.5-230M native submission](lfm2-230m-native-submission.md) | Optional native prepared-plan encoder, four-wide prefill dots, Python fallback and further Vulkan gains |
