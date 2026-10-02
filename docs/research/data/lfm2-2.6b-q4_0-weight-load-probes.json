@@ -558,6 +558,317 @@
     "conclusion": "About 42 percent of the apparent 0.948-versus-1.081 gap is the tile shape and only the remaining 0.077 ms is attributable to the blocked staging, roughly 7 percent at that tile. The two numbers still come from separate runs rather than one interleaved pass, so the split is indicative, not exact. It does not change the outcome: the kernel is incorrect at every tile, all six ffn_down variants fail outright, and the 0.948 ms is not credited as performance anywhere.",
     "caveat": "This probe measures plain staging only. Re-measuring the blocked variant interleaved with it would require restoring the reverted rhs_block pass-through, which was not done because the variant fails the correctness gate and cannot be shipped."
   },
+  "tilelang_swizzle_after_lowering_fix": {
+    "question": "The original swizzle probe failed inside TileLang with 'buffer rhs is not found in the block'. Attribution was wrong: TileLang 0.1.14 lowers a swizzled shared buffer on target=webgpu without help. The failure came from this repo's lower_simt_gemm, which replaces a block's alloc_buffers with freshly declared buffers while passing annotations through unchanged, so the layout map kept pointing at Vars the block no longer allocated. layout_inference.cc keys the map by Var, collects the new alloc_buffers, then looks up each old Var and fails. After re-keying annotations onto the substituted buffers, every variant below compiles and is numerically identical to baseline.",
+    "root_cause": {
+      "file": "src/tensor/compiler/webgpu_lowering.py",
+      "before": "[buffers.get(b, b) for b in node.alloc_buffers], node.match_buffers, node.annotations",
+      "after": "[buffers.get(b, b) for b in node.alloc_buffers], node.match_buffers, remap_annotations(node.annotations)",
+      "tilelang_side": "tilelang/src/transform/layout_inference/layout_inference.cc:969 builds buffer_data_to_buffers_ from op->alloc_buffers, then line 989 does ICHECK(buffer_data_to_buffers_.count(var)) over the attr::kLayoutMap entries.",
+      "isolation": [
+        {
+          "path": "A. TileLang only, swizzled annotation, no repo pass",
+          "result": "lowers, 1896 chars of WGSL"
+        },
+        {
+          "path": "B. repo lower_simt_gemm, no annotation",
+          "result": "lowers"
+        },
+        {
+          "path": "C. repo lower_simt_gemm with annotation, before the fix",
+          "result": "buffer rhs is not found in the block"
+        },
+        {
+          "path": "D. repo lower_simt_gemm with annotation, after the fix",
+          "result": "lowers"
+        }
+      ]
+    },
+    "protocol": "Same harness as webgpu_schedule_tune.py: seven samples after warmup, twenty launches and completion per sample, identical inputs, gate rtol=3e-4 atol=1e-5 against the FP16-operand reference. tile (32,32,64), dot_width 4, r=32.",
+    "committed_profile_tirx_disable_vectorize_true": {
+      "records": [
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "baseline",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.059
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "swizzle_kmajor",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.106
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "swizzle_nmajor",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.109
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "swizzle_nopad",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.101
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "full_bank",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "failed",
+          "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (continuous % (vector_size * 8) == 0) is false: continuous=32, vector_size=8"
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "half_bank",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.11
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "k": 2048,
+          "o": 10752,
+          "variant": "quarter_bank",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.099
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "baseline",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.217
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "swizzle_kmajor",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.223
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "swizzle_nmajor",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.216
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "swizzle_nopad",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.239
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "full_bank",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "failed",
+          "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (continuous % (vector_size * 8) == 0) is false: continuous=32, vector_size=8"
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "half_bank",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.236
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "k": 10752,
+          "o": 2048,
+          "variant": "quarter_bank",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "status": "ok",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.262
+        }
+      ],
+      "finding": "Every compiling variant reproduces the baseline's maximum absolute error exactly, so the swizzle is honoured end to end and reaches WGSL, but none of them is faster. ffn_gate runs 3.8 to 4.8 percent slower than baseline across all four working variants; ffn_down is flat to 2 percent slower. make_full_bank_swizzled_layout still fails on a genuine TileLang-side contiguity constraint, continuous % (vector_size * 8) == 0 with continuous=32 and vector_size=8 for f16, which needs a contiguous dimension of at least 64 elements and so does not apply at tile_n=32."
+    },
+    "diagnostic_tirx_disable_vectorize_false": {
+      "note": "Run once to test whether the profile's tirx.disable_vectorize flag was what kept the swizzle from paying off. The flag was reverted immediately afterwards and is not part of this change. Enabling it does not rescue the swizzle.",
+      "records": [
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "variant": "baseline",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.054
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "variant": "swizzle_kmajor",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.107
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "variant": "swizzle_nmajor",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.101
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "variant": "swizzle_nopad",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.108
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "variant": "half_bank",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.106
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "variant": "quarter_bank",
+          "max_abs_err": 3.3527612686157227e-08,
+          "median_ms": 1.093
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "variant": "baseline",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.212
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "variant": "swizzle_kmajor",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.229
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "variant": "swizzle_nmajor",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.258
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "variant": "swizzle_nopad",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.264
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "variant": "half_bank",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.233
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "variant": "quarter_bank",
+          "max_abs_err": 1.6391277313232422e-07,
+          "median_ms": 2.272
+        }
+      ]
+    },
+    "wgsl_evidence": {
+      "note": "Confirms the annotation reaches WGSL rather than being silently dropped.",
+      "plain_wgsl_chars": 9254,
+      "swizzled_wgsl_chars": 9543,
+      "identical": false
+    },
+    "conclusion": "The lowering fix stands on its own: without it no layout annotation could reach the WebGPU backend from this repo at all. It does not deliver a faster weight load. The four scalar reads of the 4-wide weight operand are therefore not blocked by TileLang, and not by the swizzle either; that path is closed on measurement, not on assumption."
+  },
   "attribution": {
     "note": "Compares each kernel against an FP16-operand reference (the declared prefill contract) and an FP32-operand reference. The blocked kernel matches neither, so it is not merely skipping the FP16 staging rounding. Error scales with the K tile count, so a 3-D shared store changes what TileLang emits in a way this template does not control. The faster blocked timing is not real performance.",
     "measurements": [

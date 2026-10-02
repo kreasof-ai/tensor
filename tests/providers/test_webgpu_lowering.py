@@ -200,3 +200,41 @@ def tensor_export():return {"kernel":kernel}
         if 'subgroup' not in device.info['features']:pytest.skip('adapter lacks subgroups')
         out=device.zeros(128);device.load(artifact).launch(device.ones(128),out)
         values=out.to_numpy();assert np.all(values==values[0]) and values[0] in (4,8,16,32,64,128)
+
+
+def test_layout_annotations_follow_substituted_buffers(tmp_path):
+    """A layout annotation addresses its buffer by Var, and lower_simt_gemm
+    substitutes alloc_buffers. The annotation has to be re-keyed onto the
+    replacement or TileLang's layout inference cannot find the buffer."""
+    from tensor.artifacts.portable import export_spec
+    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    import tilelang
+    import tvm
+    from tvm import tirx as ir
+    path=tmp_path/'annotated.py'
+    path.write_text("""import tilelang.language as T
+from tilelang.layout import make_swizzled_layout
+BK=32
+@T.prim_func
+def kernel(a:T.Tensor((BK,BK),"float16"),b:T.Tensor((BK,BK),"float16"),
+           out:T.Tensor((BK,BK),"float16")):
+    with T.Kernel(1,1,threads=32):
+        aa=T.alloc_shared((BK,BK),"float16")
+        bb=T.alloc_shared((BK,BK),"float16")
+        T.annotate_layout({bb: make_swizzled_layout(bb, k_major=True, allow_pad=True)})
+        T.copy(a,aa)
+        T.copy(b,bb)
+        T.copy(bb,out)
+def tensor_export():return {"kernel":kernel}
+""")
+    lowered=lower_simt_gemm(export_spec(path,None)['kernel'])
+    blocks=[]
+    ir.stmt_functor.post_order_visit(lowered.body,
+                                     lambda node: blocks.append(node) if isinstance(node, ir.SBlock) else None)
+    annotated=[block for block in blocks
+               if any(str(key)=='layout_map' for key in block.annotations.keys())]
+    assert annotated, 'lower_simt_gemm dropped the layout annotation'
+    for block in annotated:
+        allocated={buffer.data for buffer in block.alloc_buffers}
+        for var in block.annotations['layout_map'].keys():
+            assert var in allocated, 'layout annotation still keyed on the replaced buffer'

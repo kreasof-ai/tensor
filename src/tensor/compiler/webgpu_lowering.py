@@ -106,6 +106,29 @@ def lower_simt_gemm(kernel):
                                                     scope="shared", data_alignment=buffer.data_alignment)
     ir.stmt_functor.post_order_visit(kernel.body, collect)
 
+    buffer_vars = {old.data: new.data for old, new in buffers.items()}
+
+    def remap_annotations(annotations):
+        """Re-key Var-keyed annotations onto the substituted buffers.
+
+        Layout annotations address a block's buffers by Var, and substituting
+        alloc_buffers hands TileLang fresh Vars for the same names. Carrying the
+        annotations across unchanged would leave them pointing at buffers the
+        block no longer allocates, which layout inference cannot resolve.
+        """
+        if not annotations:
+            return annotations
+        remapped = {}
+        for key, value in annotations.items():
+            if isinstance(value, ir.Var) or not hasattr(value, "items"):
+                remapped[key] = value
+                continue
+            entries = {}
+            for entry_key, entry_value in value.items():
+                entries[buffer_vars.get(entry_key, entry_key)] = entry_value
+            remapped[key] = type(value)(entries) if entries else value
+        return type(annotations)(remapped) if remapped else annotations
+
     def materialize(node):
         if isinstance(node, ir.Call) and str(node.op.name) == "tl.infinity":
             if str(node.dtype) != "float32":
@@ -120,7 +143,7 @@ def lower_simt_gemm(kernel):
                 raise ValueError("WebGPU SIMT profile needs opaque tile blocks without explicit region annotations")
             return ir.SBlock(node.iter_vars, node.reads, node.writes, node.name_hint, node.body,
                              node.init, [buffers.get(b, b) for b in node.alloc_buffers],
-                             node.match_buffers, node.annotations)
+                             node.match_buffers, remap_annotations(node.annotations))
         if isinstance(node, ir.For) and "num_stages" in node.annotations:
             annotations = {str(k): v for k, v in node.annotations.items() if str(k) != "num_stages"}
             return ir.For(node.loop_var, node.min, node.extent, node.kind, node.body,

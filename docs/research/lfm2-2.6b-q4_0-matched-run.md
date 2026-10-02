@@ -180,18 +180,27 @@ so under `[n][k]` all 16 distinct columns sit 64 elements apart and collide on a
 single LDS bank. `[k][n]` keeps consecutive columns adjacent, and that is correct
 for this access pattern.
 
-**TileLang's own swizzle — does not reach WGSL.**
-`annotate_layout` with `make_swizzled_layout` and the
-`make_{full,half,quarter}_bank_swizzled_layout` family all parse, then the WebGPU
-lowering fails with `Check failed: (buffer_data_to_buffers_.count(var)) is false:
-buffer rhs is not found in the block`. That is not an unsupported-feature
-rejection — the annotation reaches the lowering, which then cannot map the
-swizzled buffer. `make_full_bank` fails one step earlier, on a genuine constraint
-(`continuous % (vector_size * 8) == 0`, with `continuous=32, vector_size=8` for
-f16); retried at `tile_n=64` across four tile shapes it hits the same buffer
-error, so that lead was a tile-shape constraint in front of the same wall. The
-layout decision lives in TileLang's compiled `layout_inference` pass, and
-`tilelang==0.1.14` is a pinned dependency, so this is not fixable in this repo.
+**TileLang's own swizzle — compiles, exact, and not faster.** This route was first
+recorded as upstream-blocked. That attribution was wrong. Isolating the failure with
+a standalone TileLang kernel on `target="webgpu"` shows TileLang 0.1.14 lowers a
+swizzled shared buffer without help; the failure came from this repo.
+`lower_simt_gemm` replaces a block's `alloc_buffers` with freshly declared buffers
+while passing `node.annotations` through unchanged, so the layout map kept pointing
+at the old Vars. `layout_inference.cc` keys that map by Var, collects the new
+`alloc_buffers`, then looks up each old Var and fails. Re-keying annotations onto the
+substituted buffers fixes it — see *Fixed: annotations now reach WGSL* below.
+
+With the fix, `make_swizzled_layout` and the `make_{half,quarter}_bank_swizzled_layout`
+family all compile and pass the correctness gate with **byte-identical maximum
+absolute error to baseline**, and the WGSL genuinely changes (9,254 → 9,543 chars).
+None of them is faster: `ffn_gate` runs 3.8–4.8% slower across all four working
+variants (1.059 ms baseline, 1.099–1.110 ms swizzled), `ffn_down` is flat to 2%
+slower. Enabling `tirx.disable_vectorize` for one diagnostic run does not rescue it
+either, and the flag is unchanged in the committed profile.
+`make_full_bank_swizzled_layout` still fails on a genuine TileLang-side constraint
+(`continuous % (vector_size * 8) == 0`, with `continuous=32, vector_size=8` for f16):
+it needs a contiguous dimension of at least 64 elements, so it does not apply at
+`tile_n=32`, and retried at `tile_n=64` it hits the same class of error.
 
 **Hand-rolled blocked staging — faster, and wrong.** Reshaping `rhs` to
 `(tile_k/4, tile_n, 4)` so the lane becomes the innermost axis is expressible in
@@ -210,8 +219,10 @@ outright. Comparing against an FP32-operand reference shows the result matches
 control, and the error grows with the K tile count. **The faster number is not
 real performance and is not credited anywhere in this report.**
 
-All three are reverted; `src/tensor/compiler/webgpu_lowering.py` is unchanged
-from the committed schedule. Evidence:
+The `[n][k]` layout and the blocked staging tile are both reverted and unused. The
+annotation re-keying in `lower_simt_gemm` is kept, because without it no layout
+annotation could reach the WebGPU backend from this repo at all — but it changes no
+existing kernel, since none of them carry an annotation. Evidence:
 [weight-load probes](data/lfm2-2.6b-q4_0-weight-load-probes.json), and the
 rejection reasoning is recorded in `webgpu_schedule_tune.py` so none of the
 three is re-attempted blind.
@@ -283,14 +294,32 @@ tiles are exhausted and the staging divisions are gone. The remaining gap is
 structural in `register_matmul_schedule`, which issues one scalar LDS read per
 element with no vectorisation, and whose bank-conflict-free weight layout is
 exactly what blocks the 4-wide operand from becoming a real `ds_read_b128`.
-Three attempts to close that are recorded above; two are upstream-blocked and
-the third is incorrect, so the vector load is not reachable from this repo
-today. A TileLang fix for the `buffer not found in the block` failure is the
-prerequisite, and it is worth an upstream issue: it blocks any swizzled shared
-layout on the WebGPU backend, not just LFM2.
+The three attempts to close that are recorded above, and all three are now
+closed on measurement rather than assumption: the swizzle compiles and is exact
+but slower, the blocked staging tile is faster but incorrect, and the transposed
+layout is slower. The vector load is not reachable by those routes, so the
+remaining prefill headroom needs a different idea — most likely a template that
+consumes weights through a vector-typed shared array rather than scalar reads —
+not another layout permutation.
 
 Decode's remaining headroom is small: after the reduction-width fix, non-GEMV
 dispatches sit at about 2.1 us each, which is the per-dispatch floor, so further
 decode gains require cutting dispatch count by fusing neighbours rather than
 tuning kernels. The prefill and decode gaps move in opposite directions with
 model size, so conclusions drawn from a single model size do not generalize.
+
+### Fixed: layout annotations now reach WGSL
+
+`lower_simt_gemm` rebuilds each block's `alloc_buffers` with freshly declared
+buffers so their scope and alignment suit the WebGPU backend, but it passed the
+block's annotations through untouched. TileLang keys a layout annotation map by
+`Var`, so every `T.annotate_layout` entry pointed at a buffer the rebuilt block no
+longer allocated, and `layout_inference` failed on the lookup. This was
+misattributed to TileLang for a while; the failure was ours.
+
+`remap_annotations` now re-keys Var-keyed annotations onto the substituted buffers.
+No shipped kernel carries a layout annotation, so this changes no existing output —
+the full WebGPU and tensor-llm suites pass unchanged — but it means any future
+layout annotation now has a working path to WGSL instead of a hard failure.
+Because the artifact identity hashes `webgpu_lowering.py`, bundles built before
+this change are stale and must be rebuilt.
