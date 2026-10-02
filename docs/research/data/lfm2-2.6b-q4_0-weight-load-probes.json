@@ -1,0 +1,608 @@
+{
+  "schema": "tensor.lfm2-weight-load-probes.v1",
+  "question": "The prefill inner loop builds each 4-wide weight operand from rhs[k*4+lane, col], so the lanes are tile_n elements apart and can only be four scalar LDS reads. Two routes to adjacent addresses were tried.",
+  "tilelang_swizzle": {
+    "backend": "webgpu",
+    "tilelang": "0.1.14",
+    "weight": "blk.0.ffn_gate.weight (k=2048, o=10752), tile (32,32,64), dot_width 4",
+    "note": "The annotation parses through TileLang frontend and reaches the WebGPU lowering, which then cannot map the swizzled buffer. Not an unsupported-feature rejection. make_full_bank is the only variant that fails one step earlier, on a contiguity constraint: continuous % (vector_size * 8) == 0 with continuous=32, vector_size=8 for f16. Retried at tile_n=64 across four tiles, it hits the same buffer error.",
+    "variants": [
+      {
+        "variant": "baseline",
+        "annotation": null,
+        "wgsl_bytes": 7977,
+        "scalar_rhs_reads": 8,
+        "scalar_lhs_reads": 16,
+        "vec_ops": 12,
+        "changed": true,
+        "max_abs_err": 3.3527612686157227e-08,
+        "correct": true,
+        "median_ms": 1.0592500038910657
+      },
+      {
+        "variant": "swizzle_kmajor",
+        "annotation": "T.annotate_layout({rhs: make_swizzled_layout(rhs, k_major=True, allow_pad=True)})",
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "swizzle_nmajor",
+        "annotation": "T.annotate_layout({rhs: make_swizzled_layout(rhs, k_major=False, allow_pad=True)})",
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "swizzle_nopad",
+        "annotation": "T.annotate_layout({rhs: make_swizzled_layout(rhs, k_major=True, allow_pad=False)})",
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "full_bank",
+        "annotation": "T.annotate_layout({rhs: make_full_bank_swizzled_layout(rhs)})",
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (continuous % (vector_size * 8) == 0) is false: continuous=32, vector_size=8"
+      },
+      {
+        "variant": "half_bank",
+        "annotation": "T.annotate_layout({rhs: make_half_bank_swizzled_layout(rhs)})",
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "quarter_bank",
+        "annotation": "T.annotate_layout({rhs: make_quarter_bank_swizzled_layout(rhs)})",
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      }
+    ],
+    "tile_n_64_retry": [
+      {
+        "variant": "tile326464_plain",
+        "tile": [
+          32,
+          64,
+          64
+        ],
+        "annotated": false,
+        "scalar_rhs_reads": 8,
+        "scalar_lhs_reads": 32,
+        "vec4_ops": 20,
+        "loose_rhs_reads": 9,
+        "max_abs_err": 3.3527612686157227e-08,
+        "correct": true,
+        "median_ms": 1.1109149956610054
+      },
+      {
+        "variant": "tile326464_fullbank",
+        "tile": [
+          32,
+          64,
+          64
+        ],
+        "annotated": true,
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "tile166464_fullbank",
+        "tile": [
+          16,
+          64,
+          64
+        ],
+        "annotated": true,
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "tile326432_fullbank",
+        "tile": [
+          32,
+          64,
+          32
+        ],
+        "annotated": true,
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "tile3264128_fullbank",
+        "tile": [
+          32,
+          64,
+          128
+        ],
+        "annotated": true,
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      },
+      {
+        "variant": "tile326464_fullbank",
+        "tile": [
+          32,
+          64,
+          64
+        ],
+        "annotated": true,
+        "error": "BuildError: WebGPU TIRx lowering failed: InternalError: Check failed: (buffer_data_to_buffers_.count(var)) is false: buffer rhs is not found in the block"
+      }
+    ]
+  },
+  "blocked_staging_tile": {
+    "note": "rhs reshaped to (tile_k/4, tile_n, 4) so the lane becomes the innermost axis. Compiles and is faster, but wrong. The sweep's plain baseline sits at a different tile from its fastest blocked record; see blocked_speed_attribution for the same-tile decomposition. Reverted: webgpu_lowering.py is unchanged from the committed schedule.",
+    "sweep": {
+      "model": "D:\\LLM\\LiquidAI\\LFM2.5-2.6B-GGUF\\LFM2.5-2.6B-QAD-Q4_0.gguf",
+      "preset": "blocked",
+      "records": [
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              64
+            ],
+            "dot_width": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.002227275003679097,
+            0.0022246349952183666,
+            0.0022407400014344604,
+            0.0022236699995119126,
+            0.002217860001837835,
+            0.005101009999634698,
+            0.002210574998753145
+          ],
+          "median_seconds": 0.0022246349952183666,
+          "maximum_absolute_error": 1.6391277313232422e-07
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              64
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "failed",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "dot_width": 4,
+          "error": "AssertionError: 87076e-02, -2.567965e-02],\n       [-3.411978e-02,  5.013421e-03, -2.655101e-02, ...,  1.145236e-02,...\n DESIRED: array([[ 3.062041e-03,  2.030021e-02, -7.056700e-03, ...,  3.436447e-02,\n         3.087521e-02, -2.568680e-02],\n       [-3.412111e-02,  5.019195e-03, -2.654908e-02, ...,  1.145177e-02,..."
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              64,
+              64
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "failed",
+          "tile": [
+            32,
+            64,
+            64
+          ],
+          "dot_width": 4,
+          "error": "AssertionError: 87076e-02, -2.567965e-02],\n       [-3.411978e-02,  5.013421e-03, -2.655101e-02, ...,  1.145236e-02,...\n DESIRED: array([[ 3.062041e-03,  2.030021e-02, -7.056700e-03, ...,  3.436447e-02,\n         3.087521e-02, -2.568680e-02],\n       [-3.412111e-02,  5.019195e-03, -2.654908e-02, ...,  1.145177e-02,..."
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              16,
+              32,
+              64
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "failed",
+          "tile": [
+            16,
+            32,
+            64
+          ],
+          "dot_width": 4,
+          "error": "AssertionError: 87076e-02, -2.567965e-02],\n       [-3.411978e-02,  5.013421e-03, -2.655101e-02, ...,  1.145236e-02,...\n DESIRED: array([[ 3.062041e-03,  2.030021e-02, -7.056700e-03, ...,  3.436447e-02,\n         3.087521e-02, -2.568680e-02],\n       [-3.412111e-02,  5.019195e-03, -2.654908e-02, ...,  1.145177e-02,..."
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              128
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "failed",
+          "tile": [
+            32,
+            32,
+            128
+          ],
+          "dot_width": 4,
+          "error": "AssertionError: 87076e-02, -2.567965e-02],\n       [-3.411978e-02,  5.013421e-03, -2.655101e-02, ...,  1.145236e-02,...\n DESIRED: array([[ 3.062041e-03,  2.030021e-02, -7.056700e-03, ...,  3.436447e-02,\n         3.087521e-02, -2.568680e-02],\n       [-3.412111e-02,  5.019195e-03, -2.654908e-02, ...,  1.145177e-02,..."
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              32
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "failed",
+          "tile": [
+            32,
+            32,
+            32
+          ],
+          "dot_width": 4,
+          "error": "AssertionError: 87076e-02, -2.567965e-02],\n       [-3.411978e-02,  5.013421e-03, -2.655101e-02, ...,  1.145236e-02,...\n DESIRED: array([[ 3.062041e-03,  2.030021e-02, -7.056700e-03, ...,  3.436447e-02,\n         3.087521e-02, -2.568680e-02],\n       [-3.412111e-02,  5.019195e-03, -2.654908e-02, ...,  1.145177e-02,..."
+        },
+        {
+          "weight": "blk.0.ffn_down.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              64,
+              128
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "failed",
+          "tile": [
+            32,
+            64,
+            128
+          ],
+          "dot_width": 4,
+          "error": "AssertionError: 87076e-02, -2.567965e-02],\n       [-3.411978e-02,  5.013421e-03, -2.655101e-02, ...,  1.145236e-02,...\n DESIRED: array([[ 3.062041e-03,  2.030021e-02, -7.056700e-03, ...,  3.436447e-02,\n         3.087521e-02, -2.568680e-02],\n       [-3.412111e-02,  5.019195e-03, -2.654908e-02, ...,  1.145177e-02,..."
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              64
+            ],
+            "dot_width": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.001118139998288825,
+            0.0010769649990834296,
+            0.0010814249981194735,
+            0.001090190000832081,
+            0.0010761749988887459,
+            0.001070385001366958,
+            0.0010965499968733639
+          ],
+          "median_seconds": 0.0010814249981194735,
+          "maximum_absolute_error": 3.3527612686157227e-08
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              64
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            32,
+            64
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.0010561550036072731,
+            0.001037614996312186,
+            0.0010690950031857938,
+            0.0026523700042162092,
+            0.0010816399997565895,
+            0.0010296799999196082,
+            0.0010502749995794148
+          ],
+          "median_seconds": 0.0010561550036072731,
+          "maximum_absolute_error": 1.0598450899124146e-05
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              64,
+              64
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            64,
+            64
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.0010710950009524822,
+            0.0010541850002482533,
+            0.0010498599964193999,
+            0.0010497550014406444,
+            0.0010863700008485466,
+            0.0010864549956750124,
+            0.0010523949982598423
+          ],
+          "median_seconds": 0.0010541850002482533,
+          "maximum_absolute_error": 1.0598450899124146e-05
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              16,
+              32,
+              64
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "ok",
+          "tile": [
+            16,
+            32,
+            64
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.0011426399985793978,
+            0.001111200003651902,
+            0.0011205050046555697,
+            0.001141269999789074,
+            0.0011190949997399002,
+            0.0011094250017777084,
+            0.0011241699976380914
+          ],
+          "median_seconds": 0.0011205050046555697,
+          "maximum_absolute_error": 1.0598450899124146e-05
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              128
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            32,
+            128
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.001489749999018386,
+            0.001504944998305291,
+            0.0015064799983520061,
+            0.0015144300006795675,
+            0.001501919998554513,
+            0.001508570002624765,
+            0.001515024999389425
+          ],
+          "median_seconds": 0.0015064799983520061,
+          "maximum_absolute_error": 1.0598450899124146e-05
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              32,
+              32
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            32,
+            32
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.0009676849993411451,
+            0.0009532149997539818,
+            0.000948080001398921,
+            0.0009483499976340682,
+            0.0009454499988351018,
+            0.0009497800027020275,
+            0.0009449150005821138
+          ],
+          "median_seconds": 0.0009483499976340682,
+          "maximum_absolute_error": 1.0598450899124146e-05
+        },
+        {
+          "weight": "blk.0.ffn_gate.weight",
+          "type": 2,
+          "schedule": {
+            "tile": [
+              32,
+              64,
+              128
+            ],
+            "dot_width": 4,
+            "rhs_block": 4
+          },
+          "status": "ok",
+          "tile": [
+            32,
+            64,
+            128
+          ],
+          "dot_width": 4,
+          "samples_seconds": [
+            0.0021965600026305765,
+            0.0022188849980011582,
+            0.0022128899989183994,
+            0.002210550004383549,
+            0.002184795000357553,
+            0.0022177600010763856,
+            0.0022124350012745707
+          ],
+          "median_seconds": 0.0022124350012745707,
+          "maximum_absolute_error": 1.0598450899124146e-05
+        }
+      ],
+      "protocol": "seven samples after warmup, twenty launches and completion per sample; identical inputs"
+    }
+  },
+  "blocked_speed_attribution": {
+    "question": "The sweep's only plain (unblocked) record is at the committed tile (32,32,64), while the blocked record that showed 0.948 ms is at tile (32,32,32). Comparing those two numbers mixes a tile-shape change with a staging change. Was the blocked 0.948 ms a staging win, or just a better tile?",
+    "method": "Re-measured plain, unblocked staging at three tiles including (32,32,32), interleaved rep by rep so clock or thermal drift lands on all tiles equally. Same weight, same inputs, same dot_width 4 and the same seven-sample-equivalent protocol reduced to three reps (first rep acts as warm-up for every tile).",
+    "weight": "blk.0.ffn_gate.weight (k=2048, o=10752), dot_width 4",
+    "records": [
+      {
+        "tile": [
+          32,
+          32,
+          32
+        ],
+        "samples_ms": [
+          1.544,
+          1.025,
+          1.001
+        ],
+        "median_ms": 1.025,
+        "note": "First rep is a warm-up outlier, as expected for the tile sampled first; the median is unaffected."
+      },
+      {
+        "tile": [
+          32,
+          32,
+          64
+        ],
+        "samples_ms": [
+          1.097,
+          1.075,
+          1.052
+        ],
+        "median_ms": 1.075,
+        "note": "Agrees with the sweep's 1.081 ms plain record for the same tile, so the two runs are comparable to within about 0.5 percent."
+      },
+      {
+        "tile": [
+          32,
+          64,
+          32
+        ],
+        "samples_ms": [
+          1.11,
+          1.055,
+          1.063
+        ],
+        "median_ms": 1.063
+      }
+    ],
+    "decomposition_ms": {
+      "committed_tile_plain": 1.081,
+      "plain_at_32_32_32": 1.025,
+      "blocked_at_32_32_32": 0.948,
+      "tile_shape_effect": 0.056,
+      "staging_effect_at_same_tile": 0.077
+    },
+    "conclusion": "About 42 percent of the apparent 0.948-versus-1.081 gap is the tile shape and only the remaining 0.077 ms is attributable to the blocked staging, roughly 7 percent at that tile. The two numbers still come from separate runs rather than one interleaved pass, so the split is indicative, not exact. It does not change the outcome: the kernel is incorrect at every tile, all six ffn_down variants fail outright, and the 0.948 ms is not credited as performance anywhere.",
+    "caveat": "This probe measures plain staging only. Re-measuring the blocked variant interleaved with it would require restoring the reverted rhs_block pass-through, which was not done because the variant fails the correctness gate and cannot be shipped."
+  },
+  "attribution": {
+    "note": "Compares each kernel against an FP16-operand reference (the declared prefill contract) and an FP32-operand reference. The blocked kernel matches neither, so it is not merely skipping the FP16 staging rounding. Error scales with the K tile count, so a 3-D shared store changes what TileLang emits in a way this template does not control. The faster blocked timing is not real performance.",
+    "measurements": [
+      {
+        "weight": "blk.0.ffn_gate.weight",
+        "k": 2048,
+        "reference_gap_median": 1.229e-06
+      },
+      {
+        "weight": "blk.0.ffn_gate.weight",
+        "k": 2048,
+        "variant": "unblocked",
+        "max_abs_err_vs_fp16_ref": 3.353e-08,
+        "max_abs_err_vs_fp32_ref": 8.587e-06,
+        "matches": "FP16 contract"
+      },
+      {
+        "weight": "blk.0.ffn_gate.weight",
+        "k": 2048,
+        "variant": "blocked",
+        "max_abs_err_vs_fp16_ref": 1.06e-05,
+        "max_abs_err_vs_fp32_ref": 1.04e-05,
+        "matches": "neither"
+      },
+      {
+        "weight": "blk.0.ffn_down.weight",
+        "k": 10752,
+        "reference_gap_median": 2.769e-06
+      },
+      {
+        "weight": "blk.0.ffn_down.weight",
+        "k": 10752,
+        "variant": "unblocked",
+        "max_abs_err_vs_fp16_ref": 1.639e-07,
+        "max_abs_err_vs_fp32_ref": 2.63e-05,
+        "matches": "FP16 contract"
+      },
+      {
+        "weight": "blk.0.ffn_down.weight",
+        "k": 10752,
+        "variant": "blocked",
+        "max_abs_err_vs_fp16_ref": 2.539e-05,
+        "max_abs_err_vs_fp32_ref": 2.796e-05,
+        "matches": "neither"
+      }
+    ]
+  }
+}

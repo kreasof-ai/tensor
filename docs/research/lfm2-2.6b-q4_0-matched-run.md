@@ -167,18 +167,54 @@ enough column tiles remain to fill the device: `o=10752` gives 336 workgroups
 The guard is therefore on column count, not depth. The 230M checkpoint has no
 projection above 3,072 columns and is unaffected by construction.
 
-### Rejected: transposed weight layout
+### Rejected: three routes to a vectorized weight load
 
-The inner loop builds each 4-wide weight operand from `rhs[base]`,
-`rhs[base+32]`, `rhs[base+64]`, `rhs[base+96]` — stride 64 bytes, four scalar
-LDS reads that cannot become one vector load, while the activation operands are
-contiguous. Storing the shared weights as `[n][k]` makes them adjacent. It
-measured **1.4–1.9x slower and failed the `ffn_down` correctness gate**.
-Threads index the weight column as `tx % nr`, so under `[n][k]` all 16 distinct
-columns sit 64 elements apart and collide on a single LDS bank, while `[k][n]`
-keeps consecutive columns adjacent. The existing layout is correct for this
-access pattern; making the vector load work needs an XOR swizzle, not a layout
-swap. Reverted; the reasoning is recorded in `webgpu_schedule_tune.py`.
+The inner loop builds each 4-wide weight operand from `rhs[base]`, `rhs[base+32]`,
+`rhs[base+64]`, `rhs[base+96]` — stride 64 bytes, four scalar LDS reads that cannot
+become one vector load, while the activation operands *are* contiguous. Three
+approaches were tried; all three are wrong, for different reasons.
+
+**[n][k] staging — 1.4–1.9x slower, fails the gate.** Storing the shared weights
+transposed makes them adjacent, but threads index the weight column as `tx % nr`,
+so under `[n][k]` all 16 distinct columns sit 64 elements apart and collide on a
+single LDS bank. `[k][n]` keeps consecutive columns adjacent, and that is correct
+for this access pattern.
+
+**TileLang's own swizzle — does not reach WGSL.**
+`annotate_layout` with `make_swizzled_layout` and the
+`make_{full,half,quarter}_bank_swizzled_layout` family all parse, then the WebGPU
+lowering fails with `Check failed: (buffer_data_to_buffers_.count(var)) is false:
+buffer rhs is not found in the block`. That is not an unsupported-feature
+rejection — the annotation reaches the lowering, which then cannot map the
+swizzled buffer. `make_full_bank` fails one step earlier, on a genuine constraint
+(`continuous % (vector_size * 8) == 0`, with `continuous=32, vector_size=8` for
+f16); retried at `tile_n=64` across four tile shapes it hits the same buffer
+error, so that lead was a tile-shape constraint in front of the same wall. The
+layout decision lives in TileLang's compiled `layout_inference` pass, and
+`tilelang==0.1.14` is a pinned dependency, so this is not fixable in this repo.
+
+**Hand-rolled blocked staging — faster, and wrong.** Reshaping `rhs` to
+`(tile_k/4, tile_n, 4)` so the lane becomes the innermost axis is expressible in
+`register_matmul_schedule` without any TileLang cooperation. It compiles and it
+measures 0.948 ms for `ffn_gate` at tile `(32,32,32)`, against 1.025 ms for plain
+staging at that same tile — about 7%. The first reading of this sweep suggested
+more, 0.948 ms against 1.081 ms, but that 1.081 ms is the committed `(32,32,64)`
+tile: re-measuring plain staging interleaved across tiles splits the apparent
+0.133 ms gap into roughly 0.056 ms of tile shape and 0.077 ms of staging. The two
+numbers come from separate runs, so that split is indicative rather than exact.
+It is also wrong: max absolute error against the FP16-operand reference rises
+from 3.4e-08 to 1.1e-05, and all six `ffn_down` variants fail their gate
+outright. Comparing against an FP32-operand reference shows the result matches
+*neither* contract, so it is not merely skipping the FP16 staging rounding — a
+3-D shared store changes what TileLang emits in a way this template does not
+control, and the error grows with the K tile count. **The faster number is not
+real performance and is not credited anywhere in this report.**
+
+All three are reverted; `src/tensor/compiler/webgpu_lowering.py` is unchanged
+from the committed schedule. Evidence:
+[weight-load probes](data/lfm2-2.6b-q4_0-weight-load-probes.json), and the
+rejection reasoning is recorded in `webgpu_schedule_tune.py` so none of the
+three is re-attempted blind.
 
 ## Corrected results
 
@@ -247,9 +283,14 @@ tiles are exhausted and the staging divisions are gone. The remaining gap is
 structural in `register_matmul_schedule`, which issues one scalar LDS read per
 element with no vectorisation, and whose bank-conflict-free weight layout is
 exactly what blocks the 4-wide operand from becoming a real `ds_read_b128`.
-Closing it needs a swizzled shared layout with vector-typed arrays. Decode's
-remaining headroom is small: after the reduction-width fix, non-GEMV dispatches
-sit at about 2.1 us each, which is the per-dispatch floor, so further decode
-gains require cutting dispatch count by fusing neighbours rather than tuning
-kernels. The prefill and decode gaps move in opposite directions with model size,
-so conclusions drawn from a single model size do not generalize.
+Three attempts to close that are recorded above; two are upstream-blocked and
+the third is incorrect, so the vector load is not reachable from this repo
+today. A TileLang fix for the `buffer not found in the block` failure is the
+prerequisite, and it is worth an upstream issue: it blocks any swizzled shared
+layout on the WebGPU backend, not just LFM2.
+
+Decode's remaining headroom is small: after the reduction-width fix, non-GEMV
+dispatches sit at about 2.1 us each, which is the per-dispatch floor, so further
+decode gains require cutting dispatch count by fusing neighbours rather than
+tuning kernels. The prefill and decode gaps move in opposite directions with
+model size, so conclusions drawn from a single model size do not generalize.

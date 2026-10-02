@@ -32,12 +32,40 @@ TILES=[{'dot_width':4},{'dot_width':1},
 
 PRESETS={'legacy':LEGACY,'tiles':TILES}
 
-# Rejected: an [n][k] weight layout, so the four lanes of a dot_width load sit
-# adjacent instead of tile_n apart. Measured 1.4-1.9x SLOWER, and it failed the
-# ffn_down correctness gate. Cause: threads index the weight column as tx%nr,
-# so under [n][k] all 16 distinct columns are 64 elements apart and collide on
-# the same LDS bank, while [k][n] keeps consecutive columns adjacent. Making
-# this work needs a swizzle, not a layout swap.
+# Rejected, twice over. The prefill inner loop builds each 4-wide weight
+# operand from rhs[k*4+lane, col], so the four lanes are tile_n elements apart
+# and can only ever be four scalar LDS reads. Two routes to adjacent addresses
+# were tried; both are wrong, for different reasons.
+#
+#  1. TileLang's own swizzle. annotate_layout with make_swizzled_layout and
+#     the make_{full,half,quarter}_bank_swizzled_layout family all parse, then
+#     the WebGPU lowering fails with "buffer rhs is not found in the block".
+#     make_full_bank additionally wants a contiguous dimension of at least 64
+#     and rejects tile_n=32 first; at tile_n=64 it hits the same error. The
+#     layout decision lives in TileLang's compiled layout_inference pass.
+#  2. A hand-rolled blocked staging tile, rhs shaped (tile_k/4, tile_n, 4) so
+#     the lane becomes the innermost axis. It compiles and it is faster at the
+#     same tile -- ffn_gate 0.948 ms blocked against 1.025 ms plain at
+#     (32,32,32) -- but it is wrong. Max absolute error against the FP16-operand
+#     reference rises from 3.4e-08 to 1.1e-05, and all six ffn_down variants fail
+#     their gate outright. Compared against an FP32-operand reference the result
+#     matches neither contract, so the staged value is not merely skipping the
+#     FP16 rounding: a 3-D shared store changes what TileLang emits in a way this
+#     template does not control.
+#
+#     If you re-measure this, hold the tile fixed. The first sweep only ran a
+#     plain baseline at (32,32,64), so its 0.948-vs-1.081 ms reading mixed a
+#     tile-shape win with a staging win; plain (32,32,32) is 1.025 ms, and only
+#     about 0.077 ms of that gap is the staging. Do not quote the larger figure.
+#
+# The faster number is therefore not real performance and must not be quoted.
+# Attribution is in docs/research/lfm2-2.6b-q4_0-matched-run.md.
+#
+# Also rejected: an [n][k] weight layout. Measured 1.4-1.9x SLOWER, and it
+# failed the ffn_down correctness gate. Cause: threads index the weight column
+# as tx%nr, so under [n][k] all 16 distinct columns are 64 elements apart and
+# collide on one LDS bank, while [k][n] keeps consecutive columns adjacent.
+# Fixing that needs a swizzle, not a layout swap -- see point 1 above.
 
 
 def run(model,out,preset='legacy'):
