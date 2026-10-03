@@ -9,6 +9,37 @@ from tensor.artifacts.format import read_artifact
 NATIVE=pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires a native WebGPU adapter')
 
 
+@NATIVE
+@pytest.mark.parametrize('owner_axis,tile_n',[('row',5),('column',8)])
+@pytest.mark.parametrize('k_layout',['blocked','striped'])
+@pytest.mark.parametrize('dot_width',[1,2,4])
+def test_partitioned_matmul_tail_outputs_and_half_subnormals(tmp_path,owner_axis,tile_n,k_layout,dot_width):
+    from tensor.compiler.webgpu_lowering import partitioned_matmul_schedule
+    from tensor_llm.kernels import emit
+    from tensor_llm.webgpu_kernels import round_half
+    r,k,o=3,128,7
+    lhs=round_half('x[({row}) * 128 + ({k})]')
+    rhs='T.cast(w[({column}) * 128 + ({k})], "float32")'
+    body=partitioned_matmul_schedule(r,k,o,lhs,rhs,tile_m=8,tile_n=tile_n,threads=64,
+                                     partitions=8,unroll=4,dot_width=dot_width,owner_axis=owner_axis,k_layout=k_layout)
+    path=tmp_path/'partitioned.py';artifact=path.with_suffix('.tbin')
+    path.write_text(emit([('x',r*k,'float32'),('w',o*k,'float16'),('out',r*o,'float32')],body))
+    tensor.build(path,artifact,provider='webgpu')
+    weight=np.random.default_rng(403).normal(size=(o,k)).astype(np.float16)
+    with tensor.Device(provider='webgpu') as device:
+        kernel=device.load(artifact);weights=device.from_numpy(weight.ravel());output=device.full(r*o,np.nan)
+        for seed,scale in ((29,.01),(202,1),(303,.00001)):
+            inputs=(np.random.default_rng(seed).normal(size=(r,k))*scale).astype(np.float32)
+            lhs=inputs.astype(np.float16).astype(np.float64);rhs=weight.astype(np.float64)
+            expected=lhs@rhs.T;bound=np.abs(lhs)@np.abs(rhs).T*3e-6+1e-10
+            device.write(output,np.full(r*o,np.nan,dtype=np.float32))
+            input=device.from_numpy(inputs.ravel());kernel.launch(input,weights,output)
+            actual=output.to_numpy().reshape(r,o)
+            assert np.isfinite(actual).all()
+            assert np.all(np.abs(actual-expected)<=bound)
+            input.release()
+
+
 @pytest.mark.parametrize('consumer', ['none', 'read', 'write', 'clear', 'reduce'])
 def test_whole_loop_accumulators_require_exclusive_fragment_ownership(tmp_path, consumer):
     from tensor.artifacts.portable import export_spec
@@ -174,6 +205,31 @@ def test_register_schedule_shared_layout_vector_dots_and_tails(tmp_path,schedule
 
 
 @NATIVE
+@pytest.mark.parametrize('force_fallback',[False,True])
+@pytest.mark.parametrize('shared_input',[False,True])
+@pytest.mark.parametrize('depth,unroll,accumulators',[(256,2,2),(1024,8,8),(2560,20,4)])
+def test_streamed_gemv_fused_tail_and_f32_activation_contract(tmp_path,force_fallback,shared_input,depth,unroll,accumulators):
+    from tensor_llm.webgpu_kernels import source
+    p=dict(r=1,k=depth,o=7,type=1,sg=True,decode_schedule='streamed',lanes=32,threads=64,
+           micro_rows=2,dot_width=4,unroll=unroll,accumulators=accumulators,k_layout='striped',shared_input=shared_input)
+    text=source('ffn',p)
+    if force_fallback:text=text.replace('T.call_extern("uint32", "tensor_subgroup_size")','T.uint32(0)')
+    path=tmp_path/'gemv.py';artifact=path.with_suffix('.tbin');path.write_text(text)
+    tensor.build(path,artifact,provider='webgpu')
+    rng=np.random.default_rng(172);weights=[rng.normal(size=(7,depth)).astype(np.float16) for _ in range(2)]
+    with tensor.Device(provider='webgpu') as device:
+        kernel=device.load(artifact);ws=[device.from_numpy(w.ravel()) for w in weights]
+        for scale in (1,.01,1e-5):
+            x=(rng.normal(size=depth)*scale).astype(np.float32)
+            g,u=[w.astype(np.float64)@x.astype(np.float64) for w in weights]
+            expected=g/(1+np.exp(-g))*u
+            out=device.from_numpy(np.full(7,np.nan,np.float32));inp=device.from_numpy(x)
+            kernel.launch(inp,*ws,out);actual=out.to_numpy()
+            np.testing.assert_allclose(actual,expected,rtol=3e-4,atol=1e-7)
+            inp.release();out.release()
+
+
+@NATIVE
 def test_subgroup_contract_and_packed_intrinsic(tmp_path):
     path=tmp_path/'packed.py';artifact=tmp_path/'packed.tbin'
     path.write_text('''import tilelang.language as T
@@ -238,3 +294,34 @@ def tensor_export():return {"kernel":kernel}
         allocated={buffer.data for buffer in block.alloc_buffers}
         for var in block.annotations['layout_map'].keys():
             assert var in allocated, 'layout annotation still keyed on the replaced buffer'
+
+
+@NATIVE
+@pytest.mark.parametrize('force_fallback',[False,True])
+def test_fused_attention_active_tail_and_qk_fallback(tmp_path,force_fallback):
+    from tensor_llm.webgpu_kernels import source
+    h,kh,d,cap=4,2,64,96
+    text=source('attention',dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,
+                attention_schedule='partitioned_values',channels=32,value_parts=16,fused_scores=True))
+    if force_fallback:text=text.replace('T.call_extern("uint32", "tensor_subgroup_size") >= 32','False')
+    path=tmp_path/'attention.py';path.write_text(text)
+    artifact=tmp_path/'attention.tbin';tensor.build(path,artifact,provider='webgpu')
+    with tensor.Device(provider='webgpu') as device:
+        kernel=device.load(artifact)
+        rng=np.random.default_rng(314);q=rng.normal(size=(h,d)).astype(np.float32)
+        keys=rng.normal(size=(cap,kh,d)).astype(np.float16);values=rng.normal(size=(cap,kh,d)).astype(np.float16)
+        qb=device.from_numpy(q.ravel());kb=device.from_numpy(keys.ravel());vb=device.from_numpy(values.ravel())
+        out=device.full(h*d,np.nan);control=device.zeros(2,'int32')
+        for position in (0,31,95):
+            k=keys.copy();v=values.copy();k[position+1:]=np.nan;v[position+1:]=np.nan
+            device.write(kb,k.ravel());device.write(vb,v.ravel());device.write(control,np.array([position,1],np.int32))
+            device.write(out,np.full(h*d,np.nan,np.float32))
+            kernel.launch(qb,kb,vb,out,control)
+            actual=out.to_numpy().reshape(h,d)
+            k=keys[:position+1].astype(np.float64)[:,np.arange(h)//2,:].transpose(1,0,2)
+            v=values[:position+1].astype(np.float64)[:,np.arange(h)//2,:].transpose(1,0,2)
+            scores=(k*q.astype(np.float64)[:,None,:]).sum(axis=2)*d**-.5
+            prob=np.exp(scores-scores.max(axis=1,keepdims=True));prob/=prob.sum(axis=1,keepdims=True)
+            expected=(prob[:,:,None]*v).sum(axis=1)
+            assert np.isfinite(actual).all()
+            np.testing.assert_allclose(actual,expected,rtol=1e-5,atol=3e-7)

@@ -52,7 +52,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--model',required=True,type=Path);p.add_argument('--out',required=True,type=Path)
     p.add_argument('--context',type=int,default=8448);p.add_argument('--target')
     p.add_argument('--provider',choices=('cuda','webgpu'),default='cuda')
-    p.add_argument('--webgpu-profile',choices=('portable','subgroup'),default='portable')
+    p.add_argument('--webgpu-profile',choices=('portable','subgroup','searched','decode_searched','decode_fused'),default='portable')
     args=p.parse_args();produce(args.model,args.out,context=args.context,target=args.target,provider=args.provider,webgpu_profile=args.webgpu_profile)
 
 if __name__=='__main__':main()

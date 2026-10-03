@@ -15,10 +15,26 @@ from .tokenizer import Tokenizer
 from .provenance import implementation_hashes
 
 
-def paired_ffn(rows,gate,up):
+DECODE_GEMV_COMMON=dict(lanes=32,micro_rows=1,dot_width=4,unroll=8,
+                        accumulators=4,k_layout='striped',shared_input=False)
+# Independently replayed winners on full 230M F16 weight traffic.
+# Keys are (input depth, output columns). Other models retain their schedules.
+DECODE_GEMV={
+    (1024,2560):dict(family='paired',threads=256),
+    (1024,65536):dict(family='separate',threads=256),
+    (2560,1024):dict(family='separate',threads=64,micro_rows=2,unroll=4),
+    (1024,3072):dict(family='separate',threads=256),
+    (1024,1024):dict(family='separate',threads=64),
+    (1024,512):dict(family='separate',threads=64),
+}
+
+
+def paired_ffn(rows,gate,up,profile=None):
     # Quantized decode benefits from shared unpack/input work; the measured
     # F16 decode pair loses occupancy. Prefill benefits from register reuse.
-    return gate.type==up.type and (rows>1 or gate.type not in (0,1))
+    searched=(profile in ('decode_searched','decode_fused') and rows==1 and gate.type==1 and
+              DECODE_GEMV.get(tuple(reversed(gate.shape)),{}).get('family')=='paired')
+    return gate.type==up.type and (rows>1 or gate.type not in (0,1) or searched)
 
 
 # A full-width output tile doubles the work per workgroup and halves the launch
@@ -32,13 +48,40 @@ def projection_tile(rows,columns):
     return {'tile':WIDE_TILE} if rows>1 and columns>=WIDE_TILE_COLUMNS else {}
 
 
+def webgpu_parameters(kind,p,profile):
+    """Apply opt-in schedules measured on RX 6700 XT."""
+    if profile=='decode_fused':
+        result=webgpu_parameters(kind,p,'decode_searched')
+        if kind=='attention' and p.get('r')==1 and (p['h'],p['kh'],p['d'])==(16,8,64):
+            result.update(fused_scores=True,channels=32,value_parts=16)
+        return result
+    p=dict(p)
+    if profile in ('subgroup','searched','decode_searched') and kind in ('linear','linear_add','ffn','attention','attention_scores','rms','add_rms'):
+        p['sg']=True
+    if profile in ('searched','decode_searched') and kind in ('linear','ffn') and p.get('r')==32 and p.get('type')==1:
+        shape=(p['k'],p['o'])
+        if shape in ((1024,2560),(2560,1024)):
+            gate=shape==(1024,2560)
+            p.update(schedule='partitioned',tile=(8 if kind=='ffn' else 16,8,64) if gate else (4,8,64),
+                     threads=128 if gate else 64,partitions=16,unroll=4,dot_width=4,
+                     owner_axis='row',k_layout='blocked' if gate else 'striped')
+    if profile=='decode_searched' and p.get('r')==1:
+        if kind in ('linear','linear_add','ffn') and p.get('type')==1:
+            config=DECODE_GEMV.get((p['k'],p['o']))
+            if config is not None:
+                p.update(DECODE_GEMV_COMMON);p.update({k:v for k,v in config.items() if k!='family'})
+                p['decode_schedule']='streamed'
+        if kind=='attention' and (p['h'],p['kh'],p['d'])==(16,8,64):
+            p.update(attention_schedule='partitioned_values',channels=64,value_parts=16)
+    return p
+
+
 def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='portable'):
     cfg=Config.from_gguf(gguf);c=cfg.width
     values={}
-    if webgpu_profile not in ('portable','subgroup'):raise ValueError('unsupported WebGPU kernel profile')
+    if webgpu_profile not in ('portable','subgroup','searched','decode_searched','decode_fused'):raise ValueError('unsupported WebGPU kernel profile')
     def add(kind,**p):
-        if provider=='webgpu' and webgpu_profile=='subgroup' and kind in ('linear','linear_add','ffn','attention','attention_scores','rms','add_rms'):
-            p['sg']=True
+        if provider=='webgpu':p=webgpu_parameters(kind,p,webgpu_profile)
         values[identity(kind,p)]=(kind,p)
     for r in rows:
         for info in gguf.tensors.values():
@@ -57,11 +100,11 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
             if r==1:add('add_rms',r=r,c=c,eps=cfg.epsilon)
             for i in range(len(cfg.layers)):
                 gate,up=(gguf.tensors[f'blk.{i}.ffn_{name}.weight'] for name in ('gate','up'))
-                if paired_ffn(r,gate,up):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff))
+                if paired_ffn(r,gate,up,webgpu_profile):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff))
         add('add',r=r,c=c);add('swiglu',r=r,c=cfg.ff);add('conv',r=r,c=c)
         for kind in (('qnorm','kvnorm') if provider=='webgpu' else ('qkv',)):
             add(kind,r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,eps=cfg.epsilon,theta=cfg.theta)
-        if provider=='webgpu' and webgpu_profile=='subgroup' and r==1:
+        if provider=='webgpu' and webgpu_profile in ('subgroup','searched','decode_searched','decode_fused') and r==1:
             add('attention_scores',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
         add('attention',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
         add('last',r=r,c=c);add('advance',r=r)
@@ -127,7 +170,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                     'up':(r*f,np.float32),'activated':(r*f,np.float32),'last':(c,np.float32),'final':(c,np.float32)}
             self.workspaces[r]={name:upload(np.zeros(count,dtype)) for name,(count,dtype) in shapes.items()}
             if self.provider=='webgpu':self.workspaces[r]['hidden2']=upload(np.zeros(r*c,np.float32))
-            if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and r==1:
+            if self.provider=='webgpu' and self.webgpu_profile in ('subgroup','searched','decode_searched','decode_fused') and r==1:
                 self.workspaces[r]['scores']=upload(np.zeros(self.config.heads*self.capacity,np.float32))
         for key,record in self.manifest['kernels'].items():
             path=self.directory/record['artifact']
@@ -149,8 +192,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         cfg=self.config;c=cfg.width;ws=self.workspaces[r];plan=[]
         hidden=ws['hidden'];other=ws.get('hidden2',hidden)
         def add(kind,p,*args):
-            if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and kind in ('linear','linear_add','ffn','attention','attention_scores','rms','add_rms'):
-                p={**p,'sg':True}
+            if self.provider=='webgpu':p=webgpu_parameters(kind,p,self.webgpu_profile)
             executable=self.kernels[identity(kind,p)]
             values,symbols,launch=executable._bind(args,{},include_outputs=True)
             plan.append((executable,BoundCall(self.device,executable.manifest,values,symbols,launch,validated=True)))
@@ -176,7 +218,8 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 else:
                     add('qkv',p,ws['q'],ws['k'],ws['v'],self.weights[prefix+'attn_q_norm.weight'],self.weights[prefix+'attn_k_norm.weight'],ws['qo'],kc,vc,self.control)
                 attention_input=ws['qo']
-                if self.provider=='webgpu' and self.webgpu_profile=='subgroup' and r==1:
+                fused=(self.provider=='webgpu' and self.webgpu_profile=='decode_fused' and r==1 and (cfg.heads,cfg.kv_heads,cfg.head_dim)==(16,8,64))
+                if self.provider=='webgpu' and self.webgpu_profile in ('subgroup','searched','decode_searched','decode_fused') and r==1 and not fused:
                     add('attention_scores',dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity),ws['qo'],kc,ws['scores'],self.control)
                     attention_input=ws['scores']
                 arguments=(attention_input,vc,ws['attn'],self.control) if attention_input is not ws['qo'] else (attention_input,kc,vc,ws['attn'],self.control)
@@ -190,7 +233,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 hidden,other=other,hidden
                 rms(prefix+'ffn_norm.weight',hidden,ws['normal'])
             gate,up=(self.gguf.tensors[prefix+'ffn_'+name+'.weight'] for name in ('gate','up'))
-            if self.provider=='webgpu' and paired_ffn(r,gate,up):
+            if self.provider=='webgpu' and paired_ffn(r,gate,up,self.webgpu_profile):
                 add('ffn',dict(r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff)),ws['normal'],self.weights[gate.name],self.weights[up.name],ws['activated'])
             else:
                 linear(prefix+'ffn_gate.weight',ws['normal'],ws['gate']);linear(prefix+'ffn_up.weight',ws['normal'],ws['up'])
@@ -236,6 +279,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         if np.any(tokens<0) or np.any(tokens>=self.config.vocab):raise ValueError('token ID outside vocabulary')
         if self.position+len(tokens)>self.context:raise ValueError('context capacity exceeded')
         chunk=max(self.rows)
+        result=None
         for start in range(0,len(tokens),chunk):
             values=tokens[start:start+chunk];r=1 if len(values)==1 else chunk
             host=np.zeros(r,np.int32);host[:len(values)]=values
@@ -243,22 +287,24 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             self._write(self.workspaces[r]['tokens'],host)
             self._write(self.control,np.array([self.position,len(values)],np.int32))
             if self.provider=='webgpu':
-                (self.greedy if _greedy and start+len(values)==len(tokens) else self.prepared)[r].launch()
+                last=start+len(values)==len(tokens)
+                output=self.workspaces[1]['tokens'] if _greedy else self.logits
+                result=(self.greedy if _greedy and last else self.prepared)[r].launch(readback=output if read and last else None)
             elif self.graphs_enabled:self.graphs[r].launch()
             else:self._submit(self.plans[r])
             self.position+=len(values)
-        return self.logits.to_numpy() if read else None
+        return result if self.provider=='webgpu' else self.logits.to_numpy() if read else None
 
     def generate(self,prompt,*,max_tokens=128,chat=True,gpu_greedy=True):
         if type(max_tokens)!=int or max_tokens<1:raise ValueError('max_tokens must be positive')
         tokens=self.tokenizer.chat(prompt) if chat else self.tokenizer.encode(prompt)
         if len(tokens)+max_tokens>self.context:raise ValueError('generation exceeds context capacity')
         if self.provider=='webgpu' and gpu_greedy:
-            self.reset();self.forward(tokens,read=False,_greedy=True);generated=[]
-            for _ in range(max_tokens):
-                token=int(self.workspaces[1]['tokens'].to_numpy()[0]);generated.append(token)
+            self.reset();next_token=self.forward(tokens,_greedy=True);generated=[]
+            for step in range(max_tokens):
+                token=int(next_token[0]);generated.append(token)
                 if token==self.tokenizer.eos:break
-                self.greedy[1].launch();self.position+=1
+                next_token=self.greedy[1].launch(readback=self.workspaces[1]['tokens'] if step+1<max_tokens else None);self.position+=1
             return {'prompt_tokens':tokens,'generated_tokens':generated,'text':self.tokenizer.decode(generated)}
         self.reset();logits=self.forward(tokens);generated=[]
         for _ in range(max_tokens):

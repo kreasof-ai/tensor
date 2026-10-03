@@ -156,7 +156,7 @@ def source(kind,p):
                 name=match[0]
                 if name.startswith('acc'):return name.replace('acc','up',1)
                 return name+'2'
-            return re.sub(r'\b(?:accum|acc\d+|scale|packed|low\d+|high\d+|scratch|rhs|right\d+|value|w)\b',replace,line)
+            return re.sub(r'\b(?:accum|acc\d+(?:_\d+)?|total|scale|packed|low\d+|high\d+|scratch|rhs|right\d+|value|w)\b',replace,line)
         lines=[]
         for line in text.splitlines():
             if 'out[' in line and ' = ' in line:
@@ -165,7 +165,7 @@ def source(kind,p):
                 continue
             lines.append(line)
             stripped=line.strip()
-            if (' = ' in line and (re.match(r'(accum|acc\d+|scratch(?:\[.*?\])?|rhs(?:\[.*?\])?|right\d+|scale|packed|low\d+|high\d+) = ',stripped)
+            if (' = ' in line and (re.match(r'(accum|acc\d+(?:_\d+)?|total|scratch(?:\[.*?\])?|rhs(?:\[.*?\])?|right\d+|scale|packed|low\d+|high\d+) = ',stripped)
                                       or stripped.startswith('value = T.if_then_else(bx'))):
                 lines.append(paired(line))
             elif stripped=='value = T.alloc_var("float32")':lines.append(paired(line))
@@ -237,6 +237,12 @@ def source(kind,p):
             k,o=p['k'],p['o'];_,block,size=TYPES[q]
             count=k*o if q in (0,1) else k*o//block*size//4
             dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
+            if p.get('decode_schedule')=='streamed':
+                if q!=1:raise ValueError('streamed GEMV requires native F16 weights')
+                from tensor.compiler.webgpu_lowering import streamed_gemv_schedule
+                body=streamed_gemv_schedule(k,o,**{name:p[name] for name in
+                    ('lanes','threads','micro_rows','dot_width','unroll','accumulators','k_layout','shared_input')})
+                return emit([a('x',k),a('w',count,dtype),a('out',o)],body)
             threads=128;lanes=16 if q==2 else 32
             accumulators=1
             if q==2 and k%128==0:
@@ -334,12 +340,19 @@ def source(kind,p):
             count=k*o if q in (0,1) else k*o//block*size//4
             dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
             args=[a('x',r*k),a('w',count,dtype),a('out',r*o)]
-            from tensor.compiler.webgpu_lowering import register_matmul_schedule
+            from tensor.compiler.webgpu_lowering import register_matmul_schedule,partitioned_matmul_schedule
             tm,tn,bk=p.get('tile',(16,32,64))
+            if p.get('schedule')=='partitioned':
+                if q!=1:raise ValueError('searched partitioned profile requires F16 weights')
+                lhs=round_half('x[({row}) * '+str(k)+' + ({k})]')
+                rhs='T.cast(w[({column}) * '+str(k)+' + ({k})], "float32")'
+                body=partitioned_matmul_schedule(r,k,o,lhs,rhs,tile_m=tm,tile_n=tn,
+                    **{name:p[name] for name in ('threads','partitions','unroll','dot_width','owner_axis','k_layout')})
+                return emit(args,body)
             expr=weight(q,f'bx * {tn} + i',f'tile * {bk} + j',k,packed_words=True)
             value=round_half('value') if q!=1 else 'value'
             rhs=f'T.if_then_else(bx * {tn} + i < {o}, {expr}, 0)'
-            body=register_matmul_schedule(r,k,o,round_half('value'),rhs,tile_m=tm,tile_n=tn,tile_k=bk,pad=p.get('pad',0),
+            body=register_matmul_schedule(r,k,o,round_half('value'),rhs,tile_m=tm,tile_n=tn,tile_k=bk,threads=p.get('threads',128),pad=p.get('pad',0),
                 lhs_pad=p.get('lhs_pad',0),lhs_transpose=p.get('lhs_transpose',False),
                 dot_width=p.get('dot_width',4 if q==1 or k>=2048 else 1),unroll=p.get('unroll',False))
             body=body.replace('rhs[j, i] = value',f'rhs[j, i] = {value}')
@@ -414,6 +427,81 @@ def source(kind,p):
                 out[head * {cap} + token] = dot''')
     if kind=='attention':
         h,kh,d,cap=p['h'],p['kh'],p['d'],p['cap'];threads=128
+        if r==1 and p.get('attention_schedule')=='partitioned_values':
+            channels=p['channels'];parts=p['value_parts'];threads=channels*parts
+            if channels not in (16,32,64) or d%channels or parts not in (1,2,4,8,16) or threads>1024:
+                raise ValueError('unsupported decode attention distribution')
+            maximum_reduce=subgroup_reduce(threads,'maximum','max')
+            sum_reduce=subgroup_reduce(threads,'total')
+            arguments=[a('q',h*cap),a('vc',cap*kh*d,'float16'),a('out',h*d),a('pos',2,'int32')]
+            score_loop=f'''    for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
+        token = tile * {threads} + tx
+        if token <= pos[0]:
+            scores[token] = q[head * {cap} + token]
+            maximum = T.max(maximum, scores[token])'''
+            if p.get('fused_scores'):
+                if threads%32 or d%32:raise ValueError('fused attention requires complete 32-lane reductions')
+                arguments=[a('q',h*d),a('kc',cap*kh*d,'float16'),*arguments[1:]]
+                shuffles='\n'.join(f'            dot = dot + T.call_extern("float32", "subgroupShuffleXor", dot, T.uint32({stride}))' for stride in (16,8,4,2,1))
+                score_loop=f'''    if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
+        lane = tx % 32
+        for tile in T.serial(T.ceildiv(pos[0] + 1, {threads//32})):
+            token = tile * {threads//32} + tx // 32
+            dot = 0
+            if token <= pos[0]:
+                for j in T.unroll({d//32}):
+                    qchannel = j * 32 + lane
+                    dot = dot + q[head * {d} + qchannel] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + qchannel], "float32")
+{shuffles}
+            if (lane == 0) & (token <= pos[0]):
+                scores[token] = dot * {d**-0.5}
+    else:
+        for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
+            token = tile * {threads} + tx
+            if token <= pos[0]:
+                dot = 0
+                for j in T.serial({d}):
+                    dot = dot + q[head * {d} + j] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + j], "float32")
+                scores[token] = dot * {d**-0.5}
+    T.sync_threads()
+    for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
+        token = tile * {threads} + tx
+        if token <= pos[0]:
+            maximum = T.max(maximum, scores[token])'''
+            return emit(arguments,f'''with T.Kernel({h}, {d//channels}, threads={threads}) as (head, block):
+    tx = T.get_thread_binding()
+    channel = tx % {channels}
+    part = tx // {channels}
+    scores = T.alloc_shared(({cap},), "float32")
+    scratch = T.alloc_shared(({threads},), "float32")
+    partials = T.alloc_shared(({threads},), "float32")
+    maximum = T.alloc_var("float32")
+    total = T.alloc_var("float32")
+    result = T.alloc_var("float32")
+    dot = T.alloc_var("float32")
+    maximum = -T.infinity("float32")
+{score_loop}
+{maximum_reduce}
+    total = 0
+    for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
+        token = tile * {threads} + tx
+        if token <= pos[0]:
+            scores[token] = T.exp(scores[token] - scratch[0])
+            total = total + scores[token]
+    T.sync_threads()
+{sum_reduce}
+    result = 0
+    for tile in T.serial(T.ceildiv(pos[0] + 1, {parts})):
+        token = tile * {parts} + part
+        if token <= pos[0]:
+            result = result + scores[token] * T.cast(vc[(token * {kh} + head // {h//kh}) * {d} + block * {channels} + channel], "float32")
+    partials[tx] = result
+    T.sync_threads()
+    if part == 0:
+        result = 0
+        for other in T.unroll({parts}):
+            result = result + partials[other * {channels} + channel]
+        out[head * {d} + block * {channels} + channel] = result / scratch[0]''')
         maximum_reduce=subgroup_reduce(threads,'maximum','max') if p.get('sg') else '    scratch[tx] = maximum\n    T.sync_threads()\n'+tree_reduce(threads,'max')
         sum_reduce=subgroup_reduce(threads,'total') if p.get('sg') else '    scratch[tx] = total\n    T.sync_threads()\n'+tree_reduce(threads)
         score_loop=f'''    for tile in T.serial(T.ceildiv({cap}, {threads})):

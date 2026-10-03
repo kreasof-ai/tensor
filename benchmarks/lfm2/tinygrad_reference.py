@@ -16,6 +16,7 @@ def rounded_half(value):
     Its native f16 conversion truncates; round in FP32 before an exact cast.
     The integer path covers normal halves and the scaled path subnormal halves.
     """
+    if value.dtype==dtypes.half:return value.float()
     if not Device.DEFAULT.startswith('WEBGPU'):return value.half().float()
     value=value.float();bits=value.bitcast(dtypes.uint32);magnitude=value.abs()
     normal=((bits+4095+((bits>>13)&1))&0xffffe000).bitcast(dtypes.float)
@@ -29,19 +30,25 @@ def rounded_half(value):
 
 
 class Reference:
-    def __init__(self,path,*,context=512,weight_mode='packed'):
+    def __init__(self,path,*,context=512,weight_mode='packed',search_root=None):
         self.gguf=GGUF(path);self.config=Config.from_gguf(self.gguf);self.context=context
         self.device=Device.DEFAULT;self.capacity=(context+32+63)//64*64
+        self.replay=None
+        if search_root is not None:
+            from benchmarks.lfm2.tinygrad_schedule_replay import ProjectionReplay
+            self.replay=ProjectionReplay(search_root)
         self.weights={}
         for name,info in self.gguf.tensors.items():
             if info.type in (0,1):
-                value=Tensor(np.array(self.gguf.array(name),copy=True),device=self.device).realize()
+                value=Tensor(np.array(self.gguf.array(name,dtype=np.float16 if info.type==1 else np.float32),copy=True),device=self.device).realize()
             elif weight_mode=='decoded':
                 value=Tensor(np.array(self.gguf.array(name),copy=True),device=self.device).realize()
             else:
                 raw=Tensor(np.array(self.gguf.packed(name),copy=True),device=self.device).realize()
                 value=ggml_data_to_tensor(raw,int(np.prod(info.shape)),info.type).reshape(info.shape)
             self.weights[name]=value
+        if any(self.weights[name].dtype!=dtypes.half for name,info in self.gguf.tensors.items() if info.type==1):
+            raise ValueError('F16 GGUF tensors must retain native half storage')
         c=self.config
         self.states={i:Tensor.zeros(2,c.width,device=self.device).realize() for i,k in enumerate(c.layers) if k=='conv'}
         self.caches={i:tuple(Tensor.zeros(self.capacity,c.kv_heads,c.head_dim,dtype=dtypes.half,device=self.device).realize() for _ in range(2))
@@ -57,9 +64,12 @@ class Reference:
         c=self.config;r=tokens.shape[0];d=c.head_dim;w=self.weights
         def project(name,x,single=False):
             weight=w[name]
+            replay=self.replay is not None and r==32 and '.ffn_' in name
+            if replay:x=x.contiguous().realize()
             if r>1 and not single:x,weight=rounded_half(x),rounded_half(weight)
             else:x,weight=x.float(),weight.float()
-            return x@weight.T
+            result=x@weight.T
+            return result.realize() if replay else result
         def norm(name,x):return x*(x.square().mean(axis=-1,keepdim=True)+c.epsilon).rsqrt()*w[name].float()
         def rotate(x):
             left,right=x.chunk(2,dim=-1)
@@ -91,7 +101,12 @@ class Reference:
                 prob=mask.where(float('-inf'),scores).softmax(-1)
                 attn=(prob@vals).permute(1,0,2).reshape(r,c.width)
                 mix=project(p+'attn_output.weight',attn)
-            hidden=hidden+mix;x=norm(p+'ffn_norm.weight',hidden)
+            hidden=hidden+mix
+            # FFN realization boundaries must also complete their residual.
+            # Otherwise its lazy convolution/state write can execute again
+            # when the residual is consumed after the materialized projection.
+            if self.replay is not None and r==32:hidden=hidden.contiguous().realize()
+            x=norm(p+'ffn_norm.weight',hidden)
             gate=project(p+'ffn_gate.weight',x);up=project(p+'ffn_up.weight',x)
             hidden=hidden+project(p+'ffn_down.weight',gate.silu()*up)
         final=norm('token_embd_norm.weight',hidden[valid-1:valid])
@@ -107,6 +122,9 @@ class Reference:
             host=np.zeros(r,np.int32);host[:len(values)]=values
             pos=UOp.variable('position',0,self.context-1).bind(self.position)
             valid=UOp.variable('valid',2,32).bind(len(values)) if r==32 else 1
-            result=self.jits[r](Tensor(host,device=self.device),pos,valid)
+            if self.replay is None:result=self.jits[r](Tensor(host,device=self.device),pos,valid)
+            else:
+                with self.replay:
+                    result=self.jits[r](Tensor(host,device=self.device),pos,valid)
             self.position+=len(values)
         return result.numpy()

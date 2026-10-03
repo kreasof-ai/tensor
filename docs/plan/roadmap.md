@@ -26,6 +26,26 @@ Its [default engine report](../research/lfm2-inference.md) and
 [experimental decode follow-up](../research/lfm2-decode-optimization.md) record
 correctness and comparisons with llama.cpp CUDA.
 
+**Workload update — 2026-10-03:** the RX 6700 XT Vulkan experiments now include
+bounded schedule discovery and ordered readback for LFM2.5-230M F16. The
+[prefill search](../research/lfm2-prefill-search-throughput.md) improves Tensor
+prefill by 45–47%; the [decode search](../research/lfm2-230m-decode-search.md)
+improves decoding by 39–63% within its recorded comparison. The subsequent
+[runtime optimization](../research/lfm2-230m-runtime-search.md) adds a further
+10.5–12.0% completed decode throughput by combining compute and copy submission
+and removing redundant completion waits. Its runtime-only logits remain
+bitwise equal across 19 independent fixtures.
+
+The latest matched run measures 441.9 completed decode tokens/s for Tensor and
+490.0 for llama.cpp at prefix 128. The remaining throughput gap is 1.11×;
+native Vulkan arithmetic differs and does not meet Tensor's 1% oracle gate.
+An additional 601-candidate projection search and fused-attention sweep did
+not improve full-model throughput. Retain `decode_searched` for this measured
+profile; `decode_fused` remains experimental. Reports preserve the raw samples,
+source and shader provenance, correctness checks and reproduction commands.
+These results do not establish parity, a hardware ceiling, or improvements
+on unmeasured models and workloads.
+
 ---
 
 ## Phase 0 — Architecture validation *(complete)*

@@ -11,6 +11,17 @@ samples, rejected-run logs, pinned adapter sources and selected schedules.
 
 ## Scope and reproducibility
 
+**Storage correction:** the historical full-model adapter in this report used
+`GGUF.array` with its default FP32 dtype, expanding the F16 matrix storage to
+FP32. These full-model rows match checkpoint values and arithmetic precision,
+but do not match Tensor's native F16 weight storage. The adapter is now fixed
+to preserve the GGUF dtype; these archived timings are retained as historical
+diagnostics and are not native-F16 parity measurements. The projection
+harness used native packed F16 views from the start and is unaffected.
+The fresh [full-model throughput comparison](lfm2-prefill-search-throughput.md)
+uses native FP16 storage for both tinygrad modes and measures replayed search
+schedules alongside Tensor and llama.cpp.
+
 The Tensor source baseline is `63d6d6f` and tinygrad is pinned to
 `91b8cb5fa6c031c5a7440159d955f66952c5e2e9` (0.14.0). The checkpoint SHA256 is
 `4d364976c7ae1b85bd380f743155aa2d532f7a10291beaa6b27a7d6c9b10527f`.
@@ -33,8 +44,9 @@ It is not a reproduction of tinygrad's optimized native AMD LLM benchmark.
 Vulkan WebGPU uses the official pydawn 0.3.0 Dawn DLL, release SHA256
 `45a3a9a9e194067fcb6c6f05ca0e78804c6ead50d21cbec2f18084a829d3d07c`.
 
-The adapter keeps F16 matrix storage, FP32 normalization/activations and
-accumulation, and FP16-rounded projection operands for multirow prefill.
+The historical full-model adapter uses FP32-expanded matrix storage, FP32
+normalization/activations and accumulation, and FP16-rounded projection
+operands for multirow prefill. The corrected adapter preserves F16 storage.
 It uses separate symbolic 1/32-row JITs, a symbolic token position and valid
 row count, and graph-ordered writes for convolution state and FP16 KV caches.
 Reset must reproduce the initial logits bitwise. Attention scans a fixed

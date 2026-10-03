@@ -43,10 +43,33 @@ def tensor_export():return {"kernel":kernel}
         for multiplier in (1.,4.):
             device.write(x,np.arange(4,dtype=np.float32)*multiplier);plan.launch()
             np.testing.assert_array_equal(z.to_numpy(),np.arange(4,dtype=np.float32)*multiplier*6)
+        # Same-submission readback must observe the complete ordered plan,
+        # reuse staging, and return snapshots independent of its next mapping.
+        device.write(x,np.arange(4,dtype=np.float32)*7)
+        first=plan.launch(readback=z);staging=z._readback
+        device.write(x,np.arange(4,dtype=np.float32)*9)
+        second=plan.launch(readback=z)
+        assert z._readback is staging
+        np.testing.assert_array_equal(first,np.arange(4,dtype=np.float32)*42)
+        np.testing.assert_array_equal(second,np.arange(4,dtype=np.float32)*54)
+        spare=device.zeros(4);spare.release()
+        with pytest.raises(TensorRuntimeError,match='released'):plan.launch(readback=spare)
         x.release()
         with pytest.raises(TensorRuntimeError,match='released'):plan.launch()
         plan.close();plan.close()
         with pytest.raises(TensorRuntimeError,match='closed'):plan.launch()
+
+
+@NATIVE
+def test_webgpu_readback_orders_pending_uploads_without_queue_fence(monkeypatch):
+    with tx.Device(provider='webgpu') as device:
+        buffer=device.from_numpy(np.array([1,2,3],np.float16))
+        def unexpected_fence():raise AssertionError('readback adds a redundant queue fence')
+        monkeypatch.setattr(device,'synchronize',unexpected_fence)
+        for values in ([3,5,7],[-9,-2,8]):
+            expected=np.array(values,np.float16);device.write(buffer,expected)
+            np.testing.assert_array_equal(buffer.to_numpy(),expected)
+        monkeypatch.undo()
 
 
 @pytest.mark.parametrize("size", [True, 0, 3, 4.0])

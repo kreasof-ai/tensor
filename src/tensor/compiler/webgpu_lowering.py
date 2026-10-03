@@ -89,6 +89,131 @@ def register_matmul_schedule(rows, depth, columns, lhs_value, rhs_value, *,
 {stores}'''
 
 
+def partitioned_matmul_schedule(rows, depth, columns, lhs_value, rhs_value, *,
+                                tile_m=8, tile_n=16, threads=128, partitions=8,
+                                unroll=4, dot_width=1, owner_axis='column', k_layout='blocked'):
+    """Direct-load SIMT microtiles with one workgroup-local K reduction.
+
+    Load expressions use {row}, {column}, and {k} placeholders. The producer
+    owns operand precision. Partitions never require a second dispatch or atomics.
+    """
+    dimensions=(rows,depth,columns,tile_m,tile_n,threads,partitions,unroll)
+    if any(type(v) is not int or v<=0 for v in dimensions):
+        raise ValueError('partitioned matmul dimensions must be positive integers')
+    if partitions & (partitions-1) or threads%partitions or depth%(partitions*unroll):
+        raise ValueError('invalid K partition or unroll')
+    if dot_width not in (1,2,4) or unroll%dot_width:
+        raise ValueError('invalid partitioned matmul dot width')
+    if owner_axis not in ('row','column') or k_layout not in ('blocked','striped'):
+        raise ValueError('invalid partitioned matmul distribution')
+    owners=threads//partitions
+    nc=min(tile_n,owners) if owner_axis=='column' else owners//min(tile_m,owners)
+    if owners%nc or tile_m%(owners//nc) or tile_n%nc:
+        raise ValueError('invalid partitioned output tile')
+    rm=owners//nc; mm=tile_m//rm; nn=tile_n//nc
+    if mm*nn>64 or tile_m*tile_n*partitions*4>32768:
+        raise ValueError('partitioned matmul resource limit')
+    lines=[f'with T.Kernel(T.ceildiv({rows}, {tile_m}), T.ceildiv({columns}, {tile_n}), threads={threads}) as (by, bx):',
+           '    tx = T.get_thread_binding()',f'    lane = tx % {partitions}',
+           f'    mr = tx // {partitions*nc}',f'    nr = (tx // {partitions}) % {nc}',
+           f'    scratch = T.alloc_shared(({tile_m*tile_n*partitions},), "float32")']
+    for i in range(mm):
+        for j in range(nn):lines += [f'    acc{i}_{j} = T.alloc_var("float32")',f'    acc{i}_{j} = 0']
+    lines += [f'    for tile in T.serial({depth//(partitions*unroll)}):',
+              f'        for u in T.unroll({unroll//dot_width}):']
+    kval=lambda v:(f'tile * {partitions*unroll} + lane * {unroll} + u * {dot_width} + {v}' if k_layout=='blocked'
+                   else f'tile * {partitions*unroll} + lane * {dot_width} + u * {partitions*dot_width} + {v}')
+    for i in range(mm):
+        row=f'by * {tile_m} + mr + {i*rm}'
+        exprs=[f'T.if_then_else({row} < {rows}, {lhs_value.format(row=row,column="0",k=kval(v))}, 0)' for v in range(dot_width)]
+        expr=exprs[0] if dot_width==1 else f'T.call_extern("float32x{dot_width}", "vec{dot_width}<f32>", '+', '.join(exprs)+')'
+        lines += [f'            left{i} = {expr}']
+    for j in range(nn):
+        col=f'bx * {tile_n} + nr + {j*nc}'
+        exprs=[f'T.if_then_else({col} < {columns}, {rhs_value.format(row="0",column=col,k=kval(v))}, 0)' for v in range(dot_width)]
+        expr=exprs[0] if dot_width==1 else f'T.call_extern("float32x{dot_width}", "vec{dot_width}<f32>", '+', '.join(exprs)+')'
+        lines += [f'            right{j} = {expr}']
+    for i in range(mm):
+        for j in range(nn):
+            product=f'left{i} * right{j}' if dot_width==1 else f'T.call_extern("float32", "dot", left{i}, right{j})'
+            lines += [f'            acc{i}_{j} = acc{i}_{j} + {product}']
+    for i in range(mm):
+        for j in range(nn):lines += [f'    scratch[((mr + {i*rm}) * {tile_n} + nr + {j*nc}) * {partitions} + lane] = acc{i}_{j}']
+    lines += ['    T.sync_threads()', '    total = T.alloc_var("float32")',
+              f'    for index in T.serial(T.ceildiv({tile_m*tile_n}, {threads})):',
+              f'        slot = index * {threads} + tx',f'        if slot < {tile_m*tile_n}:',
+              '            total = 0',f'            for part in T.unroll({partitions}):',
+              f'                total = total + scratch[slot * {partitions} + part]',
+              f'            if (by * {tile_m} + slot // {tile_n} < {rows}) & (bx * {tile_n} + slot % {tile_n} < {columns}):',
+              f'                out[(by * {tile_m} + slot // {tile_n}) * {columns} + bx * {tile_n} + slot % {tile_n}] = total']
+    return '\n'.join(lines)
+
+
+def streamed_gemv_schedule(depth, columns, *, lanes=32, threads=128,
+                          micro_rows=1, dot_width=4, unroll=1, accumulators=1,
+                          k_layout='striped', shared_input=False):
+    """F16-weight/F32-input GEMV with reusable input and independent K chains.
+
+    Keep activation precision intact. Output tails are guarded and subgroup
+    reductions have a shared-memory fallback for smaller physical subgroups.
+    """
+    if any(type(v) is not int or v<=0 for v in
+           (depth,columns,lanes,threads,micro_rows,dot_width,unroll,accumulators)):
+        raise ValueError('invalid GEMV dimensions')
+    if lanes not in (8,16,32,64,128) or threads not in (64,128,256,512) or threads%lanes:
+        raise ValueError('invalid GEMV distribution')
+    if dot_width not in (1,2,4) or accumulators not in (1,2,4,8) or unroll%accumulators:
+        raise ValueError('invalid GEMV arithmetic')
+    if depth%(lanes*dot_width*unroll) or micro_rows>8 or micro_rows*accumulators>32:
+        raise ValueError('invalid GEMV tile')
+    if k_layout not in ('blocked','striped') or type(shared_input) is not bool:
+        raise ValueError('invalid GEMV input layout')
+    if (depth*4 if shared_input else 0)+micro_rows*threads*4>32768:
+        raise ValueError('GEMV scratch exceeds portable limit')
+    rows=threads//lanes;tile_rows=rows*micro_rows;step=lanes*dot_width*unroll
+    lines=[f'with T.Kernel(T.ceildiv({columns}, {tile_rows}), threads={threads}) as bx:',
+           '    tx = T.get_thread_binding()',f'    lane = tx % {lanes}',f'    row = tx // {lanes}',
+           f'    scratch = T.alloc_shared(({micro_rows*threads},), "float32")']
+    if shared_input:
+        lines += [f'    lhs = T.alloc_shared(({depth},), "float32")',f'    for i in T.Parallel({depth}):',
+                  '        lhs[i] = x[i]','    T.sync_threads()']
+    for i in range(micro_rows):
+        for j in range(accumulators):lines += [f'    acc{i}_{j} = T.alloc_var("float32")',f'    acc{i}_{j} = 0']
+    lines += [f'    for tile in T.serial({depth//step}):']
+    # Generate unroll slots explicitly to distribute independent accumulators.
+    for u in range(unroll):
+        kval=lambda v:(f'tile * {step} + lane * {unroll*dot_width} + {u*dot_width+v}' if k_layout=='blocked'
+                       else f'tile * {step} + {u*lanes*dot_width} + lane * {dot_width} + {v}')
+        lhs=[f'{"lhs" if shared_input else "x"}[{kval(v)}]' for v in range(dot_width)]
+        vector=lambda terms:terms[0] if dot_width==1 else f'T.call_extern("float32x{dot_width}", "vec{dot_width}<f32>", '+', '.join(terms)+')'
+        lines += [f'        left{u} = {vector(lhs)}']
+        for i in range(micro_rows):
+            output_row=f'bx * {tile_rows} + row + {i*rows}'
+            rhs=[f'T.cast(w[({output_row}) * {depth} + {kval(v)}], "float32")' for v in range(dot_width)]
+            lines += [f'        if {output_row} < {columns}:',f'            right{u} = {vector(rhs)}']
+            prod=f'left{u} * right{u}' if dot_width==1 else f'T.call_extern("float32", "dot", left{u}, right{u})'
+            lines += [f'            acc{i}_{u%accumulators} = acc{i}_{u%accumulators} + {prod}']
+    for i in range(micro_rows):
+        for j in range(1,accumulators):lines += [f'    acc{i}_0 = acc{i}_0 + acc{i}_{j}']
+    lines += [f'    if T.call_extern("uint32", "tensor_subgroup_size") >= {lanes}:']
+    for stride in (lanes>>i for i in range(1,lanes.bit_length())):
+        for i in range(micro_rows):
+            lines += [f'        acc{i}_0 = acc{i}_0 + T.call_extern("float32", "subgroupShuffleXor", acc{i}_0, T.uint32({stride}))']
+    lines += ['    else:']
+    for i in range(micro_rows):lines += [f'        scratch[{i*threads} + tx] = acc{i}_0']
+    lines += ['        T.sync_threads()']
+    for stride in (lanes>>i for i in range(1,lanes.bit_length())):
+        lines += [f'        if lane < {stride}:']
+        for i in range(micro_rows):
+            lines += [f'            scratch[{i*threads} + tx] = scratch[{i*threads} + tx] + scratch[{i*threads+stride} + tx]']
+        lines += ['        T.sync_threads()']
+    for i in range(micro_rows):lines += [f'        acc{i}_0 = scratch[{i*threads} + tx]']
+    for i in range(micro_rows):
+        output_row=f'bx * {tile_rows} + row + {i*rows}'
+        lines += [f'    if (lane == 0) & ({output_row} < {columns}):',f'        out[{output_row}] = acc{i}_0']
+    return '\n'.join(lines)
+
+
 def lower_simt_gemm(kernel):
     import tvm
     ir = tvm.tirx

@@ -7,6 +7,7 @@ from pathlib import Path as _Path
 import sys as _sys
 _sys.path.insert(0,str(_Path(__file__).resolve().parents[2]))
 import argparse,hashlib,json,os,statistics,subprocess,time
+from contextlib import ExitStack
 from pathlib import Path
 import numpy as np
 import tensor
@@ -53,17 +54,23 @@ def check(name,actual,expected):
     return result
 
 
-def run(model,bundle,reference,fixtures,out,*,repeats=5,decode=64,weight_mode='packed'):
+def run(model,bundle,reference,fixtures,out,*,repeats=5,decode=64,weight_mode='packed',validation_only=False,baseline_bundle=None,tinygrad_search_root=None):
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     cases=[{key:case[key] for key in ('name','tokens','reset')} for case in json.loads((Path(fixtures)/'report.json').read_text())['validation']]
     expected,oracle=cached_reference(fixtures,model,cases)
     start=time.perf_counter();tiny=TinyReference(model,weight_mode=weight_mode);load=time.perf_counter()-start
+    tiny_searched=TinyReference(model,weight_mode=weight_mode,search_root=tinygrad_search_root) if tinygrad_search_root else None
     info=tiny_info();print('tinygrad',info,'load seconds',load,flush=True)
     native=NativeReference(model,reference,context=512)
     try:
-        with tensor.Device(provider='webgpu') as device,LFM2(model,bundle,device,context=512) as engine:
+        with ExitStack() as stack:
+            device=stack.enter_context(tensor.Device(provider='webgpu'))
+            engine=stack.enter_context(LFM2(model,bundle,device,context=512))
             if device.info['adapter']['backend_type']!='Vulkan':raise RuntimeError('requires Vulkan')
             first_calls={};prompt=cases[0]['tokens'];runners={'tensor':engine,'tinygrad':tiny,'llama_cpp':native}
+            if baseline_bundle is not None:
+                runners['tensor_baseline']=stack.enter_context(LFM2(model,baseline_bundle,device,context=512))
+            if tiny_searched is not None:runners['tinygrad_searched']=tiny_searched
             for name,runner in runners.items():
                 runner.reset();start=time.perf_counter();actual=runner.forward(prompt);elapsed=time.perf_counter()-start
                 comparison=metrics(actual,expected[0]) if name=='llama_cpp' else check('first_'+name,actual,expected[0])
@@ -82,6 +89,7 @@ def run(model,bundle,reference,fixtures,out,*,repeats=5,decode=64,weight_mode='p
                     except AssertionError:
                         failure={'status':'failed','model':str(Path(model).resolve()),'model_sha256':oracle['model_sha256'],
                                  'tinygrad':info,'first_call':first_calls,'independent_reference':oracle,
+                                 'tinygrad_schedule_replay':tiny_searched.replay.report() if tiny_searched is not None else None,
                                  'validation':validation,'failed_fixture':{**row,'runner':name,'metrics':metrics(actual,expected[i])}}
                         (out/'report.json').write_text(json.dumps(failure,indent=2)+'\n')
                         raise
@@ -89,22 +97,29 @@ def run(model,bundle,reference,fixtures,out,*,repeats=5,decode=64,weight_mode='p
                     if case['name']=='reset_chat' and not np.array_equal(first[name],actual):raise AssertionError('reset must be bitwise identical: '+name)
                 validation.append(row);print('validation',case['name'],row['tinygrad'],flush=True)
             benchmarks=[];forced=np.resize(prompt,decode).tolist()
+            if tiny_searched is not None:
+                matched={row['weight_shape'] for row in tiny_searched.replay.records.values()}
+                if matched!={'ffn_gate','ffn_down'}:raise RuntimeError('searched tinygrad FFN ASTs did not both match: '+str(matched))
             report={'status':'measuring','model':str(Path(model).resolve()),'model_sha256':oracle['model_sha256'],
                     'tinygrad':info,'tinygrad_adapter_sha256':hashlib.sha256(Path(__file__).with_name('tinygrad_reference.py').read_bytes()).hexdigest(),
-                    'weight_mode':weight_mode,'adapter':device.info,'implementation':engine.manifest['implementation'],
+                    'weight_mode':weight_mode,'weight_storage':{'f16_gguf':'native FP16','f32_gguf':'native FP32'},
+                    'adapter':device.info,'implementation':engine.manifest['implementation'],
+                    'tensor_profiles':{name:runner.webgpu_profile for name,runner in runners.items() if name.startswith('tensor')},
+                    'tensor_bundles':{name:runner.manifest for name,runner in runners.items() if name.startswith('tensor')},
+                    'tinygrad_schedule_replay':tiny_searched.replay.report() if tiny_searched is not None else None,
                     'native_commit':COMMIT,'independent_reference':oracle,'loading_seconds':{'tinygrad':load},
                     'first_call':first_calls,'validation':validation,'benchmarks':benchmarks,
                     'protocol':{'context':512,'prefill_chunk':32,'warmups':3,'repeats':repeats,'host_logits':'FP32','sampling':'excluded',
-                                'loading':'excluded from warmed timings','order':'rotate all three runners, sequential GPU execution',
+                                'loading':'excluded from warmed timings','order':'rotate all runners, sequential GPU execution',
                                 'first_call':'includes graph/kernel compilation where needed; isolated persistent tinygrad cache; Tensor producer AOT compilation excluded',
                                 'tinygrad_attention':'fixed 576-entry FP16 KV buffers with causal mask; generic compiler, no upstream AMD LLM kernels'}}
             (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
-            for length in (32,128,384):
+            for length in (() if validation_only else (32,128,384)):
                 prefix=np.resize(prompt,length).tolist();samples={name:[] for name in runners};names=list(runners)
                 # Three warmups allow tinygrad's initial call and JIT capture
                 # to complete before timing either static row profile.
                 for repeat in range(repeats+3):
-                    order=names[repeat%3:]+names[:repeat%3]
+                    order=names[repeat%len(names):]+names[:repeat%len(names)]
                     for name in order:
                         runner=runners[name];runner.reset();start=time.perf_counter();runner.forward(prefix);prefill=time.perf_counter()-start
                         start=time.perf_counter()
@@ -127,6 +142,9 @@ if __name__=='__main__':
     for name in ('model','bundle','reference','fixtures','out'):p.add_argument('--'+name,required=True,type=Path)
     p.add_argument('--repeats',type=int,default=5);p.add_argument('--decode',type=int,default=64)
     p.add_argument('--weight-mode',choices=('packed','decoded'),default='packed')
+    p.add_argument('--validation-only',action='store_true')
+    p.add_argument('--baseline-bundle',type=Path)
+    p.add_argument('--tinygrad-search-root',type=Path)
     a=p.parse_args()
     if a.repeats<1 or not 1<=a.decode<=128:p.error('requires positive repeats and 1..128 decode tokens')
-    run(a.model,a.bundle,a.reference,a.fixtures,a.out,repeats=a.repeats,decode=a.decode,weight_mode=a.weight_mode)
+    run(a.model,a.bundle,a.reference,a.fixtures,a.out,repeats=a.repeats,decode=a.decode,weight_mode=a.weight_mode,validation_only=a.validation_only,baseline_bundle=a.baseline_bundle,tinygrad_search_root=a.tinygrad_search_root)

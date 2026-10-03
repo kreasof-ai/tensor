@@ -3,6 +3,7 @@ from pathlib import Path as _Path
 import sys as _sys
 _sys.path.insert(0,str(_Path(__file__).resolve().parents[2]))
 import argparse,hashlib,json,statistics,time
+from contextlib import nullcontext
 from pathlib import Path
 import numpy as np
 import tensor
@@ -15,10 +16,10 @@ from benchmarks.lfm2.tinygrad_compare import tiny_info
 from benchmarks.lfm2.tinygrad_reference import rounded_half
 
 
-def run(model,bundle,out,rows=(1,32)):
+def run(model,bundle,out,rows=(1,32),*,weights=('ffn_gate','ffn_down'),search_seconds=None,fallback_cache=None,heldout=False):
     out=Path(out);out.mkdir(parents=True,exist_ok=True);gguf=GGUF(model)
     manifest=json.loads((Path(bundle)/'inference.json').read_text());records=[]
-    for suffix in ('ffn_gate','ffn_down'):
+    for suffix in weights:
         name='blk.0.'+suffix+'.weight';info=gguf.tensors[name];o,k=info.shape
         decoded=gguf.array(name).reshape(o,k)
         for r in rows:
@@ -34,11 +35,19 @@ def run(model,bundle,out,rows=(1,32)):
                 lhs,rhs=(rounded_half(value),rounded_half(weight)) if r>1 else (value.float(),weight.float())
                 return (lhs@rhs.T).realize()
             jit=TinyJit(operation);start=time.perf_counter();result=jit(input);result.numpy();cold=time.perf_counter()-start
-            start=time.perf_counter();result=jit(input);result.numpy();capture=time.perf_counter()-start
+            if search_seconds is not None:
+                if r!=32 or info.type!=1:raise ValueError('budgeted search requires 32-row F16 projections')
+                from benchmarks.lfm2.tinygrad_search_budget import BudgetSearch
+                budget=BudgetSearch(search_seconds,out/f'{suffix}-r{r}-search',x,decoded.astype(np.float16),expected,tolerance,fallback_cache=fallback_cache)
+            else:budget=nullcontext()
+            start=time.perf_counter()
+            with budget:result=jit(input);result.numpy()
+            capture=time.perf_counter()-start
             actual=jit(input).numpy()
             if not np.all(np.isfinite(actual)) or not np.all(np.abs(actual-expected)<=tolerance):raise AssertionError(('tinygrad',name,r,float(np.max(np.abs(actual-expected)))))
             record={'weight':name,'shape':[r,k,o],'type':info.type,'tinygrad':{'first_seconds':cold,'capture_and_search_seconds':capture,
                     'maximum_absolute_error':float(np.max(np.abs(actual-expected)))}}
+            if search_seconds is not None:record['search']=budget.stats
             programs=[]
             for prg in jit.captured._linear.toposort():
                 if prg.op is not Ops.PROGRAM:continue
@@ -78,6 +87,17 @@ def run(model,bundle,out,rows=(1,32)):
                         if repeat:samples[name_runner].append(elapsed)
                 for name_runner,values in samples.items():record[name_runner].update(samples_seconds=values,median_seconds=statistics.median(values))
                 adapter=device.info
+            if heldout or search_seconds is not None:
+                checks=[]
+                for seed,scale in ((101,.01),(202,1.0),(303,.00001)):
+                    values=(np.random.default_rng(seed).normal(size=(r,k))*scale).astype(np.float32)
+                    lhs=values.astype(np.float16).astype(np.float64) if r>1 else values.astype(np.float64)
+                    reference=lhs@right.T;bound=np.abs(lhs)@np.abs(right).T*3e-6+1e-10
+                    actual=jit(Tensor(values).realize()).numpy()
+                    if not np.all(np.isfinite(actual)) or not np.all(np.abs(actual-reference)<=bound):
+                        raise AssertionError(('heldout tinygrad',name,r,seed))
+                    checks.append({'seed':seed,'scale':scale,'maximum_absolute_error':float(np.max(np.abs(actual-reference)))})
+                record['heldout_validation']=checks
             records.append(record);print(record,flush=True)
     report={'status':'passed','model':str(Path(model).resolve()),'model_sha256':hashlib.file_digest(Path(model).open('rb'),'sha256').hexdigest(),
             'tinygrad':tiny_info(),'tensor_adapter':adapter,'records':records,
@@ -89,4 +109,9 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('model','bundle','out'):p.add_argument('--'+name,required=True,type=Path)
     p.add_argument('--rows',type=int,nargs='+',default=[1,32],choices=(1,32))
-    a=p.parse_args();run(a.model,a.bundle,a.out,tuple(a.rows))
+    p.add_argument('--weights',nargs='+',choices=('ffn_gate','ffn_down'),default=['ffn_gate','ffn_down'])
+    p.add_argument('--search-seconds',type=float);p.add_argument('--fallback-cache',type=Path)
+    p.add_argument('--heldout',action='store_true')
+    a=p.parse_args()
+    if a.search_seconds is not None and a.search_seconds<=0:p.error('search seconds must be positive')
+    run(a.model,a.bundle,a.out,tuple(a.rows),weights=tuple(a.weights),search_seconds=a.search_seconds,fallback_cache=a.fallback_cache,heldout=a.heldout)

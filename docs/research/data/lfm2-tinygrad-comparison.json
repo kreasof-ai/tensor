@@ -5053,5 +5053,9 @@
         -65520.0
       ]
     }
+  },
+  "corrections": {
+    "full_model_storage": "Historical full-model adapter expands F16 GGUF tensors to FP32 through GGUF.array default dtype. Full-model timings do not match Tensor native F16 storage. Adapter is now corrected; retained historical full-model samples are not native-F16 parity measurements.",
+    "projection_storage": "All original projection experiments use native packed F16 views; unaffected."
   }
 }

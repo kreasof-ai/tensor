@@ -10,6 +10,11 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
+| [230M runtime overhead and wider discovery](lfm2-230m-runtime-search.md) | 10.5–12.0% decode gain from ordered readback and fewer submissions; 601 more projection candidates, experimental attention fusion, and a 1.09–1.13× remaining native gap |
+| [230M F16 decode search](lfm2-230m-decode-search.md) | 1,081 streamed-weight projection candidates, paired FFN and parallel attention; 39–63% decode gains and a 1.23× remaining llama.cpp gap |
+| [Searched prefill and decoding throughput](lfm2-prefill-search-throughput.md) | Full-model F16 rates for Tensor, tinygrad and llama.cpp; 45–47% Tensor prefill gains, 19–28% tinygrad gains, unchanged decoding and explicit accuracy metrics |
+| [Tensor search versus tinygrad and llama.cpp](lfm2-tensor-search-comparison.md) | Tensor's own 30-minute Vulkan schedule search, 2.85×/5.93× projection GPU gains, and fresh precision-checked three-framework kernel/call measurements |
+| [Wider tinygrad projection search](lfm2-tinygrad-long-search.md) | A combined 30-minute cap, per-candidate oracle checks and independent GPU/completed-call remeasurement of wider beams |
 | [LFM2 and tinygrad schedule search](lfm2-tinygrad-comparison.md) | Matched 230M F16 inference, OpenCL/Vulkan precision checks, bounded BEAM projection search and a producer-side search design |
 | [Further LFM2 WebGPU decode optimization](lfm2-webgpu-decode-push.md) | Packed floating dots, measured row widths and residual fusion: +9.3% 2.6B decode, 1.21x gap to llama.cpp, smaller-model regression checks |
 | [LFM2.5-2.6B Q4_0 matched run](lfm2-2.6b-q4_0-matched-run.md) | The 230M submission protocol re-run on a 2.6B QAD checkpoint, plus two schedule corrections: decode reduction width and prefill staging cost, worth +8.1% decode and +19.0% prefill |

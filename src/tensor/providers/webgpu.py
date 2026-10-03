@@ -40,6 +40,13 @@ def probe(ordinal=0):
 
 
 class OpaqueBuffer(Buffer):
+    def to_numpy(self):
+        # Copy submission is ordered after all writes/dispatches on this queue;
+        # mapping its destination waits for completion. A separate queue-wide
+        # fence before the copy adds another host round trip without ordering it.
+        self._check()
+        return self.device._download(self)
+
     @property
     def pointer(self):
         raise BufferError("WebGPU buffers have opaque handles, not device pointers")
@@ -149,21 +156,34 @@ class Device(Session):
     def from_dlpack(self, source):
         raise BufferError("WebGPU has no raw-address DLPack import; upload a NumPy array")
 
-    def _download(self, buffer):
-        import numpy as np
+    def _readback_staging(self, buffer):
         import wgpu
+        self._check();buffer._check()
+        if buffer.device is not self:raise self.error("WebGPU readback belongs to another device")
         if buffer._readback is None:
             buffer._readback=self._gpu.create_buffer(size=buffer._allocated,
                 usage=wgpu.BufferUsage.COPY_DST|wgpu.BufferUsage.MAP_READ)
-        staging=buffer._readback
-        encoder=self._gpu.create_command_encoder()
-        encoder.copy_buffer_to_buffer(buffer._storage,0,staging,0,buffer._allocated)
-        self._gpu.queue.submit([encoder.finish()])
-        staging.map_sync(wgpu.MapMode.READ)
+        return buffer._readback
+
+    def _map_readback(self, buffer, staging):
+        import numpy as np
+        import wgpu
+        # The preceding explicit copy submission already flushes the queue.
+        # This is the same path wgpu-native 0.29 queue.read_buffer uses, avoiding
+        # map_sync's extra empty submission. Keep the public path on other versions.
+        if wgpu.__version__=='0.29.0':staging.map_async('READ_NOSYNC').sync_wait()
+        else:staging.map_sync(wgpu.MapMode.READ)
         try:
             data=staging.read_mapped(copy=False)
             return np.frombuffer(data,dtype=buffer.dtype,count=math.prod(buffer.shape)).reshape(buffer.shape).copy()
         finally:staging.unmap()
+
+    def _download(self, buffer):
+        staging=self._readback_staging(buffer)
+        encoder=self._gpu.create_command_encoder()
+        encoder.copy_buffer_to_buffer(buffer._storage,0,staging,0,buffer._allocated)
+        self._gpu.queue.submit([encoder.finish()])
+        return self._map_readback(buffer,staging)
 
     def _dispose_buffer(self, buffer):
         if buffer._readback is not None:
@@ -382,11 +402,13 @@ class PreparedPlan:
         except BaseException:
             self.close();raise
 
-    def launch(self):
+    def launch(self, *, readback=None):
+        """Submit dispatches; optionally copy and return an owned host snapshot."""
         device=self.device;device._check()
         if self.closed or self.generation!=device._generation:raise device.error("WebGPU plan is closed or belongs to a prior session")
         # Resource lifetime remains checked even though descriptors are bound once.
         for resource in self.resources:resource._check()
+        staging=device._readback_staging(readback) if readback is not None else None
         dimension=device._gpu.limits['max-compute-workgroups-per-dimension']
         encoder=device._gpu.create_command_encoder()
         compute=encoder.begin_compute_pass()
@@ -402,7 +424,10 @@ class PreparedPlan:
                 width=min(grid[0],dimension)
                 compute.dispatch_workgroups(width,grid[1],(grid[0]+width-1)//width)
         compute.end()
+        if staging is not None:
+            encoder.copy_buffer_to_buffer(readback._storage,0,staging,0,readback._allocated)
         device._gpu.queue.submit([encoder.finish()])
+        if staging is not None:return device._map_readback(readback,staging)
 
     def close(self):
         if self.closed:return
