@@ -42,15 +42,40 @@ The 230M Q4_0 file contains 82 Q4_0 matrices and one Q6_K tied embedding/output
 matrix; the Vulkan path runs both decoders on packed u32 buffers. The F16
 embedding is exactly 128 MiB and fits the current default WebGPU binding limit.
 
-The latest [decode repeat](../../docs/research/lfm2-webgpu-decode-push.md) measures
+The [packed decode repeat](../../docs/research/lfm2-webgpu-decode-push.md) measures
 packed floating dots and residual fusion on this GPU: 2.6B Q4_0 reaches
 140 tok/s against llama.cpp's 169 at prefix 128, and 230M Q4_0 improves by 9.5%
 in the same fresh comparison. Prefill is unchanged. Rebuild existing bundles
 after updating the package because implementation fingerprints are enforced.
 
-This profile uses the ordinary post-training-quantized Q4_0 checkpoint. The
-repository also publishes a distinct QAD Q4_0 checkpoint; do not interchange
-them in matched numerical or performance comparisons. Q4_K_M can additionally
+The later [2.6B QAD Q4_0 revisit](../../docs/research/lfm2-2.6b-q4_0-revisit.md)
+reaches 146 tok/s decode versus native 169–170 at prefix 128. Ordered readback
+adds 5% in an identical-shader ablation; the opt-in `prefill_chunked` profile
+with rows 1/32/128 improves long-prompt prefill by 48–49%, to 346/339 tok/s.
+Packed Q4 prefill still trails native substantially. Its Q6_K output matrix
+requires `max_buffer_size=268435456` on this device.
+
+The subsequent [packed parity search](../../docs/research/lfm2-2.6b-q4_0-parity.md)
+reaches 164 tok/s decode versus native 170, and 522/517 tok/s prefill for
+128/384 tokens. Build with `--webgpu-profile quant_searched --prefill-chunks 32 128`
+to select replayed Q4/Q6 decode, fused attention and packed prefill outer products
+for the measured 2.6B shapes. Other shapes retain existing schedules. The
+256 MiB buffer limit is still required. Decode parity remains unproven;
+the same-chunk prefill gain is 51%, with all 19 independent logit fixtures passing.
+
+The [1K prefill experiment](../../docs/research/lfm2-2.6b-prefill-1k.md) adds the
+opt-in `--webgpu-profile prefill_mixed --prefill-chunks 32 128` profile for this
+2.6B QAD Q4_0 checkpoint, reaching 1,058/1,047 tok/s at 128/384 prompt tokens,
+about twice the packed control. It combines searched short F16 accumulation tiles,
+two-component Q8 activation dots, parallel RMS and a guarded final-layer suffix
+plan. Its approximate prefill arithmetic passes the same independent logit
+gates; decode projection WGSL stays identical to `quant_searched`. Weights
+remain packed, and the 256 MiB buffer limit is required. See the report for
+completed-forward throughput, native comparisons and the validated scope.
+
+The 230M Q4_0 download uses the ordinary post-training-quantized checkpoint.
+The 2.6B reports above use the distinct QAD Q4_0 checkpoint; do not interchange
+these variants in matched numerical or performance comparisons. Q4_K_M can additionally
 be downloaded with `--formats Q4_K_M`. Omitting `--model-size` preserves the
 existing 2.6B download workflow and its default output directory.
 

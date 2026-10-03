@@ -370,7 +370,7 @@ class PreparedPlan:
         from wgpu.backends.wgpu_native._api import libf
         self._native_bind=libf.wgpuComputePassEncoderSetBindGroup
         self._null_offsets=ffi.NULL
-        self._encode=None;self._records=b''
+        self._encode=None;self._records=b'';self._submit_native=None
         try:
             from tensor.providers import _webgpu_native
         except ImportError:
@@ -380,7 +380,22 @@ class PreparedPlan:
                 self._encode=libf._make_proxy_func('tensorEncodePreparedPlan',_webgpu_native.encode)
                 self._function_pointers=tuple(int(ffi.cast('uintptr_t',ffi.addressof(lib,name))) for name in (
                     'wgpuComputePassEncoderSetPipeline','wgpuComputePassEncoderSetBindGroup','wgpuComputePassEncoderDispatchWorkgroups'))
+                if hasattr(_webgpu_native,'submit'):
+                    self._submit_native=libf._make_proxy_func('tensorSubmitPreparedPlan',_webgpu_native.submit)
+                    self._submission_descriptors=tuple(ffi.new(name+' *') for name in
+                        ('WGPUCommandEncoderDescriptor','WGPUComputePassDescriptor','WGPUCommandBufferDescriptor'))
+                    self._descriptor_records=struct.pack('<QQQ',*(int(ffi.cast('uintptr_t',v)) for v in self._submission_descriptors))
+                    self._submission_functions=struct.pack('<'+'Q'*12,*(int(ffi.cast('uintptr_t',ffi.addressof(lib,name))) for name in (
+                        'wgpuDeviceCreateCommandEncoder','wgpuCommandEncoderBeginComputePass',
+                        'wgpuComputePassEncoderSetPipeline','wgpuComputePassEncoderSetBindGroup','wgpuComputePassEncoderDispatchWorkgroups',
+                        'wgpuComputePassEncoderEnd','wgpuCommandEncoderCopyBufferToBuffer','wgpuCommandEncoderFinish',
+                        'wgpuQueueSubmit','wgpuCommandBufferRelease','wgpuComputePassEncoderRelease','wgpuCommandEncoderRelease')))
+                    def captured_error():
+                        stack=libf._error_handler._get_proxy_stack()
+                        return bool(stack and stack[-1].message is not None)
+                    self._submission_error_probe=captured_error
         device.info['prepared_encoding']='native' if self._encode else 'python'
+        device.info['prepared_submission']='native' if self._submit_native else 'python'
         try:
             for executable,call in self.calls:
                 if executable.device is not device:raise device.error("WebGPU plan belongs to another device")
@@ -409,6 +424,15 @@ class PreparedPlan:
         # Resource lifetime remains checked even though descriptors are bound once.
         for resource in self.resources:resource._check()
         staging=device._readback_staging(readback) if readback is not None else None
+        if self._submit_native and self._encode:
+            from wgpu.backends.wgpu_native._ffi import ffi
+            handle=lambda value:int(ffi.cast('uintptr_t',value))
+            self._submit_native(handle(device._gpu._internal),handle(device._gpu.queue._internal),
+                self._records,self._descriptor_records,self._submission_functions,
+                handle(readback._storage._internal) if staging is not None else 0,
+                handle(staging._internal) if staging is not None else 0,
+                readback._allocated if staging is not None else 0,self._submission_error_probe)
+            return device._map_readback(readback,staging) if staging is not None else None
         dimension=device._gpu.limits['max-compute-workgroups-per-dimension']
         encoder=device._gpu.create_command_encoder()
         compute=encoder.begin_compute_pass()

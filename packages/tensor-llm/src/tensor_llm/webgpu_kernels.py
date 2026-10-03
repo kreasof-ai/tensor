@@ -102,6 +102,76 @@ def round_half(value):
 def source(kind,p):
     r=p.get('r',1)
     a=lambda name,n,dtype='float32':(name,n,dtype)
+    if kind in ('linear','ffn') and p.get('q16'):
+        return source(kind+'_q16',p)
+    if kind=='prefill_tail':
+        c,t=p['c'],p['t']
+        return emit([a('x',r*c),a('out',t*c),a('control',2,'int32'),a('tail_control',2,'int32')],f'''with T.Kernel(T.ceildiv({t*c},256),threads=256) as block:
+    tx=T.get_thread_binding()
+    index=block * 256 + tx
+    start=T.max(control[1] - {t},0)
+    count=T.min(control[1],{t})
+    if index < {t*c}:
+        out[index]=T.if_then_else(index // {c} < count,x[start * {c} + index],0)
+    if index == 0:
+        tail_control[0]=control[0] + start
+        tail_control[1]=count''')
+    if kind=='quantize_q16':
+        k=p['k'];blocks=r*k//32;words=r*k//4
+        if k%32:raise ValueError('two-component activation blocks require depth divisible by 32')
+        pack=lambda component:' | '.join(f'((T.reinterpret("uint32", quants[{component}, tx * 4 + {i}]) & 255) << {i*8})' for i in range(4))
+        lines=[f'with T.Kernel({blocks}, threads=32) as block:',
+               '    tx = T.get_thread_binding()','    scratch = T.alloc_shared((32,), "float32")',
+               '    quants = T.alloc_shared((2, 32), "int32")','    values = T.alloc_shared((32,), "float32")',
+               '    factor = T.alloc_var("float32")',f'    values[tx] = {round_half("x[block * 32 + tx]")}']
+        for component in range(2):
+            lines += ['    scratch[tx] = T.abs(values[tx])','    T.sync_threads()',tree_reduce(32,'max'),
+                      '    factor = T.max(scratch[0] / 127, 1.0e-20)',
+                      f'    quants[{component}, tx] = T.cast(T.round(values[tx] / factor), "int32")',
+                      '    T.sync_threads()',f'    if tx < 8:',f'        packed[block * 8 + tx + {component*words}] = {pack(component)}',
+                      f'    values[tx] = values[tx] - T.cast(quants[{component}, tx], "float32") * factor',
+                      f'    scratch[tx] = T.cast(quants[{component}, tx], "float32")','    T.sync_threads()',tree_reduce(32),
+                      '    if tx == 0:',f'        scales[block + {component*blocks}] = factor',f'        sums[block + {component*blocks}] = T.cast(scratch[0], "int32")',
+                      '    T.sync_threads()']
+        if p.get('fixed_residual'):
+            # The low component shares a fixed scale ratio with the high one.
+            # A rounded high byte leaves at most half a step: /254 fits +/-127.
+            text='\n'.join(lines)
+            first='factor = T.max(scratch[0] / 127, 1.0e-20)'
+            at=text.rfind(first);text=text[:at]+text[at:].replace(first,'factor = scales[block] / 254',1)
+            lines=text.splitlines()
+        if p.get('sg'):
+            fast=['    value = T.alloc_var("float32")',f'    value = {round_half("x[block * 32 + tx]")}',
+                  '    if T.call_extern("uint32", "tensor_subgroup_size") >= 32:']
+            for component in range(2):
+                packed=' | '.join(f'((T.reinterpret("uint32", T.call_extern("int32", "subgroupShuffle", quant, T.uint32((tx // 4) * 4 + {i}))) & 255) << {i*8})' for i in range(4))
+                factor='factor / 254' if component and p.get('fixed_residual') else 'T.max(T.call_extern("float32", "subgroupMax", T.abs(value)) / 127, 1.0e-20)'
+                fast += [f'        factor = {factor}',
+                         '        quant = T.cast(T.round(value / factor), "int32")',f'        bits = {packed}',
+                         '        total = T.call_extern("int32", "subgroupAdd", quant)',
+                         '        if tx % 4 == 0:',f'            packed[block * 8 + tx // 4 + {component*words}] = bits',
+                         '        if tx == 0:',f'            scales[block + {component*blocks}] = factor',f'            sums[block + {component*blocks}] = total',
+                         '        value = value - T.cast(quant, "float32") * factor']
+            fast += ['    else:']+['    '+line for line in '\n'.join(lines[6:]).splitlines()]
+            lines=lines[:6]+fast
+        return emit([a('x',r*k),a('packed',2*words,'uint32'),a('scales',2*blocks),a('sums',2*blocks,'int32')],'\n'.join(lines))
+    if kind in ('linear_q16','ffn_q16'):
+        from tensor.compiler.webgpu_lowering import packed_integer_matmul_schedule
+        k,o=p['k'],p['o'];count=k*o//32*18//4;parts=2 if kind=='ffn_q16' else 1
+        base=f'(({{column}}) * {k//32} + {{block}}) * 18'
+        words=[packed_word(base+' + 2 + ({word}) * 4').replace('w[',name+'[') for name in ('w','w2')[:parts]]
+        scales=[packed_half(base).replace('w[',name+'[') for name in ('w','w2')[:parts]]
+        if p.get('q4_prepacked'):
+            count=k*o//32*9
+            base=f'(({{column}}) * {k//32} + {{block}}) * 9'
+            words=[f'{name}[{base} + {{word}}]' for name in ('w','w2')[:parts]]
+            scales=[f'T.reinterpret("float32", {name}[{base} + 8])' for name in ('w','w2')[:parts]]
+        args=[a('packed',r*k//2,'uint32'),a('scales',r*k//16),a('sums',r*k//16,'int32'),a('w',count,'uint32')]
+        if parts==2:args += [a('w2',count,'uint32')]
+        args += [a('out',r*o)]
+        config=dict(p.get('integer',{}))
+        if p.get('q4_prepacked'):config['signed_rhs']=True
+        return emit(args,packed_integer_matmul_schedule(r,k,o,words,scales,**config))
     if kind=='quantize_q8':
         k=p['k']
         packed=' | '.join(f'((T.reinterpret("uint32", quants[tx * 4 + {i}]) & 255) << {i*8})' for i in range(4))
@@ -156,7 +226,7 @@ def source(kind,p):
                 name=match[0]
                 if name.startswith('acc'):return name.replace('acc','up',1)
                 return name+'2'
-            return re.sub(r'\b(?:accum|acc\d+(?:_\d+)?|total|scale|packed|low\d+|high\d+|scratch|rhs|right\d+|value|w)\b',replace,line)
+            return re.sub(r'\b(?:accum|acc\d+(?:_\d+)?|partial\d+_\d+|total|scale|packed|low\d+|high\d+|scratch|rhs|right\d+|value\d*|w)\b',replace,line)
         lines=[]
         for line in text.splitlines():
             if 'out[' in line and ' = ' in line:
@@ -165,10 +235,10 @@ def source(kind,p):
                 continue
             lines.append(line)
             stripped=line.strip()
-            if (' = ' in line and (re.match(r'(accum|acc\d+(?:_\d+)?|total|scratch(?:\[.*?\])?|rhs(?:\[.*?\])?|right\d+|scale|packed|low\d+|high\d+) = ',stripped)
-                                      or stripped.startswith('value = T.if_then_else(bx'))):
+            if (' = ' in line and (re.match(r'(accum|acc\d+(?:_\d+)?|partial\d+_\d+|total|scratch(?:\[.*?\])?|rhs(?:\[.*?\])?|right\d+|scale|packed|low\d+|high\d+) = ',stripped)
+                                      or re.match(r'value\d* = T.if_then_else\(bx',stripped))):
                 lines.append(paired(line))
-            elif stripped=='value = T.alloc_var("float32")':lines.append(paired(line))
+            elif re.fullmatch(r'value\d* = T.alloc_var\("float32"\)',stripped):lines.append(paired(line))
         return '\n'.join(lines)+'\n'
     if kind=='linear_add':
         if r!=1:raise ValueError('residual projection fusion requires decode rows')
@@ -217,7 +287,7 @@ def source(kind,p):
     if tx == 0:
         token[0] = indices[0]
         pos[1] = 1''')
-    if kind=='rms' and r==1:
+    if kind=='rms' and (r==1 or p.get('parallel_rows')):
         c=p['c'];threads=rms_width(c)
         reduce=subgroup_reduce(threads,'total') if p.get('sg') else '    scratch[tx] = total\n    T.sync_threads()\n'+tree_reduce(threads)
         return emit([a('x',r*c),a('w',c),a('out',r*c)],f'''with T.Kernel({r}, threads={threads}) as row:
@@ -251,8 +321,11 @@ def source(kind,p):
                 wide=p.get('sg') and k%256==0 and min(k,o)>=2048
                 lanes=p.get('gemv_lanes',32 if wide else 16);threads=p.get('gemv_threads',128)
                 accumulators=p.get('gemv_accumulators',1)
-                if lanes not in (8,16,32) or threads not in (64,128,256) or accumulators not in (1,4) or k%(lanes*8):
+                if lanes not in (8,16,32,64) or threads not in (64,128,256,512) or threads%lanes or accumulators not in (1,4) or k%(lanes*8):
                     raise ValueError('unsupported packed Q4 decode schedule')
+            if q==14:
+                threads=p.get('gemv_threads',128)
+                if threads not in (64,128,256,512):raise ValueError('invalid Q6 decode workgroup')
             row_count=threads//lanes
             expr=weight(q,f'bx * {row_count} + row','tile * 32 + lane',k,packed_words=True)
             if q==2 and k%128==0:
@@ -285,7 +358,7 @@ def source(kind,p):
             packed = {packed_word(base+' + 2 + lane % 4 * 4')}
 '''+ '\n'.join(loads)
             elif q==14:
-                base=f'((bx * 4 + row) * {k//256} + tile) * 210'
+                base=f'((bx * {row_count} + row) * {k//256} + tile) * 210'
                 reads='\n'.join(f'            low{i} = {packed_byte(base+f" + {i*32} + lane")}' for i in range(4))
                 reads+='\n'+'\n'.join(f'            high{i} = {packed_byte(base+f" + {128+i*32} + lane")}' for i in range(2))
                 terms=[]
@@ -299,6 +372,20 @@ def source(kind,p):
             scale = {packed_half(base+' + 208')}
 {reads}
 '''+ '\n'.join(terms)
+                if p.get('gemv_q6_dot'):
+                    body=[f'            scale = {packed_half(base+" + 208")}']
+                    for half in range(2):
+                        low_address=base+f' + {half*64} + (lane // 8 % 2) * 32 + lane % 8 * 4'
+                        high_address=base+f' + {128+half*32} + lane % 8 * 4'
+                        body += [f'            low{half} = {packed_word(low_address)}',f'            high{half} = {packed_word(high_address)}']
+                        lhs=', '.join(f'x[tile * 256 + {half*128} + lane * 4 + {byte}]' for byte in range(4))
+                        rhs=', '.join(f'T.cast(((low{half} >> ({byte*8} + lane // 16 * 4)) & 15) | (((high{half} >> ({byte*8} + lane // 8 * 2)) & 3) << 4), "float32") - 32' for byte in range(4))
+                        bits=packed_byte(base+f' + {192+half*8} + lane // 4')
+                        signed=f'T.cast(T.cast({bits}, "int32") - T.if_then_else({bits} >= 128, 256, 0), "float32")'
+                        body += [f'            left{half} = T.call_extern("float32x4", "vec4<f32>", {lhs})',
+                                 f'            right{half} = T.call_extern("float32x4", "vec4<f32>", {rhs})',
+                                 f'            accum = accum + scale * {signed} * T.call_extern("float32", "dot", left{half}, right{half})']
+                    loop=f'        for tile in T.serial({k//256}):\n'+'\n'.join(body)
             elif q in (0,1) and k%128==0:
                 index='tile * 128 + lane * 4'
                 lhs=', '.join(f'x[{index} + {i}]' for i in range(4))
@@ -317,12 +404,26 @@ def source(kind,p):
                 else:
                     loop=f'''        for tile in T.serial({k//32}):
             accum = accum + x[tile * 32 + lane] * ({expr})'''
+            unroll=p.get('gemv_unroll',1);chains=p.get('gemv_chains',1)
+            if unroll!=1 or chains!=1:
+                match=re.match(r'        for tile in T.serial\((\d+)\):',loop)
+                if (q not in (2,14) or type(unroll) is not int or unroll not in (1,2,4,8,16)
+                    or type(chains) is not int or chains not in (1,2,4,8) or chains>unroll
+                    or accumulators!=1 or match is None or int(match[1])%unroll):
+                    raise ValueError('invalid packed decode unroll or accumulator chains')
+                body='\n'.join(loop.splitlines()[1:]);parts=[]
+                for slot in range(unroll):
+                    part=re.sub(r'\btile\b',f'(tile * {unroll} + {slot})',body)
+                    if chains>1:part=re.sub(r'\baccum\b',f'acc{slot%chains}',part)
+                    parts.append(part)
+                loop=f'        for tile in T.serial({int(match[1])//unroll}):\n'+'\n'.join(parts)
+                if chains>1:accumulators=chains
             reduction='\n'.join(f'''    if lane < {stride}:
         scratch[tx] = scratch[tx] + scratch[tx + {stride}]
     T.sync_threads()''' for stride in (lanes>>i for i in range(1,lanes.bit_length())))
             reduction = segmented_reduce(lanes) if p.get('sg') else '    scratch[tx] = accum\n    T.sync_threads()\n'+reduction
-            extra='' if accumulators==1 else '\n'+'\n'.join(f'    acc{i} = T.alloc_var("float32")\n    acc{i} = 0' for i in range(4))
-            combine='' if accumulators==1 else '\n    accum = (acc0 + acc1) + (acc2 + acc3)'
+            extra='' if accumulators==1 else '\n'+'\n'.join(f'    acc{i} = T.alloc_var("float32")\n    acc{i} = 0' for i in range(accumulators))
+            combine='' if accumulators==1 else '\n    accum = '+('(acc0 + acc1) + (acc2 + acc3)' if accumulators==4 else ' + '.join(f'acc{i}' for i in range(accumulators)))
             return emit([a('x',k),a('w',count,dtype),a('out',o)],f'''with T.Kernel(T.ceildiv({o}, {row_count}), threads={threads}) as bx:
     tx = T.get_thread_binding()
     row = tx // {lanes}
@@ -343,9 +444,13 @@ def source(kind,p):
             from tensor.compiler.webgpu_lowering import register_matmul_schedule,partitioned_matmul_schedule,outer_product_matmul_schedule
             tm,tn,bk=p.get('tile',(16,32,64))
             if p.get('schedule')=='outer':
-                if q!=1:raise ValueError('outer-product prefill requires F16 weights')
-                body=outer_product_matmul_schedule(r,k,o,dtype='float16',
-                    lhs_value=round_half('x[({row}) * '+str(k)+' + ({k})]'),**p['outer'])
+                if q not in (1,2,14):raise ValueError('outer-product prefill requires F16, Q4_0 or Q6_K weights')
+                shared_dtype=p.get('outer_shared_dtype','float16')
+                if shared_dtype not in ('float16','float32'):raise ValueError('invalid outer-product shared dtype')
+                loads={} if q==1 else dict(rhs_value=weight(q,'{column}','{k}',k,packed_words=True),rhs_transform=round_half('{value}'))
+                if q==1 and shared_dtype=='float32':loads=dict(rhs_value='T.cast(w[({column}) * '+str(k)+' + ({k})], "float32")')
+                body=outer_product_matmul_schedule(r,k,o,dtype=shared_dtype,
+                    lhs_value=round_half('x[({row}) * '+str(k)+' + ({k})]'),**loads,**p['outer'])
                 return emit(args,body)
             if p.get('schedule')=='partitioned':
                 if q!=1:raise ValueError('searched partitioned profile requires F16 weights')

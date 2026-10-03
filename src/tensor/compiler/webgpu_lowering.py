@@ -22,10 +22,21 @@ def lower_wgsl_intrinsics(source):
         "tensor_unpack_f16": '''fn tensor_unpack_f16(bits:u32)->f32 {
   return unpack2x16float(bits).x;
 }''',
+        "tensor_dot2_f16_add": '''fn tensor_dot2_f16_add(a:u32, b:u32, accumulator:f32)->f32 {
+  return accumulator + dot(unpack2x16float(a), unpack2x16float(b));
+}''',
+        "tensor_fma2_f16_vec": '''fn tensor_fma2_f16_vec(a:u32, b:u32, accumulator:vec2<f16>)->vec2<f16> {
+  return fma(vec2<f16>(unpack2x16float(a)), vec2<f16>(unpack2x16float(b)), accumulator);
+}''',
+        "tensor_sum2_f16_vec": '''fn tensor_sum2_f16_vec(a:vec2<f16>)->f32 {
+  return f32(a.x) + f32(a.y);
+}''',
     }
     for name, helper in helpers.items():
         if name+'(' in source:
             source += '\n'+helper+'\n'
+    if 'tensor_fma2_f16_vec(' in source and 'enable f16;' not in source:
+        source='enable f16;\n'+source
     if "dot4I8Packed(" in source:
         source = 'requires packed_4x8_integer_dot_product;\n'+source
     if "tensor_subgroup_size()" in source:
@@ -114,7 +125,8 @@ def outer_product_matmul_schedule(rows, depth, columns, *, tile_m=64, tile_n=64,
                                   lhs_layout='km', lhs_pad=0, rhs_pad=0,
                                   owner_axis='column', unroll=4, fma=True,
                                   dtype='float32', epilogue='gemm', explicit_unroll=False,
-                                  lhs_value=None):
+                                  lhs_value=None, rhs_value=None, rhs_transform=None,
+                                  dot_width=1,packed_pairs=False,half_accum=False,group_order='column'):
     """Staged SIMT outer products with complete-K private FP32 accumulators.
 
     Cooperative loads preserve row-major A and transposed row-major B storage.
@@ -127,14 +139,30 @@ def outer_product_matmul_schedule(rows, depth, columns, *, tile_m=64, tile_n=64,
         raise ValueError('invalid outer-product ownership')
     if micro_m*micro_n>64 or tile_k%unroll or unroll>16:
         raise ValueError('invalid outer-product register footprint or unroll')
+    if type(dot_width) is not int or dot_width not in (1,2,4) or tile_k%(unroll*dot_width):
+        raise ValueError('invalid outer-product dot width')
+    if type(packed_pairs) is not bool or (packed_pairs and (dtype!='float16' or dot_width!=2 or lhs_layout!='km')):
+        raise ValueError('packed outer-product pairs require F16, K-major layout and dot width two')
+    if type(half_accum) is not bool or (half_accum and not packed_pairs):
+        raise ValueError('half accumulation requires packed F16 pairs')
+    if group_order not in ('row','column'):raise ValueError('invalid outer-product group order')
     if lhs_layout not in ('mk','km') or owner_axis not in ('row','column') or dtype not in ('float32','float16') or epilogue not in ('gemm','linear') or type(fma) is not bool or type(explicit_unroll) is not bool:
         raise ValueError('invalid outer-product layout or arithmetic')
     if any(type(v) is not int or v<0 for v in (lhs_pad,rhs_pad)):
         raise ValueError('invalid outer-product padding')
     if lhs_value is not None and (type(lhs_value) is not str or not lhs_value.strip()):
         raise ValueError('invalid outer-product activation expression')
+    if any(v is not None and (type(v) is not str or not v.strip()) for v in (rhs_value,rhs_transform)):
+        raise ValueError('invalid outer-product weight expression')
+    if packed_pairs:
+        return packed_outer_product_schedule(rows,depth,columns,tile_m=tile_m,tile_n=tile_n,
+            tile_k=tile_k,micro_m=micro_m,micro_n=micro_n,threads=threads,lhs_pad=lhs_pad,
+            rhs_pad=rhs_pad,owner_axis=owner_axis,unroll=unroll,explicit_unroll=explicit_unroll,
+            epilogue=epilogue,lhs_value=lhs_value,rhs_value=rhs_value,rhs_transform=rhs_transform,half_accum=half_accum,group_order=group_order)
     activation=(lhs_value or f'x[({{row}}) * {depth} + ({{k}})]').format(
         row=f'by * {tile_m} + ar',k=f'tile * {tile_k} + ak')
+    weight=(rhs_value or f'w[({{column}}) * {depth} + ({{k}})]').format(
+        column=f'bx * {tile_n} + br',row='0',k=f'tile * {tile_k} + bk')
     lhs_shape=(tile_k,tile_m+lhs_pad) if lhs_layout=='km' else (tile_m,tile_k+lhs_pad)
     rhs_shape=(tile_k,tile_n+rhs_pad)
     size=(lhs_shape[0]*lhs_shape[1]+rhs_shape[0]*rhs_shape[1])*(4 if dtype=='float32' else 2)
@@ -143,9 +171,13 @@ def outer_product_matmul_schedule(rows, depth, columns, *, tile_m=64, tile_n=64,
     mr,nr=('tx // '+str(rn),'tx % '+str(rn)) if owner_axis=='column' else ('tx % '+str(rm),'tx // '+str(rm))
     idx=lambda row,k:f'[{k}, {row}]' if lhs_layout=='km' else f'[{row}, {k}]'
     lines=(['T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})'] if explicit_unroll else [])
-    lines += [f'with T.Kernel(T.ceildiv({columns}, {tile_n}), T.ceildiv({rows}, {tile_m}), threads={threads}) as (bx, by):',
+    grid=(f'T.ceildiv({rows}, {tile_m}), T.ceildiv({columns}, {tile_n})' if group_order=='row' else
+          f'T.ceildiv({columns}, {tile_n}), T.ceildiv({rows}, {tile_m})')
+    axes='by, bx' if group_order=='row' else 'bx, by'
+    lines += [f'with T.Kernel({grid}, threads={threads}) as ({axes}):',
            '    tx = T.get_thread_binding()',f'    mr = {mr}',f'    nr = {nr}',
            f'    lhs = T.alloc_shared({lhs_shape}, "{dtype}")',f'    rhs = T.alloc_shared({rhs_shape}, "{dtype}")']
+    if rhs_transform is not None:lines += ['    value = T.alloc_var("float32")']
     for i in range(micro_m):
         for j in range(micro_n):lines += [f'    acc{i}_{j} = T.alloc_var("float32")',f'    acc{i}_{j} = 0']
     lines += [f'    for tile in T.serial(T.ceildiv({depth}, {tile_k})):',
@@ -157,21 +189,201 @@ def outer_product_matmul_schedule(rows, depth, columns, *, tile_m=64, tile_n=64,
               f'        for load_b in T.serial(T.ceildiv({tile_n*tile_k}, {threads})):',
               f'            flat_b = load_b * {threads} + tx',
               f'            br = flat_b // {tile_k}',f'            bk = flat_b % {tile_k}',
-              f'            if br < {tile_n}:',
-              f'                rhs[bk, br] = T.if_then_else((bx * {tile_n} + br < {columns}) & (tile * {tile_k} + bk < {depth}), w[(bx * {tile_n} + br) * {depth} + tile * {tile_k} + bk], T.cast(0, "{dtype}"))',
-              '        T.sync_threads()',f'        for chunk in T.serial({tile_k//unroll}):',f'            for u in T.unroll({unroll}):',
-              f'                kk = chunk * {unroll} + u']
-    for i in range(micro_m):lines += [f'                left{i} = T.cast(lhs{idx(f"mr + {i*rm}","kk")}, "float32")']
-    for j in range(micro_n):lines += [f'                right{j} = T.cast(rhs[kk, nr + {j*rn}], "float32")']
+              f'            if br < {tile_n}:']
+    if rhs_transform is None:
+        operand=weight if rhs_value is None else f'T.cast({weight}, "{dtype}")'
+        lines += [f'                rhs[bk, br] = T.if_then_else((bx * {tile_n} + br < {columns}) & (tile * {tile_k} + bk < {depth}), {operand}, T.cast(0, "{dtype}"))']
+    else:
+        lines += [f'                value = T.if_then_else(bx * {tile_n} + br < {columns}, T.if_then_else(tile * {tile_k} + bk < {depth}, {weight}, 0), 0)',
+                  f'                rhs[bk, br] = T.cast({rhs_transform.format(value="value")}, "{dtype}")']
+    lines += [
+              '        T.sync_threads()',f'        for chunk in T.serial({tile_k//(unroll*dot_width)}):',f'            for u in T.unroll({unroll}):',
+              f'                kk = chunk * {unroll} + u' if dot_width==1 else f'                kk = (chunk * {unroll} + u) * {dot_width}']
+    def vector(values):
+        return values[0] if dot_width==1 else f'T.call_extern("float32x{dot_width}", "vec{dot_width}<f32>", '+', '.join(values)+')'
+    for i in range(micro_m):
+        values=[f'T.cast(lhs{idx(f"mr + {i*rm}","kk" if dot_width==1 else f"kk + {lane}")}, "float32")' for lane in range(dot_width)]
+        lines += [f'                left{i} = {vector(values)}']
+    for j in range(micro_n):
+        values=[f'T.cast(rhs[{"kk" if dot_width==1 else f"kk + {lane}"}, nr + {j*rn}], "float32")' for lane in range(dot_width)]
+        lines += [f'                right{j} = {vector(values)}']
     for i in range(micro_m):
         for j in range(micro_n):
-            value=f'T.call_extern("float32", "fma", left{i}, right{j}, acc{i}_{j})' if fma else f'acc{i}_{j} + left{i} * right{j}'
+            value=(f'acc{i}_{j} + T.call_extern("float32", "dot", left{i}, right{j})' if dot_width>1 else
+                   f'T.call_extern("float32", "fma", left{i}, right{j}, acc{i}_{j})' if fma else f'acc{i}_{j} + left{i} * right{j}')
             lines += [f'                acc{i}_{j} = {value}']
     lines += ['        T.sync_threads()']
     for i in range(micro_m):
         for j in range(micro_n):
             row=f'by * {tile_m} + mr + {i*rm}';col=f'bx * {tile_n} + nr + {j*rn}'
             value=f'T.max(acc{i}_{j} + T.cast(bias[{col}], "float32"), 0)' if epilogue=='linear' else f'acc{i}_{j}'
+            lines += [f'    if ({row} < {rows}) & ({col} < {columns}):',f'        out[({row}) * {columns} + {col}] = {value}']
+    return '\n'.join(lines)
+
+
+def packed_outer_product_schedule(rows,depth,columns,*,tile_m,tile_n,tile_k,
+                                  micro_m,micro_n,threads,lhs_pad,rhs_pad,owner_axis,
+                                  unroll,explicit_unroll,epilogue,lhs_value,rhs_value,rhs_transform,half_accum=False,group_order='column'):
+    """Adjacent K halves in shared u32; optional short private F16 FMA chains.
+
+    Even/odd K lanes round independently in F16 for ``unroll`` terms before
+    contributing to the complete-K F32 total. This changes accumulation
+    precision and requires a producer's model-level acceptance, not just timing.
+    """
+    pk=tile_k//2;rm,rn=tile_m//micro_m,tile_n//micro_n
+    if (pk*(tile_m+lhs_pad+tile_n+rhs_pad)*4)>32768:
+        raise ValueError('packed outer-product storage exceeds 32 KiB')
+    mr,nr=(f'tx // {rn}',f'tx % {rn}') if owner_axis=='column' else (f'tx % {rm}',f'tx // {rm}')
+    lines=(['T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})'] if explicit_unroll else [])
+    grid=(f'T.ceildiv({rows}, {tile_m}), T.ceildiv({columns}, {tile_n})' if group_order=='row' else
+          f'T.ceildiv({columns}, {tile_n}), T.ceildiv({rows}, {tile_m})')
+    axes='by, bx' if group_order=='row' else 'bx, by'
+    lines += [f'with T.Kernel({grid}, threads={threads}) as ({axes}):',
+              '    tx = T.get_thread_binding()',f'    mr = {mr}',f'    nr = {nr}']
+    for name,width in (('lhs',tile_m+lhs_pad),('rhs',tile_n+rhs_pad)):
+        lines += [f'    {name} = T.alloc_shared(({pk}, {width}), "uint32")']
+    lines += ['    value0 = T.alloc_var("float32")','    value1 = T.alloc_var("float32")']
+    for i in range(micro_m):
+        for j in range(micro_n):
+            lines += [f'    acc{i}_{j} = T.alloc_var("float32")',f'    acc{i}_{j} = 0']
+            if half_accum:lines += [f'    partial{i}_{j} = T.alloc_var("float16x2")']
+    lines += [f'    for tile in T.serial(T.ceildiv({depth}, {tile_k})):',
+              f'        for load_a in T.serial(T.ceildiv({tile_m*pk}, {threads})):',
+              f'            flat = load_a * {threads} + tx',f'            ar = flat // {pk}',f'            pair = flat % {pk}',
+              f'            if ar < {tile_m}:']
+    av=[]
+    for lane in range(2):
+        row=f'by * {tile_m} + ar';k=f'tile * {tile_k} + pair * 2 + {lane}'
+        expr=(lhs_value or f'x[({{row}}) * {depth} + ({{k}})]').format(row=row,k=k)
+        av.append(f'T.if_then_else(({row} < {rows}) & ({k} < {depth}), T.cast({expr}, "float32"), 0)')
+    lines += [f'                lhs[pair, ar] = T.call_extern("uint32", "pack2x16float", T.call_extern("float32x2", "vec2<f32>", {av[0]}, {av[1]}))']
+    lines += [f'        for load_b in T.serial(T.ceildiv({tile_n*pk}, {threads})):',
+              f'            flat = load_b * {threads} + tx',f'            br = flat // {pk}',f'            pair = flat % {pk}',
+              f'            if br < {tile_n}:']
+    for lane in range(2):
+        column=f'bx * {tile_n} + br';k=f'tile * {tile_k} + pair * 2 + {lane}'
+        expr=(rhs_value or f'w[({{column}}) * {depth} + ({{k}})]').format(column=column,k=k,row='0')
+        lines += [f'                value{lane} = T.if_then_else(bx * {tile_n} + br < {columns}, T.if_then_else({k} < {depth}, T.cast({expr}, "float32"), 0), 0)']
+    bv=[rhs_transform.format(value=f'value{lane}') if rhs_transform else f'value{lane}' for lane in range(2)]
+    lines += [f'                rhs[pair, br] = T.call_extern("uint32", "pack2x16float", T.call_extern("float32x2", "vec2<f32>", {bv[0]}, {bv[1]}))']
+    lines += ['        T.sync_threads()',f'        for chunk in T.serial({pk//unroll}):']
+    if half_accum:
+        for i in range(micro_m):
+            for j in range(micro_n):lines += [f'            partial{i}_{j} = T.call_extern("float16x2", "vec2<f16>", T.cast(0, "float16"))']
+    lines += [f'            for u in T.unroll({unroll}):',f'                kk = chunk * {unroll} + u']
+    for name,width,stride,count in (('left','lhs',rm,micro_m),('right','rhs',rn,micro_n)):
+        index='mr' if name=='left' else 'nr'
+        for i in range(count):
+            expr=f'{width}[kk, {index} + {i*stride}]'
+            lines += [f'                {name}{i} = {expr}']
+    for i in range(micro_m):
+        for j in range(micro_n):
+            if half_accum:lines += [f'                partial{i}_{j} = T.call_extern("float16x2", "tensor_fma2_f16_vec", left{i}, right{j}, partial{i}_{j})']
+            else:lines += [f'                acc{i}_{j} = T.call_extern("float32", "tensor_dot2_f16_add", left{i}, right{j}, acc{i}_{j})']
+    if half_accum:
+        for i in range(micro_m):
+            for j in range(micro_n):lines += [f'            acc{i}_{j} = acc{i}_{j} + T.call_extern("float32", "tensor_sum2_f16_vec", partial{i}_{j})']
+    lines += ['        T.sync_threads()']
+    for i in range(micro_m):
+        for j in range(micro_n):
+            row=f'by * {tile_m} + mr + {i*rm}';col=f'bx * {tile_n} + nr + {j*rn}'
+            value=f'T.max(acc{i}_{j} + T.cast(bias[{col}], "float32"), 0)' if epilogue=='linear' else f'acc{i}_{j}'
+            lines += [f'    if ({row} < {rows}) & ({col} < {columns}):',f'        out[({row}) * {columns} + {col}] = {value}']
+    return '\n'.join(lines)
+
+
+def packed_integer_matmul_schedule(rows, depth, columns, rhs_words, rhs_scales, *,
+                                  tile_m=16, tile_n=32, micro_m=2, micro_n=2,
+                                  threads=128, owner_axis='column', group_order='row',tile_k=32,
+                                  fixed_residual=False,signed_rhs=False):
+    """Two-component signed-byte activations, unsigned nibble RHS, F32 sums.
+
+    Producers provide packed RHS word/scale expressions with {column}, {block}
+    and {word} placeholders. One or two RHS matrices select linear/SwiGLU output.
+    Input planes use packed[2*M*K/4], scales/sums[2*M*K/32]. No GPU imports.
+    """
+    dims=(rows,depth,columns,tile_m,tile_n,micro_m,micro_n,threads,tile_k)
+    if any(type(v) is not int or v<=0 for v in dims) or tile_k%32 or depth%tile_k:
+        raise ValueError('invalid packed integer matmul dimensions')
+    if threads not in (64,128,256,512) or tile_m%micro_m or tile_n%micro_n or (tile_m//micro_m)*(tile_n//micro_n)!=threads:
+        raise ValueError('invalid packed integer matmul ownership')
+    parts=len(rhs_words)
+    if parts not in (1,2) or len(rhs_scales)!=parts or any(type(v) is not str or not v.strip() for v in (*rhs_words,*rhs_scales)):
+        raise ValueError('invalid packed integer matmul RHS expressions')
+    if micro_m*micro_n>32 or owner_axis not in ('column','row') or group_order not in ('column','row'):
+        raise ValueError('invalid packed integer matmul layout')
+    if type(fixed_residual) is not bool:raise ValueError('invalid fixed residual mode')
+    if type(signed_rhs) is not bool:raise ValueError('invalid signed RHS mode')
+    blocks=tile_k//32
+    storage=(tile_m*80+parts*tile_n*36)*blocks
+    if storage>32768:raise ValueError('packed integer matmul exceeds 32 KiB')
+    rm,rn=tile_m//micro_m,tile_n//micro_n
+    mr,nr=(f'tx // {rn}',f'tx % {rn}') if owner_axis=='column' else (f'tx % {rm}',f'tx // {rm}')
+    grid=(f'T.ceildiv({rows}, {tile_m}), T.ceildiv({columns}, {tile_n})', '(by, bx)') if group_order=='row' else (f'T.ceildiv({columns}, {tile_n}), T.ceildiv({rows}, {tile_m})','(bx, by)')
+    lines=['T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})',
+           f'with T.Kernel({grid[0]}, threads={threads}) as {grid[1]}:',
+           '    tx = T.get_thread_binding()',f'    mr = {mr}',f'    nr = {nr}',
+           f'    lhs = T.alloc_shared((2, {tile_m}, {8*blocks}), "uint32")',
+           f'    factors = T.alloc_shared((2, {tile_m}, {blocks}), "float32")',
+           f'    offsets = T.alloc_shared((2, {tile_m}, {blocks}), "int32")',
+           f'    rhs = T.alloc_shared(({parts}, {8*blocks}, {tile_n}), "uint32")',
+           f'    weight_scale = T.alloc_shared(({parts}, {blocks}, {tile_n}), "float32")']
+    for part in range(parts):
+        for i in range(micro_m):
+            for j in range(micro_n):
+                lines += [f'    acc{part}_{i}_{j} = T.alloc_var("float32")',f'    acc{part}_{i}_{j} = 0']
+                for component in range(2):lines += [f'    dot{part}_{component}_{i}_{j} = T.alloc_var("int32")']
+    lines += [f'    for tile in T.serial({depth//tile_k}):',
+              f'        for load_a in T.serial(T.ceildiv({tile_m*8*blocks}, {threads})):',
+              f'            flat = load_a * {threads} + tx',f'            ar = flat // {8*blocks}',f'            word = flat % {8*blocks}',
+              f'            if ar < {tile_m}:']
+    for component in range(2):
+        row=f'by * {tile_m} + ar';index=f'({row}) * {depth//4} + tile * {8*blocks} + word + {component*rows*depth//4}'
+        scaleindex=f'({row}) * {depth//32} + tile * {blocks} + word // 8 + {component*rows*depth//32}'
+        lines += [f'                lhs[{component}, ar, word] = T.if_then_else({row} < {rows}, packed[{index}], T.uint32(0))',
+                  '                if word % 8 == 0:',f'                    factors[{component}, ar, word // 8] = T.if_then_else({row} < {rows}, scales[{scaleindex}], 0)',
+                  f'                    offsets[{component}, ar, word // 8] = T.if_then_else({row} < {rows}, sums[{scaleindex}], 0)']
+    rhs_words_per_block=8 if signed_rhs else 4
+    lines += [f'        for load_b in T.serial(T.ceildiv({tile_n*rhs_words_per_block*blocks}, {threads})):',
+              f'            flat = load_b * {threads} + tx',f'            br = flat // {rhs_words_per_block*blocks}',f'            word = flat % {rhs_words_per_block*blocks}',
+              f'            if br < {tile_n}:']
+    for part in range(parts):
+        column=f'bx * {tile_n} + br'
+        values=dict(column=column,block=f'tile * {blocks} + word // {rhs_words_per_block}',word=f'word % {rhs_words_per_block}')
+        lines += [f'                bits{part} = T.if_then_else({column} < {columns}, {rhs_words[part].format(**values)}, T.uint32(0))']
+        if signed_rhs:lines += [f'                rhs[{part}, word, br] = bits{part}']
+        else:lines += [f'                rhs[{part}, (word // 4) * 8 + word % 4, br] = bits{part} & T.uint32(252645135)',
+                      f'                rhs[{part}, (word // 4) * 8 + word % 4 + 4, br] = (bits{part} >> 4) & T.uint32(252645135)']
+        lines += [f'                if word % {rhs_words_per_block} == 0:',f'                    weight_scale[{part}, word // {rhs_words_per_block}, br] = T.if_then_else({column} < {columns}, {rhs_scales[part].format(**values)}, 0)']
+    lines += ['        T.sync_threads()',f'        for block in T.serial({blocks}):']
+    for part in range(parts):
+        for component in range(2):
+            for i in range(micro_m):
+                for j in range(micro_n):lines += [f'            dot{part}_{component}_{i}_{j} = 0']
+    lines += ['            for word in T.unroll(8):']
+    for component in range(2):
+        for i in range(micro_m):lines += [f'                left{component}_{i} = lhs[{component}, mr + {i*rm}, block * 8 + word]']
+    for part in range(parts):
+        for j in range(micro_n):lines += [f'                right{part}_{j} = rhs[{part}, block * 8 + word, nr + {j*rn}]']
+        for component in range(2):
+            for i in range(micro_m):
+                for j in range(micro_n):lines += [f'                dot{part}_{component}_{i}_{j} = dot{part}_{component}_{i}_{j} + T.call_extern("int32", "dot4I8Packed", left{component}_{i}, right{part}_{j})']
+    for part in range(parts):
+        for i in range(micro_m):
+            for j in range(micro_n):
+                row=f'mr + {i*rm}';col=f'nr + {j*rn}'
+                values=[f'T.cast(dot{part}_{component}_{i}_{j}'+('' if signed_rhs else f' - 8 * offsets[{component}, {row}, block]')+f', "float32") * factors[{component}, {row}, block]' for component in range(2)]
+                if fixed_residual:
+                    combined=(f'dot{part}_0_{i}_{j} * 254 + dot{part}_1_{i}_{j}' if signed_rhs else
+                              f'(dot{part}_0_{i}_{j} - 8 * offsets[0, {row}, block]) * 254 + dot{part}_1_{i}_{j} - 8 * offsets[1, {row}, block]')
+                    lines += [f'            acc{part}_{i}_{j} = acc{part}_{i}_{j} + T.cast({combined}, "float32") * factors[1, {row}, block] * weight_scale[{part}, block, {col}]']
+                else:
+                    lines += [f'            acc{part}_{i}_{j} = acc{part}_{i}_{j} + ({values[0]} + {values[1]}) * weight_scale[{part}, block, {col}]']
+    lines += ['        T.sync_threads()']
+    for i in range(micro_m):
+        for j in range(micro_n):
+            row=f'by * {tile_m} + mr + {i*rm}';col=f'bx * {tile_n} + nr + {j*rn}';value=f'acc0_{i}_{j}'
+            if parts==2:value=f'({value}) / (1 + T.exp(-({value}))) * acc1_{i}_{j}'
             lines += [f'    if ({row} < {rows}) & ({col} < {columns}):',f'        out[({row}) * {columns} + {col}] = {value}']
     return '\n'.join(lines)
 

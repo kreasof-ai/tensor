@@ -17,9 +17,9 @@ NATIVE = pytest.mark.skipif(os.environ.get("TENSOR_WEBGPU") != "1", reason="set 
 
 
 @NATIVE
-@pytest.mark.parametrize('encoding',['python','native'])
+@pytest.mark.parametrize('encoding',['python','native_encode','native_submit'])
 def test_prepared_plan_replay_scalar_isolation_and_released_resources(tmp_path,encoding):
-    if encoding=='native':pytest.importorskip('tensor.providers._webgpu_native')
+    if encoding!='python':pytest.importorskip('tensor.providers._webgpu_native')
     from tensor.runtime import TensorRuntimeError
     source=tmp_path/'affine.py'
     source.write_text('''import tilelang.language as T
@@ -39,7 +39,10 @@ def tensor_export():return {"kernel":kernel}
             calls.append((kernel,BoundCall(device,kernel.manifest,values,symbols,launch,validated=True)))
         plan=device.prepare_plan(calls)
         if encoding=='python':plan._encode=None
-        else:assert plan._encode is not None
+        else:
+            assert plan._encode is not None
+            if encoding=='native_encode':plan._submit_native=None
+            else:assert plan._submit_native is not None
         for multiplier in (1.,4.):
             device.write(x,np.arange(4,dtype=np.float32)*multiplier);plan.launch()
             np.testing.assert_array_equal(z.to_numpy(),np.arange(4,dtype=np.float32)*multiplier*6)
@@ -293,6 +296,21 @@ def test_native_prepared_encoder_rejects_malformed_records():
     for records in (b'x',bytes(32)):
         with pytest.raises(ValueError,match='native WebGPU'):
             native.encode(1,records,1,1,1)
+
+
+def test_native_submission_rejects_abi_before_calling_function_pointers():
+    import struct
+    native=pytest.importorskip('tensor.providers._webgpu_native')
+    descriptors=struct.pack('<QQQ',1,1,1)
+    functions=struct.pack('<'+'Q'*12,*([1]*12))
+    valid_record=struct.pack('<QQIIII',1,1,1,1,1,0)
+    args=[1,1,valid_record,descriptors,functions,0,0,0,lambda:False]
+    # Dummy nonzero pointers must never be called: every malformed case is
+    # rejected completely before command creation or encoder mutation.
+    for index,value in ((0,0),(1,0),(2,b'x'),(2,bytes(32)),(3,b'x'),
+                        (3,bytes(24)),(4,b'x'),(4,bytes(96)),(5,1),(7,4),(8,None)):
+        bad=args.copy();bad[index]=value
+        with pytest.raises(ValueError,match='native WebGPU'):native.submit(*bad)
 
 
 @NATIVE

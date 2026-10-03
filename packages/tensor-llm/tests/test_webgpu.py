@@ -105,12 +105,12 @@ def test_gpu_argmax_ties_tail_and_control(tmp_path):
             np.testing.assert_array_equal(pos.to_numpy(),np.array([11,1],np.int32))
 
 
-@pytest.mark.parametrize('kind',[2,14])
+@pytest.mark.parametrize('kind,unroll,dot',[(2,1,False),(2,2,False),(14,1,False),(14,2,False),(14,1,True),(14,2,True)])
 @pytest.mark.parametrize('subgroup',[False,True,'fallback'])
-def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup):
+def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup,unroll,dot):
     from tensor_llm.gguf import dequantize,TYPES
     from tensor_llm.webgpu_kernels import source
-    k,o=256,8;_,block,size=TYPES[kind]
+    k,o=512,8;_,block,size=TYPES[kind]
     rng=np.random.default_rng(524+kind);blocks=rng.integers(0,256,(o*k//block,size),dtype=np.uint8)
     offset=0 if kind==2 else 208
     scales=np.resize(np.array([0.,1.,-1.,2**-24,-2**-24,2**-14,.001,3.],np.float16),len(blocks))
@@ -120,7 +120,7 @@ def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup):
     expected=decoded@x.astype(np.float64)
     tolerance=np.sum(np.abs(decoded*x),axis=1)*3e-6+1e-10
     path=tmp_path/'projection.py';artifact=tmp_path/'projection.tbin'
-    text=source('linear',dict(r=1,k=k,o=o,type=kind,sg=bool(subgroup)))
+    text=source('linear',dict(r=1,k=k,o=o,type=kind,sg=bool(subgroup),gemv_unroll=unroll,gemv_chains=unroll,gemv_q6_dot=dot))
     if subgroup=='fallback':text=text.replace('T.call_extern("uint32", "tensor_subgroup_size")','T.uint32(8)')
     path.write_text(text);tensor.build(path,artifact,provider='webgpu')
     with tensor.Device(provider='webgpu') as device:
@@ -134,6 +134,8 @@ def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup):
     {'gemv_lanes':16,'gemv_threads':256,'gemv_accumulators':4},
     {'gemv_lanes':32,'gemv_threads':128,'gemv_accumulators':4},
     {'gemv_lanes':32,'gemv_threads':128,'gemv_dot':True},
+    {'gemv_lanes':32,'gemv_threads':128,'gemv_dot':True,'gemv_unroll':2,'gemv_chains':2},
+    {'gemv_lanes':64,'gemv_threads':128,'gemv_dot':True},
 ])
 @pytest.mark.parametrize('subgroup',[False,True,'fallback'])
 @pytest.mark.parametrize('kind',['linear','ffn'])

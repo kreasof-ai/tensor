@@ -12,18 +12,18 @@ from benchmarks.lfm2.webgpu_run import cached_reference,metrics
 from benchmarks.lfm2.vulkan_reference import Reference as NativeReference,COMMIT
 
 
-def run(model,baseline,searched,reference,fixtures,out,repeats=7,*,runtime_bundle=None,baseline_wrapper=None):
+def run(model,baseline,searched,reference,fixtures,out,repeats=7,*,runtime_bundle=None,baseline_wrapper=None,max_buffer_size=None):
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     cases=[{key:row[key] for key in ('name','tokens','reset')} for row in json.loads((Path(fixtures)/'report.json').read_text())['validation']]
     expected,oracle=cached_reference(fixtures,model,cases);validation=[];benchmarks=[]
     report={'status':'validating','model_sha256':oracle['model_sha256'],'independent_reference':oracle,
             'native_commit':COMMIT,'validation':validation,'benchmarks':benchmarks,
-            'protocol':{'context':512,'prefill_chunk':32,'warmups':3,'repeats':repeats,'decode_tokens':64,
+            'protocol':{'context':512,'prefill_chunk':32,'warmups':3,'repeats':repeats,'decode_tokens':64,'max_buffer_size':max_buffer_size,
                         'timing':'completed forward, host FP32 logits; loading, AOT compile, initial calls, reset and sampling excluded; rotate all three runners; sequential GPU'}}
     def save():(out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
     with ExitStack() as stack:
         native=NativeReference(model,reference);stack.callback(native.close)
-        device=stack.enter_context(tensor.Device(provider='webgpu'))
+        device=stack.enter_context(tensor.Device(provider='webgpu',max_buffer_size=max_buffer_size))
         before=stack.enter_context(LFM2(model,baseline,device,context=512));after=stack.enter_context(LFM2(model,searched,device,context=512))
         if baseline_wrapper:baseline_wrapper(before)
         runners={'tensor_before':before,'tensor_searched':after,'llama_cpp':native};names=list(runners)
@@ -82,5 +82,6 @@ def run(model,baseline,searched,reference,fixtures,out,repeats=7,*,runtime_bundl
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('model','baseline','searched','reference','fixtures','out'):p.add_argument('--'+name,type=Path,required=True)
-    p.add_argument('--repeats',type=int,default=7);a=p.parse_args()
-    run(a.model,a.baseline,a.searched,a.reference,a.fixtures,a.out,a.repeats)
+    p.add_argument('--repeats',type=int,default=7)
+    p.add_argument('--max-buffer-size',type=int);a=p.parse_args()
+    run(a.model,a.baseline,a.searched,a.reference,a.fixtures,a.out,a.repeats,max_buffer_size=a.max_buffer_size)

@@ -10,6 +10,9 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
+| [2.6B QAD Q4_0 1K prefill experiment](lfm2-2.6b-prefill-1k.md) | 1,058/1,047 tok/s prefill, twice the packed control; mixed arithmetic, shared layout search, guarded suffix liveness and unchanged decoding |
+| [2.6B QAD Q4_0 parity search](lfm2-2.6b-q4_0-parity.md) | 164 tok/s decode versus native 170, a further 51% packed prefill gain, corrected replay controls and the remaining 3–5% decode gap |
+| [2.6B QAD Q4_0 revisit](lfm2-2.6b-q4_0-revisit.md) | 146 tok/s decode versus native 169–170, a controlled 5% runtime gain, 48–49% larger-chunk prefill gains and the remaining quantized projection gap |
 | [230M adaptive prefill and the CLBlast transfer](lfm2-prefill-chase.md) | 16% short-prompt and 2.19× long-prompt prefill gains, mixed-precision outer products, chunk ablations and tuned llama.cpp controls; decoding unchanged |
 | [230M runtime overhead and wider discovery](lfm2-230m-runtime-search.md) | 10.5–12.0% decode gain from ordered readback and fewer submissions; 601 more projection candidates, experimental attention fusion, and a 1.09–1.13× remaining native gap |
 | [230M F16 decode search](lfm2-230m-decode-search.md) | 1,081 streamed-weight projection candidates, paired FFN and parallel attention; 39–63% decode gains and a 1.23× remaining llama.cpp gap |

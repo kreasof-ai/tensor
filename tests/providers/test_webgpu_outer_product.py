@@ -10,6 +10,11 @@ from tensor.compiler.webgpu_lowering import outer_product_matmul_schedule
     {'rows':0}, {'micro_m':3}, {'threads':128}, {'unroll':3},
     {'lhs_pad':-1}, {'rhs_pad':True}, {'owner_axis':'invalid'},
     {'lhs_layout':'invalid'}, {'fma':1}, {'epilogue':'invalid'}, {'explicit_unroll':1},
+    {'dot_width':True}, {'dot_width':3}, {'tile_k':16,'unroll':16,'dot_width':2},
+    {'packed_pairs':1}, {'packed_pairs':True},
+    {'packed_pairs':True,'dtype':'float32','dot_width':2},
+    {'half_accum':1},{'half_accum':True},{'group_order':'invalid'},
+    {'packed_pairs':True,'dtype':'float16','dot_width':2,'lhs_layout':'mk'},
     {'tile_m':128,'tile_n':128,'tile_k':32,'micro_m':8,'micro_n':8,'lhs_pad':1},
 ])
 def test_illegal_outer_product_resources_rejected(change):
@@ -24,9 +29,21 @@ def test_illegal_outer_product_resources_rejected(change):
     dict(lhs_layout='km',lhs_pad=1,rhs_pad=1,explicit_unroll=True),
     dict(tile_m=32,tile_n=128,tile_k=32,micro_m=4,micro_n=8,threads=128,
          lhs_layout='mk',lhs_pad=1,rhs_pad=1,owner_axis='row',unroll=8,fma=False),
+    dict(tile_m=32,tile_n=64,tile_k=32,micro_m=2,micro_n=4,threads=256,
+         lhs_layout='km',unroll=4,dot_width=2,explicit_unroll=True),
+    dict(tile_m=16,tile_n=32,tile_k=32,micro_m=2,micro_n=4,threads=64,
+         lhs_layout='mk',unroll=4,dot_width=4,explicit_unroll=True),
+    dict(tile_m=16,tile_n=32,tile_k=32,micro_m=2,micro_n=4,threads=64,
+         unroll=4,dot_width=2,packed_pairs=True,explicit_unroll=True),
+    dict(tile_m=32,tile_n=64,tile_k=32,micro_m=2,micro_n=4,threads=256,
+         lhs_layout='km',unroll=4,group_order='row',explicit_unroll=True),
+    dict(tile_m=16,tile_n=32,tile_k=32,micro_m=2,micro_n=4,threads=64,
+         unroll=4,dot_width=2,packed_pairs=True,group_order='row',explicit_unroll=True),
 ])
 def test_outer_product_tails_precision_and_fused_epilogue(tmp_path,dtype,mode,config):
     from benchmarks.inference.webgpu_outer_product_search import source
+    if config.get('packed_pairs') and dtype!='float16':
+        pytest.skip('packed half pairs require F16 operands')
     # Multiple workgroups, partial M/N/K tiles and a long reduction.
     m,n,k=35,131,1027
     path=tmp_path/'outer.py';artifact=path.with_suffix('.tbin')

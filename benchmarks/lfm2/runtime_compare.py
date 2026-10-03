@@ -33,15 +33,24 @@ def install_legacy_readback(engine):
     return engine
 
 
+def install_python_submission(engine):
+    for plan in (*engine.prepared.values(),*engine.greedy.values()):plan._submit_native=None
+    return engine
+
+
 def run(a):
     compare.run(a.model,a.bundle,a.searched or a.bundle,a.reference,a.fixtures,a.out,a.repeats,
-                runtime_bundle=a.bundle if a.searched else None,baseline_wrapper=install_legacy_readback)
+                runtime_bundle=a.bundle if a.searched else None,
+                baseline_wrapper=install_python_submission if a.ablation=='submission' else install_legacy_readback,
+                max_buffer_size=a.max_buffer_size)
     import json
     path=a.out/'report.json';report=json.loads(path.read_text())
-    report['protocol']['runtime_ablation']='tensor_before: original queue fence, separate copy submission, public map_sync empty flush; tensor_runtime (or tensor_searched in a runtime-only run): same shaders with combined compute/copy submission and map completion only; tensor_searched with --searched: extended kernel search too'
+    report['protocol']['runtime_ablation']=('tensor_before: Python command encoder/pass/finish/submit wrappers with native dispatch encoding; tensor_searched: native fresh command creation/encoding/copy/submission/release. Identical shaders, ordered map completion and owned host snapshots.' if a.ablation=='submission' else 'tensor_before: original queue fence, separate copy submission, public map_sync empty flush; tensor_runtime (or tensor_searched in a runtime-only run): same shaders with combined compute/copy submission and map completion only; tensor_searched with --searched: extended kernel search too')
     path.write_text(json.dumps(report,indent=2)+'\n')
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('model','bundle','reference','fixtures','out'):p.add_argument('--'+name,type=Path,required=True)
-    p.add_argument('--searched',type=Path);p.add_argument('--repeats',type=int,default=7);run(p.parse_args())
+    p.add_argument('--searched',type=Path);p.add_argument('--repeats',type=int,default=7)
+    p.add_argument('--max-buffer-size',type=int)
+    p.add_argument('--ablation',choices=('readback','submission'),default='readback');run(p.parse_args())

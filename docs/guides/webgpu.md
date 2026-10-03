@@ -70,6 +70,27 @@ or unrolled schedules for other prefill shapes. The compiler helper's
 the FP32 activation ABI. See the [full-model adaptive prefill comparison](../research/lfm2-prefill-chase.md)
 for the measured 230M/context-512 scope, numerical checks and native controls.
 
+Packed RHS loads can use the helper's `rhs_value` expression, with `{column}`,
+`{k}` and `{row}` placeholders; its `rhs_transform` expression receives `{value}`
+after a guarded F32 load. The LFM2 producer uses these hooks to decode Q4/Q6
+words and apply nearest-even half rounding before staging shared operands.
+`--webgpu-profile quant_searched --prefill-chunks 32 128` selects replayed packed
+prefill and decode schedules for measured 2.6B shapes. See the
+[quantized parity experiment](../research/lfm2-2.6b-q4_0-parity.md) for accuracy
+gates, corrected discovery controls and the measured remaining native gap.
+
+The opt-in `prefill_mixed` profile with `--prefill-chunks 32 128` adds measured
+2.6B Q4 schedules: short F16 FMA chains with F32 totals, two-component Q8
+activation dots for other projections, parallel RMS, and a guarded final-layer
+suffix plan. These alter prefill arithmetic and require the full-model numerical
+gates described in the [1K prefill experiment](../research/lfm2-2.6b-prefill-1k.md).
+Decode projection WGSL is unchanged from `quant_searched`. The outer-product
+helper exposes `packed_pairs=True`, `half_accum=True`, shared padding and
+`group_order='row'|'column'`; packed pairs require F16/K-major/dot-width-two
+operands. Half chains round each FMA before adding to F32 totals. The generic
+`packed_integer_matmul_schedule` consumes packed signed activation components
+and Q4 fields with per-block scales. Neither changes ordinary GEMM defaults.
+
 FP32 sum/max tile reductions retain ordered summation by default. The attribute
 `tensor.webgpu.reduction="tree"` selects parallel shared-memory reduction with
 identity padding for odd extents. It changes floating-point summation order and
@@ -103,6 +124,11 @@ buffers are still created each launch. Without the extension the Python path
 remains available. MSVC is needed on the Windows producer only; the measured
 consumer uses a CPython 3.12 Windows x64 wheel. See the
 [native submission report](../research/lfm2-230m-native-submission.md).
+The extended helper also creates command/pass handles, appends an optional
+ordered readback copy, finishes/submits and releases those fresh handles.
+Validation checkpoints stop erroneous encoding before submission. This path
+is gated on wgpu 0.29, a 64-bit ABI and the extension's submission entrypoint;
+older extensions retain native encoding with Python command wrappers.
 
 The artifact target is `webgpu-portable-v1`, kind `wgsl`. Portability comes from
 WGSL plus explicit adapter feature/limit negotiation, rather than a CUDA SM or

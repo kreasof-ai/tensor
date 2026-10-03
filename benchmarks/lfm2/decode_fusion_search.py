@@ -30,25 +30,29 @@ class PlanTimer(Timer):
         return int(ticks[1]-ticks[0])*self.period*1e-9
 
 
-def run(out):
+def run(out,heads=16,kv_heads=8,depth=64,capacity=576,include_current=False):
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     device=Device();device._adapter=TimestampAdapter(device._adapter)
-    h,kh,d,cap=16,8,64,576;positions=(0,31,128,384,510);records=[]
+    h,kh,d,cap=heads,kv_heads,depth,capacity;positions=(0,31,128,384,510);records=[]
+    if h%kh or d%32 or cap<=510:raise ValueError('invalid attention shape')
     rng=np.random.default_rng(917)
     q=rng.normal(size=(h,d)).astype(np.float32)
     keys=rng.normal(size=(cap,kh,d)).astype(np.float16)
     values=rng.normal(size=(cap,kh,d)).astype(np.float16)
     expected={};bounds={}
     for pos in positions:
-        k=keys[:pos+1].astype(np.float64)[:,np.arange(h)//2,:].transpose(1,0,2)
+        k=keys[:pos+1].astype(np.float64)[:,np.arange(h)//(h//kh),:].transpose(1,0,2)
         logits=(k*q[:,None,:]).sum(axis=2)*d**-.5
         prob=np.exp(logits-logits.max(axis=1,keepdims=True));prob/=prob.sum(axis=1,keepdims=True)
-        v=values[:pos+1].astype(np.float64)[:,np.arange(h)//2,:].transpose(1,0,2)
+        v=values[:pos+1].astype(np.float64)[:,np.arange(h)//(h//kh),:].transpose(1,0,2)
         expected[pos]=(prob[:,:,None]*v).sum(axis=1)
         # Propagate an absolute QK rounding bound through softmax and V.
         qk_bound=(np.abs(k)*np.abs(q[:,None,:])).sum(axis=2)*d**-.5*3e-6
         bounds[pos]=(prob[:,:,None]*np.abs(v)).sum(axis=1)*(2*qk_bound.max(axis=1)[:,None]+5e-6)+1e-7
     specs=[dict(name='split',channels=64,value_parts=16,fused_scores=False)]
+    if include_current:specs.insert(0,dict(name='current',fused_scores=False))
+    if include_current:specs += [dict(name=f'split-c{c}-p{parts}',channels=c,value_parts=parts,fused_scores=False)
+                                for c in (16,32,64) for parts in (4,8,16) if (c,parts)!=(64,16)]
     specs += [dict(name=f'fused-c{c}-p{parts}',channels=c,value_parts=parts,fused_scores=True)
               for c in (16,32,64) for parts in (2,4,8,16)]
     with device:
@@ -61,6 +65,7 @@ def run(out):
         for spec in specs:
             p=dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,attention_schedule='partitioned_values',
                    **{k:v for k,v in spec.items() if k!='name'})
+            if spec['name']=='current':p.pop('attention_schedule')
             path=out/(spec['name']+'.py');path.write_text(source('attention',p));artifact=path.with_suffix('.tbin')
             row=dict(name=spec['name'],parameters=p,validation=[],positions={});records.append(row)
             kernel=single=plan=timer=None
@@ -110,4 +115,8 @@ def run(out):
     (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--out',type=Path,required=True);run(p.parse_args().out)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--heads',type=int,default=16);p.add_argument('--kv-heads',type=int,default=8)
+    p.add_argument('--depth',type=int,default=64);p.add_argument('--capacity',type=int,default=576)
+    p.add_argument('--include-current',action='store_true')
+    a=p.parse_args();run(a.out,a.heads,a.kv_heads,a.depth,a.capacity,a.include_current)

@@ -103,6 +103,21 @@ class GGUF:
         return dequantize(self.packed(name)[index*count:(index+1)*count],info.type)
 
 
+def prepack_q4_0(data):
+    """Aligned signed-byte blocks and an exact F32 scale (36 bytes per block).
+
+    This derived cache doubles Q4_0 storage; it does not change its values.
+    Eight words retain the low-16/high-16 element order, then one scale word.
+    """
+    raw=np.asarray(data,dtype=np.uint8).reshape(-1)
+    if raw.size%18:raise GGUFError('incomplete Q4_0 cache block')
+    blocks=raw.reshape(-1,18);result=np.empty((len(blocks),9),np.uint32)
+    signed=(np.concatenate((blocks[:,2:]&15,blocks[:,2:]>>4),axis=1).astype(np.int16)-8).astype(np.int8)
+    result[:,:8]=signed.view(np.uint32)
+    result[:,8]=blocks[:,:2].copy().view('<f2').astype('<f4').reshape(-1).view(np.uint32)
+    return result.reshape(-1)
+
+
 def dequantize(data, kind):
     raw=np.asarray(data,dtype=np.uint8).reshape(-1)
     if kind not in TYPES:raise GGUFError(f'unsupported GGML type {kind}')
