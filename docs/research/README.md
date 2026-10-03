@@ -6,6 +6,11 @@ Reports retain the measured environment, workload, correctness checks, timing
 protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 [data/](data/). Results apply to the recorded profiles and revisions.
 
+For the RX 6700 XT Vulkan campaign, start with the
+[kernel and inference improvement history](rx6700xt-vulkan-history.md):
+the first hardware attempt through 1K 2.6B prefill, with 23 inference milestones,
+kernel and throughput plots, source hashes and an archive commit timeline.
+
 ## Inference and training workloads
 
 | Report | What to read it for |

@@ -4,3 +4,6 @@ docs/research/data/phase6-*.json -text whitespace=cr-at-eol
 docs/research/data/phase6-*.xml -text
 docs/research/data/reorganization-*.json -text whitespace=cr-at-eol
 docs/research/data/reorganization-*.xml -text
+
+# Keep this recovered historical snapshot identical to its original Git blob.
+docs/research/data/lfm2-2.6b-q4_0-initial-vulkan.json -text
