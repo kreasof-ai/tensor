@@ -27,7 +27,7 @@ def build_webgpu(source_path, output_path, *, target=None, cache_dir=None, compi
     import tilelang
     import tvm
     from tensor.compiler.lowering import frontend_arguments, integer_expression
-    from tensor.compiler.webgpu_lowering import lower_simt_gemm, lower_wgsl_intrinsics, verify_uniform_barriers
+    from tensor.compiler.webgpu_lowering import lower_simt_gemm, lower_explicit_unroll, lower_wgsl_intrinsics, verify_uniform_barriers
     try:
         spec = export_spec(source_path, checked)
         if not isinstance(spec, dict) or "kernel" not in spec or set(spec) - {"kernel", "outputs"}:
@@ -56,7 +56,7 @@ def build_webgpu(source_path, output_path, *, target=None, cache_dir=None, compi
             except (OSError, ValueError):
                 pass
         if not hit:
-            kernel = lower_simt_gemm(original)
+            kernel = lower_explicit_unroll(lower_simt_gemm(original))
             target_object = tvm.target.Target("webgpu")
             with tilelang.transform.PassContext(opt_level=3, config={"tirx.disable_vectorize": True}), target_object:
                 lowered = tilelang.lower(kernel, target=target_object,

@@ -22,6 +22,16 @@ def test_restarts_continue_without_a_valid_incumbent_and_deduplicate():
 def test_coupled_move_can_preserve_output_owners():
     assert {**SEED,'threads':256,'partitions':16} in list(neighbors(SEED))
 
+
+def test_outer_product_coupled_moves_reach_legal_microtiles():
+    seed=dict(family='outer',tile_m=64,tile_n=128,micro_m=4,micro_n=8,threads=256)
+    space=dict(tile_m=(32,64,128),tile_n=(64,128),micro_m=(2,4,8),
+               micro_n=(4,8),threads=(64,128,256,512))
+    moves=list(neighbors(seed,{'outer':space}))
+    assert {**seed,'micro_m':8,'threads':128} in moves
+    assert {**seed,'tile_m':128,'threads':512} in moves
+    assert {**seed,'tile_n':64,'threads':128} in moves
+
 def test_slower_new_family_still_gets_neighbor_exploration():
     fast={**SEED,'family':'partitioned'}
     slow={**SEED,'family':'partitioned_rows','tile_n':5,'dot_width':2,'unroll':8}

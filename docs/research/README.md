@@ -10,6 +10,7 @@ protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 
 | Report | What to read it for |
 |---|---|
+| [230M adaptive prefill and the CLBlast transfer](lfm2-prefill-chase.md) | 16% short-prompt and 2.19× long-prompt prefill gains, mixed-precision outer products, chunk ablations and tuned llama.cpp controls; decoding unchanged |
 | [230M runtime overhead and wider discovery](lfm2-230m-runtime-search.md) | 10.5–12.0% decode gain from ordered readback and fewer submissions; 601 more projection candidates, experimental attention fusion, and a 1.09–1.13× remaining native gap |
 | [230M F16 decode search](lfm2-230m-decode-search.md) | 1,081 streamed-weight projection candidates, paired FFN and parallel attention; 39–63% decode gains and a 1.23× remaining llama.cpp gap |
 | [Searched prefill and decoding throughput](lfm2-prefill-search-throughput.md) | Full-model F16 rates for Tensor, tinygrad and llama.cpp; 45–47% Tensor prefill gains, 19–28% tinygrad gains, unchanged decoding and explicit accuracy metrics |
@@ -35,6 +36,7 @@ Each report records its supported profile, implementation and precision contract
 
 | Report | Comparison |
 |---|---|
+| [Staged outer-product WebGPU GEMM](webgpu-outer-product-gemm.md) | Fresh 3.37× large-FP32 gain, a roughly 2× remaining CLBlast gap, opt-in unroll lowering, coupled discovery and separate skinny-shape validation |
 | [Whole-loop WebGPU GEMM accumulators](webgpu-gemm-accumulation.md) | About 1.6× gains on large GEMMs, unchanged tile sizes and bitwise outputs; conservative depth selection avoids shorter-K regressions |
 | [CLBlast on RX 6700 XT](clblast-rx6700xt.md) | Matched FP32 OpenCL GEMM versus generated WebGPU kernels, full linear epilogues, bounded tuning and precision-gated FP16 observations |
 | [Latency scaling](latency-scaling.md) | Matching pointwise, GEMM, and attention shapes across Tensor, Torch, native TileLang, Triton, and WebGPU; includes A10G, RX 6700 XT and a fresh compiler-optimization repeat |

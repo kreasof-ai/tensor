@@ -51,6 +51,25 @@ materialized fragment. Attention's score reductions and intermediate result
 rescaling retain their existing lowering. See the
 [whole-loop accumulator ablation](../research/webgpu-gemm-accumulation.md).
 
+For opt-in staged outer products, the producer helper
+`tensor.compiler.webgpu_lowering.outer_product_matmul_schedule` emits a tile
+program with independent shared layouts, thread ownership, FP32 private
+microtiles and optional fused bias/ReLU. It accepts FP16/FP32 operands with
+FP32 output and handles M/N/K tails. Its `explicit_unroll=True` option emits
+`tensor.webgpu.loop_unroll="explicit"`, expanding marked static `T.unroll`
+loops of at most 16 iterations before WGSL generation. Serial loops retain
+their structure. Neither option changes ordinary `T.gemm` defaults or LFM2
+profile selection. See the [CLBlast chase](../research/webgpu-outer-product-gemm.md)
+for measured schedules, correctness evidence and generation/search commands.
+
+The standalone LFM2 producer can build an experimental adaptive F16 bundle
+with `--webgpu-profile prefill_outer --prefill-chunks 32 128`. It retains the
+existing fused FFN and decode projections while selecting replayed outer-product
+or unrolled schedules for other prefill shapes. The compiler helper's
+`lhs_value` expression supplies the existing nearest-even half rounding from
+the FP32 activation ABI. See the [full-model adaptive prefill comparison](../research/lfm2-prefill-chase.md)
+for the measured 230M/context-512 scope, numerical checks and native controls.
+
 FP32 sum/max tile reductions retain ordered summation by default. The attribute
 `tensor.webgpu.reduction="tree"` selects parallel shared-memory reduction with
 identity padding for odd extents. It changes floating-point summation order and

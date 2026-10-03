@@ -29,12 +29,14 @@ class TimestampAdapter:
         return self.adapter.request_device_sync(**kwargs)
 
 
-def profile(model,bundle,out,repeats=10,timestamp_period_ns=0,max_buffer_size=None):
+def profile(model,bundle,out,repeats=10,timestamp_period_ns=0,max_buffer_size=None,prefill_position=96):
     if timestamp_period_ns<=0:raise ValueError('requires the measured Vulkan timestampPeriod')
     device=Device(max_buffer_size=max_buffer_size);device._adapter=TimestampAdapter(device._adapter)
     with device,LFM2(model,bundle,device,context=512) as engine:
         prompt=engine.tokenizer.chat('What is 2 + 2?');rows=[]
-        for r in (1,32):
+        for r in engine.rows:
+            prefix=128 if r==1 else prefill_position
+            if prefix<0 or prefix+r>engine.context:raise ValueError('profile position exceeds context')
             plan=engine.prepared[r];n=len(plan.nodes)
             query=device._gpu.create_query_set(type='timestamp',count=2*n)
             result=device._gpu.create_buffer(size=16*n,usage=wgpu.BufferUsage.QUERY_RESOLVE|wgpu.BufferUsage.COPY_SRC)
@@ -42,7 +44,8 @@ def profile(model,bundle,out,repeats=10,timestamp_period_ns=0,max_buffer_size=No
             for mode in ('host','whole','dispatch'):
                 samples=[]
                 for repeat in range(repeats+1):
-                    engine.reset();engine.forward(np.resize(prompt,128 if r==1 else 96))
+                    engine.reset()
+                    if prefix:engine.forward(np.resize(prompt,prefix))
                     start=time.perf_counter();device.synchronize();sync=time.perf_counter()-start
                     start=time.perf_counter()
                     engine._write(engine.workspaces[r]['tokens'],np.resize(prompt,r).astype(np.int32))
@@ -78,7 +81,7 @@ def profile(model,bundle,out,repeats=10,timestamp_period_ns=0,max_buffer_size=No
             for i,((kernel,call),ms) in enumerate(zip(plan.calls,elapsed)):
                 name=kinds[id(kernel)];totals[name]+=ms
                 nodes.append({'index':i,'kind':name,'weight':next((weights[id(b)] for b in call.storage if id(b) in weights),None),'gpu_ms':ms})
-            row={'rows':r,'position':128 if r==1 else 96,'dispatches':n,'host_median':host,'whole_gpu_ms':whole,
+            row={'rows':r,'position':prefix,'dispatches':n,'host_median':host,'whole_gpu_ms':whole,
                  'instrumented_dispatch_sum_ms':sum(elapsed),'gpu_by_kind_ms':dict(sorted(totals.items(),key=lambda p:-p[1])),
                  'nodes':nodes}
             rows.append(row);print(json.dumps({k:v for k,v in row.items() if k!='nodes'},indent=2),flush=True)
@@ -93,4 +96,5 @@ if __name__=='__main__':
     p.add_argument('--repeats',type=int,default=10)
     p.add_argument('--timestamp-period-ns',required=True,type=float)
     p.add_argument('--max-buffer-size',type=int)
-    a=p.parse_args();profile(a.model,a.bundle,a.out,a.repeats,a.timestamp_period_ns,max_buffer_size=a.max_buffer_size)
+    p.add_argument('--prefill-position',type=int,default=96)
+    a=p.parse_args();profile(a.model,a.bundle,a.out,a.repeats,a.timestamp_period_ns,max_buffer_size=a.max_buffer_size,prefill_position=a.prefill_position)

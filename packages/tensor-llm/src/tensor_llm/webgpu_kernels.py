@@ -340,14 +340,20 @@ def source(kind,p):
             count=k*o if q in (0,1) else k*o//block*size//4
             dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
             args=[a('x',r*k),a('w',count,dtype),a('out',r*o)]
-            from tensor.compiler.webgpu_lowering import register_matmul_schedule,partitioned_matmul_schedule
+            from tensor.compiler.webgpu_lowering import register_matmul_schedule,partitioned_matmul_schedule,outer_product_matmul_schedule
             tm,tn,bk=p.get('tile',(16,32,64))
+            if p.get('schedule')=='outer':
+                if q!=1:raise ValueError('outer-product prefill requires F16 weights')
+                body=outer_product_matmul_schedule(r,k,o,dtype='float16',
+                    lhs_value=round_half('x[({row}) * '+str(k)+' + ({k})]'),**p['outer'])
+                return emit(args,body)
             if p.get('schedule')=='partitioned':
                 if q!=1:raise ValueError('searched partitioned profile requires F16 weights')
                 lhs=round_half('x[({row}) * '+str(k)+' + ({k})]')
                 rhs='T.cast(w[({column}) * '+str(k)+' + ({k})], "float32")'
                 body=partitioned_matmul_schedule(r,k,o,lhs,rhs,tile_m=tm,tile_n=tn,
                     **{name:p[name] for name in ('threads','partitions','unroll','dot_width','owner_axis','k_layout')})
+                if p.get('explicit_unroll'):body='T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})\n'+body
                 return emit(args,body)
             expr=weight(q,f'bx * {tn} + i',f'tile * {bk} + j',k,packed_words=True)
             value=round_half('value') if q!=1 else 'value'
@@ -356,6 +362,7 @@ def source(kind,p):
                 lhs_pad=p.get('lhs_pad',0),lhs_transpose=p.get('lhs_transpose',False),
                 dot_width=p.get('dot_width',4 if q==1 or k>=2048 else 1),unroll=p.get('unroll',False))
             body=body.replace('rhs[j, i] = value',f'rhs[j, i] = {value}')
+            if p.get('explicit_unroll'):body='T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})\n'+body
             return emit(args,body)
         if q in (0,1):return text
         _,block,size=TYPES[q]

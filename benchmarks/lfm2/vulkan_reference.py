@@ -33,8 +33,10 @@ class Batch(ct.Structure):
 
 
 class Reference:
-    def __init__(self,model,directory,*,context=512):
+    def __init__(self,model,directory,*,context=512,prefill_chunk=32):
         if os.name!='nt':raise RuntimeError('this pinned helper requires Windows')
+        if type(prefill_chunk) is not int or prefill_chunk not in (32,64,128):raise ValueError('requires a supported prefill chunk')
+        self.prefill_chunk=prefill_chunk
         directory=Path(directory).resolve()
         release=json.loads((directory/'release.json').read_text())
         if release['commit']!=COMMIT or release['archive_sha256']!=RELEASE_SHA256:
@@ -58,13 +60,13 @@ class Reference:
         vocab=bind('llama_model_get_vocab',P,[P])(self.model)
         self.vocab=bind('llama_vocab_n_tokens',I,[P])(vocab)
         cp=bind('llama_context_default_params',ContextParams,[])()
-        cp.n_ctx=context;cp.n_batch=32;cp.n_ubatch=32;cp.n_seq_max=1;cp.n_threads=6;cp.n_threads_batch=6
+        cp.n_ctx=context;cp.n_batch=prefill_chunk;cp.n_ubatch=prefill_chunk;cp.n_seq_max=1;cp.n_threads=6;cp.n_threads_batch=6
         cp.type_k=1;cp.type_v=1;cp.flash_attn_type=1;cp.offload_kqv=True;cp.op_offload=True
         self.ctx=bind('llama_init_from_model',P,[P,ContextParams])(self.model,cp)
         if not self.ctx:raise RuntimeError('llama.cpp context init failed: '+''.join(self.logs[-20:]))
         if not any('using device Vulkan0' in line for line in self.logs):
             raise RuntimeError('native reference did not select Vulkan0')
-        self.batch=bind('llama_batch_init',Batch,[I,I,I])(32,0,1)
+        self.batch=bind('llama_batch_init',Batch,[I,I,I])(prefill_chunk,0,1)
         bind('llama_decode',I,[P,Batch]);bind('llama_synchronize',None,[P])
         bind('llama_get_logits_ith',ct.POINTER(F),[P,I])
         bind('llama_get_memory',P,[P]);bind('llama_memory_clear',None,[P,B])
@@ -75,8 +77,8 @@ class Reference:
         self.lib.llama_memory_clear(self.lib.llama_get_memory(self.ctx),True);self.position=0
 
     def forward(self,tokens):
-        for start in range(0,len(tokens),32):
-            ids=tokens[start:start+32];b=self.batch;b.n_tokens=len(ids)
+        for start in range(0,len(tokens),self.prefill_chunk):
+            ids=tokens[start:start+self.prefill_chunk];b=self.batch;b.n_tokens=len(ids)
             for i,token in enumerate(ids):
                 b.token[i]=int(token);b.pos[i]=self.position+i;b.n_seq_id[i]=1;b.seq_id[i][0]=0;b.logits[i]=int(i==len(ids)-1)
             if self.lib.llama_decode(self.ctx,b):raise RuntimeError('llama.cpp decode failed')

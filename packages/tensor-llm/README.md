@@ -61,7 +61,7 @@ Build and run the smaller Vulkan demonstration from the repository root:
 .venv/Scripts/python.exe -m tensor_llm generate --provider webgpu --model build/lfm2-230m-models/LFM2.5-230M-Q4_0.gguf --bundle build/lfm2-230m-q4_0-webgpu --prompt 'What is 2 + 2?' --max-tokens 96
 ```
 
-Use `F16` and `lfm2-230m-f16-webgpu` for the F16 bundle. The WebGPU profile uses
+Use `F16` and `lfm2-230m-f16-webgpu` for the F16 bundle. The standard WebGPU profile uses
 32-token prefill chunks, FP16 projection operands with FP32 accumulation, FP32
 decode projections/attention, FP16 K/V caches and FP32 convolution history.
 One prepared compute pass submits the per-layer dispatches per chunk, caching
@@ -86,6 +86,17 @@ encoder; it batches the dispatch loop into one C call with native validation
 error capture. Ordinary Python wheels retain the Python encoder fallback.
 Context 512 is the measured profile. See [the native submission report](../../docs/research/lfm2-230m-native-submission.md)
 for numerical checks, remaining performance gaps and benchmark commands.
+
+The experimental `prefill_outer` profile adds selected native-F16 projection
+schedules and supports multiple prefill row sizes. Build the measured 230M
+adaptive bundle with `--webgpu-profile prefill_outer --prefill-chunks 32 128`
+and `--context 512`; the ordinary runner chooses a compiled row size from the
+remaining prompt length. The profile retains the searched fused FFN and decode
+projections. On RX 6700 XT it improves completed prefill by about 16% at 32
+tokens and 2.19× at 128/384 tokens; larger native llama.cpp chunks still win.
+See the [adaptive prefill comparison](../../docs/research/lfm2-prefill-chase.md)
+for accuracy, chunk ablations and reproduction. Other checkpoints, quantized
+weights and larger contexts have not been remeasured for this profile.
 
 For a compiler-free Windows consumer, build the optional encoder on a producer
 with MSVC C build tools. It creates a CPython 3.12 Windows x64 wheel; the

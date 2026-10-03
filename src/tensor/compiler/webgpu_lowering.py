@@ -89,6 +89,93 @@ def register_matmul_schedule(rows, depth, columns, lhs_value, rhs_value, *,
 {stores}'''
 
 
+def lower_explicit_unroll(kernel):
+    """Opt-in expansion of bounded T.unroll loops before WGSL code generation.
+
+    TileLang's WGSL path may retain unrolled loops as ordinary shader loops.
+    Expand only an explicitly requested schedule; serial reductions stay loops.
+    """
+    import tvm
+    mode=str(kernel.attrs.get('tensor.webgpu.loop_unroll','none'))
+    if mode not in ('none','explicit'):raise ValueError('invalid WebGPU loop unroll mode')
+    if mode=='none':return kernel
+    ir=tvm.tirx
+    def check(node):
+        if isinstance(node,ir.For) and node.kind==ir.ForKind.UNROLLED:
+            if not isinstance(node.extent,ir.IntImm) or not 0<=int(node.extent)<=16:
+                raise ValueError('explicit WebGPU unroll requires a static extent at most 16')
+    ir.stmt_functor.post_order_visit(kernel.body,check)
+    name=str(kernel.attrs['global_symbol'])
+    return ir.transform.UnrollLoop()(tvm.IRModule({name:kernel}))[name]
+
+
+def outer_product_matmul_schedule(rows, depth, columns, *, tile_m=64, tile_n=64,
+                                  tile_k=16, micro_m=4, micro_n=4, threads=256,
+                                  lhs_layout='km', lhs_pad=0, rhs_pad=0,
+                                  owner_axis='column', unroll=4, fma=True,
+                                  dtype='float32', epilogue='gemm', explicit_unroll=False,
+                                  lhs_value=None):
+    """Staged SIMT outer products with complete-K private FP32 accumulators.
+
+    Cooperative loads preserve row-major A and transposed row-major B storage.
+    Shared layouts and output ownership are independent scheduling choices.
+    The generated source uses x[M*K], w[N*K], optional bias[N], and out[M*N].
+    """
+    dims=(rows,depth,columns,tile_m,tile_n,tile_k,micro_m,micro_n,threads,unroll)
+    if any(type(v) is not int or v<=0 for v in dims):raise ValueError('invalid outer-product dimensions')
+    if threads not in (64,128,256,512) or tile_m%micro_m or tile_n%micro_n or (tile_m//micro_m)*(tile_n//micro_n)!=threads:
+        raise ValueError('invalid outer-product ownership')
+    if micro_m*micro_n>64 or tile_k%unroll or unroll>16:
+        raise ValueError('invalid outer-product register footprint or unroll')
+    if lhs_layout not in ('mk','km') or owner_axis not in ('row','column') or dtype not in ('float32','float16') or epilogue not in ('gemm','linear') or type(fma) is not bool or type(explicit_unroll) is not bool:
+        raise ValueError('invalid outer-product layout or arithmetic')
+    if any(type(v) is not int or v<0 for v in (lhs_pad,rhs_pad)):
+        raise ValueError('invalid outer-product padding')
+    if lhs_value is not None and (type(lhs_value) is not str or not lhs_value.strip()):
+        raise ValueError('invalid outer-product activation expression')
+    activation=(lhs_value or f'x[({{row}}) * {depth} + ({{k}})]').format(
+        row=f'by * {tile_m} + ar',k=f'tile * {tile_k} + ak')
+    lhs_shape=(tile_k,tile_m+lhs_pad) if lhs_layout=='km' else (tile_m,tile_k+lhs_pad)
+    rhs_shape=(tile_k,tile_n+rhs_pad)
+    size=(lhs_shape[0]*lhs_shape[1]+rhs_shape[0]*rhs_shape[1])*(4 if dtype=='float32' else 2)
+    if size>32768:raise ValueError('outer-product shared storage exceeds 32 KiB')
+    rm,rn=tile_m//micro_m,tile_n//micro_n
+    mr,nr=('tx // '+str(rn),'tx % '+str(rn)) if owner_axis=='column' else ('tx % '+str(rm),'tx // '+str(rm))
+    idx=lambda row,k:f'[{k}, {row}]' if lhs_layout=='km' else f'[{row}, {k}]'
+    lines=(['T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})'] if explicit_unroll else [])
+    lines += [f'with T.Kernel(T.ceildiv({columns}, {tile_n}), T.ceildiv({rows}, {tile_m}), threads={threads}) as (bx, by):',
+           '    tx = T.get_thread_binding()',f'    mr = {mr}',f'    nr = {nr}',
+           f'    lhs = T.alloc_shared({lhs_shape}, "{dtype}")',f'    rhs = T.alloc_shared({rhs_shape}, "{dtype}")']
+    for i in range(micro_m):
+        for j in range(micro_n):lines += [f'    acc{i}_{j} = T.alloc_var("float32")',f'    acc{i}_{j} = 0']
+    lines += [f'    for tile in T.serial(T.ceildiv({depth}, {tile_k})):',
+              f'        for load_a in T.serial(T.ceildiv({tile_m*tile_k}, {threads})):',
+              f'            flat_a = load_a * {threads} + tx',
+              f'            ar = flat_a // {tile_k}',f'            ak = flat_a % {tile_k}',
+              f'            if ar < {tile_m}:',
+              f'                lhs{idx("ar","ak")} = T.if_then_else((by * {tile_m} + ar < {rows}) & (tile * {tile_k} + ak < {depth}), T.cast({activation}, "{dtype}"), T.cast(0, "{dtype}"))',
+              f'        for load_b in T.serial(T.ceildiv({tile_n*tile_k}, {threads})):',
+              f'            flat_b = load_b * {threads} + tx',
+              f'            br = flat_b // {tile_k}',f'            bk = flat_b % {tile_k}',
+              f'            if br < {tile_n}:',
+              f'                rhs[bk, br] = T.if_then_else((bx * {tile_n} + br < {columns}) & (tile * {tile_k} + bk < {depth}), w[(bx * {tile_n} + br) * {depth} + tile * {tile_k} + bk], T.cast(0, "{dtype}"))',
+              '        T.sync_threads()',f'        for chunk in T.serial({tile_k//unroll}):',f'            for u in T.unroll({unroll}):',
+              f'                kk = chunk * {unroll} + u']
+    for i in range(micro_m):lines += [f'                left{i} = T.cast(lhs{idx(f"mr + {i*rm}","kk")}, "float32")']
+    for j in range(micro_n):lines += [f'                right{j} = T.cast(rhs[kk, nr + {j*rn}], "float32")']
+    for i in range(micro_m):
+        for j in range(micro_n):
+            value=f'T.call_extern("float32", "fma", left{i}, right{j}, acc{i}_{j})' if fma else f'acc{i}_{j} + left{i} * right{j}'
+            lines += [f'                acc{i}_{j} = {value}']
+    lines += ['        T.sync_threads()']
+    for i in range(micro_m):
+        for j in range(micro_n):
+            row=f'by * {tile_m} + mr + {i*rm}';col=f'bx * {tile_n} + nr + {j*rn}'
+            value=f'T.max(acc{i}_{j} + T.cast(bias[{col}], "float32"), 0)' if epilogue=='linear' else f'acc{i}_{j}'
+            lines += [f'    if ({row} < {rows}) & ({col} < {columns}):',f'        out[({row}) * {columns} + {col}] = {value}']
+    return '\n'.join(lines)
+
+
 def partitioned_matmul_schedule(rows, depth, columns, lhs_value, rhs_value, *,
                                 tile_m=8, tile_n=16, threads=128, partitions=8,
                                 unroll=4, dot_width=1, owner_axis='column', k_layout='blocked'):

@@ -23,7 +23,7 @@ def key(config):
     return tuple(sorted(config.items()))
 
 def neighbors(config,spaces=None):
-    """Adjacent coordinate moves, plus coupled thread/partition changes."""
+    """Adjacent moves and coupled changes that preserve output ownership."""
     space=(SPACES if spaces is None else spaces)[config['family']]
     for axis,values in space.items():
         index=values.index(config.get(axis,values[0]))
@@ -34,6 +34,18 @@ def neighbors(config,spaces=None):
         for thread,partition in itertools.product(space['threads'],space['partitions']):
             if thread//partition==config['threads']//config['partitions']:
                 yield {**config,'threads':thread,'partitions':partition}
+    if all(axis in space for axis in ('tile_m','tile_n','micro_m','micro_n','threads')):
+        # A tile or register-microtile move must also change the thread count.
+        # Single-coordinate moves alone cannot cross this legality constraint.
+        for axis in ('tile_m','tile_n','micro_m','micro_n'):
+            values=space[axis];index=values.index(config[axis])
+            for offset in (-1,1):
+                if not 0<=index+offset<len(values):continue
+                candidate={**config,axis:values[index+offset]}
+                tm,tn,mm,mn=(candidate[a] for a in ('tile_m','tile_n','micro_m','micro_n'))
+                if tm%mm or tn%mn:continue
+                threads=(tm//mm)*(tn//mn)
+                if threads in space['threads']:yield {**candidate,'threads':threads}
 
 class ScheduleSearch:
     """Widenable beam with deterministic restarts across the legal space.
