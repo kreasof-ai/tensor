@@ -1,0 +1,1991 @@
+{
+  "schema": "tensor.lfm2-cuda-format-search.v1",
+  "phase": "prefill",
+  "family": "tiles",
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "cases": [
+    {
+      "model": "LFM2.5-2.6B-F16.gguf",
+      "tensor": "blk.0.ffn_down.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 1
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.4140045900285983e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.0002775552034378052,
+              0.0002775039911270142,
+              0.00027745280265808103,
+              0.0002773504018783569,
+              0.0002773504018783569
+            ],
+            "completed_seconds": [
+              0.00027837709994855687,
+              0.0002781185999992886,
+              0.0002780261499538028,
+              0.00027789309997388044,
+              0.000277877150074346
+            ],
+            "median_gpu_seconds": 0.00027745280265808103,
+            "median_completed_seconds": 0.0002780261499538028,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "016414547bd80577ba87b2ae22778acc225638e1273952ff1fa5898af9a15e5e"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 1.4140045900285983e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00015467519760131834,
+              0.00015477759838104248,
+              0.00015452159643173218,
+              0.00015436799526214598,
+              0.00015472639799118043
+            ],
+            "completed_seconds": [
+              0.0001554426499751571,
+              0.00015530359996773768,
+              0.0001550431500618288,
+              0.00015500959998462349,
+              0.00015525115004493272
+            ],
+            "median_gpu_seconds": 0.00015467519760131834,
+            "median_completed_seconds": 0.00015525115004493272,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "30a772a943dd1b0a02c141e44413151b76d89637785c048a439e72239568589a"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 1.4140045900285983e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00018503520488739015,
+              0.0001848320007324219,
+              0.0001848320007324219,
+              0.0001848320007324219,
+              0.00018488320112228395
+            ],
+            "completed_seconds": [
+              0.00018573224997453508,
+              0.0001853652500358294,
+              0.00018530825000198092,
+              0.0001853852500062203,
+              0.0001855062499998894
+            ],
+            "median_gpu_seconds": 0.0001848320007324219,
+            "median_completed_seconds": 0.0001853852500062203,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "06fede593042d4355e789e09d27b1a6bb0b4f4a9f84a86e765fa0f0fc9eca1fa"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-F16.gguf",
+      "tensor": "blk.0.ffn_gate.weight",
+      "kind": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 1
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.000262604808807373,
+              0.0002629631996154785,
+              0.0002629120111465454,
+              0.00026255359649658206,
+              0.000262604808807373
+            ],
+            "completed_seconds": [
+              0.0002633972999319667,
+              0.0002636178500324604,
+              0.0002634987999954319,
+              0.0002631037999890395,
+              0.0002632548000292445
+            ],
+            "median_gpu_seconds": 0.000262604808807373,
+            "median_completed_seconds": 0.0002633972999319667,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "e4206a4bd45ca306068169f56a48c07278dff30b2227120a63b030e350bdf229"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.0002066943883895874,
+              0.00020648961067199707,
+              0.000207206392288208,
+              0.0002070528030395508,
+              0.00020689918994903564
+            ],
+            "completed_seconds": [
+              0.00020747119997395204,
+              0.00020708969996121595,
+              0.0002077671999359154,
+              0.0002075461999993422,
+              0.00020743915001730784
+            ],
+            "median_gpu_seconds": 0.00020689918994903564,
+            "median_completed_seconds": 0.00020747119997395204,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "7593b225a999f1e35d77e4af6cd5be688f6cd0d9ad0e90feb6cccffaa0974c6a"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00023224000930786135,
+              0.00023183360099792482,
+              0.0002318847894668579,
+              0.00023214080333709718,
+              0.00023168001174926758
+            ],
+            "completed_seconds": [
+              0.00023337220000030356,
+              0.00023250069998539402,
+              0.00023245214997587028,
+              0.00023270465007954044,
+              0.00023236964998432085
+            ],
+            "median_gpu_seconds": 0.0002318847894668579,
+            "median_completed_seconds": 0.00023250069998539402,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "eaeb91569d6f99589f385c7cb2f577953d7c478b6b5dc082a3aedcef2c391b15"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-F16.gguf",
+      "tensor": "blk.0.shortconv.in_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 1
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              9.159680008888244e-05,
+              9.169920086860657e-05,
+              9.18016016483307e-05,
+              9.149439930915832e-05,
+              9.175040125846863e-05
+            ],
+            "completed_seconds": [
+              9.222834996762686e-05,
+              9.218684999723337e-05,
+              9.225735002473811e-05,
+              9.205239994116709e-05,
+              9.229834995494457e-05
+            ],
+            "median_gpu_seconds": 9.169920086860657e-05,
+            "median_completed_seconds": 9.222834996762686e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "562b3641125e830abc5c38f428aa801817a6439cfc09661f50ccc29bdd78d308"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              6.0774397850036625e-05,
+              6.0876798629760744e-05,
+              6.046720147132873e-05,
+              6.0518401861190794e-05,
+              6.06719970703125e-05
+            ],
+            "completed_seconds": [
+              6.144724993646377e-05,
+              6.135124995125807e-05,
+              6.0914200003026056e-05,
+              6.09847000305308e-05,
+              6.11347500125703e-05
+            ],
+            "median_gpu_seconds": 6.06719970703125e-05,
+            "median_completed_seconds": 6.11347500125703e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "b3aad781c0ad1a665bd08de4f3ef30f1aad293fa62278fcd5f08d436ee2c85dc"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              5.857279896736145e-05,
+              5.847039818763733e-05,
+              5.847039818763733e-05,
+              5.8367997407913204e-05,
+              5.847039818763733e-05
+            ],
+            "completed_seconds": [
+              5.930820007051807e-05,
+              5.894070000067586e-05,
+              5.889370004297234e-05,
+              5.885720001970185e-05,
+              5.896619995837682e-05
+            ],
+            "median_gpu_seconds": 5.847039818763733e-05,
+            "median_completed_seconds": 5.894070000067586e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "1fea8fcd0003c24fc56255161cc2349ebc323efc397e5b8457e9e1691e197a85"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-F16.gguf",
+      "tensor": "blk.0.shortconv.out_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 1
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.6246335506778494e-06,
+          "timing": {
+            "gpu_seconds": [
+              5.181440114974975e-05,
+              5.171200037002564e-05,
+              5.171200037002564e-05,
+              5.166079998016358e-05,
+              5.17632007598877e-05
+            ],
+            "completed_seconds": [
+              5.2476549990387865e-05,
+              5.221605006227037e-05,
+              5.22245500178542e-05,
+              5.216704994381871e-05,
+              5.224154992902186e-05
+            ],
+            "median_gpu_seconds": 5.171200037002564e-05,
+            "median_completed_seconds": 5.22245500178542e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "c70ed74adebce9ee08aa3e17b7f5b7c77c39d1ad8f6f42a04075af1ae6cbc75e"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 1.6246335506778494e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.0208000540733338e-05,
+              3.0259200930595397e-05,
+              3.0259200930595397e-05,
+              3.0208000540733338e-05,
+              3.0156800150871275e-05
+            ],
+            "completed_seconds": [
+              3.0876099935994715e-05,
+              3.074315000048955e-05,
+              3.075459999308805e-05,
+              3.06946500131744e-05,
+              3.060210001422092e-05
+            ],
+            "median_gpu_seconds": 3.0208000540733338e-05,
+            "median_completed_seconds": 3.074315000048955e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "50ec309a34240a0d8dcacd47d1384e66a74d22fb1430a6b0ec9bcd1704654ebc"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 1.6246335506778494e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.609600067138672e-05,
+              3.5993599891662596e-05,
+              3.5993599891662596e-05,
+              3.599199950695038e-05,
+              3.594239950180054e-05
+            ],
+            "completed_seconds": [
+              3.675624993775273e-05,
+              3.6510249992716125e-05,
+              3.644970001914771e-05,
+              3.640875002020039e-05,
+              3.644025000539841e-05
+            ],
+            "median_gpu_seconds": 3.5993599891662596e-05,
+            "median_completed_seconds": 3.644970001914771e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "19f2e2395664d7fb449cd291bd447a834cdc25d02a39e44e172e382f01dc4af9"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-F16.gguf",
+      "tensor": "blk.2.attn_k.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 1
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 2.9136146060542874e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.752959966659546e-05,
+              3.752959966659546e-05,
+              3.752959966659546e-05,
+              3.757120072841644e-05,
+              3.752959966659546e-05
+            ],
+            "completed_seconds": [
+              3.812230006587925e-05,
+              3.800775002673618e-05,
+              3.80133000362548e-05,
+              3.799774995059124e-05,
+              3.7939249978080625e-05
+            ],
+            "median_gpu_seconds": 3.752959966659546e-05,
+            "median_completed_seconds": 3.800775002673618e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "fff54be7158d4137dd3895bb53fb3d7c5fe5432b5cdea45754b1c14fef59ccfd"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 2.9136146060542874e-06,
+          "timing": {
+            "gpu_seconds": [
+              2.3449599742889403e-05,
+              2.33472004532814e-05,
+              2.3296000063419344e-05,
+              2.324479967355728e-05,
+              2.324479967355728e-05
+            ],
+            "completed_seconds": [
+              2.4073450003925245e-05,
+              2.3763999979564688e-05,
+              2.3758499992254656e-05,
+              2.3698950008110843e-05,
+              2.3723999947833364e-05
+            ],
+            "median_gpu_seconds": 2.3296000063419344e-05,
+            "median_completed_seconds": 2.3758499992254656e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2e12c06c29da79dced426379780ed36ccf92ed01ba365d3a05ebb438ae3e9cd0"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 2.9136146060542874e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.082239925861359e-05,
+              3.072000145912171e-05,
+              3.075200021266937e-05,
+              3.0668801069259644e-05,
+              3.072000145912171e-05
+            ],
+            "completed_seconds": [
+              3.150259999529226e-05,
+              3.1213650072459134e-05,
+              3.114715000265278e-05,
+              3.112360000159242e-05,
+              3.112714994131238e-05
+            ],
+            "median_gpu_seconds": 3.072000145912171e-05,
+            "median_completed_seconds": 3.114715000265278e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "71edf2b3677455305eaa772f6339dc1ed37434f8f46f2473c5ad9efb07ce1137"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_0.gguf",
+      "tensor": "blk.0.ffn_down.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.3809977349065646e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00036546559333801266,
+              0.00036536319255828855,
+              0.0003651583909988403,
+              0.00036520960330963133,
+              0.000364851188659668
+            ],
+            "completed_seconds": [
+              0.0003662399500171887,
+              0.0003659960000732099,
+              0.000365727450025588,
+              0.0003657769500023278,
+              0.00036543240003084065
+            ],
+            "median_gpu_seconds": 0.00036520960330963133,
+            "median_completed_seconds": 0.0003657769500023278,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "21b873a1a0489f6009517e1dc076cf7b7967a585fb5c710295a933e3bd5f9f5b"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.3809977349065646e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.0002023423910140991,
+              0.000202239990234375,
+              0.00020218880176544192,
+              0.00020218880176544192,
+              0.00020203518867492674
+            ],
+            "completed_seconds": [
+              0.00020304910003687837,
+              0.00020280009994166903,
+              0.00020286415001464776,
+              0.00020290664997446584,
+              0.00020268365005904343
+            ],
+            "median_gpu_seconds": 0.00020218880176544192,
+            "median_completed_seconds": 0.00020286415001464776,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "4a007d2b922fe07fb2e4c6a0aabace99e2fb20afc854c5ddbbe63daf52152244"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.3809977349065646e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00018104319572448733,
+              0.00018088959455490113,
+              0.00018073600530624391,
+              0.0001808351993560791,
+              0.0001811455965042114
+            ],
+            "completed_seconds": [
+              0.0001817851999476261,
+              0.00018144069999834756,
+              0.00018126969998775167,
+              0.0001814057000046887,
+              0.00018182320000050822
+            ],
+            "median_gpu_seconds": 0.00018088959455490113,
+            "median_completed_seconds": 0.00018144069999834756,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f578c65c8d74df876d41915d7c5daffe3369b455699ed050b0542da273dd931d"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_0.gguf",
+      "tensor": "blk.0.ffn_gate.weight",
+      "kind": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 2
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00016732159852981567,
+              0.0001689087986946106,
+              0.00016732159852981567,
+              0.00016742399930953978,
+              0.00016686079502105714
+            ],
+            "completed_seconds": [
+              0.00016802495001684293,
+              0.00016941445001066312,
+              0.00016789339997558272,
+              0.0001679454499935673,
+              0.000167468900053791
+            ],
+            "median_gpu_seconds": 0.00016732159852981567,
+            "median_completed_seconds": 0.0001679454499935673,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "4e48a008b2deff450430eea5e928e4fbbe049fcbea11fa466821afc5368b3e7f"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00013716479539871218,
+              0.00013777920007705687,
+              0.00013680640459060668,
+              0.00013706079721450805,
+              0.00013731839656829834
+            ],
+            "completed_seconds": [
+              0.00013792479994663155,
+              0.00013831835003657033,
+              0.00013746380000156933,
+              0.0001375957999698585,
+              0.000137898299999506
+            ],
+            "median_gpu_seconds": 0.00013716479539871218,
+            "median_completed_seconds": 0.000137898299999506,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "39ded5bbf51b711ca836b2f7738d778122530001067cdb8eb6e6a28444a4ddf3"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00016988159418106078,
+              0.0001691648006439209,
+              0.00017003519535064698,
+              0.00016962560415267945,
+              0.00016962560415267945
+            ],
+            "completed_seconds": [
+              0.0001705730000139738,
+              0.0001696729500508809,
+              0.00017051799995897453,
+              0.00017008094991979305,
+              0.00017016644997056574
+            ],
+            "median_gpu_seconds": 0.00016962560415267945,
+            "median_completed_seconds": 0.00017016644997056574,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "3411689bad0c00e2e5cea646428b34f848d985b0e9e9c2425dbc7ddd248f72b7"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_0.gguf",
+      "tensor": "blk.0.shortconv.in_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 2
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              7.418879866600037e-05,
+              7.403519749641418e-05,
+              7.398399710655212e-05,
+              7.41375982761383e-05,
+              7.388160228729247e-05
+            ],
+            "completed_seconds": [
+              7.490199996027514e-05,
+              7.451555002262467e-05,
+              7.444749999194756e-05,
+              7.457105002686148e-05,
+              7.438000002366608e-05
+            ],
+            "median_gpu_seconds": 7.403519749641418e-05,
+            "median_completed_seconds": 7.451555002262467e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "20a55d28f61cf6e113f5bf64c42ba221be23e89f4db0706304085187c3174253"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              4.853760004043579e-05,
+              4.8742398619651795e-05,
+              4.8998400568962095e-05,
+              4.858880043029785e-05,
+              4.869120121002198e-05
+            ],
+            "completed_seconds": [
+              4.928899998049019e-05,
+              4.9231499997404174e-05,
+              4.944199999954435e-05,
+              4.9116500031232134e-05,
+              4.919850007354398e-05
+            ],
+            "median_gpu_seconds": 4.869120121002198e-05,
+            "median_completed_seconds": 4.9231499997404174e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "7b836818beae05a4211560f9dae565d8b946a3c36503627b1dde65db487e97b1"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              4.7513601183891295e-05,
+              4.7257599234580994e-05,
+              4.736000001430512e-05,
+              4.710400104522705e-05,
+              4.7257599234580994e-05
+            ],
+            "completed_seconds": [
+              4.82274500427593e-05,
+              4.775850002260995e-05,
+              4.786344998137792e-05,
+              4.7575950065947834e-05,
+              4.7734449981362556e-05
+            ],
+            "median_gpu_seconds": 4.7257599234580994e-05,
+            "median_completed_seconds": 4.775850002260995e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8e4a76fde4ba4ba6c91f0e85a28886366257ce9885aac152ac7d0b42f23d8743"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_0.gguf",
+      "tensor": "blk.0.shortconv.out_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.5449163731844836e-06,
+          "timing": {
+            "gpu_seconds": [
+              4.879359900951386e-05,
+              4.869120121002198e-05,
+              4.868640005588531e-05,
+              4.8640000820159914e-05,
+              4.8640000820159914e-05
+            ],
+            "completed_seconds": [
+              4.94800499836856e-05,
+              4.9180499991052785e-05,
+              4.908799992335844e-05,
+              4.902849996142322e-05,
+              4.904450006506522e-05
+            ],
+            "median_gpu_seconds": 4.868640005588531e-05,
+            "median_completed_seconds": 4.908799992335844e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "e919c46d76e92b745d3d353aa0b5169b1fda8c79141f0ccbe848487a448e8dcc"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.5449163731844836e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.307519853115082e-05,
+              3.297280073165893e-05,
+              3.297280073165893e-05,
+              3.3024001121520995e-05,
+              3.3024001121520995e-05
+            ],
+            "completed_seconds": [
+              3.362915003890521e-05,
+              3.3462200008216314e-05,
+              3.348419995745644e-05,
+              3.349865000927821e-05,
+              3.345420000187005e-05
+            ],
+            "median_gpu_seconds": 3.3024001121520995e-05,
+            "median_completed_seconds": 3.348419995745644e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f10c3072710812f90c9a20a9630eb24cfe93554553fc04ffcf8a189052bde6e6"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.5449163731844836e-06,
+          "timing": {
+            "gpu_seconds": [
+              2.5651198625564573e-05,
+              2.5548800826072692e-05,
+              2.5548800826072692e-05,
+              2.5548800826072692e-05,
+              2.5548800826072692e-05
+            ],
+            "completed_seconds": [
+              2.6254000022163382e-05,
+              2.601000005597598e-05,
+              2.599600002213265e-05,
+              2.600449997771648e-05,
+              2.6015999992523575e-05
+            ],
+            "median_gpu_seconds": 2.5548800826072692e-05,
+            "median_completed_seconds": 2.601000005597598e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "11263fb6df471ea840b8401bf7a56772f42706bb5cafc116b0c1794b20904a0b"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_0.gguf",
+      "tensor": "blk.2.attn_k.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 2.7858950721668513e-06,
+          "timing": {
+            "gpu_seconds": [
+              4.869120121002198e-05,
+              4.853760004043579e-05,
+              4.8486399650573726e-05,
+              4.853760004043579e-05,
+              4.853760004043579e-05
+            ],
+            "completed_seconds": [
+              4.928749995087855e-05,
+              4.89844499497849e-05,
+              4.891795006187749e-05,
+              4.901945003439323e-05,
+              4.898895003861981e-05
+            ],
+            "median_gpu_seconds": 4.853760004043579e-05,
+            "median_completed_seconds": 4.898895003861981e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "7ccb15477ccc41f20f260102bc68606719bbcd5c3f09071c8edf7b20b44b5746"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 2.7858950721668513e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.2153600454330445e-05,
+              3.2153600454330445e-05,
+              3.2051199674606326e-05,
+              3.2051199674606326e-05,
+              3.2051199674606326e-05
+            ],
+            "completed_seconds": [
+              3.27476500388002e-05,
+              3.2667650066287025e-05,
+              3.254160001233686e-05,
+              3.2481600010214605e-05,
+              3.244165000069188e-05
+            ],
+            "median_gpu_seconds": 3.2051199674606326e-05,
+            "median_completed_seconds": 3.254160001233686e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f1952c453ef0b4c45caecdaad0b6534633bd89d4aceaf7a44cb1fe57cf84d818"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 2.7858950721668513e-06,
+          "timing": {
+            "gpu_seconds": [
+              2.5139200687408448e-05,
+              2.508800029754639e-05,
+              2.5036799907684326e-05,
+              2.5036799907684326e-05,
+              2.5036799907684326e-05
+            ],
+            "completed_seconds": [
+              2.5765499958652072e-05,
+              2.5551050021022094e-05,
+              2.5464999998803252e-05,
+              2.5466500028414883e-05,
+              2.5604050006222678e-05
+            ],
+            "median_gpu_seconds": 2.5036799907684326e-05,
+            "median_completed_seconds": 2.5551050021022094e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "fb254eb055f58a13132ae104c769e01b4f8ade4ea7496f5b1470423112826183"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.ffn_down.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 14
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.4278397254043396e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.000419379186630249,
+              0.0004184576034545898,
+              0.0004181983947753906,
+              0.000418662405014038,
+              0.00041794562339782714
+            ],
+            "completed_seconds": [
+              0.00042096904999198157,
+              0.00041928205000658637,
+              0.0004191179999907035,
+              0.00041954455000450255,
+              0.0004186105499684345
+            ],
+            "median_gpu_seconds": 0.0004184576034545898,
+            "median_completed_seconds": 0.00041928205000658637,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "dd1405e3d83f6ea09c0c505d257ed6902e8e5eae1be82ed0f95b06143a711cd9"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.4278397254043396e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.0002532864093780518,
+              0.0002530303955078125,
+              0.0002536448001861572,
+              0.0002533888101577759,
+              0.0002533888101577759
+            ],
+            "completed_seconds": [
+              0.0002540761500313238,
+              0.00025366159998156944,
+              0.00025422709995837067,
+              0.00025397910003448486,
+              0.0002539766000154486
+            ],
+            "median_gpu_seconds": 0.0002533888101577759,
+            "median_completed_seconds": 0.00025397910003448486,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "815efa267f78dd0263dac614243e4e7347a3a1282249e3476f45b1d9f81a2e02"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.4278397254043396e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00019537919759750368,
+              0.00019516639709472658,
+              0.0001952672004699707,
+              0.00019502079486846924,
+              0.00019512319564819337
+            ],
+            "completed_seconds": [
+              0.0001960469499863393,
+              0.00019567745002859737,
+              0.00019576245003918302,
+              0.00019557895002435542,
+              0.00019578495002861018
+            ],
+            "median_gpu_seconds": 0.00019516639709472658,
+            "median_completed_seconds": 0.00019576245003918302,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "572dc1b9a12dce4807f9e0abe0c7bbc609d7ab807d045c19978821b0779622f3"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.ffn_gate.weight",
+      "kind": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00020403199195861816,
+              0.00020326399803161622,
+              0.00020311040878295898,
+              0.00020346879959106447,
+              0.00020357120037078858
+            ],
+            "completed_seconds": [
+              0.00020490365004661727,
+              0.0002039000999502605,
+              0.0002036655499978224,
+              0.00020404464994498993,
+              0.00020408059999681426
+            ],
+            "median_gpu_seconds": 0.00020346879959106447,
+            "median_completed_seconds": 0.00020404464994498993,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f16aa48bfa91aa0663b3e9c6d23d81e2536ec23603a0f941473f9c0679e66d47"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00019097599983215332,
+              0.00019071999788284304,
+              0.00019025919437408448,
+              0.00019046399593353273,
+              0.0001907711982727051
+            ],
+            "completed_seconds": [
+              0.0001917803499964066,
+              0.0001912798500598001,
+              0.00019082535000052302,
+              0.00019104035000054863,
+              0.00019129189995510388
+            ],
+            "median_gpu_seconds": 0.00019071999788284304,
+            "median_completed_seconds": 0.0001912798500598001,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "658bd881d5f8445031a955a47447b8eab06d047b61cb7d1e49efefd83f276c8f"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 64,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": false,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              0.00019507199525833132,
+              0.00019476159811019898,
+              0.00019471360445022582,
+              0.00019456000328063966,
+              0.00019481600522994996
+            ],
+            "completed_seconds": [
+              0.00019599610004661372,
+              0.00019542555000953143,
+              0.00019537255002433085,
+              0.00019526609994500178,
+              0.00019546455005183815
+            ],
+            "median_gpu_seconds": 0.00019476159811019898,
+            "median_completed_seconds": 0.00019542555000953143,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "842e4483140b280c635bd4c8659ea2f58896502aae8509590e5e3f299c63e8c4"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.shortconv.in_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              9.963520169258117e-05,
+              9.953280091285705e-05,
+              9.947839975357055e-05,
+              9.953280091285705e-05,
+              9.953280091285705e-05
+            ],
+            "completed_seconds": [
+              0.00010034585002358654,
+              0.00010001179998653242,
+              9.993085004680324e-05,
+              0.00010005080002883915,
+              0.00010006284992414294
+            ],
+            "median_gpu_seconds": 9.953280091285705e-05,
+            "median_completed_seconds": 0.00010005080002883915,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "58bf052f68ea94b41e38df00a67dcf9f1cbee0430a645f93987e9d75290a26c2"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              6.538239717483521e-05,
+              6.487039923667908e-05,
+              6.487039923667908e-05,
+              6.517760157585143e-05,
+              6.476799845695496e-05
+            ],
+            "completed_seconds": [
+              6.598684994969517e-05,
+              6.54853499327146e-05,
+              6.539229998452356e-05,
+              6.57068500004243e-05,
+              6.528029998662533e-05
+            ],
+            "median_gpu_seconds": 6.487039923667908e-05,
+            "median_completed_seconds": 6.54853499327146e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "cd73036238c12254b4b5a0e15058cf0b7be7c05ec1761fd454a1353a1c67abfe"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 0.0,
+          "timing": {
+            "gpu_seconds": [
+              8.862720131874084e-05,
+              8.852480053901672e-05,
+              8.88320028781891e-05,
+              8.857280015945434e-05,
+              8.841919898986817e-05
+            ],
+            "completed_seconds": [
+              8.937329994296306e-05,
+              8.907185001589823e-05,
+              8.93593000000692e-05,
+              8.900334996724269e-05,
+              8.892129999367171e-05
+            ],
+            "median_gpu_seconds": 8.857280015945434e-05,
+            "median_completed_seconds": 8.907185001589823e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f89add5db78e1aa0579b9fe8679a8f8a871de28487abbc54dbaa6b1b6d0d7ef2"
+        }
+      },
+      "selected": "candidate-0"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.shortconv.out_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.760313032306001e-06,
+          "timing": {
+            "gpu_seconds": [
+              6.937599778175355e-05,
+              6.937599778175355e-05,
+              6.922240257263184e-05,
+              6.92736029624939e-05,
+              6.92736029624939e-05
+            ],
+            "completed_seconds": [
+              7.009085002209758e-05,
+              6.990489991949289e-05,
+              6.972635001147864e-05,
+              6.97498499903304e-05,
+              6.972439996388857e-05
+            ],
+            "median_gpu_seconds": 6.92736029624939e-05,
+            "median_completed_seconds": 6.97498499903304e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ec909c3c46de11eef5bd4306805ec314a52f67bae30541ee635a5d19f6d52869"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.760313032306001e-06,
+          "timing": {
+            "gpu_seconds": [
+              4.361920058727264e-05,
+              4.352000057697296e-05,
+              4.352000057697296e-05,
+              4.357120096683502e-05,
+              4.352000057697296e-05
+            ],
+            "completed_seconds": [
+              4.425335000632913e-05,
+              4.397540005811607e-05,
+              4.404384999361355e-05,
+              4.4090850042266536e-05,
+              4.397584998514503e-05
+            ],
+            "median_gpu_seconds": 4.352000057697296e-05,
+            "median_completed_seconds": 4.404384999361355e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "5e6a1e39fde313d0860538105830b52ee2ba828775769e4d6e6b8c2003731bdc"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.760313032306001e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.5993599891662596e-05,
+              3.589119911193848e-05,
+              3.589119911193848e-05,
+              3.5839998722076414e-05,
+              3.5940799117088316e-05
+            ],
+            "completed_seconds": [
+              3.6681250003312015e-05,
+              3.6386699957802196e-05,
+              3.629624998211511e-05,
+              3.632870002547861e-05,
+              3.6418199943000215e-05
+            ],
+            "median_gpu_seconds": 3.589119911193848e-05,
+            "median_completed_seconds": 3.6386699957802196e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "5f298c4bc1e2e53779f17d51edc56f16986cf922ce16ccd7b735bf7ba42c39ad"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.2.attn_k.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 3.008940634792945e-06,
+          "timing": {
+            "gpu_seconds": [
+              6.937280297279359e-05,
+              6.917120218276977e-05,
+              6.917120218276977e-05,
+              6.917120218276977e-05,
+              6.92736029624939e-05
+            ],
+            "completed_seconds": [
+              7.00188999871898e-05,
+              6.961384997339337e-05,
+              6.959440006539807e-05,
+              6.970334998186445e-05,
+              6.971739994696691e-05
+            ],
+            "median_gpu_seconds": 6.917120218276977e-05,
+            "median_completed_seconds": 6.970334998186445e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9695b1d1eef5c34a3fec50ee18cd597822e18795d30d5671d171b04fe8e35b03"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 3.008940634792945e-06,
+          "timing": {
+            "gpu_seconds": [
+              4.382719993591309e-05,
+              4.3721601366996765e-05,
+              4.3673598766326905e-05,
+              4.3673598766326905e-05,
+              4.3673598766326905e-05
+            ],
+            "completed_seconds": [
+              4.450485002962523e-05,
+              4.4152400005259554e-05,
+              4.4114350021118295e-05,
+              4.413440001371782e-05,
+              4.412935004438623e-05
+            ],
+            "median_gpu_seconds": 4.3673598766326905e-05,
+            "median_completed_seconds": 4.413440001371782e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8037112504885f956c9550a8ba2a49763fef2972037fb462fc6d9bcb3819b402"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 3.008940634792945e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.589119911193848e-05,
+              3.5839998722076414e-05,
+              3.578880131244659e-05,
+              3.578880131244659e-05,
+              3.578880131244659e-05
+            ],
+            "completed_seconds": [
+              3.647524999905727e-05,
+              3.633320002336404e-05,
+              3.626724992500385e-05,
+              3.62002499969094e-05,
+              3.62232500265236e-05
+            ],
+            "median_gpu_seconds": 3.578880131244659e-05,
+            "median_completed_seconds": 3.626724992500385e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "c426642801100009914525a3c0ee7b12ad31d0d6ce4c1a15bc89662a56ae32fb"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.2.attn_v.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 14
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 3.0206303314975463e-06,
+          "timing": {
+            "gpu_seconds": [
+              5.811200141906738e-05,
+              5.8060801029205324e-05,
+              5.7958400249481205e-05,
+              5.7958400249481205e-05,
+              5.785599946975708e-05
+            ],
+            "completed_seconds": [
+              5.8764700042956974e-05,
+              5.8562699996400626e-05,
+              5.844465003974619e-05,
+              5.8450649976293787e-05,
+              5.832020005982486e-05
+            ],
+            "median_gpu_seconds": 5.7958400249481205e-05,
+            "median_completed_seconds": 5.8450649976293787e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "548b5a5047314a00febf75c732674693ac7d7c59705e54e1a27aa97c9271b649"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 3.0206303314975463e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.891200125217437e-05,
+              3.891200125217437e-05,
+              3.891200125217437e-05,
+              3.8860800862312316e-05,
+              3.891200125217437e-05
+            ],
+            "completed_seconds": [
+              3.954430003432208e-05,
+              3.9372750052280026e-05,
+              3.937974997825222e-05,
+              3.931024994017207e-05,
+              3.9371800085064024e-05
+            ],
+            "median_gpu_seconds": 3.891200125217437e-05,
+            "median_completed_seconds": 3.9372750052280026e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "05aaecefd1279c2f23974addc4745977c8b5288dafd35dc9c4a8bcb8c8983875"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 3.0206303314975463e-06,
+          "timing": {
+            "gpu_seconds": [
+              3.0412799119949344e-05,
+              3.0411198735237123e-05,
+              3.031040132045746e-05,
+              3.031040132045746e-05,
+              3.031040132045746e-05
+            ],
+            "completed_seconds": [
+              3.104960005657631e-05,
+              3.0898599925421875e-05,
+              3.078665004068171e-05,
+              3.074960004596505e-05,
+              3.075360000366345e-05
+            ],
+            "median_gpu_seconds": 3.031040132045746e-05,
+            "median_completed_seconds": 3.078665004068171e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "c5acd55b259ef36d6cdae8bc203df029aa214027a4eae192bbaacceb03f339aa"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.3.ffn_down.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.436758035410341e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00046776318550109864,
+              0.0004677103996276855,
+              0.00046735358238220214,
+              0.00046771202087402344,
+              0.00046755838394165036
+            ],
+            "completed_seconds": [
+              0.0004685734999839042,
+              0.00046823894999761253,
+              0.00046786900002189214,
+              0.00046828694994474065,
+              0.00046813945000394596
+            ],
+            "median_gpu_seconds": 0.0004677103996276855,
+            "median_completed_seconds": 0.00046823894999761253,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "913455eb849404a7f4d54a6fdf62fd5b7033c7c242d80e5bd9d2438a390dde1c"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "block_m": 32,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.436758035410341e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00027079679965972896,
+              0.0002706432104110718,
+              0.0002706432104110718,
+              0.00027059199810028074,
+              0.00027054080963134764
+            ],
+            "completed_seconds": [
+              0.00027221349992032626,
+              0.00027123454992761253,
+              0.0002712380000048142,
+              0.00027115399998365317,
+              0.00027109850007036587
+            ],
+            "median_gpu_seconds": 0.0002706432104110718,
+            "median_completed_seconds": 0.00027123454992761253,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "89847fb627230f8fb8fd33d6f4bc8443df93e0df3cf5b1a8bb247c4938bcf359"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "block_m": 16,
+            "block_n": 64,
+            "block_k": 128,
+            "stages": 2,
+            "threads": 128,
+            "packed_pairs": true,
+            "family": "mma"
+          },
+          "relative_rms": 1.436758035410341e-05,
+          "timing": {
+            "gpu_seconds": [
+              0.00022661120891571046,
+              0.0002264575958251953,
+              0.00022620160579681398,
+              0.00022609920501708984,
+              0.00022655999660491942
+            ],
+            "completed_seconds": [
+              0.0002273121000143874,
+              0.0002270306000355049,
+              0.00022672760005661984,
+              0.0002266706000227714,
+              0.00022710359999109642
+            ],
+            "median_gpu_seconds": 0.0002264575958251953,
+            "median_completed_seconds": 0.0002270306000355049,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "da30bf78bc7526cedf48166ab1a782ef258bfaf7424e2a781ca5b3db3ed0886c"
+        }
+      },
+      "selected": "candidate-1"
+    }
+  ],
+  "model_sha256": {
+    "LFM2.5-2.6B-F16.gguf": "e041c231351185eb390f9c417d3bfd1815869a50a8589f3f86e5b9add3c529f1",
+    "LFM2.5-2.6B-Q4_0.gguf": "e1a61bf937bc60726e18626e97f7ee9bfd2574d95744c2ed909de98b78006fbe",
+    "LFM2.5-2.6B-Q4_K_M.gguf": "02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed"
+  },
+  "sources": {
+    "benchmarks/lfm2/cuda_format_search.py": {
+      "sha256": "bd900febac9385f4a60ebe92ed52c17421cc8fd707d5961887b459b89f870d58",
+      "text": "\"\"\"Bounded CUDA projection search with checkpoint weights and independent math.\"\"\"\nfrom pathlib import Path as _Path\nimport sys as _sys\n_sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))\nimport argparse\nimport hashlib\nimport json\nfrom pathlib import Path\nimport numpy as np\nimport tensor\nfrom tensor.providers.cuda_graph import CudaGraph\nfrom tensor.compiler.tuning import measure_cuda\nfrom tensor.compiler.search import ScheduleSearch,ScheduleProfile\nfrom tensor.compiler.cuda_schedules import projection_space,projection_legal\nfrom tensor.artifacts.format import read_artifact\nfrom tensor_llm import GGUF\nfrom tensor_llm.cuda_kernels import gemv_source, fused_source, prefill_source\nfrom tensor_llm.kernels import source as baseline_source\n\n\ndef current_source(kind,p):\n    if kind in ('linear','linear_add','ffn'):\n        return gemv_source(kind,p) if p['r']==1 else fused_source(kind,p)\n    return baseline_source(kind,p)\n\ndef compile_source(text, out):\n    key=hashlib.sha256(text.encode()).hexdigest()[:24]\n    out=Path(out);out.mkdir(parents=True,exist_ok=True)\n    path=out/(key+'.py');artifact=path.with_suffix('.tbin')\n    if not path.exists() or path.read_text()!=text:path.write_text(text);artifact.unlink(missing_ok=True)\n    if artifact.exists():\n        manifest,_=read_artifact(artifact)\n        expected=hashlib.sha256(Path(tensor.__file__).parent.joinpath('compiler/cuda_lowering.py').read_bytes()).hexdigest()\n        if manifest['compiler'].get('lowering_sha256')!=expected:artifact.unlink()\n    if not artifact.exists():tensor.build(path,artifact,compiler='nvrtc',target='sm_86',cache_dir=out/'cache')\n    return artifact\n\n\ndef search(models, out, phase='prefill', rows=(128,), family='tiles', formats=('F16','Q4_0','Q4_K_M'), max_candidates=8):\n    if type(max_candidates) is not int or max_candidates<1:raise ValueError('positive candidate budget required')\n    import torch\n    torch.backends.cuda.matmul.allow_tf32=False\n    models=Path(models);out=Path(out);out.mkdir(parents=True,exist_ok=True)\n    repo=Path(__file__).resolve().parents[2]\n    sources={name:dict(sha256=hashlib.sha256((repo/name).read_bytes()).hexdigest(),text=(repo/name).read_text()) for name in ('benchmarks/lfm2/cuda_format_search.py', 'src/tensor/compiler/search.py', 'src/tensor/compiler/cuda_schedules.py', 'src/tensor/compiler/cuda_lowering.py', 'packages/tensor-llm/src/tensor_llm/cuda_kernels.py')}\n    cases=[];seen=set();model_hashes={};profile_entries=[]\n    profile=ScheduleProfile(json.loads(Path(__file__).with_name('profiles').joinpath('cuda-sm86-lfm2.5-2.6b.json').read_text()))\n    for fmt in formats:\n        path=models/f'LFM2.5-2.6B-{fmt}.gguf';gguf=GGUF(path)\n        with path.open('rb') as stream:model_hashes[path.name]=hashlib.file_digest(stream,'sha256').hexdigest()\n        for name,info in gguf.tensors.items():\n            if len(info.shape)!=2 or name.endswith('conv.weight'):continue\n            o,k=info.shape;q=info.type\n            if phase=='prefill' and name=='token_embd.weight':continue\n            kind='ffn' if name.endswith('ffn_gate.weight') else 'linear'\n            if name.endswith('ffn_up.weight'):continue\n            for r in rows if phase=='prefill' else (1,):\n                key=(kind,r,k,o,q)\n                if key in seen:continue\n                seen.add(key);parameters=dict(r=r,k=k,o=o,type=q)\n                spaces=projection_space(phase,f16_vectors=q==1,family=family)\n                defaults=(dict(block_m=32,block_n=64,block_k=64,stages=2,threads=128,packed_pairs=family!='tiles')\n                          if phase=='prefill' else dict(threads=128,unroll=4,**({'f16_values':4} if q==1 else {})))\n                seed={**defaults,**profile.select(kind,parameters,provider='cuda',target='sm_86')}\n                if phase=='prefill' and family=='paired-loads':seed['packed_pairs']=True\n                seed['family']=next(iter(spaces))\n                # A restricted family can exclude an otherwise valid measured\n                # seed (for example a 64-row tile in the small-row family).\n                for axis,values in spaces[seed['family']].items():\n                    if seed.get(axis,values[0]) not in values:seed[axis]=values[0]\n                discovery=ScheduleSearch([seed],spaces=spaces,width=4,\n                    legal=lambda cfg:projection_legal(cfg,depth=k,paired=kind=='ffn',packed_pairs=q in (1,2,12,14)))\n                def candidates():\n                    yield 'before',(None,current_source(kind,parameters))\n                    if phase=='decode' and kind=='ffn' and q==1:\n                        yield 'separate',(dict(paired=False),current_source('linear',parameters))\n                    for index in range(max_candidates):\n                        try:config=discovery.next()\n                        except StopIteration:break\n                        p={**parameters,**{key:value for key,value in config.items() if key!='family'}}\n                        text=prefill_source(kind,p) if phase=='prefill' else current_source(kind,p)\n                        yield f'candidate-{index}',(config,text)\n                rng=np.random.default_rng(2093)\n                x=rng.normal(size=(r,k)).astype(np.float32)*.3\n                decoded=torch.from_numpy(np.array(gguf.array(name),copy=True)).cuda()\n                tx=torch.from_numpy(x).cuda()\n                expected=torch.mm(tx.half(),decoded.half().T,out_dtype=torch.float32) if r>1 else torch.mm(tx,decoded.T)\n                arrays=[x.ravel(),np.array(gguf.packed(name),copy=True)]\n                if q in (0,1):arrays[1]=arrays[1].view(np.float32 if q==0 else np.float16)\n                if kind=='ffn':\n                    upname=name.replace('ffn_gate','ffn_up')\n                    up=torch.from_numpy(np.array(gguf.array(upname),copy=True)).cuda()\n                    updot=torch.mm(tx.half(),up.half().T,out_dtype=torch.float32) if r>1 else torch.mm(tx,up.T)\n                    expected=torch.nn.functional.silu(expected)*updot\n                    packed=np.array(gguf.packed(upname),copy=True)\n                    arrays.append(packed.view(np.float16 if q==1 else np.float32) if q in (0,1) else packed)\n                    del up,updot\n                expected=expected.cpu().numpy().ravel()\n                del decoded,tx;torch.cuda.empty_cache()\n                row=dict(model=path.name,tensor=name,kind=kind,parameters=parameters,candidates={})\n                with tensor.Device() as device:\n                    buffers=[device.from_numpy(a) for a in arrays];output=device.empty(r*o)\n                    for label,(config,text) in candidates():\n                        kernel=swiglu=gate=up=None\n                        try:\n                            artifact=compile_source(text,out/'kernels');kernel=device.load(artifact)\n                            if label=='separate':\n                                gate=device.empty(o);up=device.empty(o)\n                                swiglu=device.load(compile_source(current_source('swiglu',dict(r=1,c=o)),out/'kernels'))\n                                def launch():\n                                    kernel.launch(buffers[0],buffers[1],gate)\n                                    kernel.launch(buffers[0],buffers[2],up)\n                                    swiglu.launch(gate,up,output)\n                            else:\n                                def launch():kernel.launch(*buffers,output)\n                            launch();actual=output.to_numpy()\n                            relative=float(np.linalg.norm(actual.astype(np.float64)-expected)/np.linalg.norm(expected))\n                            assert np.isfinite(actual).all() and relative<.002,(label,relative)\n                            def batch():\n                                for _ in range(20):launch()\n                            with CudaGraph(device,batch,resources=(*buffers,output,kernel)) as graph:\n                                timing=measure_cuda(device,graph.launch,warmup=3,samples=5,repeats=1)\n                            for metric in ('gpu_seconds','completed_seconds'):timing[metric]=[x/20 for x in timing[metric]]\n                            for metric in ('median_gpu_seconds','median_completed_seconds'):timing[metric]/=20\n                            timing['graph_nodes']=20\n                            row['candidates'][label]=dict(status='passed',config=config,relative_rms=relative,timing=timing,\n                                                          source_sha256=hashlib.sha256(text.encode()).hexdigest())\n                            print(key,label,round(timing['median_gpu_seconds']*1e6,2),'us',flush=True)\n                            if config and 'family' in config:discovery.record(config,timing['median_gpu_seconds'])\n                        except Exception as exc:\n                            row['candidates'][label]=dict(status='rejected',config=config,reason=str(exc))\n                            print(key,label,'rejected',str(exc)[:160],flush=True)\n                        finally:\n                            for resource in (kernel,swiglu,gate,up):\n                                if resource is not None:resource.release()\n                    passed=[n for n,v in row['candidates'].items() if v['status']=='passed' and n!='separate']\n                    assert passed,row\n                    row['selected']=min(passed,key=lambda n:row['candidates'][n]['timing']['median_gpu_seconds'])\n                    selected=row['candidates'][row['selected']]\n                    config={name:value for name,value in (selected['config'] or {}).items() if name!='family'}\n                    profile_entries.append(dict(operation=kind,parameters=parameters,schedule=config,\n                                                source_sha256=selected['source_sha256'],median_gpu_seconds=selected['timing']['median_gpu_seconds']))\n                    adapter=device.info\n                cases.append(row)\n                report=dict(schema='tensor.lfm2-cuda-format-search.v1',phase=phase,family=family,\n                            adapter=adapter,cases=cases,model_sha256=model_hashes,sources=sources,\n                            protocol=dict(seed=2093,gpu_concurrency=1,warmups=3,samples=5,\n                                          graph_repetitions=20,times_divided_by=20,relative_rms_max=.002,\n                                          baseline='generic packed schedule, not the frozen full-model before profile',\n                                          reference='independent Torch FP16 prefill/FP32 decode operators',\n                                          discovery='tensor.compiler.search.ScheduleSearch',max_candidates_per_shape=max_candidates))\n                selected_profile=dict(schema='tensor.schedule-profile.v1',provider='cuda',target='sm_86',entries=profile_entries,\n                                      provenance=dict(method='shared beam discovery; independent correctness gate then GPU timing'))\n                (out/'profile.json').write_text(json.dumps(selected_profile,indent=2)+'\\n')\n                (out/'search.json').write_text(json.dumps(report,indent=2)+'\\n')\n    return cases\n\n\nif __name__=='__main__':\n    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--models',type=Path,default=Path('build/lfm2-models'))\n    p.add_argument('--out',type=Path,required=True);p.add_argument('--phase',choices=('prefill','decode'),default='prefill')\n    p.add_argument('--rows',type=int,nargs='+',default=[128])\n    p.add_argument('--family',choices=('tiles','paired-loads','small-rows'),default='tiles')\n    p.add_argument('--formats',nargs='+',choices=('F16','Q4_0','Q4_K_M'),default=['F16','Q4_0','Q4_K_M'])\n    p.add_argument('--candidates',type=int,default=8)\n    args=p.parse_args();search(args.models,args.out,args.phase,tuple(args.rows),args.family,tuple(args.formats),args.candidates)\n"
+    },
+    "src/tensor/compiler/search.py": {
+      "sha256": "826ccbd9e003e4d67fa40b031d26866d7f38ea7ae28f4bd8f2a63cda9a207865",
+      "text": "\"\"\"Device-independent schedule discovery and producer profile selection.\n\nBackends supply spaces, legality predicates and coupled moves. Callers own\ncompilation, correctness checks, timing and budgets; no device is opened here.\n\"\"\"\nfrom __future__ import annotations\nimport hashlib\nimport itertools\nimport json\nimport math\n\n\ndef key(config):\n    return tuple(sorted(config.items()))\n\n\ndef neighbors(config, spaces, *, coupled=None):\n    space = spaces[config['family']]\n    for axis, values in space.items():\n        index = values.index(config.get(axis, values[0]))\n        for offset in (-1, 1):\n            if 0 <= index + offset < len(values):\n                yield {**config, axis: values[index + offset]}\n    if coupled is not None:\n        yield from coupled(config, space)\n\n\nclass ScheduleSearch:\n    \"\"\"Beam exploration with family retention and deterministic restarts.\n\n    Only correctness-checked positive finite timings should be recorded. A\n    finite space ends with StopIteration; rejected candidates are still seen.\n    \"\"\"\n    def __init__(self, seeds, *, spaces, width=8, coupled=None, legal=None):\n        if type(width) is not int or width <= 0:\n            raise ValueError('beam width must be a positive integer')\n        if not spaces or any(not axes or any(not values for values in axes.values()) for axes in spaces.values()):\n            raise ValueError('schedule spaces must have nonempty families and axes')\n        self.width = width\n        self.spaces = {family: {axis: tuple(values) for axis, values in axes.items()} for family, axes in spaces.items()}\n        self.coupled, self.legal = coupled, legal\n        self.pending = [dict(seed) for seed in seeds]\n        self.seen, self.results = set(), []\n        for seed in self.pending:\n            if seed.get('family') not in self.spaces:\n                raise ValueError('seed family is absent from the schedule space')\n            for axis, values in self.spaces[seed['family']].items():\n                if axis in seed and seed[axis] not in values:\n                    raise ValueError('seed axis is absent from the schedule space: ' + axis)\n        self.restarts = self._restarts()\n\n    def _restarts(self):\n        for family, space in self.spaces.items():\n            axes = list(space)\n            for values in itertools.product(*(space[axis] for axis in axes)):\n                yield {'family': family, **dict(zip(axes, values))}\n\n    def next(self):\n        while True:\n            if not self.pending:\n                ranked = sorted(self.results, key=lambda row: row[0])\n                selected = ranked[:self.width]\n                for family in self.spaces:\n                    selected += [row for row in ranked if row[1]['family'] == family][:2]\n                self.pending = [candidate for _, config in selected\n                                for candidate in neighbors(config, self.spaces, coupled=self.coupled)\n                                if key(candidate) not in self.seen]\n                if not self.pending:\n                    self.pending = [next(self.restarts)]\n            config = self.pending.pop(0)\n            identity = key(config)\n            if identity in self.seen:\n                continue\n            self.seen.add(identity)\n            if self.legal is None or self.legal(config):\n                return config\n\n    def record(self, config, seconds):\n        if math.isfinite(seconds) and seconds > 0:\n            self.results.append((seconds, dict(config)))\n\n\nclass ScheduleProfile:\n    \"\"\"Target-bound producer settings keyed by operation and semantic parameters.\n\n    Selectors may be partial; the most specific match wins. Conflicting matches\n    at equal specificity are rejected instead of depending on record order.\n    Runtime consumers use compiled artifacts, never this producer utility.\n    \"\"\"\n    def __init__(self, data):\n        if data.get('schema') != 'tensor.schedule-profile.v1':\n            raise ValueError('unsupported schedule profile schema')\n        if not isinstance(data.get('provider'), str) or not isinstance(data.get('target'), str):\n            raise ValueError('schedule profile needs provider and target')\n        if not isinstance(data.get('entries'), list):\n            raise ValueError('schedule profile needs entries')\n        seen = set()\n        for entry in data['entries']:\n            if (not isinstance(entry.get('operation'), str) or not isinstance(entry.get('parameters'), dict)\n                    or not isinstance(entry.get('schedule'), dict)):\n                raise ValueError('invalid schedule profile entry')\n            identity = json.dumps([entry['operation'], entry['parameters']], sort_keys=True)\n            if identity in seen:\n                raise ValueError('duplicate schedule profile selector')\n            seen.add(identity)\n        self.data = json.loads(json.dumps(data, allow_nan=False))\n\n    @property\n    def sha256(self):\n        return hashlib.sha256(json.dumps(self.data, sort_keys=True, separators=(',', ':')).encode()).hexdigest()\n\n    def select(self, operation, parameters, *, provider, target):\n        if (provider, target) != (self.data['provider'], self.data['target']):\n            raise ValueError('schedule profile provider/target mismatch')\n        matches = [entry for entry in self.data['entries'] if entry['operation'] == operation\n                   and all(name in parameters and parameters[name] == value for name, value in entry['parameters'].items())]\n        if not matches:\n            return {}\n        specificity = max(len(entry['parameters']) for entry in matches)\n        matches = [entry for entry in matches if len(entry['parameters']) == specificity]\n        if any(entry['schedule'] != matches[0]['schedule'] for entry in matches[1:]):\n            raise ValueError('ambiguous schedule profile selector')\n        return dict(matches[0]['schedule'])\n"
+    },
+    "src/tensor/compiler/cuda_schedules.py": {
+      "sha256": "ecf7f4617fe9594cb0069a50684a6b7b5747c70eaec4c8a84f93d98c36ee0c9b",
+      "text": "\"\"\"CUDA schedule spaces supplied to device-independent discovery.\"\"\"\n\nPREFILL_SPACE = dict(block_m=(16,32,64),block_n=(64,128),block_k=(32,64,128),\n                     stages=(2,3),threads=(128,256),packed_pairs=(False,True))\nDECODE_SPACE = dict(threads=(64,128,256),unroll=(1,2,4,8))\nATTENTION_SPACES = {'partial': {'splits': (16,)},\n                    'grouped': {'stage': (16,32,64), 'warps': (2,4)}}\n\n\ndef projection_space(phase, *, f16_vectors=False, family='tiles'):\n    if phase=='decode':\n        return {'gemv': {**DECODE_SPACE, **({'f16_values': (4,8,16)} if f16_vectors else {})}}\n    if phase!='prefill':raise ValueError('requires prefill or decode schedule space')\n    space=dict(PREFILL_SPACE)\n    if family=='paired-loads':space['packed_pairs']=(True,)\n    if family=='small-rows':space.update(block_m=(16,32),block_n=(64,),stages=(2,),threads=(128,))\n    return {'mma': space}\n\n\ndef projection_legal(config, *, depth, paired=False, packed_pairs=True, shared_limit=99*1024):\n    if config['family']=='gemv':\n        width=config.get('f16_values',4)\n        return depth%256==0 and depth%(32*width)==0\n    bk,bm,bn,stages=(config[name] for name in ('block_k','block_m','block_n','stages'))\n    # SM86 has a 99 KiB opt-in shared-memory limit per CTA. Padding/layout\n    # details remain the compiler's responsibility and may reject a candidate.\n    shared=(bm+(2 if paired else 1)*bn)*bk*2*stages\n    return depth%bk==0 and shared<=shared_limit and (not config['packed_pairs'] or packed_pairs)\n"
+    },
+    "src/tensor/compiler/cuda_lowering.py": {
+      "sha256": "02aecf8d285ea654919642392bf608992e1b7e9ea2573e660d7fa57bb020fcd9",
+      "text": "\"\"\"Typed CUDA operations used by inspectable TileLang/TIRx algorithms.\n\nOnly scalar loads and FP16 pair conversion need helpers. Loops, quantization,\nreductions, fusion and attention remain in frontend IR. TileLang already owns\nwarp shuffles, vectorized loads and IEEE FP32 FMA lowering.\n\"\"\"\n\n\ndef lower_cuda_intrinsics(source):\n    helpers = {\n        'tensor_load_u16': '''__device__ __forceinline__ unsigned int tensor_load_u16(const void* ptr) {\n    return *reinterpret_cast<const unsigned short*>(ptr);\n}''',\n        'tensor_pack_f16x2': '''__device__ __forceinline__ unsigned int tensor_pack_f16x2(float lo, float hi) {\n    __half2_raw bits = __floats2half2_rn(lo, hi);\n    return unsigned(bits.x) | (unsigned(bits.y) << 16);\n}''',\n    }\n    used = [definition for name, definition in helpers.items() if name + '(' in source]\n    if not used:\n        return source\n    return '#include <cuda_fp16.h>\\n' + '\\n'.join(used) + '\\n' + source\n"
+    },
+    "packages/tensor-llm/src/tensor_llm/cuda_kernels.py": {
+      "sha256": "0e5ba091ed42fb8954859b4dd3e88c984cb0e53c2df7da2697933611ed3068c7",
+      "text": "\"\"\"Inspectable TileLang/TIRx CUDA algorithms for packed LFM2 inference.\n\nMeasured schedules belong to producer profiles. All model arithmetic and\ncontrol flow stay in IR; the backend lowers only typed scalar/vector operations.\nRuntime imports remain compiler-free.\n\"\"\"\nimport re\nimport textwrap\nfrom .kernels import emit, weight, source as baseline_source\nfrom .gguf import TYPES\n\nCUDA_PROFILES = ('default', 'optimized')\nCUDA_GROUPED_THRESHOLD = 4096\n\ndef _u16(buffer, offset):\n    return f'T.call_extern(\"uint32\", \"tensor_load_u16\", T.address_of({buffer}[{offset}]))'\n\n\ndef _word(buffer, offset):\n    return f'({_u16(buffer,offset)} | ({_u16(buffer,f\"({offset}) + 2\")} << 16))'\n\n\ndef _half(buffer, offset):\n    return f'T.cast(T.reinterpret(\"float16\", T.cast({_u16(buffer,offset)}, \"uint16\")), \"float32\")'\n\n\ndef _vector(buffer, index, name, dtype='float32', width=4):\n    return f'''{name} = T.alloc_local(({width},), \"{dtype}\")\nfor component in T.vectorized({width}):\n    {name}[component] = {buffer}[({index}) + component]'''\n\n\ndef _dot(q,k,row_bytes,buffer,width=4):\n    \"\"\"Packed GGML arithmetic expressed completely in frontend scalar/vector IR.\"\"\"\n    if q in (0,1):\n        return f'''j = tile * {32*width} + lane * {width}\n{_vector('x','j','activation',width=width)}\n{_vector(buffer,f'row * {k} + j','coefficient','float16' if q==1 else 'float32',width)}\ndot = T.alloc_var(\"float32\")\ndot = 0\nfor component in T.unroll({width}):\n    dot = T.ieee_fmaf(activation[component], T.cast(coefficient[component], \"float32\"), dot)'''\n    if q==2:\n        body=f'''base = row * {row_bytes} + (tile * 8 + lane // 4) * 18\nscale = {_half(buffer,'base')}\npacked = {_word(buffer,'base + 2 + lane % 4 * 4')}\nj = tile * 256 + lane // 4 * 32 + lane % 4 * 4\n{_vector('x','j','activation')}\n{_vector('x','j + 16','activation_hi')}\ndot = T.alloc_var(\"float32\")\ndot = 0\nfor component in T.unroll(4):\n    dot = T.ieee_fmaf(activation[component], T.cast((packed >> (component * 8)) & 15, \"float32\") - 8, dot)\nfor component in T.unroll(4):\n    dot = T.ieee_fmaf(activation_hi[component], T.cast((packed >> (component * 8 + 4)) & 15, \"float32\") - 8, dot)\ndot = scale * dot'''\n        return body\n    if q==12:\n        return f'''base = row * {row_bytes} + tile * 144\ngroup = lane // 8 * 2\npacked = {_word(buffer,'base + 16 + lane // 8 * 32 + lane % 8 * 4')}\nj = tile * 256 + lane // 8 * 64 + lane % 8 * 4\n{_vector('x','j','activation')}\n{_vector('x','j + 32','activation_hi')}\nlo = T.alloc_var(\"float32\")\nhi = T.alloc_var(\"float32\")\nlo = 0\nhi = 0\nfor component in T.unroll(4):\n    lo = T.ieee_fmaf(activation[component], T.cast((packed >> (component * 8)) & 15, \"float32\"), lo)\n    hi = T.ieee_fmaf(activation_hi[component], T.cast((packed >> (component * 8 + 4)) & 15, \"float32\"), hi)\ns0 = T.if_then_else(group < 4, {buffer}[base + 4 + group] & 63, ({buffer}[base + 8 + group] & 15) | (({buffer}[base + group] >> 6) << 4))\ns1 = T.if_then_else(group < 4, {buffer}[base + 5 + group] & 63, ({buffer}[base + 9 + group] & 15) | (({buffer}[base + 1 + group] >> 6) << 4))\nm0 = T.if_then_else(group < 4, {buffer}[base + 8 + group] & 63, ({buffer}[base + 8 + group] >> 4) | (({buffer}[base + 4 + group] >> 6) << 4))\nm1 = T.if_then_else(group < 4, {buffer}[base + 9 + group] & 63, ({buffer}[base + 9 + group] >> 4) | (({buffer}[base + 5 + group] >> 6) << 4))\nsum0 = (activation[0] + activation[1]) + (activation[2] + activation[3])\nsum1 = (activation_hi[0] + activation_hi[1]) + (activation_hi[2] + activation_hi[3])\ndot = {_half(buffer,'base')} * (T.cast(s0, \"float32\") * lo + T.cast(s1, \"float32\") * hi) - {_half(buffer,'base + 2')} * (T.cast(m0, \"float32\") * sum0 + T.cast(m1, \"float32\") * sum1)'''\n    if q==14:\n        return f'''base = row * {row_bytes} + tile * 210\ndot = T.alloc_var(\"float32\")\ndot = 0\nfor half in T.unroll(2):\n    low = {_word(buffer,'base + half * 64 + (lane // 8 % 2) * 32 + lane % 8 * 4')}\n    high = {_word(buffer,'base + 128 + half * 32 + lane % 8 * 4')}\n    {_vector('x','tile * 256 + half * 128 + lane * 4','activation').replace(chr(10),chr(10)+'    ')}\n    value = T.alloc_var(\"float32\")\n    value = 0\n    for component in T.unroll(4):\n        quant = T.cast((low >> (component * 8 + lane // 16 * 4)) & 15, \"int32\") | T.cast(((high >> (component * 8 + lane // 8 * 2)) & 3) << 4, \"int32\")\n        value = T.ieee_fmaf(activation[component], T.cast(quant - 32, \"float32\"), value)\n    scale = T.cast(T.reinterpret(\"int8\", {buffer}[base + 192 + half * 8 + lane // 4]), \"float32\")\n    dot = T.ieee_fmaf(scale, value, dot)\ndot = {_half(buffer,'base + 208')} * dot'''\n    raise ValueError('unsupported packed dot encoding')\n\n\ndef gemv_source(kind,p):\n    k,o,q=p['k'],p['o'],p['type']\n    if q not in (0,1,2,12,14) or k%256:return fused_source(kind,p)\n    threads,unroll,width=p.get('threads',128),p.get('unroll',4),p.get('f16_values',4)\n    if threads not in (64,128,256) or unroll not in (1,2,4,8) or width not in (4,8,16) or k%(32*width):\n        raise ValueError('unsupported CUDA packed GEMV schedule')\n    _,block,size=TYPES[q]\n    row_bytes=k*(4 if q==0 else 2) if q in (0,1) else k//block*size\n    tiles=k//(32*width) if q in (0,1) else k//256\n    paired,residual=kind=='ffn',kind=='linear_add'\n    args=[('x',k,'float32'),('w',k*o if q in (0,1) else row_bytes*o,'float16' if q==1 else 'float32' if q==0 else 'uint8')]\n    if paired:args.append(('w2',args[1][1],args[1][2]))\n    if residual:args.append(('residual',o,'float32'))\n    args.append(('out',o,'float32'))\n    declarations='\\n    ups = T.alloc_local(('+str(unroll)+',), \"float32\")' if paired else ''\n    initialize='\\n        ups[slot] = 0' if paired else ''\n    compute='\\n'.join('                    '+line for line in _dot(q,k,row_bytes,'w',width).splitlines())+'\\n                    sums[slot] = sums[slot] + dot'\n    if paired:compute+='\\n'+'\\n'.join('                    '+line for line in _dot(q,k,row_bytes,'w2',width).splitlines())+'\\n                    ups[slot] = ups[slot] + dot'\n    total='\\n    up = T.alloc_var(\"float32\")\\n    up = 0' if paired else ''\n    add='\\n        up = up + ups[slot]' if paired else ''\n    reduce='\\n'.join(f'    total = total + T.shfl_down(total, {delta})'+(f'\\n    up = up + T.shfl_down(up, {delta})' if paired else '') for delta in (16,8,4,2,1))\n    value='total / (1 + T.exp(-total)) * up' if paired else 'residual[row] + total' if residual else 'total'\n    return emit(args,f'''with T.Kernel(T.ceildiv({o}, {threads//32}), threads={threads}) as bx:\n    tx = T.get_thread_binding()\n    lane = tx % 32\n    row = bx * {threads//32} + tx // 32\n    sums = T.alloc_local(({unroll},), \"float32\"){declarations}\n    for slot in T.unroll({unroll}):\n        sums[slot] = 0{initialize}\n    if row < {o}:\n        for chunk in T.serial(T.ceildiv({tiles}, {unroll})):\n            for slot in T.unroll({unroll}):\n                tile = chunk * {unroll} + slot\n                if tile < {tiles}:\n{compute}\n    total = T.alloc_var(\"float32\")\n    total = 0{total}\n    for slot in T.unroll({unroll}):\n        total = total + sums[slot]{add}\n{reduce}\n    if (lane == 0) & (row < {o}):\n        out[row] = {value}''')\n\n\ndef warp_partial_source(p,splits):\n    h,kh,d,cap=(p[n] for n in ('h','kh','d','cap'))\n    if d!=64 or type(splits) is not int or splits<1:raise ValueError('unsupported warp attention schedule')\n    shuffle='\\n'.join(f'        score = score + T.shfl_down(score, {delta})' for delta in (16,8,4,2,1))\n    return emit([('q',h*d,'float32'),('kc',cap*kh*d,'float16'),('vc',cap*kh*d,'float16'),('parts',h*splits*66,'float32'),('pos',2,'int32')],f'''with T.Kernel({h}, {splits}, threads=128) as (head, split):\n    tx = T.get_thread_binding()\n    lane = tx % 32\n    warp = tx // 32\n    chunk = T.ceildiv(pos[0] + 1, {splits})\n    begin = split * chunk\n    end = T.min(begin + chunk, pos[0] + 1)\n    kvhead = head // {h//kh}\n    q0 = q[head * 64 + lane]\n    q1 = q[head * 64 + lane + 32]\n    maxima = T.alloc_shared((4,), \"float32\")\n    sums = T.alloc_shared((4,), \"float32\")\n    values = T.alloc_shared((4, 64), \"float32\")\n    maximum = T.alloc_var(\"float32\")\n    normalizer = T.alloc_var(\"float32\")\n    a0 = T.alloc_var(\"float32\")\n    a1 = T.alloc_var(\"float32\")\n    maximum = -T.infinity(\"float32\")\n    normalizer = 0\n    a0 = 0\n    a1 = 0\n    for offset in T.serial(T.ceildiv(T.max(end - begin - warp, 0), 4)):\n        token = begin + warp + offset * 4\n        base = (token * {kh} + kvhead) * 64\n        score = q0 * T.cast(kc[base + lane], \"float32\") + q1 * T.cast(kc[base + lane + 32], \"float32\")\n{shuffle}\n        score = T.shfl_sync(score, 0) * 0.125\n        next_max = T.max(maximum, score)\n        correction = T.exp(maximum - next_max)\n        probability = T.exp(score - next_max)\n        a0 = a0 * correction + probability * T.cast(vc[base + lane], \"float32\")\n        a1 = a1 * correction + probability * T.cast(vc[base + lane + 32], \"float32\")\n        normalizer = normalizer * correction + probability\n        maximum = next_max\n    values[warp, lane] = a0\n    values[warp, lane + 32] = a1\n    if lane == 0:\n        maxima[warp] = maximum\n        sums[warp] = normalizer\n    T.sync_threads()\n    if warp == 0:\n        merged_max = T.max(T.max(maxima[0], maxima[1]), T.max(maxima[2], maxima[3]))\n        total = T.alloc_var(\"float32\")\n        result0 = T.alloc_var(\"float32\")\n        result1 = T.alloc_var(\"float32\")\n        total = 0\n        result0 = 0\n        result1 = 0\n        for other in T.unroll(4):\n            factor = T.if_then_else(T.isfinite(merged_max), T.exp(maxima[other] - merged_max), 0)\n            total = total + sums[other] * factor\n            result0 = result0 + values[other, lane] * factor\n            result1 = result1 + values[other, lane + 32] * factor\n        base = (head * {splits} + split) * 66\n        parts[base + lane] = result0\n        parts[base + lane + 32] = result1\n        if lane == 0:\n            parts[base + 64] = merged_max\n            parts[base + 65] = total''')\n\n\ndef grouped_source(p,stage=32,warps=2):\n    h,kh,d,cap,splits=(p[n] for n in ('h','kh','d','cap','splits'))\n    group=h//kh;threads=group*warps*32\n    if d!=64 or h%kh or group not in (2,4) or stage not in (16,32,64) or warps not in (2,4):\n        raise ValueError('unsupported grouped attention schedule')\n    shuffle='\\n'.join(f'            score = score + T.shfl_down(score, {delta})' for delta in (16,8,4,2,1))\n    return emit([('q',h*d,'float32'),('kc',cap*kh*d,'float16'),('vc',cap*kh*d,'float16'),('parts',h*splits*66,'float32'),('pos',2,'int32')],f'''with T.Kernel({kh}, {splits}, threads={threads}) as (kvhead, split):\n    tx = T.get_thread_binding()\n    lane = tx % 32\n    warp = tx // 32\n    local = warp // {warps}\n    worker = warp % {warps}\n    head = kvhead * {group} + local\n    chunk = T.ceildiv(pos[0] + 1, {splits})\n    begin = split * chunk\n    end = T.min(begin + chunk, pos[0] + 1)\n    keys = T.alloc_shared(({stage}, 64), \"float16\")\n    vals = T.alloc_shared(({stage}, 64), \"float16\")\n    maxima = T.alloc_shared(({group*warps},), \"float32\")\n    sums = T.alloc_shared(({group*warps},), \"float32\")\n    values = T.alloc_shared(({group*warps}, 64), \"float32\")\n    q0 = q[head * 64 + lane]\n    q1 = q[head * 64 + lane + 32]\n    maximum = T.alloc_var(\"float32\")\n    normalizer = T.alloc_var(\"float32\")\n    a0 = T.alloc_var(\"float32\")\n    a1 = T.alloc_var(\"float32\")\n    maximum = -T.infinity(\"float32\")\n    normalizer = 0\n    a0 = 0\n    a1 = 0\n    for block in T.serial(T.ceildiv(T.max(end - begin, 0), {stage})):\n        base = begin + block * {stage}\n        for token, col in T.Parallel({stage}, 64):\n            keys[token, col] = T.if_then_else(base + token < end, kc[((base + token) * {kh} + kvhead) * 64 + col], 0)\n            vals[token, col] = T.if_then_else(base + token < end, vc[((base + token) * {kh} + kvhead) * 64 + col], 0)\n        T.sync_threads()\n        for offset in T.serial(T.ceildiv(T.max(T.min({stage}, end - base) - worker, 0), {warps})):\n            token = worker + offset * {warps}\n            score = q0 * T.cast(keys[token, lane], \"float32\") + q1 * T.cast(keys[token, lane + 32], \"float32\")\n{shuffle}\n            score = T.shfl_sync(score, 0) * 0.125\n            next_max = T.max(maximum, score)\n            correction = T.exp(maximum - next_max)\n            probability = T.exp(score - next_max)\n            a0 = a0 * correction + probability * T.cast(vals[token, lane], \"float32\")\n            a1 = a1 * correction + probability * T.cast(vals[token, lane + 32], \"float32\")\n            normalizer = normalizer * correction + probability\n            maximum = next_max\n        T.sync_threads()\n    values[warp, lane] = a0\n    values[warp, lane + 32] = a1\n    if lane == 0:\n        maxima[warp] = maximum\n        sums[warp] = normalizer\n    T.sync_threads()\n    if worker == 0:\n        merged_max = T.alloc_var(\"float32\")\n        total = T.alloc_var(\"float32\")\n        result0 = T.alloc_var(\"float32\")\n        result1 = T.alloc_var(\"float32\")\n        merged_max = -T.infinity(\"float32\")\n        total = 0\n        result0 = 0\n        result1 = 0\n        for other in T.unroll({warps}):\n            merged_max = T.max(merged_max, maxima[local * {warps} + other])\n        for other in T.unroll({warps}):\n            index = local * {warps} + other\n            factor = T.if_then_else(T.isfinite(merged_max), T.exp(maxima[index] - merged_max), 0)\n            total = total + sums[index] * factor\n            result0 = result0 + values[index, lane] * factor\n            result1 = result1 + values[index, lane + 32] * factor\n        base = (head * {splits} + split) * 66\n        parts[base + lane] = result0\n        parts[base + lane + 32] = result1\n        if lane == 0:\n            parts[base + 64] = merged_max\n            parts[base + 65] = total''')\n\n\ndef fused_source(kind, p):\n    \"\"\"Retain baseline arithmetic for unsupported packed encodings and prefill.\"\"\"\n    text = baseline_source('linear', p)\n    if kind == 'linear': return text\n    if kind == 'linear_add':\n        text = text.replace(', out: T.Tensor', f', residual: T.Tensor(({p[\"r\"] * p[\"o\"]},), \"float32\"), out: T.Tensor')\n        return re.sub(r'out\\[([^\\]]+)\\] = (.+)', r'out[\\1] = residual[\\1] + (\\2)', text)\n    k, o, q = p['k'], p['o'], p['type']\n    _, block, size = TYPES[q]\n    count = k * o if q in (0, 1) else k * o // block * size\n    dtype = 'float16' if q == 1 else 'float32' if q == 0 else 'uint8'\n    text = text.replace(', out: T.Tensor', f', w2: T.Tensor(({count},), \"{dtype}\"), out: T.Tensor')\n    pair = lambda line: re.sub(r'\\b(rhs|accum|total|w)\\b', lambda m: {'w': 'w2'}.get(m[0], m[0] + '2'), line)\n    lines = []\n    for line in text.splitlines():\n        if 'out[' in line and ' = ' in line:\n            destination, gate = line.split(' = ', 1)\n            lines.append(destination + f' = ({gate}) / (1 + T.exp(-({gate}))) * ({pair(gate)})')\n        else:\n            lines.append(line)\n            if re.search(r'\\b(rhs|accum|total)\\b', line) and not line.startswith(('def ', '    return')):\n                lines.append(pair(line))\n    return '\\n'.join(lines) + '\\n'\n\ndef source(kind, p):\n    a = lambda name, n, dtype='float32': (name, n, dtype)\n    if kind in ('linear', 'linear_add', 'ffn'):\n        if p['r']==1:\n            return gemv_source(kind,p)\n        return prefill_source(kind,p) if 'block_m' in p else fused_source(kind,p)\n    if kind == 'attention_partial': return warp_partial_source(p, p['splits'])\n    if kind == 'attention_grouped': return grouped_source(p,p.get('stage',32),p.get('warps',2))\n    if kind == 'attention_merge': return merge_source(p, p['splits'])\n    if kind in ('qnorm', 'kvnorm'):\n        r, h, kh, d, cap = (p[name] for name in ('r', 'h', 'kh', 'd', 'cap'))\n        original = baseline_source('qkv', p)\n        body = original.split(' as (head, row):\\n', 1)[1].split('\\ndef tensor_export', 1)[0]\n        query, keys = body.split(f'        if head < {kh}:\\n', 1)\n        declarations = '\\n'.join(query.splitlines()[:3]) + '\\n'\n        if kind == 'qnorm':\n            args = [a('q', r*h*d), a('qw', d), a('qo', r*h*d), a('pos', 2, 'int32')]\n            body = textwrap.dedent(query).rstrip()\n            heads = h\n        else:\n            args = [a('k', r*kh*d), a('v', r*kh*d), a('kw', d),\n                    a('kc', cap*kh*d, 'float16'), a('vc', cap*kh*d, 'float16'), a('pos', 2, 'int32')]\n            body = textwrap.dedent(declarations).rstrip() + '\\n' + textwrap.dedent(keys).rstrip()\n            heads = kh\n        return emit(args, f'with T.Kernel({heads}, {r}, threads=64) as (head, row):\\n' +\n                    '\\n'.join('    ' + line for line in body.splitlines()))\n    if kind == 'prefill_tail':\n        r, c, t = p['r'], p['c'], p['t']\n        return emit([a('x', r*c), a('out', t*c), a('pos', 2, 'int32'), a('tail_pos', 2, 'int32')], f'''with T.Kernel(T.ceildiv({t*c}, 256), threads=256) as bx:\n    for lane in T.Parallel(256):\n        i = bx * 256 + lane\n        if i < {t*c}:\n            out[i] = T.if_then_else(i // {c} < T.min(pos[1], {t}), x[(T.max(pos[1] - {t}, 0) + i // {c}) * {c} + i % {c}], 0)\n        if (bx == 0) & (lane == 0):\n            tail_pos[0] = pos[0] + T.max(pos[1] - {t}, 0)\n            tail_pos[1] = T.min(pos[1], {t})''')\n    if kind == 'add_rms':\n        text = baseline_source('rms', p)\n        n = p['r'] * p['c']\n        text = text.replace(', w: T.Tensor', f', mixed: T.Tensor(({n},), \"float32\"), residual: T.Tensor(({n},), \"float32\"), w: T.Tensor')\n        text = re.sub(r'x\\[([^\\]]+)\\]', lambda m: f'(x[{m[1]}] + mixed[{m[1]}])', text)\n        index = f'row * {p[\"c\"]} + i'\n        return text.replace(f'            out[{index}]', f'            residual[{index}] = x[{index}] + mixed[{index}]\\n            out[{index}]')\n    if kind=='argmax':\n        n=p['n'];threads=256\n        reduce='\\n'.join(f'''    if tx < {stride}:\n        if (values[tx + {stride}] > values[tx]) | ((values[tx + {stride}] == values[tx]) & (indices[tx + {stride}] < indices[tx])):\n            values[tx] = values[tx + {stride}]\n            indices[tx] = indices[tx + {stride}]\n    T.sync_threads()''' for stride in (128,64,32,16,8,4,2,1))\n        return emit([a('logits',n),a('token',1,'int32'),a('pos',2,'int32')],f'''with T.Kernel(1, threads={threads}):\n    tx = T.get_thread_binding()\n    best = T.alloc_var(\"float32\")\n    index = T.alloc_var(\"int32\")\n    values = T.alloc_shared(({threads},), \"float32\")\n    indices = T.alloc_shared(({threads},), \"int32\")\n    best = -T.infinity(\"float32\")\n    index = {n}\n    for tile in T.serial(T.ceildiv({n}, {threads})):\n        i = tile * {threads} + tx\n        if i < {n}:\n            if (logits[i] > best) | ((logits[i] == best) & (i < index)):\n                best = logits[i]\n                index = i\n    values[tx] = best\n    indices[tx] = index\n    T.sync_threads()\n{reduce}\n    if tx == 0:\n        token[0] = indices[0]\n        pos[1] = 1''')\n    return baseline_source(kind, p)\n\ndef merge_source(p,splits):\n    h,d=p['h'],p['d'];stride=d+2\n    return emit([('parts',h*splits*stride,'float32'),('out',h*d,'float32')],f'''with T.Kernel({h}, threads=128) as head:\n    maxima = T.alloc_fragment(({splits},), \"float32\")\n    maximum = T.alloc_fragment((1,), \"float32\")\n    sums = T.alloc_fragment(({splits},), \"float32\")\n    normalizer = T.alloc_fragment((1,), \"float32\")\n    products = T.alloc_fragment(({splits}, {d}), \"float32\")\n    result = T.alloc_fragment(({d},), \"float32\")\n    for i in T.Parallel({splits}):\n        maxima[i] = parts[(head * {splits} + i) * {stride} + {d}]\n    T.reduce_max(maxima, maximum, dim=0)\n    for i in T.Parallel({splits}):\n        sums[i] = parts[(head * {splits} + i) * {stride} + {d+1}] * T.exp(maxima[i] - maximum[0])\n    T.reduce_sum(sums, normalizer, dim=0)\n    for i, j in T.Parallel({splits}, {d}):\n        products[i, j] = parts[(head * {splits} + i) * {stride} + j] * T.exp(maxima[i] - maximum[0])\n    T.reduce_sum(products, result, dim=0)\n    for j in T.Parallel({d}):\n        out[head * {d} + j] = result[j] / normalizer[0]''')\n\ndef pair_load(q,k,buffer,row,col):\n    _,block,size=TYPES[q]\n    row_bytes=k*2 if q==1 else k//block*size\n    if q==1:\n        return f'bits = T.ldg32({buffer}[({row}) * {k} + ({col})])'\n    if q==2:\n        return f'''base = ({row}) * {row_bytes} + ({col}) // 32 * 18\nscale = {_half(buffer,'base')}\npacked = {_u16(buffer,f'base + 2 + ({col}) % 16')}\nshift = ({col}) % 32 // 16 * 4\nlo = scale * (T.cast((packed >> shift) & 15, \"float32\") - 8)\nhi = scale * (T.cast((packed >> (shift + 8)) & 15, \"float32\") - 8)\nbits = T.call_extern(\"uint32\", \"tensor_pack_f16x2\", lo, hi)'''\n    if q==12:\n        return f'''base = ({row}) * {row_bytes} + ({col}) // 256 * 144\nweight_col = ({col}) % 256\ngroup = weight_col // 32\nscale = T.if_then_else(group < 4, {buffer}[base + 4 + group] & 63, ({buffer}[base + 8 + group] & 15) | (({buffer}[base + group] >> 6) << 4))\nminimum = T.if_then_else(group < 4, {buffer}[base + 8 + group] & 63, ({buffer}[base + 8 + group] >> 4) | (({buffer}[base + 4 + group] >> 6) << 4))\nds = {_half(buffer,'base')} * T.cast(scale, \"float32\")\ndm = {_half(buffer,'base + 2')} * T.cast(minimum, \"float32\")\npacked = {_u16(buffer,'base + 16 + weight_col // 64 * 32 + weight_col % 32')}\nshift = group % 2 * 4\nlo = ds * T.cast((packed >> shift) & 15, \"float32\") - dm\nhi = ds * T.cast((packed >> (shift + 8)) & 15, \"float32\") - dm\nbits = T.call_extern(\"uint32\", \"tensor_pack_f16x2\", lo, hi)'''\n    if q==14:\n        return f'''base = ({row}) * {row_bytes} + ({col}) // 256 * 210\nweight_col = ({col}) % 256\ngroup = weight_col % 128 // 32\nlow = {_u16(buffer,'base + weight_col // 128 * 64 + group % 2 * 32 + weight_col % 32')}\nhigh = {_u16(buffer,'base + 128 + weight_col // 128 * 32 + weight_col % 32')}\na = T.cast((low >> (group // 2 * 4)) & 15, \"int32\") | T.cast(((high >> (group * 2)) & 3) << 4, \"int32\")\nb = T.cast((low >> (group // 2 * 4 + 8)) & 15, \"int32\") | T.cast(((high >> (group * 2 + 8)) & 3) << 4, \"int32\")\nscale = {_half(buffer,'base + 208')} * T.cast(T.reinterpret(\"int8\", {buffer}[base + 192 + weight_col // 16]), \"float32\")\nbits = T.call_extern(\"uint32\", \"tensor_pack_f16x2\", scale * T.cast(a - 32, \"float32\"), scale * T.cast(b - 32, \"float32\"))'''\n    raise ValueError('unsupported packed pair encoding')\n\n\ndef prefill_source(kind, p):\n    \"\"\"FP16 tensor-core operands, FP32 accumulation, larger staged tiles.\"\"\"\n    r,k,o,q=(p[n] for n in ('r','k','o','type'))\n    bm,bn,bk=p.get('block_m',32),p.get('block_n',64),p.get('block_k',32)\n    stages,threads=p.get('stages',2),p.get('threads',128)\n    paired=kind=='ffn'\n    _,block,size=TYPES[q];count=k*o if q in (0,1) else k*o//block*size\n    dtype='float16' if q==1 else 'float32' if q==0 else 'uint8'\n    args=[('x',r*k,'float32'),('w',count,dtype)]\n    if paired:args.append(('w2',count,dtype))\n    if kind=='linear_add':args.append(('residual',r*o,'float32'))\n    args.append(('out',r*o,'float32'))\n    read=lambda w:weight(q,f'bx * {bn} + i',f'tile * {bk} + j',k,buffer=w)\n    declarations=''\n    loads=''\n    gemm=''\n    if paired:\n        declarations=f'\\n    rhs2 = T.alloc_shared(({bn}, {bk}), \"float16\")\\n    accum2 = T.alloc_fragment(({bm}, {bn}), \"float32\")\\n    T.clear(accum2)'\n        loads=f'\\n            rhs2[i, j] = T.if_then_else(bx * {bn} + i < {o}, {read(\"w2\")}, 0)'\n        gemm='\\n        T.gemm(lhs, rhs2, accum2, transpose_B=True)'\n    value='accum[i, j]'\n    if paired:value=f'({value}) / (1 + T.exp(-({value}))) * accum2[i, j]'\n    if kind=='linear_add':value=f'residual[(by * {bm} + i) * {o} + bx * {bn} + j] + ({value})'\n    result=emit(args,f'''with T.Kernel(T.ceildiv({r}, {bm}), T.ceildiv({o}, {bn}), threads={threads}) as (by, bx):\n    lhs = T.alloc_shared(({bm}, {bk}), \"float16\")\n    rhs = T.alloc_shared(({bn}, {bk}), \"float16\")\n    accum = T.alloc_fragment(({bm}, {bn}), \"float32\")\n    T.clear(accum){declarations}\n    for tile in T.Pipelined({k//bk}, num_stages={stages}):\n        for i, j in T.Parallel({bm}, {bk}):\n            lhs[i, j] = T.if_then_else(by * {bm} + i < {r}, x[(by * {bm} + i) * {k} + tile * {bk} + j], 0)\n        for i, j in T.Parallel({bn}, {bk}):\n            rhs[i, j] = T.if_then_else(bx * {bn} + i < {o}, {read(\"w\")}, 0){loads}\n        T.gemm(lhs, rhs, accum, transpose_B=True){gemm}\n    for i, j in T.Parallel({bm}, {bn}):\n        if (by * {bm} + i < {r}) & (bx * {bn} + j < {o}):\n            out[(by * {bm} + i) * {o} + bx * {bn} + j] = {value}''')\n    if p.get('packed_pairs'):\n        old=f'        for i, j in T.Parallel({bn}, {bk}):\\n            rhs[i, j] = T.if_then_else(bx * {bn} + i < {o}, {read(\"w\")}, 0){loads}'\n        replacement=f'        for i, j in T.Parallel({bn}, {bk//2}):'\n        for rhs,w in [('rhs','w'),*([('rhs2','w2')] if paired else [])]:\n            body=pair_load(q,k,w,f'bx * {bn} + i',f'tile * {bk} + j * 2')\n            replacement+=f'\\n            if bx * {bn} + i < {o}:\\n'+ '\\n'.join('                '+line for line in body.splitlines())\n            replacement+=f'\\n                {rhs}[i, j * 2] = T.reinterpret(\"float16\", T.cast(bits & T.uint32(65535), \"uint16\"))\\n                {rhs}[i, j * 2 + 1] = T.reinterpret(\"float16\", T.cast(bits >> 16, \"uint16\"))\\n            else:\\n                {rhs}[i, j * 2] = 0\\n                {rhs}[i, j * 2 + 1] = 0'\n        old='\\n'.join('    '+line for line in old.splitlines())\n        replacement='\\n'.join('    '+line for line in replacement.splitlines())\n        assert old in result\n        result=result.replace(old,replacement)\n    return result\n"
+    }
+  },
+  "protocol": {
+    "seed": 2093,
+    "gpu_concurrency": 1,
+    "warmups": 3,
+    "samples": 5,
+    "graph_repetitions": 20,
+    "times_divided_by": 20,
+    "relative_rms_max": 0.002,
+    "baseline": "generic packed schedule, not the frozen full-model before profile",
+    "reference": "independent Torch FP16 prefill/FP32 decode operators",
+    "discovery": "tensor.compiler.search.ScheduleSearch",
+    "max_candidates_per_shape": 2
+  }
+}

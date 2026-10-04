@@ -123,6 +123,9 @@ Two shared-discovery runs checked eight real projection shapes, each with a
 baseline and eight candidates. Five schedule changes improved their GPU time
 by more than 2% in both runs. The selected settings were revalidated and then
 remeasured above; the initial measurements remain in the retained data.
+A bounded prefill run also passed all 51 candidates across 17 real
+projection/encoding combinations at 32 rows, using the same discovery engine.
+Its exported settings remain experimental pending full-model remeasurement.
 Grouped attention passed all seven configurations at nine cache lengths.
 The current 32-token/two-warp production attention schedule is retained.
 
@@ -166,7 +169,8 @@ Retained evidence:
   [Q4_K_M](data/lfm2-compiler-cleanup-Q4_K_M-consumer.json).
 - Shared discovery: [first projection run](data/lfm2-compiler-cleanup-decode-search-first.json),
   [projection recheck with source snapshots](data/lfm2-compiler-cleanup-decode-search.json),
-  [attention](data/lfm2-compiler-cleanup-attention-search.json).
+  [attention](data/lfm2-compiler-cleanup-attention-search.json),
+  [bounded prefill](data/lfm2-compiler-cleanup-prefill-search.json).
 - Initial frontend results before reselection: [Q4_0](data/lfm2-compiler-cleanup-Q4_0-initial-comparison.json),
   [Q4_K_M](data/lfm2-compiler-cleanup-Q4_K_M-initial-comparison.json).
 
