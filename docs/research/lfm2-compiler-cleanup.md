@@ -177,6 +177,39 @@ Retained evidence:
 - Initial frontend results before reselection: [Q4_0](data/lfm2-compiler-cleanup-Q4_0-initial-comparison.json),
   [Q4_K_M](data/lfm2-compiler-cleanup-Q4_K_M-initial-comparison.json).
 
+## Readable package DSL follow-up
+
+The package algorithms now live in Python `@T.prim_func` and `@T.macro`
+functions. Generated export files only bind specialization metadata to those
+factories. Shared implementation hashes and canonical parameters preserve cache
+invalidation across manifest serialization. See [the factory locations and
+ownership](../development.md).
+
+The frozen emitted-source control is `4b5e831`; the DSL code is `ce5e487`.
+On the same A10G, all 66 full-model prefill/decode logits across F16, Q4_0 and
+Q4_K_M are bitwise equal to that control and pass the independent Torch gates
+above. Installed four-distribution consumers repeat all 66 checks with compiler
+and framework imports blocked. CPU checks, CUDA operators, PyTorch integration,
+235 selected WebGPU numerical checks and ten manual-training updates pass.
+WebGPU's short FP16 FMA paths are also bitwise equal in 36 matched cases; their
+existing A10G difference from strict NumPy emulation remains.
+
+A first conversion separated the two FFN staging loops and slowed Q4_K_M
+prefill. Keeping both matrices in the original shared staging iteration restores
+the loader schedule. Final throughput ratios below span prefixes 32, 512 and
+8192, using the same timing protocol as above:
+
+| Format | DSL / emitted prefill | DSL / emitted decode |
+|---|---:|---:|
+| F16 | 0.997–0.999× | 1.000–1.000× |
+| Q4_0 | 0.995–1.000× | 1.000–1.001× |
+| Q4_K_M | 0.978–0.998× | 0.998–1.000× |
+
+[Recorded samples, source identities and validation evidence](data/tilelang-dsl-migration.json)
+include the staging control. GPU timing runs separately from compilation and
+numerical validation. Historical source-text controls remain outside packages
+in `benchmarks/lfm2/text_helpers.py`.
+
 ## Reproduction
 
 Build optimized bundles with the normal producer into `F16-frontend`,

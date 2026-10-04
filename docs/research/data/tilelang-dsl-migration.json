@@ -1,0 +1,2834 @@
+{
+  "schema": "tensor.tilelang-dsl-migration.v1",
+  "date": "2026-10-04",
+  "code_commit": "ce5e4874f1d9d85130a020bcd396ae0ae7d5e336",
+  "emitted_commit": "4b5e831c3043e599f15068187c962c725a8b8b8b",
+  "models": {
+    "F16": {
+      "model_sha256": "e041c231351185eb390f9c417d3bfd1815869a50a8589f3f86e5b9add3c529f1",
+      "adapter": {
+        "ordinal": 0,
+        "name": "NVIDIA A10G",
+        "arch": "sm_86",
+        "provider": "cuda"
+      },
+      "implementation": {
+        "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+        "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+        "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+        "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+        "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+        "tensor_llm.model": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+        "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+        "tensor_llm.kernels": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+        "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+        "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+        "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+        "tensor_llm.cuda_kernels": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b"
+      },
+      "before_source_sha256": {
+        "__init__.py": "ab4ec992fff0d3cf5327803d268d6eb819987f8b755f2c41d2d898a358ef242e",
+        "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+        "cli.py": "830e004ac02c4a66fa4abfe25bf3e92d20d454fa651e688aeb1251ee17a1c911",
+        "config.py": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+        "cuda_kernels.py": "0e5ba091ed42fb8954859b4dd3e88c984cb0e53c2df7da2697933611ed3068c7",
+        "gguf.py": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+        "kernels.py": "f083c5732f75ccdfd11f105dc591b4882f2482064dc2161b5e8d91e3de2f9e15",
+        "model.py": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+        "provenance.py": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+        "tokenizer.py": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+        "webgpu_kernels.py": "2ac825e9b6e0dbda390f6e7c777588f01a7c871c2ec37b5dabdbf82bc00c5472"
+      },
+      "harness_sha256": {
+        "cuda_transfer.py": "56e9c10e9e642ab709510eafd79ffe71f00a5a1a2b37223e6b63761353edb038",
+        "reference.cpp": "ba75cc4135b0fc4dac62e48a53ba8a85a031e37aed053829e6d231c0afa653d1",
+        "torch_reference.py": "9cd2eb2d703474f62ce69cb0710d607f768655031017d37dc68711d1a1ef29ec",
+        "fp16_decode.py": "2d075127e081ac4819c2915b49a06244f92aebbd4f67b3617e5b004075145217",
+        "decode_optimization.py": "f7a7e712bf983e9671164df404fbb9a92f9f30f7a31cb489ca4b90948fe6248f",
+        "compare_models.py": "22e2fa8df8230cd50a56185bf54665ec9d944ba9b8637c96ac706a87953c1a52"
+      },
+      "native": {
+        "commit": "f872b591121761ac7b2af18283bd99bdc092a63a",
+        "helper_sha256": "58f38881977b2e103e3d04d9e8faa03ed45949157f3456578c6aa591e0fccc6b",
+        "configuration": {
+          "backend": "llama.cpp CUDA",
+          "system": "CUDA : ARCHS = 860 | USE_GRAPHS = 1 | FA_QUANTS = q4_0-q4_0,q8_0-q8_0,f16-f16,bf16-bf16 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | ",
+          "vocab": 128000,
+          "context": 8448,
+          "flash_attention": true,
+          "gpu_layers": -1,
+          "prefill_batch": 128,
+          "cache_type": "f16"
+        }
+      },
+      "protocol": "one sequence, fixed shared tokens, completed host FP32 logits; 3 warmups per runner; rotated sequential Tensor runners; native measured separately on the same GPU before Tensor; loading/reset/tokenization/sampling excluded",
+      "repeats": 5,
+      "cases": [
+        {
+          "prompt_tokens": 32,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 2090.629712547936,
+              "decode_tokens_per_second": 89.52385110183157,
+              "prefill_seconds": 0.015306393001083052,
+              "decode_seconds": 0.7148932849995617,
+              "decode_milliseconds": 11.170207578118152,
+              "samples": [
+                {
+                  "prefill_seconds": 0.015298792000976391,
+                  "decode_seconds": 0.714927205001004
+                },
+                {
+                  "prefill_seconds": 0.015344872001151089,
+                  "decode_seconds": 0.7148932849995617
+                },
+                {
+                  "prefill_seconds": 0.015276303001883207,
+                  "decode_seconds": 0.7147722119989339
+                },
+                {
+                  "prefill_seconds": 0.015341182999691227,
+                  "decode_seconds": 0.7151263090017892
+                },
+                {
+                  "prefill_seconds": 0.015306393001083052,
+                  "decode_seconds": 0.7147614719979174
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 2085.3257972118704,
+              "decode_tokens_per_second": 89.52579967429207,
+              "prefill_seconds": 0.015345323998189997,
+              "decode_seconds": 0.7148777250004059,
+              "decode_milliseconds": 11.169964453131342,
+              "samples": [
+                {
+                  "prefill_seconds": 0.015389836000395007,
+                  "decode_seconds": 0.7149695160005649
+                },
+                {
+                  "prefill_seconds": 0.0152844920012285,
+                  "decode_seconds": 0.7148777250004059
+                },
+                {
+                  "prefill_seconds": 0.01535140399937518,
+                  "decode_seconds": 0.7147838909986604
+                },
+                {
+                  "prefill_seconds": 0.01529309399847989,
+                  "decode_seconds": 0.715210260997992
+                },
+                {
+                  "prefill_seconds": 0.015345323998189997,
+                  "decode_seconds": 0.7145855369999481
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 1873.453047373363,
+              "decode_tokens_per_second": 87.46685841442925,
+              "prefill_seconds": 0.017080759,
+              "decode_seconds": 0.731705713,
+              "decode_milliseconds": 11.432901765625,
+              "samples": [
+                {
+                  "prefill_seconds": 0.017080759,
+                  "decode_seconds": 0.7319761
+                },
+                {
+                  "prefill_seconds": 0.01709078,
+                  "decode_seconds": 0.73202402
+                },
+                {
+                  "prefill_seconds": 0.017097199,
+                  "decode_seconds": 0.731529661
+                },
+                {
+                  "prefill_seconds": 0.017053419,
+                  "decode_seconds": 0.731705713
+                },
+                {
+                  "prefill_seconds": 0.01706832,
+                  "decode_seconds": 0.731664373
+                }
+              ]
+            }
+          }
+        },
+        {
+          "prompt_tokens": 512,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 6558.821367336044,
+              "decode_tokens_per_second": 89.08568857868387,
+              "prefill_seconds": 0.07806280600198079,
+              "decode_seconds": 0.7184094439980981,
+              "decode_milliseconds": 11.225147562470283,
+              "samples": [
+                {
+                  "prefill_seconds": 0.07805192699743202,
+                  "decode_seconds": 0.7185297679970972
+                },
+                {
+                  "prefill_seconds": 0.07828909100135206,
+                  "decode_seconds": 0.7187597709998954
+                },
+                {
+                  "prefill_seconds": 0.0780125470009807,
+                  "decode_seconds": 0.7182489289989462
+                },
+                {
+                  "prefill_seconds": 0.07806280600198079,
+                  "decode_seconds": 0.7184094439980981
+                },
+                {
+                  "prefill_seconds": 0.0781230369975674,
+                  "decode_seconds": 0.7182625220011687
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 6544.093495013651,
+              "decode_tokens_per_second": 89.09978535827713,
+              "prefill_seconds": 0.07823849099804647,
+              "decode_seconds": 0.7182957820004958,
+              "decode_milliseconds": 11.223371593757747,
+              "samples": [
+                {
+                  "prefill_seconds": 0.07836773300005007,
+                  "decode_seconds": 0.7181555419992947
+                },
+                {
+                  "prefill_seconds": 0.07823151000047801,
+                  "decode_seconds": 0.7184904259993345
+                },
+                {
+                  "prefill_seconds": 0.07823849099804647,
+                  "decode_seconds": 0.7180437159986468
+                },
+                {
+                  "prefill_seconds": 0.07815110899900901,
+                  "decode_seconds": 0.7182957820004958
+                },
+                {
+                  "prefill_seconds": 0.07826523000039742,
+                  "decode_seconds": 0.7184303149988409
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 5370.39397461935,
+              "decode_tokens_per_second": 87.14204193683537,
+              "prefill_seconds": 0.095337512,
+              "decode_seconds": 0.7344331,
+              "decode_milliseconds": 11.4755171875,
+              "samples": [
+                {
+                  "prefill_seconds": 0.09520649,
+                  "decode_seconds": 0.7344331
+                },
+                {
+                  "prefill_seconds": 0.095173349,
+                  "decode_seconds": 0.73432259
+                },
+                {
+                  "prefill_seconds": 0.095449074,
+                  "decode_seconds": 0.734310629
+                },
+                {
+                  "prefill_seconds": 0.095337512,
+                  "decode_seconds": 0.735015474
+                },
+                {
+                  "prefill_seconds": 0.095356962,
+                  "decode_seconds": 0.734461202
+                }
+              ]
+            }
+          }
+        },
+        {
+          "prompt_tokens": 8192,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 6347.342309360484,
+              "decode_tokens_per_second": 85.56162418140333,
+              "prefill_seconds": 1.290618907998578,
+              "decode_seconds": 0.747998891001771,
+              "decode_milliseconds": 11.687482671902671,
+              "samples": [
+                {
+                  "prefill_seconds": 1.291141998997773,
+                  "decode_seconds": 0.747998891001771
+                },
+                {
+                  "prefill_seconds": 1.2901837200006412,
+                  "decode_seconds": 0.7479536310020194
+                },
+                {
+                  "prefill_seconds": 1.291014845999598,
+                  "decode_seconds": 0.7481560439991881
+                },
+                {
+                  "prefill_seconds": 1.290248181001516,
+                  "decode_seconds": 0.7483065870001155
+                },
+                {
+                  "prefill_seconds": 1.290618907998578,
+                  "decode_seconds": 0.7479849119990831
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 6338.162377347396,
+              "decode_tokens_per_second": 85.57522940476905,
+              "prefill_seconds": 1.2924881869985256,
+              "decode_seconds": 0.7478799700002128,
+              "decode_milliseconds": 11.685624531253325,
+              "samples": [
+                {
+                  "prefill_seconds": 1.2927557839975634,
+                  "decode_seconds": 0.7480524819984566
+                },
+                {
+                  "prefill_seconds": 1.2919543060015712,
+                  "decode_seconds": 0.7477706960016803
+                },
+                {
+                  "prefill_seconds": 1.2936315799997828,
+                  "decode_seconds": 0.7478799700002128
+                },
+                {
+                  "prefill_seconds": 1.29242186600095,
+                  "decode_seconds": 0.7478016460008803
+                },
+                {
+                  "prefill_seconds": 1.2924881869985256,
+                  "decode_seconds": 0.7481447440004558
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 5256.157774421557,
+              "decode_tokens_per_second": 84.89840221472339,
+              "prefill_seconds": 1.558552911,
+              "decode_seconds": 0.75384222,
+              "decode_milliseconds": 11.7787846875,
+              "samples": [
+                {
+                  "prefill_seconds": 1.557714402,
+                  "decode_seconds": 0.754848329
+                },
+                {
+                  "prefill_seconds": 1.560428208,
+                  "decode_seconds": 0.75384222
+                },
+                {
+                  "prefill_seconds": 1.558552911,
+                  "decode_seconds": 0.753769589
+                },
+                {
+                  "prefill_seconds": 1.560291736,
+                  "decode_seconds": 0.753732627
+                },
+                {
+                  "prefill_seconds": 1.557993819,
+                  "decode_seconds": 0.754416452
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "validation": {
+        "status": "passed",
+        "steps": [
+          {
+            "depth": 1,
+            "stage": "prefill",
+            "position": 1,
+            "relative_rms": 8.347210597573329e-07,
+            "cosine": 0.9999999999996514,
+            "max_error": 4.470348358154297e-06,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 1,
+            "stage": "decode",
+            "position": 2,
+            "relative_rms": 2.0449399893929433e-05,
+            "cosine": 0.9999999998916305,
+            "max_error": 0.0003523826599121094,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 32,
+            "stage": "prefill",
+            "position": 32,
+            "relative_rms": 0.0018381647722147607,
+            "cosine": 0.9999985803465554,
+            "max_error": 0.023283958435058594,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 32,
+            "stage": "decode",
+            "position": 33,
+            "relative_rms": 0.0015741591564934839,
+            "cosine": 0.9999991727196009,
+            "max_error": 0.017767906188964844,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 127,
+            "stage": "prefill",
+            "position": 127,
+            "relative_rms": 0.0011856486012468896,
+            "cosine": 0.9999995758300413,
+            "max_error": 0.016275405883789062,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 127,
+            "stage": "decode",
+            "position": 128,
+            "relative_rms": 0.0006493983068535932,
+            "cosine": 0.999999804606586,
+            "max_error": 0.016286373138427734,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 128,
+            "stage": "prefill",
+            "position": 128,
+            "relative_rms": 0.000678368059593311,
+            "cosine": 0.9999997732224558,
+            "max_error": 0.009894132614135742,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 128,
+            "stage": "decode",
+            "position": 129,
+            "relative_rms": 0.0005437427329943895,
+            "cosine": 0.9999998532267494,
+            "max_error": 0.010004281997680664,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 129,
+            "stage": "prefill",
+            "position": 129,
+            "relative_rms": 0.0007633785404718015,
+            "cosine": 0.9999997086550196,
+            "max_error": 0.009276628494262695,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 129,
+            "stage": "decode",
+            "position": 130,
+            "relative_rms": 0.0006028957660814826,
+            "cosine": 0.9999998592842025,
+            "max_error": 0.00865936279296875,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 384,
+            "stage": "prefill",
+            "position": 384,
+            "relative_rms": 0.0011525189699822126,
+            "cosine": 0.9999993734882486,
+            "max_error": 0.013257026672363281,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 384,
+            "stage": "decode",
+            "position": 385,
+            "relative_rms": 0.0008597546371374758,
+            "cosine": 0.9999997998053046,
+            "max_error": 0.013480186462402344,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 512,
+            "stage": "prefill",
+            "position": 512,
+            "relative_rms": 0.0007587474622071657,
+            "cosine": 0.9999997126378143,
+            "max_error": 0.01428210735321045,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 512,
+            "stage": "decode",
+            "position": 513,
+            "relative_rms": 0.0008271172534574643,
+            "cosine": 0.9999997374754521,
+            "max_error": 0.010891437530517578,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 2048,
+            "stage": "prefill",
+            "position": 2048,
+            "relative_rms": 0.0016459652614448457,
+            "cosine": 0.9999988523362192,
+            "max_error": 0.012341737747192383,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 2048,
+            "stage": "decode",
+            "position": 2049,
+            "relative_rms": 0.0005454268985262169,
+            "cosine": 0.9999998915446304,
+            "max_error": 0.006316423416137695,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4095,
+            "stage": "prefill",
+            "position": 4095,
+            "relative_rms": 0.0015655489833490434,
+            "cosine": 0.9999987820301498,
+            "max_error": 0.011216163635253906,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4095,
+            "stage": "decode",
+            "position": 4096,
+            "relative_rms": 0.0005815604345245907,
+            "cosine": 0.999999853544155,
+            "max_error": 0.006737709045410156,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4096,
+            "stage": "prefill",
+            "position": 4096,
+            "relative_rms": 0.0003482535121615502,
+            "cosine": 0.999999974917226,
+            "max_error": 0.009124279022216797,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4096,
+            "stage": "decode",
+            "position": 4097,
+            "relative_rms": 0.0003763018844136711,
+            "cosine": 0.9999999613784601,
+            "max_error": 0.006650567054748535,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 8192,
+            "stage": "prefill",
+            "position": 8192,
+            "relative_rms": 0.0003844600775979164,
+            "cosine": 0.9999999389275044,
+            "max_error": 0.009543091058731079,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 8192,
+            "stage": "decode",
+            "position": 8193,
+            "relative_rms": 0.000694776372598809,
+            "cosine": 0.9999997777394735,
+            "max_error": 0.007956981658935547,
+            "top1_equal": true,
+            "finite": true
+          }
+        ],
+        "gates": {
+          "relative_rms_max": 0.01,
+          "cosine_min": 0.9999,
+          "matching_argmax": true,
+          "reset_bitwise_equal": true,
+          "graph_eager_bitwise_equal": true,
+          "gpu_host_greedy_equal": true
+        },
+        "reference": "independent Torch FP16 prefill/FP32 decode operators; no shared kernel templates",
+        "reference_source_sha256": "9cd2eb2d703474f62ce69cb0710d607f768655031017d37dc68711d1a1ef29ec",
+        "saved_logits": {
+          "1-decode.npy": "830f2339b11dccf988b726ed19cba6077dc1c6705c5b87efb714c7fc764923a4",
+          "1-prefill.npy": "4ef6d32123364e0783127545fa4e3056afa7bd3f43f1052353258671cdace211",
+          "127-decode.npy": "190d542cf0ca7bade55b4e282965e902043cf47db845c7d10f2c4b2257848c81",
+          "127-prefill.npy": "2109b04696784bd46bc5997b8cab45d008133a48735cc01b4593c591c1712b15",
+          "128-decode.npy": "baea15e0ade5c7d68699e4050cda5b5ccd300fcf9fb8103c19dbf91538ba1a1b",
+          "128-prefill.npy": "3f8d7afd1bda76df41b02e0fab6860e45aa9b0307b5d9c3fceef3279bd11aaaf",
+          "129-decode.npy": "276559da50d1fce62c9156a07dda84702faa51f6681fa8c04026d7430bb82053",
+          "129-prefill.npy": "34b4d98eba63f417ea2aff8b60682c4e71f737efef0fe1d34b6d3ca439cb79f5",
+          "2048-decode.npy": "0e8f8cbb49c7feea42aa5f251a52744f74602d262678917a45493eb2274c0d38",
+          "2048-prefill.npy": "c939d4be96e86b9bb88b922d3f5926b951de4059d19d7b9ba8af26263f4cebfe",
+          "32-decode.npy": "3088a82eaf2d4c7634347e539c2554548d5c3247e0955a4ceacedd3ab2463cc6",
+          "32-prefill.npy": "f8b82c3bc2bd68409bb7300372e6d5c9845644bb54533e694aa1bc07c82a9f25",
+          "384-decode.npy": "0bba5622c1cd8db2cbfb58c53ba85bb0aacfc464920a0a1ce20d2ed1daae4dad",
+          "384-prefill.npy": "8f445d9fa65c6293467c141f775ed24a25e21811b1c33a74c07cbaac9b6bd515",
+          "4095-decode.npy": "bcdac8c17435638e65d94dd9cdfd169f2bcc06ea524c0785a68bc3f1d879ee54",
+          "4095-prefill.npy": "e7bd8dcbaa2e885b84bdb2da5089eb0de7055f2a4f91797b28b10b6c1f4b646e",
+          "4096-decode.npy": "9a4fd5702d95a9a12aedd8317d11a51604ba71c04779cdc45ca3b8ae3451d213",
+          "4096-prefill.npy": "457c5515467ab202056b81636c77e479bb28ff1f82ab3092a79ffad6366ef4b2",
+          "512-decode.npy": "a05f40f75c81b094f927528c54b94a7d92b11ac97085d18d34ff8091caea8ca2",
+          "512-prefill.npy": "50771e60affc08e8b3eedeacb2aabf7605b0c7a23088cdcaeb18065ab78d068c",
+          "8192-decode.npy": "8f356c2149bd84fa014db703a348058d486fce429f8c61eda451ceb0d729e5f7",
+          "8192-prefill.npy": "9b1ed11ccb16f3c0736d83d4e399ca2ce30f0640cab8c05dd33c98bd35dc5897"
+        },
+        "bitwise_equal_to_emitted": [
+          "1-decode.npy",
+          "1-prefill.npy",
+          "127-decode.npy",
+          "127-prefill.npy",
+          "128-decode.npy",
+          "128-prefill.npy",
+          "129-decode.npy",
+          "129-prefill.npy",
+          "2048-decode.npy",
+          "2048-prefill.npy",
+          "32-decode.npy",
+          "32-prefill.npy",
+          "384-decode.npy",
+          "384-prefill.npy",
+          "4095-decode.npy",
+          "4095-prefill.npy",
+          "4096-decode.npy",
+          "4096-prefill.npy",
+          "512-decode.npy",
+          "512-prefill.npy",
+          "8192-decode.npy",
+          "8192-prefill.npy"
+        ]
+      },
+      "consumer": {
+        "schema": "tensor.lfm2-cuda-transfer-consumer.v1",
+        "status": "passed",
+        "model_sha256": "e041c231351185eb390f9c417d3bfd1815869a50a8589f3f86e5b9add3c529f1",
+        "bundle_sha256": "e59d0f97d8553dd2546cd815d6f354d061e5adfc6f78902393e5804e8f696ffe",
+        "implementation": {
+          "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+          "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+          "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+          "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+          "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+          "tensor_llm.model": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+          "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+          "tensor_llm.kernels": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+          "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+          "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+          "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+          "tensor_llm.cuda_kernels": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b"
+        },
+        "adapter": {
+          "ordinal": 0,
+          "name": "NVIDIA A10G",
+          "arch": "sm_86",
+          "provider": "cuda"
+        },
+        "distributions": [
+          "numpy",
+          "regex",
+          "tensor-llm",
+          "tensor-workspace"
+        ],
+        "steps": [
+          {
+            "depth": 1,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 1,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 32,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 32,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 127,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 127,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 128,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 128,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 129,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 129,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 384,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 384,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 512,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 512,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 2048,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 2048,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4095,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4095,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4096,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4096,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 8192,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 8192,
+            "stage": "decode",
+            "bitwise_equal": true
+          }
+        ],
+        "generation": {
+          "prompt_tokens": [
+            124894,
+            124899,
+            5922,
+            207,
+            2992,
+            355,
+            278,
+            5205,
+            302,
+            3980,
+            39,
+            124900,
+            207,
+            124899,
+            63514,
+            207,
+            124901
+          ],
+          "generated_tokens": [
+            597,
+            4695,
+            355,
+            13564,
+            267,
+            90139,
+            1456,
+            650,
+            3451,
+            34,
+            496,
+            2992,
+            355,
+            278,
+            5205,
+            302
+          ],
+          "text": "The user is asking a straightforward factual question: \"What is the capital of"
+        },
+        "long_generation_equal": true,
+        "forbidden_imports": [],
+        "compiler_imports": [],
+        "consumer_source_sha256": "bf0dc5bee374ea0037465a82d7dbdf7d7e9d353483a0817822908c26b8aa59af"
+      },
+      "audit": {
+        "status": "passed",
+        "kernel_count": 63,
+        "profile_sha256": "4a56e23237b1f3102646e1479814021ab98857eb7f25fd8d23c09becc62431e8"
+      }
+    },
+    "Q4_0": {
+      "model_sha256": "e1a61bf937bc60726e18626e97f7ee9bfd2574d95744c2ed909de98b78006fbe",
+      "adapter": {
+        "ordinal": 0,
+        "name": "NVIDIA A10G",
+        "arch": "sm_86",
+        "provider": "cuda"
+      },
+      "implementation": {
+        "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+        "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+        "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+        "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+        "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+        "tensor_llm.model": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+        "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+        "tensor_llm.kernels": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+        "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+        "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+        "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+        "tensor_llm.cuda_kernels": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b"
+      },
+      "before_source_sha256": {
+        "__init__.py": "ab4ec992fff0d3cf5327803d268d6eb819987f8b755f2c41d2d898a358ef242e",
+        "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+        "cli.py": "830e004ac02c4a66fa4abfe25bf3e92d20d454fa651e688aeb1251ee17a1c911",
+        "config.py": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+        "cuda_kernels.py": "0e5ba091ed42fb8954859b4dd3e88c984cb0e53c2df7da2697933611ed3068c7",
+        "gguf.py": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+        "kernels.py": "f083c5732f75ccdfd11f105dc591b4882f2482064dc2161b5e8d91e3de2f9e15",
+        "model.py": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+        "provenance.py": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+        "tokenizer.py": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+        "webgpu_kernels.py": "2ac825e9b6e0dbda390f6e7c777588f01a7c871c2ec37b5dabdbf82bc00c5472"
+      },
+      "harness_sha256": {
+        "cuda_transfer.py": "56e9c10e9e642ab709510eafd79ffe71f00a5a1a2b37223e6b63761353edb038",
+        "reference.cpp": "ba75cc4135b0fc4dac62e48a53ba8a85a031e37aed053829e6d231c0afa653d1",
+        "torch_reference.py": "9cd2eb2d703474f62ce69cb0710d607f768655031017d37dc68711d1a1ef29ec",
+        "fp16_decode.py": "2d075127e081ac4819c2915b49a06244f92aebbd4f67b3617e5b004075145217",
+        "decode_optimization.py": "f7a7e712bf983e9671164df404fbb9a92f9f30f7a31cb489ca4b90948fe6248f",
+        "compare_models.py": "22e2fa8df8230cd50a56185bf54665ec9d944ba9b8637c96ac706a87953c1a52"
+      },
+      "native": {
+        "commit": "f872b591121761ac7b2af18283bd99bdc092a63a",
+        "helper_sha256": "58f38881977b2e103e3d04d9e8faa03ed45949157f3456578c6aa591e0fccc6b",
+        "configuration": {
+          "backend": "llama.cpp CUDA",
+          "system": "CUDA : ARCHS = 860 | USE_GRAPHS = 1 | FA_QUANTS = q4_0-q4_0,q8_0-q8_0,f16-f16,bf16-bf16 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | ",
+          "vocab": 128000,
+          "context": 8448,
+          "flash_attention": true,
+          "gpu_layers": -1,
+          "prefill_batch": 128,
+          "cache_type": "f16"
+        }
+      },
+      "protocol": "one sequence, fixed shared tokens, completed host FP32 logits; 3 warmups per runner; rotated sequential Tensor runners; native measured separately on the same GPU before Tensor; loading/reset/tokenization/sampling excluded",
+      "repeats": 5,
+      "cases": [
+        {
+          "prompt_tokens": 32,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 2310.8640797692597,
+              "decode_tokens_per_second": 252.6091595522485,
+              "prefill_seconds": 0.013847633999830578,
+              "decode_seconds": 0.2533558169998287,
+              "decode_milliseconds": 3.958684640622323,
+              "samples": [
+                {
+                  "prefill_seconds": 0.013832553999236552,
+                  "decode_seconds": 0.2533558169998287
+                },
+                {
+                  "prefill_seconds": 0.013899524001317332,
+                  "decode_seconds": 0.253731725999387
+                },
+                {
+                  "prefill_seconds": 0.013837383001373382,
+                  "decode_seconds": 0.25331825600005686
+                },
+                {
+                  "prefill_seconds": 0.013893444000132149,
+                  "decode_seconds": 0.2536753839995072
+                },
+                {
+                  "prefill_seconds": 0.013847633999830578,
+                  "decode_seconds": 0.2532673759997124
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 2298.395518921565,
+              "decode_tokens_per_second": 252.49664939134783,
+              "prefill_seconds": 0.013922755999374203,
+              "decode_seconds": 0.2534687099978328,
+              "decode_milliseconds": 3.960448593716137,
+              "samples": [
+                {
+                  "prefill_seconds": 0.013932953999756137,
+                  "decode_seconds": 0.25348183100140886
+                },
+                {
+                  "prefill_seconds": 0.013872663999791257,
+                  "decode_seconds": 0.2535829609987559
+                },
+                {
+                  "prefill_seconds": 0.013937076000729576,
+                  "decode_seconds": 0.2534459290000086
+                },
+                {
+                  "prefill_seconds": 0.013887433997297194,
+                  "decode_seconds": 0.2534687099978328
+                },
+                {
+                  "prefill_seconds": 0.013922755999374203,
+                  "decode_seconds": 0.2532527140028833
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 3126.578861258942,
+              "decode_tokens_per_second": 235.35541734995124,
+              "prefill_seconds": 0.010234829,
+              "decode_seconds": 0.271929156,
+              "decode_milliseconds": 4.2488930625,
+              "samples": [
+                {
+                  "prefill_seconds": 0.01024803,
+                  "decode_seconds": 0.272024888
+                },
+                {
+                  "prefill_seconds": 0.010573746,
+                  "decode_seconds": 0.271929156
+                },
+                {
+                  "prefill_seconds": 0.010186389,
+                  "decode_seconds": 0.271795994
+                },
+                {
+                  "prefill_seconds": 0.010206928,
+                  "decode_seconds": 0.272079039
+                },
+                {
+                  "prefill_seconds": 0.010234829,
+                  "decode_seconds": 0.271807014
+                }
+              ]
+            }
+          }
+        },
+        {
+          "prompt_tokens": 512,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 6363.397103579132,
+              "decode_tokens_per_second": 249.01102547584642,
+              "prefill_seconds": 0.08046016799926292,
+              "decode_seconds": 0.25701673200092046,
+              "decode_milliseconds": 4.015886437514382,
+              "samples": [
+                {
+                  "prefill_seconds": 0.08060816999932285,
+                  "decode_seconds": 0.25706081300086225
+                },
+                {
+                  "prefill_seconds": 0.08049336900148774,
+                  "decode_seconds": 0.25701673200092046
+                },
+                {
+                  "prefill_seconds": 0.08020318199851317,
+                  "decode_seconds": 0.2567485170002328
+                },
+                {
+                  "prefill_seconds": 0.08045823700012988,
+                  "decode_seconds": 0.25698607099911897
+                },
+                {
+                  "prefill_seconds": 0.08046016799926292,
+                  "decode_seconds": 0.2571480849983345
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 6346.103888421724,
+              "decode_tokens_per_second": 249.1380116725758,
+              "prefill_seconds": 0.0806794229974912,
+              "decode_seconds": 0.25688573000297765,
+              "decode_milliseconds": 4.013839531296526,
+              "samples": [
+                {
+                  "prefill_seconds": 0.08076639299906674,
+                  "decode_seconds": 0.2570473630003107
+                },
+                {
+                  "prefill_seconds": 0.0806794229974912,
+                  "decode_seconds": 0.2572285659989575
+                },
+                {
+                  "prefill_seconds": 0.08037817500007804,
+                  "decode_seconds": 0.25688573000297765
+                },
+                {
+                  "prefill_seconds": 0.08026500400228542,
+                  "decode_seconds": 0.25671219600189943
+                },
+                {
+                  "prefill_seconds": 0.08075839299999643,
+                  "decode_seconds": 0.25672557699726894
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 6796.241885310418,
+              "decode_tokens_per_second": 232.5853001227836,
+              "prefill_seconds": 0.075335753,
+              "decode_seconds": 0.275167863,
+              "decode_milliseconds": 4.299497859375,
+              "samples": [
+                {
+                  "prefill_seconds": 0.075300452,
+                  "decode_seconds": 0.27598898
+                },
+                {
+                  "prefill_seconds": 0.075404974,
+                  "decode_seconds": 0.274784716
+                },
+                {
+                  "prefill_seconds": 0.075335753,
+                  "decode_seconds": 0.275167863
+                },
+                {
+                  "prefill_seconds": 0.076399884,
+                  "decode_seconds": 0.275381989
+                },
+                {
+                  "prefill_seconds": 0.07524688,
+                  "decode_seconds": 0.275113253
+                }
+              ]
+            }
+          }
+        },
+        {
+          "prompt_tokens": 8192,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 6045.839310107748,
+              "decode_tokens_per_second": 222.8053013737726,
+              "prefill_seconds": 1.3549814309990325,
+              "decode_seconds": 0.2872463070016238,
+              "decode_milliseconds": 4.488223546900372,
+              "samples": [
+                {
+                  "prefill_seconds": 1.3549814309990325,
+                  "decode_seconds": 0.2870630329998676
+                },
+                {
+                  "prefill_seconds": 1.3537744869972812,
+                  "decode_seconds": 0.2870062020010664
+                },
+                {
+                  "prefill_seconds": 1.3540673809984582,
+                  "decode_seconds": 0.2872463070016238
+                },
+                {
+                  "prefill_seconds": 1.3572587959970406,
+                  "decode_seconds": 0.28763683199940715
+                },
+                {
+                  "prefill_seconds": 1.3585917839991453,
+                  "decode_seconds": 0.2876512940019893
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 6044.630880381352,
+              "decode_tokens_per_second": 222.98910342886163,
+              "prefill_seconds": 1.355252315999678,
+              "decode_seconds": 0.28700953999941703,
+              "decode_milliseconds": 4.484524062490891,
+              "samples": [
+                {
+                  "prefill_seconds": 1.3544307999982266,
+                  "decode_seconds": 0.28747135100275045
+                },
+                {
+                  "prefill_seconds": 1.3537642449991836,
+                  "decode_seconds": 0.28673177599921473
+                },
+                {
+                  "prefill_seconds": 1.355521948000387,
+                  "decode_seconds": 0.28701832899969304
+                },
+                {
+                  "prefill_seconds": 1.355252315999678,
+                  "decode_seconds": 0.28700953999941703
+                },
+                {
+                  "prefill_seconds": 1.3577307969972026,
+                  "decode_seconds": 0.2868724470026791
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 6697.2588052672045,
+              "decode_tokens_per_second": 217.16733356888523,
+              "prefill_seconds": 1.223187014,
+              "decode_seconds": 0.294703623,
+              "decode_milliseconds": 4.604744109375001,
+              "samples": [
+                {
+                  "prefill_seconds": 1.223047871,
+                  "decode_seconds": 0.294693744
+                },
+                {
+                  "prefill_seconds": 1.222932438,
+                  "decode_seconds": 0.294659213
+                },
+                {
+                  "prefill_seconds": 1.223187014,
+                  "decode_seconds": 0.294854817
+                },
+                {
+                  "prefill_seconds": 1.224710336,
+                  "decode_seconds": 0.294703623
+                },
+                {
+                  "prefill_seconds": 1.223887669,
+                  "decode_seconds": 0.294804145
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "validation": {
+        "status": "passed",
+        "steps": [
+          {
+            "depth": 1,
+            "stage": "prefill",
+            "position": 1,
+            "relative_rms": 1.6026850515824374e-06,
+            "cosine": 0.9999999999988881,
+            "max_error": 8.404254913330078e-06,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 1,
+            "stage": "decode",
+            "position": 2,
+            "relative_rms": 4.1011326676550744e-05,
+            "cosine": 0.9999999991689231,
+            "max_error": 0.0009741783142089844,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 32,
+            "stage": "prefill",
+            "position": 32,
+            "relative_rms": 0.0014003604336078697,
+            "cosine": 0.9999990563201083,
+            "max_error": 0.022431373596191406,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 32,
+            "stage": "decode",
+            "position": 33,
+            "relative_rms": 0.0007055766163023373,
+            "cosine": 0.999999794004249,
+            "max_error": 0.012331962585449219,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 127,
+            "stage": "prefill",
+            "position": 127,
+            "relative_rms": 0.0007500961589060701,
+            "cosine": 0.9999997632362545,
+            "max_error": 0.011251449584960938,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 127,
+            "stage": "decode",
+            "position": 128,
+            "relative_rms": 0.00040893255114532874,
+            "cosine": 0.9999999354603382,
+            "max_error": 0.008728981018066406,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 128,
+            "stage": "prefill",
+            "position": 128,
+            "relative_rms": 0.0006858788367950659,
+            "cosine": 0.9999997694292007,
+            "max_error": 0.010321617126464844,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 128,
+            "stage": "decode",
+            "position": 129,
+            "relative_rms": 0.000559187366947954,
+            "cosine": 0.9999998823882259,
+            "max_error": 0.010008811950683594,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 129,
+            "stage": "prefill",
+            "position": 129,
+            "relative_rms": 0.00066284853660464,
+            "cosine": 0.9999998547745911,
+            "max_error": 0.008358955383300781,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 129,
+            "stage": "decode",
+            "position": 130,
+            "relative_rms": 0.0008174578002543314,
+            "cosine": 0.9999998398555832,
+            "max_error": 0.008878231048583984,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 384,
+            "stage": "prefill",
+            "position": 384,
+            "relative_rms": 0.0011147431928083887,
+            "cosine": 0.9999993788813243,
+            "max_error": 0.01511383056640625,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 384,
+            "stage": "decode",
+            "position": 385,
+            "relative_rms": 0.0004854026356688851,
+            "cosine": 0.9999999111908454,
+            "max_error": 0.008861541748046875,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 512,
+            "stage": "prefill",
+            "position": 512,
+            "relative_rms": 0.0009098548678379539,
+            "cosine": 0.9999995967847329,
+            "max_error": 0.016921043395996094,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 512,
+            "stage": "decode",
+            "position": 513,
+            "relative_rms": 0.0013236478965753886,
+            "cosine": 0.9999993089550069,
+            "max_error": 0.014480113983154297,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 2048,
+            "stage": "prefill",
+            "position": 2048,
+            "relative_rms": 0.0015267017500937164,
+            "cosine": 0.9999990042605724,
+            "max_error": 0.012263298034667969,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 2048,
+            "stage": "decode",
+            "position": 2049,
+            "relative_rms": 0.0007289898078846412,
+            "cosine": 0.9999998152679069,
+            "max_error": 0.00927734375,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4095,
+            "stage": "prefill",
+            "position": 4095,
+            "relative_rms": 0.0009697207100877321,
+            "cosine": 0.9999995429153817,
+            "max_error": 0.007990837097167969,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4095,
+            "stage": "decode",
+            "position": 4096,
+            "relative_rms": 0.0003120001038063746,
+            "cosine": 0.9999999518795234,
+            "max_error": 0.004243373870849609,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4096,
+            "stage": "prefill",
+            "position": 4096,
+            "relative_rms": 0.0002590480172244048,
+            "cosine": 0.9999999711056798,
+            "max_error": 0.00940561294555664,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4096,
+            "stage": "decode",
+            "position": 4097,
+            "relative_rms": 0.0003670230630524713,
+            "cosine": 0.9999999519935068,
+            "max_error": 0.006707131862640381,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 8192,
+            "stage": "prefill",
+            "position": 8192,
+            "relative_rms": 0.00033128676573172247,
+            "cosine": 0.9999999453833658,
+            "max_error": 0.007495880126953125,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 8192,
+            "stage": "decode",
+            "position": 8193,
+            "relative_rms": 0.0007848830275694348,
+            "cosine": 0.999999696448512,
+            "max_error": 0.005762577056884766,
+            "top1_equal": true,
+            "finite": true
+          }
+        ],
+        "gates": {
+          "relative_rms_max": 0.01,
+          "cosine_min": 0.9999,
+          "matching_argmax": true,
+          "reset_bitwise_equal": true,
+          "graph_eager_bitwise_equal": true,
+          "gpu_host_greedy_equal": true
+        },
+        "reference": "independent Torch FP16 prefill/FP32 decode operators; no shared kernel templates",
+        "reference_source_sha256": "9cd2eb2d703474f62ce69cb0710d607f768655031017d37dc68711d1a1ef29ec",
+        "saved_logits": {
+          "1-decode.npy": "54e1949a33ecb0c47dc6f33a31ba5122d7d9a5ad72588b3adfd4ad2bedd6b401",
+          "1-prefill.npy": "8b6b6c99a8ee48b407390a93550abd8ff7aac1288e48f3f027e6c7c7ee9caddc",
+          "127-decode.npy": "169da4339ef56ec876f84b523b06d1e42a787728a0c60a26040cb7b5d91b9a19",
+          "127-prefill.npy": "3ecde9c08546da1ea7aa27212cbd7e57a2d82785b647b30b61df3734caac1bd4",
+          "128-decode.npy": "d1b700f96fdb735b7ef455052a72a2e02fb3c13321d3d41e0813c2aad0776d8e",
+          "128-prefill.npy": "2b72f824a7e3b0c9a492266f5c81baf580c870a2416af803fd3d9cc29a1a84d5",
+          "129-decode.npy": "fa90104f73f412214524ff8ee91537a0cfcb77cfa4630cd894048abce7ec02b7",
+          "129-prefill.npy": "7e7ba39e28e1ca351904b36ac5122ca0868d2289493bd4c3fb75de64f1f58421",
+          "2048-decode.npy": "b2f177219e10318ecf27882b767a95a8316b258181a9777ddbe26b052598835f",
+          "2048-prefill.npy": "161760585aa223dc43e40f90a4b406dfffef12bc9e4f327ea6e4dd4e53473ac2",
+          "32-decode.npy": "6f4c2dd6f06118b0dac1bf40f2a7b09da6ae2dad1ea929956e2d41b76bd6c343",
+          "32-prefill.npy": "4687cb7ef2fbca5af9df68b173bdc5417a8bd3432dc0b0e7146bbda45261dbfa",
+          "384-decode.npy": "9eb637f6c71e9639ce72146113a9786b2b48e80c3b5f62a2c5403a27cba55548",
+          "384-prefill.npy": "7de3ceb8bfc30ce97d08b32e4968d8cf7d2b9a463d3521731b47d326e962f401",
+          "4095-decode.npy": "6f9a81e77a8b60b39843ecccccc3c360c65919faea40c894427a0858537ef00e",
+          "4095-prefill.npy": "8c0bb1b0f80ff41934cd8b44cf0db04bf9175fbccc614ac0e0cf381c800edbdb",
+          "4096-decode.npy": "e4dfb4192b3529ce498803db98707e06013313bc00babed43513de5910bfd73d",
+          "4096-prefill.npy": "85966cf5d05f2216f1bdcf1eec8f5e0efbc7e9aa64ceab0576289fdc9b1947b3",
+          "512-decode.npy": "76ac0188a036d472f1a752d118ba4738368751dc52ce6934842fb6cb5342a1f7",
+          "512-prefill.npy": "e1aa1187dc0cf3dd024cc984448703eb3960ba0fe03d73e5d746c9f2e17d5677",
+          "8192-decode.npy": "366e8127a8f7a780168dcdcd5c6a970e536225a5490a7dc76976dff2215c2962",
+          "8192-prefill.npy": "b372498c102752fab9c71db810238e4f354c2b82e7efd6c685b9644090eff64c"
+        },
+        "bitwise_equal_to_emitted": [
+          "1-decode.npy",
+          "1-prefill.npy",
+          "127-decode.npy",
+          "127-prefill.npy",
+          "128-decode.npy",
+          "128-prefill.npy",
+          "129-decode.npy",
+          "129-prefill.npy",
+          "2048-decode.npy",
+          "2048-prefill.npy",
+          "32-decode.npy",
+          "32-prefill.npy",
+          "384-decode.npy",
+          "384-prefill.npy",
+          "4095-decode.npy",
+          "4095-prefill.npy",
+          "4096-decode.npy",
+          "4096-prefill.npy",
+          "512-decode.npy",
+          "512-prefill.npy",
+          "8192-decode.npy",
+          "8192-prefill.npy"
+        ]
+      },
+      "consumer": {
+        "schema": "tensor.lfm2-cuda-transfer-consumer.v1",
+        "status": "passed",
+        "model_sha256": "e1a61bf937bc60726e18626e97f7ee9bfd2574d95744c2ed909de98b78006fbe",
+        "bundle_sha256": "185497bcb4c40a637db07817765f81edd9c60035778ac15416ea5b06c31375d6",
+        "implementation": {
+          "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+          "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+          "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+          "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+          "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+          "tensor_llm.model": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+          "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+          "tensor_llm.kernels": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+          "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+          "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+          "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+          "tensor_llm.cuda_kernels": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b"
+        },
+        "adapter": {
+          "ordinal": 0,
+          "name": "NVIDIA A10G",
+          "arch": "sm_86",
+          "provider": "cuda"
+        },
+        "distributions": [
+          "numpy",
+          "regex",
+          "tensor-llm",
+          "tensor-workspace"
+        ],
+        "steps": [
+          {
+            "depth": 1,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 1,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 32,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 32,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 127,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 127,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 128,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 128,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 129,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 129,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 384,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 384,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 512,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 512,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 2048,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 2048,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4095,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4095,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4096,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4096,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 8192,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 8192,
+            "stage": "decode",
+            "bitwise_equal": true
+          }
+        ],
+        "generation": {
+          "prompt_tokens": [
+            124894,
+            124899,
+            5922,
+            207,
+            2992,
+            355,
+            278,
+            5205,
+            302,
+            3980,
+            39,
+            124900,
+            207,
+            124899,
+            63514,
+            207,
+            124901
+          ],
+          "generated_tokens": [
+            597,
+            4695,
+            355,
+            13564,
+            267,
+            1442,
+            3547,
+            1456,
+            650,
+            3451,
+            34,
+            496,
+            2992,
+            355,
+            278,
+            5205
+          ],
+          "text": "The user is asking a very simple factual question: \"What is the capital"
+        },
+        "long_generation_equal": true,
+        "forbidden_imports": [],
+        "compiler_imports": [],
+        "consumer_source_sha256": "bf0dc5bee374ea0037465a82d7dbdf7d7e9d353483a0817822908c26b8aa59af"
+      },
+      "audit": {
+        "status": "passed",
+        "kernel_count": 63,
+        "profile_sha256": "4a56e23237b1f3102646e1479814021ab98857eb7f25fd8d23c09becc62431e8"
+      }
+    },
+    "Q4_K_M": {
+      "model_sha256": "02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed",
+      "adapter": {
+        "ordinal": 0,
+        "name": "NVIDIA A10G",
+        "arch": "sm_86",
+        "provider": "cuda"
+      },
+      "implementation": {
+        "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+        "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+        "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+        "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+        "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+        "tensor_llm.model": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+        "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+        "tensor_llm.kernels": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+        "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+        "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+        "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+        "tensor_llm.cuda_kernels": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b"
+      },
+      "before_source_sha256": {
+        "__init__.py": "ab4ec992fff0d3cf5327803d268d6eb819987f8b755f2c41d2d898a358ef242e",
+        "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+        "cli.py": "830e004ac02c4a66fa4abfe25bf3e92d20d454fa651e688aeb1251ee17a1c911",
+        "config.py": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+        "cuda_kernels.py": "0e5ba091ed42fb8954859b4dd3e88c984cb0e53c2df7da2697933611ed3068c7",
+        "gguf.py": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+        "kernels.py": "f083c5732f75ccdfd11f105dc591b4882f2482064dc2161b5e8d91e3de2f9e15",
+        "model.py": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+        "provenance.py": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+        "tokenizer.py": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+        "webgpu_kernels.py": "2ac825e9b6e0dbda390f6e7c777588f01a7c871c2ec37b5dabdbf82bc00c5472"
+      },
+      "harness_sha256": {
+        "cuda_transfer.py": "56e9c10e9e642ab709510eafd79ffe71f00a5a1a2b37223e6b63761353edb038",
+        "reference.cpp": "ba75cc4135b0fc4dac62e48a53ba8a85a031e37aed053829e6d231c0afa653d1",
+        "torch_reference.py": "9cd2eb2d703474f62ce69cb0710d607f768655031017d37dc68711d1a1ef29ec",
+        "fp16_decode.py": "2d075127e081ac4819c2915b49a06244f92aebbd4f67b3617e5b004075145217",
+        "decode_optimization.py": "f7a7e712bf983e9671164df404fbb9a92f9f30f7a31cb489ca4b90948fe6248f",
+        "compare_models.py": "22e2fa8df8230cd50a56185bf54665ec9d944ba9b8637c96ac706a87953c1a52"
+      },
+      "native": {
+        "commit": "f872b591121761ac7b2af18283bd99bdc092a63a",
+        "helper_sha256": "58f38881977b2e103e3d04d9e8faa03ed45949157f3456578c6aa591e0fccc6b",
+        "configuration": {
+          "backend": "llama.cpp CUDA",
+          "system": "CUDA : ARCHS = 860 | USE_GRAPHS = 1 | FA_QUANTS = q4_0-q4_0,q8_0-q8_0,f16-f16,bf16-bf16 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | ",
+          "vocab": 128000,
+          "context": 8448,
+          "flash_attention": true,
+          "gpu_layers": -1,
+          "prefill_batch": 128,
+          "cache_type": "f16"
+        }
+      },
+      "protocol": "one sequence, fixed shared tokens, completed host FP32 logits; 3 warmups per runner; rotated sequential Tensor runners; native measured separately on the same GPU before Tensor; loading/reset/tokenization/sampling excluded",
+      "repeats": 5,
+      "cases": [
+        {
+          "prompt_tokens": 32,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 1740.4209002942707,
+              "decode_tokens_per_second": 226.8604454707959,
+              "prefill_seconds": 0.018386356998234987,
+              "decode_seconds": 0.282111762000568,
+              "decode_milliseconds": 4.407996281258875,
+              "samples": [
+                {
+                  "prefill_seconds": 0.01837671600151225,
+                  "decode_seconds": 0.28199528999903123
+                },
+                {
+                  "prefill_seconds": 0.0184146569990844,
+                  "decode_seconds": 0.282111762000568
+                },
+                {
+                  "prefill_seconds": 0.018379065997578437,
+                  "decode_seconds": 0.28197644899773877
+                },
+                {
+                  "prefill_seconds": 0.018485347001842456,
+                  "decode_seconds": 0.2822648159999517
+                },
+                {
+                  "prefill_seconds": 0.018386356998234987,
+                  "decode_seconds": 0.2821551830020326
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 1701.645677619855,
+              "decode_tokens_per_second": 226.688732501153,
+              "prefill_seconds": 0.01880532499853871,
+              "decode_seconds": 0.2823254569993878,
+              "decode_milliseconds": 4.411335265615435,
+              "samples": [
+                {
+                  "prefill_seconds": 0.01880532499853871,
+                  "decode_seconds": 0.28227443499781657
+                },
+                {
+                  "prefill_seconds": 0.018747213001915952,
+                  "decode_seconds": 0.28252418199917884
+                },
+                {
+                  "prefill_seconds": 0.018828516000212403,
+                  "decode_seconds": 0.2822988959997019
+                },
+                {
+                  "prefill_seconds": 0.018738244001724524,
+                  "decode_seconds": 0.2823893280001357
+                },
+                {
+                  "prefill_seconds": 0.01880546500251512,
+                  "decode_seconds": 0.2823254569993878
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 3178.5685018761005,
+              "decode_tokens_per_second": 224.62221859519732,
+              "prefill_seconds": 0.010067425,
+              "decode_seconds": 0.284922838,
+              "decode_milliseconds": 4.45191934375,
+              "samples": [
+                {
+                  "prefill_seconds": 0.010431273,
+                  "decode_seconds": 0.284830606
+                },
+                {
+                  "prefill_seconds": 0.010067425,
+                  "decode_seconds": 0.284931498
+                },
+                {
+                  "prefill_seconds": 0.010076125,
+                  "decode_seconds": 0.28501371
+                },
+                {
+                  "prefill_seconds": 0.010047795,
+                  "decode_seconds": 0.284794865
+                },
+                {
+                  "prefill_seconds": 0.010025025,
+                  "decode_seconds": 0.284922838
+                }
+              ]
+            }
+          }
+        },
+        {
+          "prompt_tokens": 512,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 4791.092191832393,
+              "decode_tokens_per_second": 224.07184662059694,
+              "prefill_seconds": 0.10686498599898187,
+              "decode_seconds": 0.2856226740004786,
+              "decode_milliseconds": 4.462854281257478,
+              "samples": [
+                {
+                  "prefill_seconds": 0.10684951700022793,
+                  "decode_seconds": 0.28549227099938435
+                },
+                {
+                  "prefill_seconds": 0.10689098700095201,
+                  "decode_seconds": 0.2856226740004786
+                },
+                {
+                  "prefill_seconds": 0.10686498599898187,
+                  "decode_seconds": 0.2855201019992819
+                },
+                {
+                  "prefill_seconds": 0.10691517699888209,
+                  "decode_seconds": 0.285630364996905
+                },
+                {
+                  "prefill_seconds": 0.10678264500165824,
+                  "decode_seconds": 0.28658953400008613
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 4782.988255927576,
+              "decode_tokens_per_second": 223.96568935130264,
+              "prefill_seconds": 0.10704605000137235,
+              "decode_seconds": 0.28575805600121384,
+              "decode_milliseconds": 4.464969625018966,
+              "samples": [
+                {
+                  "prefill_seconds": 0.10704671100029373,
+                  "decode_seconds": 0.2856836650025798
+                },
+                {
+                  "prefill_seconds": 0.10700840999925276,
+                  "decode_seconds": 0.28575805600121384
+                },
+                {
+                  "prefill_seconds": 0.10703682999883313,
+                  "decode_seconds": 0.2858775200002128
+                },
+                {
+                  "prefill_seconds": 0.10704605000137235,
+                  "decode_seconds": 0.286006112000905
+                },
+                {
+                  "prefill_seconds": 0.10714833200108842,
+                  "decode_seconds": 0.28562672400221345
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 6246.372803292814,
+              "decode_tokens_per_second": 222.12996655663287,
+              "prefill_seconds": 0.08196757,
+              "decode_seconds": 0.288119613,
+              "decode_milliseconds": 4.501868953125,
+              "samples": [
+                {
+                  "prefill_seconds": 0.08196757,
+                  "decode_seconds": 0.288103263
+                },
+                {
+                  "prefill_seconds": 0.082355598,
+                  "decode_seconds": 0.288302507
+                },
+                {
+                  "prefill_seconds": 0.081689115,
+                  "decode_seconds": 0.288029592
+                },
+                {
+                  "prefill_seconds": 0.081792138,
+                  "decode_seconds": 0.288409619
+                },
+                {
+                  "prefill_seconds": 0.08220655,
+                  "decode_seconds": 0.288119613
+                }
+              ]
+            }
+          }
+        },
+        {
+          "prompt_tokens": 8192,
+          "decode_tokens": 64,
+          "runners": {
+            "emitted": {
+              "prefill_tokens_per_second": 4656.604427753659,
+              "decode_tokens_per_second": 203.09172305290335,
+              "prefill_seconds": 1.7592217950004851,
+              "decode_seconds": 0.31512854900211096,
+              "decode_milliseconds": 4.923883578157984,
+              "samples": [
+                {
+                  "prefill_seconds": 1.7594626040008734,
+                  "decode_seconds": 0.31512854900211096
+                },
+                {
+                  "prefill_seconds": 1.759670625000581,
+                  "decode_seconds": 0.3150077840000449
+                },
+                {
+                  "prefill_seconds": 1.7590564620004443,
+                  "decode_seconds": 0.31515946699801134
+                },
+                {
+                  "prefill_seconds": 1.7592217950004851,
+                  "decode_seconds": 0.3154850139981136
+                },
+                {
+                  "prefill_seconds": 1.7588211660004163,
+                  "decode_seconds": 0.31508971600123914
+                }
+              ]
+            },
+            "dsl": {
+              "prefill_tokens_per_second": 4647.057777087826,
+              "decode_tokens_per_second": 202.66764453837033,
+              "prefill_seconds": 1.7628358399997524,
+              "decode_seconds": 0.3157879499995033,
+              "decode_milliseconds": 4.9341867187422395,
+              "samples": [
+                {
+                  "prefill_seconds": 1.7630361680021451,
+                  "decode_seconds": 0.3160475469994708
+                },
+                {
+                  "prefill_seconds": 1.7627973629969347,
+                  "decode_seconds": 0.31594748399948
+                },
+                {
+                  "prefill_seconds": 1.76362216599955,
+                  "decode_seconds": 0.31566163599927677
+                },
+                {
+                  "prefill_seconds": 1.7628358399997524,
+                  "decode_seconds": 0.3157879499995033
+                },
+                {
+                  "prefill_seconds": 1.7626519260011264,
+                  "decode_seconds": 0.3155738349996682
+                }
+              ]
+            },
+            "llama.cpp": {
+              "prefill_tokens_per_second": 6130.844030244196,
+              "decode_tokens_per_second": 207.96066605967064,
+              "prefill_seconds": 1.336194488,
+              "decode_seconds": 0.307750505,
+              "decode_milliseconds": 4.8086016406250005,
+              "samples": [
+                {
+                  "prefill_seconds": 1.335876731,
+                  "decode_seconds": 0.307911118
+                },
+                {
+                  "prefill_seconds": 1.33676153,
+                  "decode_seconds": 0.308014571
+                },
+                {
+                  "prefill_seconds": 1.335579945,
+                  "decode_seconds": 0.307628022
+                },
+                {
+                  "prefill_seconds": 1.336194488,
+                  "decode_seconds": 0.307675883
+                },
+                {
+                  "prefill_seconds": 1.338042327,
+                  "decode_seconds": 0.307750505
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "validation": {
+        "status": "passed",
+        "steps": [
+          {
+            "depth": 1,
+            "stage": "prefill",
+            "position": 1,
+            "relative_rms": 1.958821462369072e-06,
+            "cosine": 0.999999999998082,
+            "max_error": 9.417533874511719e-06,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 1,
+            "stage": "decode",
+            "position": 2,
+            "relative_rms": 0.00013894474541067367,
+            "cosine": 0.9999999949413397,
+            "max_error": 0.0023353099822998047,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 32,
+            "stage": "prefill",
+            "position": 32,
+            "relative_rms": 0.001503853756246108,
+            "cosine": 0.9999991108025905,
+            "max_error": 0.01804327964782715,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 32,
+            "stage": "decode",
+            "position": 33,
+            "relative_rms": 0.0011708737432077716,
+            "cosine": 0.9999993248840868,
+            "max_error": 0.01575303077697754,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 127,
+            "stage": "prefill",
+            "position": 127,
+            "relative_rms": 0.00045495615462852246,
+            "cosine": 0.9999999017312021,
+            "max_error": 0.009744644165039062,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 127,
+            "stage": "decode",
+            "position": 128,
+            "relative_rms": 0.0010134556366104865,
+            "cosine": 0.9999997409705905,
+            "max_error": 0.011415243148803711,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 128,
+            "stage": "prefill",
+            "position": 128,
+            "relative_rms": 0.0013487209666829443,
+            "cosine": 0.9999991480026769,
+            "max_error": 0.015533924102783203,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 128,
+            "stage": "decode",
+            "position": 129,
+            "relative_rms": 0.0006129555206673635,
+            "cosine": 0.999999862675245,
+            "max_error": 0.011679530143737793,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 129,
+            "stage": "prefill",
+            "position": 129,
+            "relative_rms": 0.0007256110707580426,
+            "cosine": 0.9999997545328186,
+            "max_error": 0.008603215217590332,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 129,
+            "stage": "decode",
+            "position": 130,
+            "relative_rms": 0.0004896329133296828,
+            "cosine": 0.9999999325227226,
+            "max_error": 0.007954716682434082,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 384,
+            "stage": "prefill",
+            "position": 384,
+            "relative_rms": 0.0013208138346341935,
+            "cosine": 0.9999992617525658,
+            "max_error": 0.0138092041015625,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 384,
+            "stage": "decode",
+            "position": 385,
+            "relative_rms": 0.0008047844301691402,
+            "cosine": 0.9999998091800885,
+            "max_error": 0.013634681701660156,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 512,
+            "stage": "prefill",
+            "position": 512,
+            "relative_rms": 0.0016091993309694879,
+            "cosine": 0.999998977165368,
+            "max_error": 0.017589092254638672,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 512,
+            "stage": "decode",
+            "position": 513,
+            "relative_rms": 0.0017723945132468379,
+            "cosine": 0.9999990171458746,
+            "max_error": 0.017991065979003906,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 2048,
+            "stage": "prefill",
+            "position": 2048,
+            "relative_rms": 0.00047849348661328507,
+            "cosine": 0.999999885543145,
+            "max_error": 0.013388633728027344,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 2048,
+            "stage": "decode",
+            "position": 2049,
+            "relative_rms": 0.0010036339646080324,
+            "cosine": 0.9999995645972357,
+            "max_error": 0.01410675048828125,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4095,
+            "stage": "prefill",
+            "position": 4095,
+            "relative_rms": 0.0008976365618444041,
+            "cosine": 0.9999996030700026,
+            "max_error": 0.008855581283569336,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4095,
+            "stage": "decode",
+            "position": 4096,
+            "relative_rms": 0.00046993606329203785,
+            "cosine": 0.9999998935800037,
+            "max_error": 0.004662990570068359,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4096,
+            "stage": "prefill",
+            "position": 4096,
+            "relative_rms": 0.0002333329486630767,
+            "cosine": 0.9999999737301298,
+            "max_error": 0.009162187576293945,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 4096,
+            "stage": "decode",
+            "position": 4097,
+            "relative_rms": 0.00022242301679336907,
+            "cosine": 0.9999999804170732,
+            "max_error": 0.006659567356109619,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 8192,
+            "stage": "prefill",
+            "position": 8192,
+            "relative_rms": 0.0005490160150914627,
+            "cosine": 0.999999919966947,
+            "max_error": 0.01022249460220337,
+            "top1_equal": true,
+            "finite": true
+          },
+          {
+            "depth": 8192,
+            "stage": "decode",
+            "position": 8193,
+            "relative_rms": 0.0008552111691149274,
+            "cosine": 0.9999996398233586,
+            "max_error": 0.0067234039306640625,
+            "top1_equal": true,
+            "finite": true
+          }
+        ],
+        "gates": {
+          "relative_rms_max": 0.01,
+          "cosine_min": 0.9999,
+          "matching_argmax": true,
+          "reset_bitwise_equal": true,
+          "graph_eager_bitwise_equal": true,
+          "gpu_host_greedy_equal": true
+        },
+        "reference": "independent Torch FP16 prefill/FP32 decode operators; no shared kernel templates",
+        "reference_source_sha256": "9cd2eb2d703474f62ce69cb0710d607f768655031017d37dc68711d1a1ef29ec",
+        "saved_logits": {
+          "1-decode.npy": "6792432967a3d9a1039d55ce3e511bcc6ef1686c470ece834d664c95879d28a7",
+          "1-prefill.npy": "98242789d2b2ee47d37e7af740f11bdbb9ad235fbbcc537d1e69f8761125e033",
+          "127-decode.npy": "bfebf02581ffaeb81734e5147b22039f934e586e91efe89fdb43319e61317332",
+          "127-prefill.npy": "a305eed72117f5b40650e3ed1cf28e72a1337e0d6b5bf473dcdadf6efb005775",
+          "128-decode.npy": "26e2b32b766908e3c68a079dcec929c1ae84574dcc333c71ec1824b9a45997c4",
+          "128-prefill.npy": "85236441a659124c022419a25256f11d5e01f192512a0eee529deaa3e3b40835",
+          "129-decode.npy": "59abc5e861267e4d7bb5866504291d43714a61f4e18a0ad20a50af65d6d15ca5",
+          "129-prefill.npy": "239305e8265ea4b560f2e6bf9d04c947d5a9a8c3508c1885b2023d7ee5adfe55",
+          "2048-decode.npy": "6abd5302dfa1845aca08ca413e0a1723dd473c62710bc09dfa1ced91365ecb68",
+          "2048-prefill.npy": "32b21593ac0d8f836225cf24be556778537f409272a4ac69ce3b9ae5d20b4486",
+          "32-decode.npy": "8f79fef7623d0d8938c0ee666943208d7396fe0775b907d939d4bc670e4967bc",
+          "32-prefill.npy": "0c838c96f5ccab6ea4656fce66b1b41411b022793a6b96a04f0d8f2cd3dd1013",
+          "384-decode.npy": "1893a421926878b7c6aff20ef01d079c2b4a50b81bc844197eeb9a7ec68fc2ae",
+          "384-prefill.npy": "2377a46d37091846030f5185b2bc2b04422d46e60ada8ce22f2ca29ee80670f4",
+          "4095-decode.npy": "120f5b9bd0acb16cfe215bc326b5927a47a47450ee2a6e2e3b20f1a51985a9eb",
+          "4095-prefill.npy": "a38a83e9e5d5aa8003ed92f50859d7fe2bee0f34a6ae6581773111c64c4ebdc5",
+          "4096-decode.npy": "9eed9f1a60bf4f37f7c96952471efd679e1ef14c6d5c3d0e01989f5886148403",
+          "4096-prefill.npy": "b86afadf00dd827f881f851f0140a04cf0c9b3c6650134096f60f0289a3afa25",
+          "512-decode.npy": "1d5443e8121de3dc8a85d1bf5e01cb13c281ff941fb803e97b0d3730e7b48424",
+          "512-prefill.npy": "1be16b0adb0f00b8f80270027620a2c406b789d39b192ec6162654cf0cee5cf3",
+          "8192-decode.npy": "3d479085f34d17d6d54f57acc37a291225a63cf7220b3abeec26a84cd17c5acd",
+          "8192-prefill.npy": "c45cb5fb7d2fbdbe874412543472f85a034c41763bd7ab57b70d83efcc9726c0"
+        },
+        "bitwise_equal_to_emitted": [
+          "1-decode.npy",
+          "1-prefill.npy",
+          "127-decode.npy",
+          "127-prefill.npy",
+          "128-decode.npy",
+          "128-prefill.npy",
+          "129-decode.npy",
+          "129-prefill.npy",
+          "2048-decode.npy",
+          "2048-prefill.npy",
+          "32-decode.npy",
+          "32-prefill.npy",
+          "384-decode.npy",
+          "384-prefill.npy",
+          "4095-decode.npy",
+          "4095-prefill.npy",
+          "4096-decode.npy",
+          "4096-prefill.npy",
+          "512-decode.npy",
+          "512-prefill.npy",
+          "8192-decode.npy",
+          "8192-prefill.npy"
+        ]
+      },
+      "consumer": {
+        "schema": "tensor.lfm2-cuda-transfer-consumer.v1",
+        "status": "passed",
+        "model_sha256": "02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed",
+        "bundle_sha256": "b21caae6e30bd1d903170a5878dded94bd16f4a43c408f228f92af19cfc40fb9",
+        "implementation": {
+          "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+          "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+          "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+          "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+          "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+          "tensor_llm.model": "662dda45ccb3f3af4a70d84a1a5383f9095d69eeb97370f633193a4c78e501cb",
+          "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+          "tensor_llm.kernels": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+          "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+          "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+          "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+          "tensor_llm.cuda_kernels": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b"
+        },
+        "adapter": {
+          "ordinal": 0,
+          "name": "NVIDIA A10G",
+          "arch": "sm_86",
+          "provider": "cuda"
+        },
+        "distributions": [
+          "numpy",
+          "regex",
+          "tensor-llm",
+          "tensor-workspace"
+        ],
+        "steps": [
+          {
+            "depth": 1,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 1,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 32,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 32,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 127,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 127,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 128,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 128,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 129,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 129,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 384,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 384,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 512,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 512,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 2048,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 2048,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4095,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4095,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4096,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 4096,
+            "stage": "decode",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 8192,
+            "stage": "prefill",
+            "bitwise_equal": true
+          },
+          {
+            "depth": 8192,
+            "stage": "decode",
+            "bitwise_equal": true
+          }
+        ],
+        "generation": {
+          "prompt_tokens": [
+            124894,
+            124899,
+            5922,
+            207,
+            2992,
+            355,
+            278,
+            5205,
+            302,
+            3980,
+            39,
+            124900,
+            207,
+            124899,
+            63514,
+            207,
+            124901
+          ],
+          "generated_tokens": [
+            597,
+            4695,
+            355,
+            13564,
+            267,
+            90139,
+            1456,
+            650,
+            3451,
+            34,
+            496,
+            2992,
+            355,
+            278,
+            5205,
+            302
+          ],
+          "text": "The user is asking a straightforward factual question: \"What is the capital of"
+        },
+        "long_generation_equal": true,
+        "forbidden_imports": [],
+        "compiler_imports": [],
+        "consumer_source_sha256": "bf0dc5bee374ea0037465a82d7dbdf7d7e9d353483a0817822908c26b8aa59af"
+      },
+      "audit": {
+        "status": "passed",
+        "kernel_count": 70,
+        "profile_sha256": "4a56e23237b1f3102646e1479814021ab98857eb7f25fd8d23c09becc62431e8"
+      }
+    }
+  },
+  "tests": {
+    "cpu": {
+      "passed": 306,
+      "skipped": 351
+    },
+    "cuda_operators": 21,
+    "pytorch_adapter": 25,
+    "webgpu_selected_numerical": 235,
+    "manual_training_steps": 10
+  },
+  "webgpu_half_preservation": {
+    "status": "passed",
+    "cases": [
+      {
+        "kind": "linear",
+        "unroll": 2,
+        "group_order": "row",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 2,
+        "group_order": "row",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 2,
+        "group_order": "row",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 2,
+        "group_order": "column",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 2,
+        "group_order": "column",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 2,
+        "group_order": "column",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 4,
+        "group_order": "row",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 4,
+        "group_order": "row",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 4,
+        "group_order": "row",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 4,
+        "group_order": "column",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 4,
+        "group_order": "column",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 4,
+        "group_order": "column",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 8,
+        "group_order": "row",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 8,
+        "group_order": "row",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 8,
+        "group_order": "row",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 8,
+        "group_order": "column",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 8,
+        "group_order": "column",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "linear",
+        "unroll": 8,
+        "group_order": "column",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 2,
+        "group_order": "row",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 2,
+        "group_order": "row",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 2,
+        "group_order": "row",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 2,
+        "group_order": "column",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 2,
+        "group_order": "column",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 2,
+        "group_order": "column",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 4,
+        "group_order": "row",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 4,
+        "group_order": "row",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 4,
+        "group_order": "row",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 4,
+        "group_order": "column",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 4,
+        "group_order": "column",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 4,
+        "group_order": "column",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 8,
+        "group_order": "row",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 8,
+        "group_order": "row",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 8,
+        "group_order": "row",
+        "scale": 0.25,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 8,
+        "group_order": "column",
+        "scale": 0.0001,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 8,
+        "group_order": "column",
+        "scale": 0.01,
+        "bitwise_equal": true
+      },
+      {
+        "kind": "ffn",
+        "unroll": 8,
+        "group_order": "column",
+        "scale": 0.25,
+        "bitwise_equal": true
+      }
+    ]
+  },
+  "staging_control": {
+    "emitted": {
+      "gpu_seconds": [
+        0.007385088348388672,
+        0.007384678649902343,
+        0.0073854972839355465,
+        0.007396966552734375,
+        0.007382835388183594,
+        0.007379558563232422,
+        0.007380172729492188
+      ],
+      "completed_seconds": [
+        0.007388535000063712,
+        0.007387770800414728,
+        0.007388055200135568,
+        0.0073996232000354215,
+        0.00738526479981374,
+        0.007382072800101014,
+        0.007382886800041888
+      ],
+      "median_gpu_seconds": 0.007384678649902343,
+      "median_completed_seconds": 0.007387770800414728,
+      "warmup": 3,
+      "samples": 7,
+      "repeats": 5
+    },
+    "separated": {
+      "gpu_seconds": [
+        0.008364646148681642,
+        0.008374066925048829,
+        0.008373248291015625,
+        0.008368128204345703,
+        0.008365670776367188,
+        0.008367718505859375,
+        0.00837754898071289
+      ],
+      "completed_seconds": [
+        0.008367934800480726,
+        0.008376761399995302,
+        0.008376326999859884,
+        0.008371161200193456,
+        0.008368445000087377,
+        0.008370751199981897,
+        0.008380873199348571
+      ],
+      "median_gpu_seconds": 0.008368128204345703,
+      "median_completed_seconds": 0.008371161200193456,
+      "warmup": 3,
+      "samples": 7,
+      "repeats": 5
+    },
+    "interleaved": {
+      "gpu_seconds": [
+        0.007434239959716797,
+        0.007443046569824219,
+        0.007440179443359375,
+        0.007408230590820313,
+        0.007426252746582031,
+        0.007444070434570313,
+        0.007426425933837891
+      ],
+      "completed_seconds": [
+        0.007437711999955354,
+        0.0074457763999816965,
+        0.007442998199985595,
+        0.007410981399880256,
+        0.0074288398005592175,
+        0.007446510199952172,
+        0.007428721799806226
+      ],
+      "median_gpu_seconds": 0.007434239959716797,
+      "median_completed_seconds": 0.007437711999955354,
+      "warmup": 3,
+      "samples": 7,
+      "repeats": 5
+    }
+  },
+  "staging_workload": {
+    "operation": "ffn",
+    "encoding": 12,
+    "rows": 128,
+    "depth": 2048,
+    "columns": 10752,
+    "tile": [
+      64,
+      64,
+      64
+    ],
+    "threads": 128,
+    "stages": 2,
+    "kernels_per_graph": 20,
+    "all_outputs_bitwise_equal": true
+  },
+  "limitations": [
+    "WebGPU validation used A10G Vulkan, not a fresh AMD/Apple run.",
+    "The existing A10G short-F16-FMA difference from strict NumPy emulation remains. The frozen and DSL implementations are bitwise equal in all 36 matched cases.",
+    "The GPU numerical selection excludes unavailable real-model WebGPU bundles, CUDA-only tests, and that strict short-F16-FMA oracle."
+  ],
+  "dsl_source_sha256": {
+    "src/tensor/compiler/entry.py": "63906f070e82e8053df055cd4cf2489754f3a3e0e4c2ba832537d647ce88e223",
+    "src/tensor/compiler/webgpu_templates.py": "1f008cfb483ecfc7c3e430ce80155200ae9626f6bede52046aca9e50f1d18791",
+    "packages/tensor-llm/src/tensor_llm/kernels.py": "f17f0c09e41f4900be04a018d8b3a26da50d6712ce9aa0b84df0d267072a543e",
+    "packages/tensor-llm/src/tensor_llm/cuda_kernels.py": "eccc6f0ed49590b0ca6741144a95ddd84211ef28023082324581803fdf714f6b",
+    "packages/tensor-llm/src/tensor_llm/webgpu_kernels.py": "1adfeca1d568d9a17a18244c664a00faf06f6fbf50dcd81439d2c08cca1e8a14",
+    "packages/tensor-nn/src/tensor_nn/kernels.py": "35100ceea3d36c507a6edd403d9acf7d4992a27a12db15d5eaeb07fd0cff2731",
+    "packages/tensor-torch/src/tensor_torch/kernels.py": "b30470b603573c0b2812b5b45c9747490b23cc48b1d0ad6bc6635b0554199a4a",
+    "packages/tensor-torch/src/tensor_torch/templates/attention.py": "99de43e3eb85f145fd13c045c74e797fda97f4d00dbd325943b7c146be60a287"
+  }
+}
