@@ -56,20 +56,29 @@ def test_tail_specialization_requires_the_measured_shape_and_suffix():
     assert prefill_tail_rows(cfg,gguf,'prefill_mixed')==0
 
 
-@pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires native WebGPU')
-def test_tail_extraction_partial_chunks_and_position_controls(tmp_path):
+@pytest.mark.parametrize('provider', ['cuda', 'webgpu'])
+def test_tail_extraction_partial_chunks_and_position_controls(tmp_path, provider):
     import tensor
-    from tensor_llm.webgpu_kernels import source
+    if os.environ.get('TENSOR_LFM2_CUDA' if provider=='cuda' else 'TENSOR_WEBGPU')!='1':
+        pytest.skip('requires the selected GPU provider')
+    if provider=='cuda':
+        from tensor_llm.cuda_kernels import source
+    else:
+        from tensor_llm.webgpu_kernels import source
     r,c,t=128,17,8;rng=np.random.default_rng(1805)
     path=tmp_path/'tail.py';path.write_text(source('prefill_tail',dict(r=r,c=c,t=t)))
-    artifact=path.with_suffix('.tbin');tensor.build(path,artifact,provider='webgpu')
-    with tensor.Device(provider='webgpu') as device:
+    artifact=path.with_suffix('.tbin');tensor.build(path,artifact,provider=provider,**({'compiler':'nvrtc','target':'sm_86'} if provider=='cuda' else {}))
+    with tensor.Device(provider=provider) as device:
         kernel=device.load(artifact);x=rng.normal(size=(r,c)).astype(np.float32)
         inp=device.from_numpy(x.ravel());out=device.full(t*c,np.nan)
         control=device.zeros(2,dtype='int32');tail_control=device.zeros(2,dtype='int32')
         for position in (0,127,384):
             for count in (1,2,4,8,17,128):
-                device.write(control,np.array([position,count],np.int32))
+                host=np.array([position,count],np.int32)
+                if provider=='cuda':
+                    device.driver.call('cuMemcpyHtoD_v2',control.pointer,host.ctypes.data,host.nbytes)
+                else:
+                    device.write(control,host)
                 kernel.launch(inp,out,control,tail_control)
                 expected=np.zeros((t,c),np.float32);active=min(count,t);start=max(count-t,0)
                 expected[:active]=x[start:count]
@@ -77,10 +86,15 @@ def test_tail_extraction_partial_chunks_and_position_controls(tmp_path):
                 np.testing.assert_array_equal(tail_control.to_numpy(),[position+start,active])
 
 
-@pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires native WebGPU')
-def test_attention_tail_uses_absolute_positions_and_all_stored_keys(tmp_path):
+@pytest.mark.parametrize('provider', ['cuda', 'webgpu'])
+def test_attention_tail_uses_absolute_positions_and_all_stored_keys(tmp_path, provider):
     import tensor
-    from tensor_llm.webgpu_kernels import source
+    if os.environ.get('TENSOR_LFM2_CUDA' if provider=='cuda' else 'TENSOR_WEBGPU')!='1':
+        pytest.skip('requires the selected GPU provider')
+    if provider=='cuda':
+        from tensor_llm.cuda_kernels import source
+    else:
+        from tensor_llm.webgpu_kernels import source
     r,t,h,kh,d,cap=128,8,4,2,64,192;position=23;rng=np.random.default_rng(1817)
     q=(rng.normal(size=(r,h,d))*.1).astype(np.float32)
     keys=(rng.normal(size=(cap,kh,d))*.1).astype(np.float16)
@@ -88,8 +102,8 @@ def test_attention_tail_uses_absolute_positions_and_all_stored_keys(tmp_path):
     artifacts=[]
     for rows in (r,t):
         path=tmp_path/f'attention-{rows}.py';path.write_text(source('attention',dict(r=rows,h=h,kh=kh,d=d,cap=cap,sg=True)))
-        artifact=path.with_suffix('.tbin');tensor.build(path,artifact,provider='webgpu');artifacts.append(artifact)
-    with tensor.Device(provider='webgpu') as device:
+        artifact=path.with_suffix('.tbin');tensor.build(path,artifact,provider=provider,**({'compiler':'nvrtc','target':'sm_86'} if provider=='cuda' else {}));artifacts.append(artifact)
+    with tensor.Device(provider=provider) as device:
         k,v=[device.from_numpy(x.ravel()) for x in (keys,values)];actual=[]
         for rows,artifact in zip((r,t),artifacts):
             kernel=device.load(artifact);inp=device.from_numpy(q[-rows:].ravel())
@@ -104,4 +118,5 @@ def test_attention_tail_uses_absolute_positions_and_all_stored_keys(tmp_path):
                 scores=q[r-t+row,head].astype(np.float64)@keys[:count,group].astype(np.float64).T/d**.5
                 probabilities=np.exp(scores-np.max(scores));probabilities/=np.sum(probabilities)
                 expected[row,head]=probabilities@values[:count,group].astype(np.float64)
-        np.testing.assert_allclose(actual[1],expected,rtol=3e-5,atol=3e-7)
+        # CUDA's prefill attention uses FP16 tensor-core operands/probabilities.
+        np.testing.assert_allclose(actual[1],expected,rtol=3e-5 if provider=='webgpu' else 2e-3,atol=3e-7 if provider=='webgpu' else 2e-4)

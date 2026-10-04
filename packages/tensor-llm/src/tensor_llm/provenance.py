@@ -12,6 +12,7 @@ def implementation_hashes(provider='cuda'):
     modules = (tensor.runtime.abi, tensor.runtime.signature, tensor.providers.cuda,
                tensor.providers.cuda_graph, tensor.artifacts.format)
     names=('model', 'config', 'kernels', 'gguf', 'tokenizer', 'provenance')
+    if provider=='cuda':names+=('cuda_kernels',)
     if provider=='webgpu':
         import tensor.providers.webgpu
         import tensor.providers.webgpu_contract

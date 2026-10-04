@@ -28,6 +28,25 @@ jobs:
       - run: uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
       - run: uv run --locked python benchmarks/lfm2/diagnostic.py --out build/lfm2-diagnostic.gguf
       - run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-diagnostic --context 384 --target sm_86
+      - name: Compile the Vulkan-to-CUDA transfer profile without a GPU
+        run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-cuda-transfer/diagnostic-optimized --context 384 --target sm_86 --cuda-profile optimized --prefill-chunks 32 128
+      - name: Compile the guarded CUDA suffix templates
+        shell: bash
+        run: |
+          uv run --locked python - <<'PY'
+          from pathlib import Path
+          import tensor
+          from tensor_llm.cuda_kernels import source
+          out=Path('build/lfm2-cuda-suffix');out.mkdir(parents=True,exist_ok=True)
+          specs={
+              'qnorm':dict(r=8,h=4,kh=2,d=64,cap=448,eps=1e-5,theta=10000),
+              'kvnorm':dict(r=128,h=4,kh=2,d=64,cap=448,eps=1e-5,theta=10000),
+              'prefill_tail':dict(r=128,c=17,t=8),
+          }
+          for kind,parameters in specs.items():
+              path=out/(kind+'.py');path.write_text(source(kind,parameters))
+              tensor.build(path,path.with_suffix('.tbin'),compiler='nvrtc',target='sm_86')
+          PY
       - name: Compile experimental FP16 decode schedules with NVRTC
         run: |
           uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-cast --mode fp16_cast
@@ -73,6 +92,10 @@ jobs:
           assert t.decode(t.encode('Hello, 世界!',add_bos=False))=='Hello, 世界!'
           manifest=json.loads(Path('build/lfm2-diagnostic/inference.json').read_text())
           assert manifest['implementation']==implementation_hashes()
+          optimized=json.loads(Path('build/lfm2-cuda-transfer/diagnostic-optimized/inference.json').read_text())
+          assert optimized['implementation']==implementation_hashes()
+          assert optimized['cuda_profile']=='optimized'
+          assert optimized['rows']==[1,32,128]
           assert {d.metadata['Name'].lower() for d in metadata.distributions()}=={'tensor-workspace','tensor-llm','numpy','regex'}
           assert not {'tilelang','tvm','tvm_ffi','torch','triton','wgpu'} & sys.modules.keys()
           PY
@@ -88,7 +111,10 @@ jobs:
             build/lfm2-diagnostic-half2/artifacts/*.tbin
             build/lfm2-diagnostic-warp-split/inference.json
             build/lfm2-diagnostic-warp-split/artifacts/*.tbin
+            build/lfm2-cuda-transfer/diagnostic-optimized/inference.json
+            build/lfm2-cuda-transfer/diagnostic-optimized/artifacts/*.tbin
             build/lfm2-packed-load-controls/*.tbin
+            build/lfm2-cuda-suffix/*.tbin
             build/lfm2-wheels/*.whl
           if-no-files-found: error
           retention-days: 30

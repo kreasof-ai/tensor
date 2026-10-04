@@ -11,6 +11,7 @@ FILES = {
     'F16': ('e041c231351185eb390f9c417d3bfd1815869a50a8589f3f86e5b9add3c529f1', 5403158528),
     'Q4_0': ('e1a61bf937bc60726e18626e97f7ee9bfd2574d95744c2ed909de98b78006fbe', 1593894912),
     'Q4_K_M': ('02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed', 1674455040),
+    'QAD-Q4_0': ('a247afd6414918eac8e520a9e6137dc271235461ecbe1180462221d5b8d40b03', 1593894944),
 }
 PROFILES = {
     '2.6B': (REPOSITORY, REVISION, FILES),
@@ -24,6 +25,8 @@ PROFILES = {
 
 def download(out, kinds, *, model_size='2.6B'):
     repository, revision, files = PROFILES[model_size]
+    if any(kind not in files for kind in kinds):
+        raise ValueError(f'unsupported checkpoint format for {model_size}')
     out.mkdir(parents=True, exist_ok=True)
     records = []
     for kind in kinds:
@@ -56,7 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--out', type=Path)
     parser.add_argument('--model-size', choices=PROFILES, default='2.6B',
                         help='use 230M for faster local GPU iterations')
-    parser.add_argument('--formats', nargs='+', choices=FILES, default=list(FILES))
+    parser.add_argument('--formats', nargs='+', choices=FILES, default=['F16','Q4_0','Q4_K_M'])
     args = parser.parse_args()
     out = args.out or Path('build/lfm2-230m-models' if args.model_size == '230M' else 'build/lfm2-models')
     download(out, args.formats, model_size=args.model_size)

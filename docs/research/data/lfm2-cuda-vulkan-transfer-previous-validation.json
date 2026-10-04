@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "model_sha256": "a247afd6414918eac8e520a9e6137dc271235461ecbe1180462221d5b8d40b03",
+  "bundle_sha256": "2f57f04b64fe15d660da02ed99a802f54ccbfd3fcdb887fe872954afe509941c",
+  "steps": [
+    {
+      "depth": 128,
+      "stage": "prefill",
+      "relative_rms": 0.00070380773318939,
+      "cosine": 0.9999997539928234,
+      "max_error": 0.010362505912780762,
+      "top1_equal": true,
+      "finite": true
+    },
+    {
+      "depth": 128,
+      "stage": "decode",
+      "relative_rms": 0.000934569132752366,
+      "cosine": 0.9999995702701103,
+      "max_error": 0.015454292297363281,
+      "top1_equal": true,
+      "finite": true
+    },
+    {
+      "depth": 512,
+      "stage": "prefill",
+      "relative_rms": 0.0006603125394544101,
+      "cosine": 0.9999997820249334,
+      "max_error": 0.010673046112060547,
+      "top1_equal": true,
+      "finite": true
+    },
+    {
+      "depth": 512,
+      "stage": "decode",
+      "relative_rms": 0.0012162135552222016,
+      "cosine": 0.999999486708219,
+      "max_error": 0.015192031860351562,
+      "top1_equal": true,
+      "finite": true
+    },
+    {
+      "depth": 8192,
+      "stage": "prefill",
+      "relative_rms": 0.0006745176376270036,
+      "cosine": 0.9999998534975052,
+      "max_error": 0.011058330535888672,
+      "top1_equal": true,
+      "finite": true
+    },
+    {
+      "depth": 8192,
+      "stage": "decode",
+      "relative_rms": 0.0014707838204337813,
+      "cosine": 0.9999989452252018,
+      "max_error": 0.013399958610534668,
+      "top1_equal": true,
+      "finite": true
+    }
+  ]
+}

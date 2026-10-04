@@ -15,6 +15,7 @@ kernel and throughput plots, source hashes and an archive commit timeline.
 
 | Report | What to read it for |
 |---|---|
+| [Vulkan inference optimizations transferred to CUDA](lfm2-cuda-vulkan-transfer.md) | Packed FP32 decode, fusion, split-KV attention and guarded suffix prefill on A10G; matched QAD checkpoint and b11310 llama.cpp baseline |
 | [2.6B QAD Q4_0 1K prefill experiment](lfm2-2.6b-prefill-1k.md) | 1,058/1,047 tok/s prefill, twice the packed control; mixed arithmetic, shared layout search, guarded suffix liveness and unchanged decoding |
 | [2.6B QAD Q4_0 parity search](lfm2-2.6b-q4_0-parity.md) | 164 tok/s decode versus native 170, a further 51% packed prefill gain, corrected replay controls and the remaining 3–5% decode gap |
 | [2.6B QAD Q4_0 revisit](lfm2-2.6b-q4_0-revisit.md) | 146 tok/s decode versus native 169–170, a controlled 5% runtime gain, 48–49% larger-chunk prefill gains and the remaining quantized projection gap |
@@ -36,7 +37,8 @@ kernel and throughput plots, source hashes and an archive commit timeline.
 | [Standalone LFM2 GGUF inference](lfm2-inference.md) | Default engine, model/tokenizer contract, F16/Q4_0/Q4_K_M correctness, and original llama.cpp comparison |
 | [Standalone nanoGPT training](phase6-nanogpt.md) | Ten updates of the 124M model, manual backward, bounded autotuning, and the Torch training baseline |
 
-The experimental CUDA LFM2 optimization variants live in the benchmark harness.
+The earlier experimental CUDA LFM2 variants live in the benchmark harness;
+the Vulkan transfer is an opt-in `optimized` profile in the ordinary runner.
 The WebGPU reports describe changes to the ordinary `tensor_llm.LFM2` runner.
 Each report records its supported profile, implementation and precision contract.
 

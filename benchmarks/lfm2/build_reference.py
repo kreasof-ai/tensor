@@ -7,15 +7,16 @@ import subprocess
 COMMIT='f7b384c1e5c5b2c5b321a4a7cefea04b15b54cb7'
 
 
-def build(root,cuda_root,arch,jobs):
+def build(root,cuda_root,arch,jobs,*,commit=COMMIT):
     if os.name!='posix':raise RuntimeError('this measured baseline recipe requires Linux')
     source=root/'llama-cpp';binary=source/'out'
     root.mkdir(parents=True,exist_ok=True)
     if not source.exists():subprocess.run(['git','clone','https://github.com/ggml-org/llama.cpp',str(source)],check=True)
-    subprocess.run(['git','-C',str(source),'checkout','--detach',COMMIT],check=True)
+    subprocess.run(['git','-C',str(source),'checkout','--detach',commit],check=True)
     command=['cmake','-S',str(source),'-B',str(binary),'-G','Ninja','-DGGML_CUDA=ON',
         '-DCMAKE_CUDA_ARCHITECTURES='+arch,'-DCMAKE_BUILD_TYPE=Release','-DLLAMA_BUILD_TESTS=OFF',
         '-DLLAMA_BUILD_EXAMPLES=OFF','-DCUDAToolkit_ROOT='+str(cuda_root),
+        '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath-link,'+str(cuda_root/'lib64'),
         '-DCMAKE_CUDA_COMPILER='+str(cuda_root/'bin/nvcc')]
     for name in ('cublas','cublasLt'):
         library=cuda_root/f'lib64/lib{name}.so.12'
@@ -31,4 +32,5 @@ def build(root,cuda_root,arch,jobs):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--out',type=Path,default=Path('build'))
     p.add_argument('--cuda-root',type=Path,required=True);p.add_argument('--arch',default='86');p.add_argument('--jobs',type=int,default=8)
-    args=p.parse_args();build(args.out.resolve(),args.cuda_root.resolve(),args.arch,args.jobs)
+    p.add_argument('--commit',default=COMMIT,help='exact llama.cpp revision (default retains the original CUDA baseline)')
+    args=p.parse_args();build(args.out.resolve(),args.cuda_root.resolve(),args.arch,args.jobs,commit=args.commit)

@@ -92,8 +92,8 @@ int main(int argc,char **argv) {
         report["benchmarks"]=json::array();
         for(const auto &item:spec.value("benchmarks",json::array())) {
             auto prompt=item.at("prompt").get<std::vector<int>>();auto decode=item.at("decode").get<std::vector<int>>();
-            json samples=json::array();int repeats=item.value("repeats",5);
-            for(int repeat=-1;repeat<repeats;repeat++) {
+            json samples=json::array();int repeats=item.value("repeats",5),warmups=item.value("warmups",1);
+            for(int repeat=-warmups;repeat<repeats;repeat++) {
                 reset();auto start=Clock::now();execute(prompt);double prefill=std::chrono::duration<double>(Clock::now()-start).count();
                 json latencies=json::array();start=Clock::now();
                 for(int token:decode) {
@@ -102,7 +102,7 @@ int main(int argc,char **argv) {
                 double seconds=std::chrono::duration<double>(Clock::now()-start).count();
                 if(repeat>=0)samples.push_back({{"prefill_seconds",prefill},{"decode_seconds",seconds},{"decode_latencies",latencies}});
             }
-            report["benchmarks"].push_back({{"name",item.at("name")},{"prompt_tokens",prompt.size()},{"decode_tokens",decode.size()},{"samples",samples}});
+            report["benchmarks"].push_back({{"name",item.at("name")},{"prompt_tokens",prompt.size()},{"decode_tokens",decode.size()},{"warmups",warmups},{"samples",samples}});
         }
         std::ofstream output(outdir/"reference.json");output<<report.dump(2)<<"\n";
         llama_batch_free(batch);llama_free(ctx);llama_model_free(model);llama_backend_free();

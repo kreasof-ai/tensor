@@ -162,6 +162,36 @@ Generated source and compiler caches can be omitted. The manifest checks kernel
 checksums, architecture, coverage and implementation fingerprints before loading.
 Rebuild the plan after implementation changes.
 
+### Optimized CUDA profile
+
+The Vulkan inference work also has an opt-in CUDA transfer. Build with
+`--cuda-profile optimized --prefill-chunks 32 128` to select packed-word Q4/Q6
+decode, paired gate/up/SwiGLU, residual/RMS fusion, split-KV decode attention,
+adaptive prefill and GPU greedy sampling. Its guarded 2.6B Q4 suffix stores all
+final-attention K/V before cropping queries and the final two convolutions.
+Intermediate prefill chunks stop after their persistent state writes.
+
+The matched A10G comparison uses the distinct **QAD Q4_0** checkpoint also used
+in the Radeon campaign. Download and build it explicitly:
+
+```sh
+uv run --no-sync python benchmarks/lfm2/download.py --formats QAD-Q4_0
+TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9" uv run --no-sync python benchmarks/lfm2/producer.py \
+  --model build/lfm2-models/LFM2.5-2.6B-QAD-Q4_0.gguf \
+  --out build/lfm2-qad-cuda --context 8448 --target sm_86 \
+  --cuda-profile optimized --prefill-chunks 32 128
+```
+
+Use this model and bundle with the ordinary consumer commands below. Packed
+decode retains FP32 activations and accumulation. Prefill retains FP16
+tensor-core operands with FP32 accumulation; the final FFN is evaluated only
+for the last row using FP32 decode arithmetic. The Vulkan approximate short-half
+and Q8 activation prefill arithmetic is not used by this CUDA profile.
+See the [CUDA transfer report](../../docs/research/lfm2-cuda-vulkan-transfer.md)
+for matched timings, accuracy gates and reproduction. Full-model performance
+is established for this 2.6B QAD checkpoint on A10G; other GPUs and checkpoints
+need their own validation. The producer default remains `--cuda-profile default`.
+
 ## Run without a compiler
 
 ```sh
@@ -184,7 +214,9 @@ decode. The initial profile has a total prompt-plus-decode limit of 8,448 tokens
 It uses FP16 attention caches, FP32 convolution history, FP16 tensor-core prefill
 projections and FP32 decode projections/accumulation. Quantized activation math
 therefore differs from llama.cpp's MMQ/MMVQ paths; logits are not bitwise equal.
-Generation uses CPU greedy argmax and a single-user LFM2 chat template, or a plain
+The default CUDA profile uses CPU greedy argmax; the optimized profile samples
+on the GPU and reads one int32 per step. Use `gpu_greedy=False` to compare with
+host sampling. Generation uses a single-user LFM2 chat template, or a plain
 completion with `--raw`. Multi-turn chat, tools, sampling distributions, batching,
 CPU inference and a persistent megakernel are outside the supported profiles.
 CUDA Graph replay submits the existing per-layer kernels; it is not one fused
