@@ -38,14 +38,14 @@ def tokens(model, depths, generated):
                  decode=[pattern[i % len(pattern)] for i in range(generated)]) for depth in depths]
 
 
-def validate(model, bundle, out, *, depths=(1, 32, 127, 128, 129, 384, 512, 2048, 8192)):
+def validate(model, bundle, out, *, depths=(1, 32, 127, 128, 129, 384, 512, 2048, 4095, 4096, 8192), runner_type=LFM2):
     """Independent mixed-precision Torch operators, reset, and cached continuation."""
     from benchmarks.lfm2.torch_reference import Reference
     out = Path(out); out.mkdir(parents=True, exist_ok=True)
     cases = tokens(model, depths, 1)
     observations = []
     eager = Reference(model)
-    with tensor.Device() as device, LFM2(model, bundle, device) as runner:
+    with tensor.Device() as device, runner_type(model, bundle, device) as runner:
         first = None
         for case in cases:
             runner.reset(); eager.reset()
@@ -60,21 +60,40 @@ def validate(model, bundle, out, *, depths=(1, 32, 127, 128, 129, 384, 512, 2048
                 print('validate', row, flush=True)
                 if first is None: first = actual.copy()
         runner.reset(); np.testing.assert_array_equal(runner.forward(cases[0]['prompt']), first)
-        example=cases[min(3,len(cases)-1)]['prompt']
-        runner.reset(); graph = runner.forward(example)
-        runner.reset(); runner.graphs_enabled = False
-        eager_plan = runner.forward(example)
-        np.testing.assert_array_equal(graph, eager_plan)
-        runner.graphs_enabled = True
+        examples=[cases[min(3,len(cases)-1)]['prompt']]
+        if getattr(runner,'long_plan',None) and cases[-1]['depth']>=4096:examples.append(cases[-1]['prompt'])
+        for example in examples:
+            runner.reset(); graph = runner.forward(example)
+            graph_decode = runner.forward(cases[0]['decode'])
+            runner.reset(); runner.graphs_enabled = False
+            eager_plan = runner.forward(example)
+            np.testing.assert_array_equal(graph, eager_plan)
+            np.testing.assert_array_equal(graph_decode, runner.forward(cases[0]['decode']))
+            runner.graphs_enabled = True
         gpu = runner.generate('What is the capital of France?', max_tokens=16)
         host = runner.generate('What is the capital of France?', max_tokens=16, gpu_greedy=False)
         assert gpu == host
+        long_generation=None
+        if getattr(runner,'long_plan',None) and any(c['depth']>=4096 for c in cases):
+            case=next(c for c in cases if c['depth']>=4096)
+            prompt=runner.tokenizer.decode(case['prompt'][1:])
+            # Adjacent pieces can merge when text is re-tokenized. Length, rather
+            # than the synthetic token pattern, controls this graph-selection check.
+            while len(runner.tokenizer.encode(prompt)) < 4096:
+                prompt += ' Tensor compares packed language model inference using the same fixed tokens. '
+            prompt_tokens=len(runner.tokenizer.encode(prompt))
+            assert prompt_tokens + 4 <= runner.context
+            long_gpu=runner.generate(prompt,max_tokens=4,chat=False)
+            long_host=runner.generate(prompt,max_tokens=4,chat=False,gpu_greedy=False)
+            assert long_gpu==long_host
+            long_generation=dict(prompt=prompt,prompt_tokens=prompt_tokens,max_tokens=4,chat=False,result=long_gpu)
         report = dict(schema='tensor.lfm2-cuda-transfer-validation.v1', status='passed',
                       model_sha256=digest(model), bundle_sha256=digest(Path(bundle) / 'inference.json'),
-                      implementation=implementation_hashes(), adapter=device.info, steps=observations,
+                      implementation=runner.manifest['implementation'], adapter=device.info, steps=observations,
                       cases=cases,
                       reference_source_sha256=digest(Path(__file__).with_name('torch_reference.py')),
                       saved_logits={p.name:digest(p) for p in sorted(out.glob('*.npy'))},
+                      long_generation=long_generation,
                       gates=dict(relative_rms_max=.01, cosine_min=.9999, matching_argmax=True,
                                  reset_bitwise_equal=True, graph_eager_bitwise_equal=True,
                                  gpu_host_greedy_equal=True), generation=gpu,
@@ -84,7 +103,7 @@ def validate(model, bundle, out, *, depths=(1, 32, 127, 128, 129, 384, 512, 2048
     return report
 
 
-def compare(model, bundles, reference, out, *, depths=(128, 512, 2048, 8192), generated=64, repeats=5):
+def compare(model, bundles, reference, out, *, depths=(128, 512, 2048, 8192), generated=64, repeats=5, runner_types=None):
     if repeats < 1 or generated < 1 or any(d < 1 for d in depths): raise ValueError('positive benchmark sizes required')
     out = Path(out); out.mkdir(parents=True, exist_ok=True)
     cases = tokens(model, depths, generated)
@@ -100,7 +119,8 @@ def compare(model, bundles, reference, out, *, depths=(128, 512, 2048, 8192), ge
     with tensor.Device() as device:
         try:
             for name, path in bundles.items():
-                if name == 'previous':
+                if runner_types and name in runner_types:cls=runner_types[name]
+                elif name == 'previous':
                     from benchmarks.lfm2.decode_optimization import OptimizedLFM2
                     cls = OptimizedLFM2
                 else: cls = LFM2

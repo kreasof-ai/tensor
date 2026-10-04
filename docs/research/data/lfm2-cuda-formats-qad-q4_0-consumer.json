@@ -1,0 +1,117 @@
+{
+  "schema": "tensor.lfm2-cuda-transfer-consumer.v1",
+  "status": "passed",
+  "model_sha256": "a247afd6414918eac8e520a9e6137dc271235461ecbe1180462221d5b8d40b03",
+  "bundle_sha256": "c381cd20428a34a324ccb7185ab8bb4aa819faab3e5ec20513c72afa1518c1a5",
+  "implementation": {
+    "tensor.runtime.abi": "e9248068d1c134029ab1f1010c7788aa43c74d0a942a4cb0cafe039649b7e73d",
+    "tensor.runtime.signature": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+    "tensor.providers.cuda": "4cb8384c2ba1eee9a528500a144f65621553453ab1bb85cb76bffcd962cf38c6",
+    "tensor.providers.cuda_graph": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+    "tensor.artifacts.format": "22efc3f59a25b9106c9c648608e1cc4dd7105a16e2c67631808b0f6b41e93cd8",
+    "tensor_llm.model": "0fa8b7b30f98a6413d8fa55420e70182a7af8b7cc43414f69a3e762df5b74b42",
+    "tensor_llm.config": "101e1b7aefda894cc894c2166ceecd14290902da8cb940d7b6a5c42f51865246",
+    "tensor_llm.kernels": "f083c5732f75ccdfd11f105dc591b4882f2482064dc2161b5e8d91e3de2f9e15",
+    "tensor_llm.gguf": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+    "tensor_llm.tokenizer": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+    "tensor_llm.provenance": "82d04b8abc22871f870efca66f98e6d502f990484fc76bee4915e82d1e15ac49",
+    "tensor_llm.cuda_kernels": "6283de8ab1d0ab89b20a6942d36fa1c285a038b4dd9a03e9f6c4ebc17f01a782"
+  },
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "distributions": [
+    "numpy",
+    "regex",
+    "tensor-llm",
+    "tensor-workspace"
+  ],
+  "steps": [
+    {
+      "depth": 128,
+      "stage": "prefill",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 128,
+      "stage": "decode",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 4095,
+      "stage": "prefill",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 4095,
+      "stage": "decode",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 4096,
+      "stage": "prefill",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 4096,
+      "stage": "decode",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 8192,
+      "stage": "prefill",
+      "bitwise_equal": true
+    },
+    {
+      "depth": 8192,
+      "stage": "decode",
+      "bitwise_equal": true
+    }
+  ],
+  "generation": {
+    "prompt_tokens": [
+      124894,
+      124899,
+      5922,
+      207,
+      2992,
+      355,
+      278,
+      5205,
+      302,
+      3980,
+      39,
+      124900,
+      207,
+      124899,
+      63514,
+      207,
+      124901
+    ],
+    "generated_tokens": [
+      597,
+      4695,
+      355,
+      13564,
+      267,
+      90139,
+      1456,
+      650,
+      3451,
+      34,
+      496,
+      2992,
+      355,
+      278,
+      5205,
+      302
+    ],
+    "text": "The user is asking a straightforward factual question: \"What is the capital of"
+  },
+  "long_generation_equal": true,
+  "forbidden_imports": [],
+  "consumer_source_sha256": "4147167c521ec6ed36bb0924abefa7f8b5c078bddf90f66d8fa909aca2469ac0"
+}

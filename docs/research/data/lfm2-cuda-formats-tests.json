@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "suite": {
+    "command": "TENSOR_LFM2_CUDA=1 TENSOR_NVRTC_HOME=build/nvrtc-12.9 .venv/bin/python -m pytest packages/tensor-llm/tests tests/integration/test_lfm2_prefill_tail.py -o addopts=\"\" -q",
+    "passed": 55,
+    "skipped": 72,
+    "failed": 0
+  },
+  "grouped_attention": {
+    "command": "TENSOR_LFM2_CUDA=1 TENSOR_NVRTC_HOME=build/nvrtc-12.9 .venv/bin/python -m pytest packages/tensor-llm/tests/test_cuda_transfer.py -o addopts=\"\" -q -k split_attention",
+    "passed": 3,
+    "failed": 0
+  },
+  "nvrtc_template_count": 43,
+  "test_source_sha256": {
+    "packages/tensor-llm/tests/test_cuda_transfer.py": "35a7d69879f02ac77769bf34b790d314132f373d046be1b090957a94f8ee5099",
+    "tests/integration/test_lfm2_prefill_tail.py": "aade3270afba44af549d22a7d2e1673f9f298fa30f0fd4af31b057f81ce7040d"
+  },
+  "note": "Full suite ran before two grouped variants were added to the attention test; that test alone was rerun with all three variants afterward. WebGPU hardware cases skipped on CUDA."
+}

@@ -47,6 +47,8 @@ jobs:
               path=out/(kind+'.py');path.write_text(source(kind,parameters))
               tensor.build(path,path.with_suffix('.tbin'),compiler='nvrtc',target='sm_86')
           PY
+      - name: Compile the F16, Q4_0, Q4_K_M schedules and grouped attention without a GPU
+        run: uv run --locked python benchmarks/lfm2/cuda_formats.py compile-templates
       - name: Compile experimental FP16 decode schedules with NVRTC
         run: |
           uv run --locked python benchmarks/lfm2/fp16_decode.py bundle --base build/lfm2-diagnostic --out build/lfm2-diagnostic-cast --mode fp16_cast
@@ -115,6 +117,8 @@ jobs:
             build/lfm2-cuda-transfer/diagnostic-optimized/artifacts/*.tbin
             build/lfm2-packed-load-controls/*.tbin
             build/lfm2-cuda-suffix/*.tbin
+            build/lfm2-cuda-formats/template-checks/*.tbin
+            build/lfm2-cuda-formats/template-checks/coverage.json
             build/lfm2-wheels/*.whl
           if-no-files-found: error
           retention-days: 30

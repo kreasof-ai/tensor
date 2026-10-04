@@ -3,6 +3,11 @@
 [Research index](README.md) · [Vulkan history](rx6700xt-vulkan-history.md) ·
 [Package instructions](../../packages/tensor-llm/README.md)
 
+This report measures revision `4c6872674756454982af8c87c6a1d77b3fc5ef02`.
+The subsequent [F16/Q4_0/Q4_K_M optimization pass](lfm2-cuda-formats.md)
+extends this profile with tuned prefill and long-context grouped attention.
+Use the recorded revision to reproduce the historical timings below.
+
 The useful Vulkan optimizations transfer to CUDA as an opt-in
 `--cuda-profile optimized` plan in `tensor_llm.LFM2`. The measured workload is
 LFM2.5-2.6B **QAD Q4_0**, one sequence, on NVIDIA A10G. The weights stay packed;

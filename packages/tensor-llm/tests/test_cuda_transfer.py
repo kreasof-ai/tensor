@@ -20,11 +20,11 @@ def test_cuda_profile_rows_are_explicit():
         requirements(fixture(), 512, cuda_profile='typo')
 
 
-def build(kind, parameters, directory):
+def build(kind, parameters, directory, generator=None):
     import tensor
     from tensor_llm.cuda_kernels import source
     path = directory / (kind + '.py')
-    path.write_text(source(kind, parameters))
+    path.write_text((generator or source)(kind, parameters))
     artifact = path.with_suffix('.tbin')
     tensor.build(path, artifact, compiler='nvrtc', target='sm_86')
     return artifact
@@ -37,7 +37,7 @@ def test_packed_projection_and_epilogues_against_numpy(tmp_path, encoding):
     from tensor_llm import GGUF
     g = GGUF(ROOT / 'build/lfm2-diagnostic.gguf')
     k = 256
-    o = 8 if encoding == 12 else 7  # Exercise partial warp-row tiles.
+    o = 7  # Exercise partial warp-row tiles, including Q4_K.
     rng = np.random.default_rng(1743 + encoding)
     if encoding in (0, 1):
         weights = rng.normal(size=(o, k)).astype(np.float32 if encoding == 0 else np.float16)
@@ -64,15 +64,16 @@ def test_packed_projection_and_epilogues_against_numpy(tmp_path, encoding):
 
 
 @GPU
-def test_split_attention_short_and_tail_partitions(tmp_path):
+@pytest.mark.parametrize('kind,heads', [('attention_partial',4),('attention_grouped',4),('attention_grouped',8)])
+def test_split_attention_short_and_tail_partitions(tmp_path,kind,heads):
     import tensor
     rng = np.random.default_rng(1907)
-    h, kh, d, cap = 4, 2, 64, 448
+    h, kh, d, cap = heads, 2, 64, 448
     q = rng.normal(size=(h, d)).astype(np.float32)
     k = rng.normal(size=(cap, kh, d)).astype(np.float16)
     v = rng.normal(size=(cap, kh, d)).astype(np.float16)
     p = dict(r=1, h=h, kh=kh, d=d, cap=cap, splits=16)
-    partial = build('attention_partial', p, tmp_path)
+    partial = build(kind, p, tmp_path)
     merge = build('attention_merge', dict(h=h, d=d, splits=16), tmp_path)
     with tensor.Device() as device:
         dq, dk, dv = [device.from_numpy(a.ravel()) for a in (q, k, v)]
@@ -92,6 +93,33 @@ def test_split_attention_short_and_tail_partitions(tmp_path):
                 probs = np.exp(scores - scores.max()); probs /= probs.sum()
                 expected.append(probs @ v[:length, group].astype(np.float64))
             np.testing.assert_allclose(output.to_numpy().reshape(h, d), expected, rtol=2e-5, atol=2e-6)
+
+
+@GPU
+@pytest.mark.parametrize('encoding,rows', [(1,8),(2,32),(12,128),(14,8)])
+@pytest.mark.parametrize('kind', ['linear','ffn'])
+def test_staged_prefill_pairs_and_padding(tmp_path, encoding, rows, kind):
+    import torch
+    import tensor
+    from tensor_llm import GGUF
+    from tensor_llm.cuda_kernels import prefill_source
+    g=GGUF(ROOT/'build/lfm2-diagnostic.gguf');k,o=256,63
+    name=next(n for n,t in g.tensors.items() if t.type==encoding and len(t.shape)==2 and t.shape[1]==k)
+    info=g.tensors[name];raw=np.array(g.packed(name)[:o*info.nbytes//info.shape[0]],copy=True)
+    if encoding==1:raw=raw.view(np.float16)
+    x=np.random.default_rng(2137).normal(size=(rows,k)).astype(np.float32)*.3
+    tx=torch.from_numpy(x).cuda().half();w=torch.from_numpy(np.array(g.array(name)[:o],copy=True)).cuda().half()
+    expected=torch.mm(tx,w.T,out_dtype=torch.float32)
+    if kind=='ffn':expected=torch.nn.functional.silu(expected)*expected
+    expected=expected.cpu().numpy().ravel()
+    p=dict(r=rows,k=k,o=o,type=encoding,block_m=32,block_n=64,block_k=128,stages=2,threads=128,packed_pairs=True)
+    path=build(kind,p,tmp_path,generator=prefill_source)
+    with tensor.Device() as device:
+        inp,weights=[device.from_numpy(a) for a in (x.ravel(),raw)];output=device.full(rows*o,np.nan)
+        arguments=(inp,weights,weights,output) if kind=='ffn' else (inp,weights,output)
+        device.load(path).launch(*arguments);actual=output.to_numpy()
+        assert np.isfinite(actual).all()
+        np.testing.assert_allclose(actual,expected,rtol=1e-4,atol=1e-5)
 
 
 @GPU

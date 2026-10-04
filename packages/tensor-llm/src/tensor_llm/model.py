@@ -13,7 +13,7 @@ from .gguf import GGUF, TYPES
 from .kernels import identity
 from .tokenizer import Tokenizer
 from .provenance import implementation_hashes
-from .cuda_kernels import CUDA_PROFILES
+from .cuda_kernels import CUDA_PROFILES, CUDA_GROUPED_THRESHOLD
 
 
 DECODE_GEMV_COMMON=dict(lanes=32,micro_rows=1,dot_width=4,unroll=8,
@@ -65,13 +65,15 @@ def prefill_tail_rows(cfg,gguf,profile):
     cover its pointwise FFN and both conv histories; their discarded early
     outputs may differ, but the final output and persistent histories agree.
     """
-    if profile!='prefill_mixed' or (cfg.width,cfg.ff)!=(2048,10752) or tuple(cfg.layers[-3:])!=('attention','conv','conv'):
+    if profile not in ('prefill_mixed','cuda_optimized') or (cfg.width,cfg.ff)!=(2048,10752) or tuple(cfg.layers[-3:])!=('attention','conv','conv'):
         return 0
     for i in range(len(cfg.layers)-3,len(cfg.layers)):
         names=['ffn_gate','ffn_up','ffn_down']
         if cfg.layers[i]=='conv':names += ['shortconv.in_proj','shortconv.out_proj']
         else:names += ['attn_q','attn_output']
-        if any(gguf.tensors[f'blk.{i}.{name}.weight'].type!=2 for name in names):return 0
+        allowed=(0,1,2,12,14) if profile=='cuda_optimized' else (2,)
+        if any(gguf.tensors[f'blk.{i}.{name}.weight'].type not in allowed for name in names):return 0
+        if gguf.tensors[f'blk.{i}.ffn_gate.weight'].type!=gguf.tensors[f'blk.{i}.ffn_up.weight'].type:return 0
     return 8
 # Experimental schedule selection populated from independent F16 replay.
 PREFILL_OUTER_MK32=dict(tile_m=32,tile_n=32,tile_k=32,micro_m=2,micro_n=2,
@@ -130,7 +132,8 @@ def paired_ffn(rows,gate,up,profile=None):
     # F16 decode pair loses occupancy. Prefill benefits from register reuse.
     searched=(profile in ('decode_searched','decode_fused','prefill_unrolled','prefill_outer','prefill_chunked','quant_searched','prefill_q16','prefill_mixed') and rows==1 and gate.type==1 and
               DECODE_GEMV.get(tuple(reversed(gate.shape)),{}).get('family')=='paired')
-    return gate.type==up.type and (rows>1 or gate.type not in (0,1) or searched)
+    cuda_pair=profile=='cuda_optimized' and rows==1 and gate.type==1 and gate.shape==(10752,2048)
+    return gate.type==up.type and (rows>1 or gate.type not in (0,1) or searched or cuda_pair)
 
 
 # A full-width output tile doubles the work per workgroup and halves the launch
@@ -236,7 +239,7 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
             if r==1:add('add_rms',r=r,c=c,eps=cfg.epsilon)
             for i in range(len(cfg.layers)):
                 gate,up=(gguf.tensors[f'blk.{i}.ffn_{name}.weight'] for name in ('gate','up'))
-                if paired_ffn(r,gate,up,webgpu_profile):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff))
+                if paired_ffn(r,gate,up,'cuda_optimized' if optimized else webgpu_profile):add('ffn',r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff))
         add('add',r=r,c=c);add('swiglu',r=r,c=cfg.ff);add('conv',r=r,c=c)
         for kind in (('qnorm','kvnorm') if provider=='webgpu' else ('qkv',)):
             add(kind,r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,eps=cfg.epsilon,theta=cfg.theta)
@@ -244,6 +247,8 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
             add('attention_scores',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
         if optimized and r==1:
             add('attention_partial',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,splits=16)
+            if (cfg.heads,cfg.kv_heads,cfg.head_dim)==(32,8,64):
+                add('attention_grouped',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,splits=16)
             add('attention_merge',h=cfg.heads,d=cfg.head_dim,splits=16)
         else:add('attention',r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
         add('last',r=r,c=c);add('advance',r=r)
@@ -252,14 +257,19 @@ def requirements(gguf,capacity,rows=(1,128),*,provider='cuda',webgpu_profile='po
         prefix=f'blk.{len(cfg.layers)-1}.'
         gate,up=(gguf.tensors[prefix+'ffn_'+name+'.weight'] for name in ('gate','up'))
         if gate.type==up.type:add('ffn',r=1,k=c,o=cfg.ff,type=gate.type)
-    tail=prefill_tail_rows(cfg,gguf,'prefill_mixed' if optimized else webgpu_profile) if (provider=='webgpu' or optimized) and 128 in rows else 0
+    tail=prefill_tail_rows(cfg,gguf,'cuda_optimized' if optimized else webgpu_profile) if (provider=='webgpu' or optimized) and 128 in rows else 0
     if tail:
         if optimized:
             add('kvnorm',r=128,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity,eps=cfg.epsilon,theta=cfg.theta)
         add('prefill_tail',r=128,c=c,t=tail)
-        for k,o in ((c,3*c),(c,c),(cfg.ff,c)):
-            add('linear',r=tail,k=k,o=o,type=2,**projection_tile(tail,o))
-        add('ffn',r=tail,k=c,o=cfg.ff,type=2,**projection_tile(tail,cfg.ff))
+        for i in range(len(cfg.layers)-3,len(cfg.layers)):
+            prefix=f'blk.{i}.'
+            names=['ffn_down']+(['shortconv.in_proj','shortconv.out_proj'] if cfg.layers[i]=='conv' else ['attn_q','attn_output'])
+            for name in names:
+                info=gguf.tensors[prefix+name+'.weight'];o,k=info.shape
+                add('linear',r=tail,k=k,o=o,type=info.type,**projection_tile(tail,o))
+            gate=gguf.tensors[prefix+'ffn_gate.weight']
+            add('ffn',r=tail,k=c,o=cfg.ff,type=gate.type,**projection_tile(tail,cfg.ff))
         add('rms',r=tail,c=c,eps=cfg.epsilon);add('add',r=tail,c=c)
         add('conv',r=tail,c=c);add('last',r=tail,c=c)
         add('attention',r=tail,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=capacity)
@@ -289,6 +299,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         self.cuda_profile=self.manifest.get('cuda_profile','default')
         if self.cuda_profile not in CUDA_PROFILES:raise ValueError('unsupported CUDA kernel profile')
         self.cuda_optimized=self.provider=='cuda' and self.cuda_profile=='optimized'
+        self.grouped_decode=self.cuda_optimized and (self.config.heads,self.config.kv_heads,self.config.head_dim)==(32,8,64)
         profile=self.cuda_profile if self.provider=='cuda' else self.manifest.get('webgpu_profile','portable')
         if not valid_rows(self.provider,self.rows,profile) or self.capacity % 64:
             raise ValueError('unsupported LFM2 prefill/capacity profile')
@@ -304,7 +315,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         if self.cuda_optimized:
             self.prefill_last=(self.gguf.tensors[f'blk.{len(self.config.layers)-1}.ffn_gate.weight'].type
                 ==self.gguf.tensors[f'blk.{len(self.config.layers)-1}.ffn_up.weight'].type)
-        self.prefill_tail=prefill_tail_rows(self.config,self.gguf,'prefill_mixed' if self.cuda_optimized else self.webgpu_profile) if self.provider=='webgpu' or self.cuda_optimized else 0
+        self.prefill_tail=prefill_tail_rows(self.config,self.gguf,'cuda_optimized' if self.cuda_optimized else self.webgpu_profile) if self.provider=='webgpu' or self.cuda_optimized else 0
         expected=requirements(self.gguf,self.capacity,self.rows,provider=self.provider,webgpu_profile=self.webgpu_profile,cuda_profile=self.cuda_profile)
         if set(expected)!=set(self.manifest['kernels']):raise ValueError('incomplete/incompatible LFM2 kernel coverage')
         for record in self.manifest['kernels'].values():
@@ -316,6 +327,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                     raise ValueError('LFM2 kernel checksum mismatch')
         self.kernels={};self.graphs={};self.plans={};self.buffers=[];self.prepared={};self.prepared_states={};self.greedy={}
         self.state_plans={};self.state_graphs={};self.greedy_plans={}
+        self.long_plan=None;self.long_greedy_plan=None;self.long_graph=None;self.long_greedy_graph=None
         def upload(host):
             b=device.from_numpy(np.ascontiguousarray(host));self.buffers.append(b);return b
         self.weights={}
@@ -362,6 +374,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             path=self.directory/record['artifact']
             self.kernels[key]=device.load(path)
         for r in self.rows:self.plans[r]=self._plan(r)
+        if self.grouped_decode:self.long_plan=self._plan(1,grouped=True)
         if self.cuda_optimized:
             kinds={id(self.kernels[key]):record['kind'] for key,record in self.manifest['kernels'].items()}
             for r,plan in self.plans.items():
@@ -372,6 +385,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
             values,symbols,launch=sample._bind((self.logits,self.workspaces[1]['tokens'],self.control),{},include_outputs=True)
             call=BoundCall(device,sample.manifest,values,symbols,launch,validated=True)
             self.greedy_plans={r:(*plan,(sample,call)) for r,plan in self.plans.items()}
+            if self.long_plan:self.long_greedy_plan=(*self.long_plan,(sample,call))
         if self.provider=='webgpu':
             for r,plan in self.plans.items():self.prepared[r]=device.prepare_plan(plan)
             if self.prefill_tail:
@@ -392,9 +406,12 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 self.state_graphs[r]=CudaGraph(device,lambda plan=plan:self._submit(plan),resources=(*self.buffers,*self.kernels.values()))
             for r,plan in self.greedy_plans.items():
                 self.greedy[r]=CudaGraph(device,lambda plan=plan:self._submit(plan),resources=(*self.buffers,*self.kernels.values()))
+            if self.long_plan:
+                self.long_graph=CudaGraph(device,lambda:self._submit(self.long_plan),resources=(*self.buffers,*self.kernels.values()))
+                self.long_greedy_graph=CudaGraph(device,lambda:self._submit(self.long_greedy_plan),resources=(*self.buffers,*self.kernels.values()))
         self.allocated_bytes=sum(b.nbytes for b in self.buffers)
 
-    def _plan(self,r):
+    def _plan(self,r,*,grouped=False):
         cfg=self.config;c=cfg.width;ws=self.workspaces[r];plan=[];final_hidden=None
         scheduled_rows=r;control=self.control
         last_only=self.prefill_last and (r==128 or self.cuda_optimized and r>1)
@@ -455,7 +472,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                     attention_input=ws['scores']
                 arguments=(attention_input,vc,ws['attn'],control) if attention_input is not ws['qo'] else (attention_input,kc,vc,ws['attn'],control)
                 if self.cuda_optimized and r==1:
-                    add('attention_partial',dict(r=1,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity,splits=16),
+                    add('attention_grouped' if grouped else 'attention_partial',dict(r=1,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity,splits=16),
                         ws['qo'],kc,vc,ws['parts'],control)
                     add('attention_merge',dict(h=cfg.heads,d=cfg.head_dim,splits=16),ws['parts'],ws['attn'])
                 else:add('attention',dict(r=r,h=cfg.heads,kh=cfg.kv_heads,d=cfg.head_dim,cap=self.capacity),*arguments)
@@ -479,7 +496,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                     break
                 rms(prefix+'ffn_norm.weight',hidden,ws['normal'])
             gate,up=(self.gguf.tensors[prefix+'ffn_'+name+'.weight'] for name in ('gate','up'))
-            if (self.provider=='webgpu' or self.cuda_optimized) and paired_ffn(r,gate,up,self.webgpu_profile):
+            if (self.provider=='webgpu' or self.cuda_optimized) and paired_ffn(r,gate,up,'cuda_optimized' if self.cuda_optimized else self.webgpu_profile):
                 p=dict(r=r,k=c,o=cfg.ff,type=gate.type,**projection_tile(r,cfg.ff))
                 add('ffn',p,*inputs('ffn',p,ws['normal']),self.weights[gate.name],self.weights[up.name],ws['activated'])
             else:
@@ -548,7 +565,10 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 mode='state' if not last and r in self.state_plans else 'greedy' if _greedy and last and self.cuda_optimized else 'full'
                 plans=self.state_plans if mode=='state' else self.greedy_plans if mode=='greedy' else self.plans
                 graphs=self.state_graphs if mode=='state' else self.greedy if mode=='greedy' else self.graphs
-                if self.graphs_enabled:graphs[r].launch()
+                if r==1 and self.long_plan and self.position+1>=CUDA_GROUPED_THRESHOLD:
+                    if self.graphs_enabled:(self.long_greedy_graph if mode=='greedy' else self.long_graph).launch()
+                    else:self._submit(self.long_greedy_plan if mode=='greedy' else self.long_plan)
+                elif self.graphs_enabled:graphs[r].launch()
                 else:self._submit(plans[r])
             self.position+=len(values)
             start+=len(values)
@@ -567,8 +587,9 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 if step+1==max_tokens:break
                 if self.provider=='webgpu':next_token=self.greedy[1].launch(readback=self.workspaces[1]['tokens'])
                 else:
-                    if self.graphs_enabled:self.greedy[1].launch()
-                    else:self._submit(self.greedy_plans[1])
+                    long=bool(self.long_plan) and self.position+1>=CUDA_GROUPED_THRESHOLD
+                    if self.graphs_enabled:(self.long_greedy_graph if long else self.greedy[1]).launch()
+                    else:self._submit(self.long_greedy_plan if long else self.greedy_plans[1])
                     next_token=self.workspaces[1]['tokens'].to_numpy()
                 self.position+=1
             return {'prompt_tokens':tokens,'generated_tokens':generated,'text':self.tokenizer.decode(generated)}
@@ -584,6 +605,8 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         self.device.synchronize()
         for graph in self.graphs.values():graph.close()
         for graph in self.state_graphs.values():graph.close()
+        for graph in (self.long_graph,self.long_greedy_graph):
+            if graph:graph.close()
         for plan in self.prepared.values():plan.close()
         for plan in self.prepared_states.values():plan.close()
         for plan in self.greedy.values():plan.close()

@@ -43,10 +43,14 @@ def consume(model, bundle, reference, out):
                 observations.append(dict(depth=case['depth'], stage=stage, bitwise_equal=True))
         generated = runner.generate('What is the capital of France?', max_tokens=16)
         assert generated == fixture['generation']
+        long=fixture.get('long_generation')
+        if long:
+            assert runner.generate(long['prompt'],max_tokens=long['max_tokens'],chat=long['chat'])==long['result']
         report = dict(schema='tensor.lfm2-cuda-transfer-consumer.v1', status='passed',
                       model_sha256=fixture['model_sha256'], bundle_sha256=fixture['bundle_sha256'],
                       implementation=implementation_hashes(), adapter=device.info,
                       distributions=sorted(installed), steps=observations, generation=generated,
+                      long_generation_equal=bool(long),
                       forbidden_imports=sorted(FORBIDDEN & {name.split('.')[0] for name in sys.modules}),
                       consumer_source_sha256=digest(__file__))
     assert not report['forbidden_imports']

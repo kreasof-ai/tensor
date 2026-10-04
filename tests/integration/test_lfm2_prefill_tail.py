@@ -54,6 +54,12 @@ def test_tail_specialization_requires_the_measured_shape_and_suffix():
     assert prefill_tail_rows(SimpleNamespace(width=2048,ff=10752,layers=('conv','conv','attention')),gguf,'prefill_mixed')==0
     tensors['blk.2.ffn_gate.weight'].type=14
     assert prefill_tail_rows(cfg,gguf,'prefill_mixed')==0
+    # CUDA may crop the same causal suffix for each supported packed/native format.
+    for encoding in (1,2,12):
+        for info in tensors.values():info.type=encoding
+        assert prefill_tail_rows(cfg,gguf,'cuda_optimized')==8
+    tensors['blk.2.ffn_gate.weight'].type=14
+    assert prefill_tail_rows(cfg,gguf,'cuda_optimized')==0
 
 
 @pytest.mark.parametrize('provider', ['cuda', 'webgpu'])

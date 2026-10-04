@@ -164,21 +164,22 @@ Rebuild the plan after implementation changes.
 
 ### Optimized CUDA profile
 
-The Vulkan inference work also has an opt-in CUDA transfer. Build with
-`--cuda-profile optimized --prefill-chunks 32 128` to select packed-word Q4/Q6
-decode, paired gate/up/SwiGLU, residual/RMS fusion, split-KV decode attention,
-adaptive prefill and GPU greedy sampling. Its guarded 2.6B Q4 suffix stores all
-final-attention K/V before cropping queries and the final two convolutions.
-Intermediate prefill chunks stop after their persistent state writes.
+Build with `--cuda-profile optimized --prefill-chunks 32 128` for the measured
+LFM2.5-2.6B F16, ordinary Q4_0 and Q4_K_M schedules. This profile selects tuned
+tensor-core prefill tiles, packed pair loaders, packed-word Q4/Q6 decode,
+paired gate/up/SwiGLU, residual/RMS fusion, adaptive prefill and GPU greedy
+sampling. Decode shares K/V across query heads from 4K context onward.
+The guarded final attention/conv/conv suffix stores every K/V row before
+cropping queries and the final two convolutions to eight rows. Intermediate
+prefill chunks stop after their persistent state writes.
 
-The matched A10G comparison uses the distinct **QAD Q4_0** checkpoint also used
-in the Radeon campaign. Download and build it explicitly:
+Download all three formats, then build a bundle for the format you will run:
 
 ```sh
-uv run --no-sync python benchmarks/lfm2/download.py --formats QAD-Q4_0
+uv run --no-sync python benchmarks/lfm2/download.py --formats F16 Q4_0 Q4_K_M
 TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9" uv run --no-sync python benchmarks/lfm2/producer.py \
-  --model build/lfm2-models/LFM2.5-2.6B-QAD-Q4_0.gguf \
-  --out build/lfm2-qad-cuda --context 8448 --target sm_86 \
+  --model build/lfm2-models/LFM2.5-2.6B-Q4_K_M.gguf \
+  --out build/lfm2-q4km-cuda --context 8448 --target sm_86 \
   --cuda-profile optimized --prefill-chunks 32 128
 ```
 
@@ -187,10 +188,12 @@ decode retains FP32 activations and accumulation. Prefill retains FP16
 tensor-core operands with FP32 accumulation; the final FFN is evaluated only
 for the last row using FP32 decode arithmetic. The Vulkan approximate short-half
 and Q8 activation prefill arithmetic is not used by this CUDA profile.
-See the [CUDA transfer report](../../docs/research/lfm2-cuda-vulkan-transfer.md)
-for matched timings, accuracy gates and reproduction. Full-model performance
-is established for this 2.6B QAD checkpoint on A10G; other GPUs and checkpoints
-need their own validation. The producer default remains `--cuda-profile default`.
+See the [three-format CUDA report](../../docs/research/lfm2-cuda-formats.md)
+for matched before/after and llama.cpp timings, accuracy and reproduction on
+A10G. The [initial Vulkan transfer](../../docs/research/lfm2-cuda-vulkan-transfer.md)
+measured the separate QAD Q4_0 checkpoint; that format retains a correctness
+regression check. Other GPUs and model shapes need their own measurements.
+The producer default remains `--cuda-profile default`.
 
 ## Run without a compiler
 

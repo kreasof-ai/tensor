@@ -82,9 +82,10 @@ Vulkan. Other hardware requires its own validation.
 
 The [research index](docs/research/README.md) collects reproducible benchmarks:
 Torch/TileLang/Triton/WebGPU latency scaling, ten-update nanoGPT training, and
-LFM2 inference against llama.cpp CUDA. The latest LFM2 split-KV and packed-weight
-decode optimizations are experimental benchmark variants, separate from the
-default model runner.
+LFM2 inference against llama.cpp CUDA. The ordinary LFM2 runner offers an opt-in
+`optimized` CUDA profile with packed decode, fused projections, tuned prefill,
+and shared K/V attention at long context. See the
+[F16/Q4_0/Q4_K_M measurements](docs/research/lfm2-cuda-formats.md).
 
 Standalone autograd, arbitrary graph fusion, complete TileLang/TIRx coverage on
 WebGPU, and general GGUF model support remain future work. Direct PTX compilation
