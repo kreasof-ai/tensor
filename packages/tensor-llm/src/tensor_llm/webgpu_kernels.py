@@ -1,694 +1,1277 @@
-"""Packed LFM2 kernels with portable and optional standard subgroup schedules."""
+"""TileLang DSL for packed portable and standard-subgroup LFM2 schedules."""
+
 import math
-import re
-from .kernels import emit, source as cuda_source, weight
-from .gguf import TYPES
+from .kernels import make_kernel as baseline_kernel, weight_decoder, weight_storage
 
 
-def half_bits(bits):
-    return f'T.call_extern("float32", "tensor_unpack_f16", T.cast({bits}, "uint32"))'
+def source(kind, parameters):
+    from tensor.compiler.entry import export_source
+
+    return export_source(
+        __name__,
+        "make_kernel",
+        kind,
+        parameters,
+        dependencies=(
+            "tensor_llm.kernels",
+            "tensor_llm.gguf",
+            "tensor.compiler.entry",
+            "tensor.compiler.webgpu_templates",
+        ),
+    )
 
 
-def packed_byte(address):
-    return f'((w[({address}) // 4] >> (({address}) % 4 * 8)) & T.uint32(255))'
+def half_bits():
+    import tilelang.language as T
+
+    @T.macro
+    def unpack(bits):
+        return T.call_extern("float32", "tensor_unpack_f16", T.cast(bits, "uint32"))
+
+    return unpack
 
 
-def packed_half(address):
-    return half_bits(f'((w[({address}) // 4] >> (({address}) % 4 * 8)) & T.uint32(65535))')
+def packed_loads():
+    import tilelang.language as T
+
+    unpack = half_bits()
+
+    @T.macro
+    def byte(w, address):
+        return (w[address // 4] >> (address % 4 * 8)) & T.uint32(255)
+
+    @T.macro
+    def half(w, address):
+        return unpack((w[address // 4] >> (address % 4 * 8)) & T.uint32(65535))
+
+    @T.macro
+    def word(w, address):
+        # The 18-byte GGML Q4 blocks alternate between 2- and 4-byte alignment.
+        return T.call_extern(
+            "uint32",
+            "tensor_byte_align_u32",
+            w[address // 4],
+            w[(address + 3) // 4],
+            T.cast(address % 4, "uint32"),
+        )
+
+    return byte, half, word
 
 
-def packed_word(address):
-    # GGML's 18-byte Q4 blocks alternate between two- and four-byte alignment.
-    return f'T.call_extern("uint32", "tensor_byte_align_u32", w[({address}) // 4], w[(({address}) + 3) // 4], T.cast(({address}) % 4, "uint32"))'
+def round_half():
+    """Exact ties-to-even FP16 rounding, including FP16 subnormals.
+
+    Signed exponent comparisons avoid costly unsigned division in WGSL lowering.
+    This operation is shared by prefill operand staging and cache stores.
+    """
+    import tilelang.language as T
+
+    @T.macro
+    def rounded(value):
+        bits = T.reinterpret("uint32", value)
+        exponent = T.cast((bits >> 23) & 255, "int32")
+        shift = T.min(T.max(126 - exponent, 1), 24)
+        mantissa = (bits & 8388607) | 8388608
+        rounding = (
+            mantissa + (T.uint32(1) << (shift - 1)) - 1 + ((mantissa >> shift) & 1)
+        ) >> shift
+        quantum = T.reinterpret("float32", T.uint32(103 << 23))
+        small = T.if_then_else(
+            exponent < 102, 0.0, T.cast(rounding, "float32") * quantum
+        ) * T.if_then_else((bits >> 31) != 0, -1.0, 1.0)
+        normal = T.reinterpret("float32", (bits + 4095 + ((bits >> 13) & 1)) & T.uint32(4294959104))
+        return T.if_then_else(exponent < 113, small, normal)
+
+    return rounded
 
 
-def segmented_reduce(lanes):
-    shuffle='\n'.join(f'        accum = accum + T.call_extern("float32", "subgroupShuffleXor", accum, T.uint32({stride}))' for stride in (lanes>>i for i in range(1,lanes.bit_length())))
-    fallback='\n'.join(f'''        if lane < {stride}:
-            scratch[tx] = scratch[tx] + scratch[tx + {stride}]
-        T.sync_threads()''' for stride in (lanes>>i for i in range(1,lanes.bit_length())))
-    return f'''    if T.call_extern("uint32", "tensor_subgroup_size") >= {lanes}:
-{shuffle}
-        scratch[tx] = accum
-    else:
-        scratch[tx] = accum
+def tree_reduce(size, operation="sum"):
+    import tilelang.language as T
+
+    def reduce(scratch, tx):
+        for stride in (size >> i for i in range(1, size.bit_length())):
+            step(scratch, tx, stride)
+
+    @T.macro
+    def step(scratch, tx, stride):
+        if tx < stride:
+            if operation == "max":
+                scratch[tx] = T.max(scratch[tx], scratch[tx + stride])
+            else:
+                scratch[tx] = scratch[tx] + scratch[tx + stride]
         T.sync_threads()
-{fallback}'''
+
+    return reduce
 
 
-def tree_reduce(size,operation='sum'):
-    lines=[]
-    for stride in (size>>i for i in range(1,size.bit_length())):
-        left,right='scratch[tx]',f'scratch[tx + {stride}]'
-        expression=f'T.max({left}, {right})' if operation=='max' else f'{left} + {right}'
-        lines.extend((f'    if tx < {stride}:',f'        scratch[tx] = {expression}','    T.sync_threads()'))
-    return '\n'.join(lines)
+def subgroup_reduce(size, operation="sum"):
+    import tilelang.language as T
 
+    builtin = "subgroupMax" if operation == "max" else "subgroupAdd"
 
-def subgroup_reduce(size,value,operation='sum'):
-    builtin='subgroupMax' if operation=='max' else 'subgroupAdd'
-    initial='-T.infinity("float32")' if operation=='max' else '0'
-    update=f'T.max({value}, scratch[i])' if operation=='max' else f'{value} + scratch[i]'
-    return f'''    scratch[tx] = T.call_extern("float32", "{builtin}", {value})
-    T.sync_threads()
-    if tx == 0:
-        {value} = {initial}
-        for group in T.serial(T.ceildiv({size}, T.cast(T.call_extern("uint32", "tensor_subgroup_size"), "int32"))):
-            i = group * T.cast(T.call_extern("uint32", "tensor_subgroup_size"), "int32")
-            {value} = {update}
-        scratch[0] = {value}
-    T.sync_threads()'''
+    @T.macro
+    def reduce(scratch, tx, value: T.Ref):
+        scratch[tx] = T.call_extern("float32", builtin, value)
+        T.sync_threads()
+        if tx == 0:
+            value = -T.infinity("float32") if operation == "max" else 0
+            for group in T.serial(
+                T.ceildiv(size, T.cast(T.call_extern("uint32", "tensor_subgroup_size"), "int32"))
+            ):
+                i = group * T.cast(T.call_extern("uint32", "tensor_subgroup_size"), "int32")
+                if operation == "max":
+                    value = T.max(value, scratch[i])
+                else:
+                    value = value + scratch[i]
+            scratch[0] = value
+        T.sync_threads()
+
+    return reduce
 
 
 def rms_width(c):
-    """Threads for the single-workgroup decode reduction over c elements.
-
-    Decode normalisation reduces a whole row inside one workgroup, so a
-    64-thread wave occupies one of forty compute units and walks c/64
-    dependent iterations twice, once to accumulate and once to rescale. A full
-    256-thread CU quarter-wave cuts that chain by four at the same dispatch
-    count. c must still divide evenly, exactly as the previous fixed width
-    required, and add_rms rewrites this kernel's source so it shares the value.
-    """
     for width in (256, 128, 64):
         if c % width == 0:
             return width
     return 64
 
 
-def round_half(value):
-    """Round FP32 to an exactly representable FP16 value before native casting.
+def projection_epilogue(kind):
+    import tilelang.language as T
 
-    Native f16 conversion need not match NumPy's ties-to-even rounding. Integer
-    rounding also handles FP16 subnormals, retaining the stated prefill contract.
+    @T.macro
+    def store(out, residual, index, gate, up):
+        if kind in ("ffn", "ffn_q16"):
+            out[index] = gate / (1 + T.exp(-gate)) * up
+        elif kind == "linear_add":
+            out[index] = residual[index] + gate
+        else:
+            out[index] = gate
 
-    The exponent range tests compare a signed cast. Lowering the equivalent
-    unsigned compare emits `exponent / 113u < 1u`, and an unsigned divide costs
-    far more than the branch it replaces. Every staged prefill operand passes
-    through this routine, so those two divisions dominated the staging loop.
-    """
-    bits=f'T.reinterpret("uint32", {value})'
-    exponent=f'(({bits} >> 23) & 255)'
-    signed=f'T.cast({exponent}, "int32")'
-    shift=f'T.min(T.max(126 - {signed}, 1), 24)'
-    mantissa=f'(({bits} & 8388607) | 8388608)'
-    rounded=f'(({mantissa} + (T.uint32(1) << ({shift} - 1)) - 1 + (({mantissa} >> {shift}) & 1)) >> {shift})'
-    quantum=f'T.reinterpret("float32", T.uint32({103<<23}))'
-    small=f'T.if_then_else({signed} < 102, 0.0, T.cast({rounded}, "float32") * {quantum}) * T.if_then_else(({bits} >> 31) != 0, -1.0, 1.0)'
-    normal=f'T.reinterpret("float32", ({bits} + 4095 + (({bits} >> 13) & 1)) & T.uint32(4294959104))'
-    return f'T.if_then_else({signed} < 113, {small}, {normal})'
+    return store
 
 
-def source(kind,p):
-    r=p.get('r',1)
-    a=lambda name,n,dtype='float32':(name,n,dtype)
-    if kind in ('linear','ffn') and p.get('q16'):
-        return source(kind+'_q16',p)
-    if kind=='prefill_tail':
-        c,t=p['c'],p['t']
-        return emit([a('x',r*c),a('out',t*c),a('control',2,'int32'),a('tail_control',2,'int32')],f'''with T.Kernel(T.ceildiv({t*c},256),threads=256) as block:
-    tx=T.get_thread_binding()
-    index=block * 256 + tx
-    start=T.max(control[1] - {t},0)
-    count=T.min(control[1],{t})
-    if index < {t*c}:
-        out[index]=T.if_then_else(index // {c} < count,x[start * {c} + index],0)
-    if index == 0:
-        tail_control[0]=control[0] + start
-        tail_control[1]=count''')
-    if kind=='quantize_q16':
-        k=p['k'];blocks=r*k//32;words=r*k//4
-        if k%32:raise ValueError('two-component activation blocks require depth divisible by 32')
-        pack=lambda component:' | '.join(f'((T.reinterpret("uint32", quants[{component}, tx * 4 + {i}]) & 255) << {i*8})' for i in range(4))
-        lines=[f'with T.Kernel({blocks}, threads=32) as block:',
-               '    tx = T.get_thread_binding()','    scratch = T.alloc_shared((32,), "float32")',
-               '    quants = T.alloc_shared((2, 32), "int32")','    values = T.alloc_shared((32,), "float32")',
-               '    factor = T.alloc_var("float32")',f'    values[tx] = {round_half("x[block * 32 + tx]")}']
-        for component in range(2):
-            lines += ['    scratch[tx] = T.abs(values[tx])','    T.sync_threads()',tree_reduce(32,'max'),
-                      '    factor = T.max(scratch[0] / 127, 1.0e-20)',
-                      f'    quants[{component}, tx] = T.cast(T.round(values[tx] / factor), "int32")',
-                      '    T.sync_threads()',f'    if tx < 8:',f'        packed[block * 8 + tx + {component*words}] = {pack(component)}',
-                      f'    values[tx] = values[tx] - T.cast(quants[{component}, tx], "float32") * factor',
-                      f'    scratch[tx] = T.cast(quants[{component}, tx], "float32")','    T.sync_threads()',tree_reduce(32),
-                      '    if tx == 0:',f'        scales[block + {component*blocks}] = factor',f'        sums[block + {component*blocks}] = T.cast(scratch[0], "int32")',
-                      '    T.sync_threads()']
-        if p.get('fixed_residual'):
-            # The low component shares a fixed scale ratio with the high one.
-            # A rounded high byte leaves at most half a step: /254 fits +/-127.
-            text='\n'.join(lines)
-            first='factor = T.max(scratch[0] / 127, 1.0e-20)'
-            at=text.rfind(first);text=text[:at]+text[at:].replace(first,'factor = scales[block] / 254',1)
-            lines=text.splitlines()
-        if p.get('sg'):
-            fast=['    value = T.alloc_var("float32")',f'    value = {round_half("x[block * 32 + tx]")}',
-                  '    if T.call_extern("uint32", "tensor_subgroup_size") >= 32:']
+def projection_abi(kind, p, algorithm):
+    import tilelang.language as T
+    from tensor.compiler.entry import primitive
+
+    r, k, o, q = p.get("r", 1), p["k"], p["o"], p["type"]
+    count, dtype = weight_storage(q, k * o, packed_words=True)
+    args = [("x", r * k, "float32"), ("w", count, dtype)]
+    if kind == "ffn":
+
+        @T.macro
+        def call(x, w, w2, out):
+            algorithm(x, w, out, w2)
+
+        return primitive([*args, ("w2", count, dtype), ("out", r * o, "float32")], call)
+    if kind == "linear_add":
+
+        @T.macro
+        def call(x, w, residual, out):
+            algorithm(x, w, out, None, residual)
+
+        return primitive([*args, ("residual", r * o, "float32"), ("out", r * o, "float32")], call)
+    return primitive([*args, ("out", r * o, "float32")], algorithm)
+
+
+def prefill_kernel(kind, p):
+    import tilelang.language as T
+    from tensor.compiler.webgpu_templates import (
+        register_matmul,
+        partitioned_matmul,
+        outer_product_matmul,
+    )
+
+    r, k, o, q = (p[n] for n in ("r", "k", "o", "type"))
+    parts = 2 if kind == "ffn" else 1
+    tm, tn, bk = p.get("tile", (16, 32, 64))
+    rounded, decoder = round_half(), weight_decoder(q, k, packed_words=True)
+    epilogue = projection_epilogue(kind)
+
+    @T.macro
+    def read_rhs(w, col, channel):
+        if q == 1:
+            return decoder(w, col, channel)
+        else:
+            return rounded(decoder(w, col, channel))
+
+    if p.get("schedule") == "outer":
+        if q not in (1, 2, 14):
+            raise ValueError("outer-product prefill requires F16, Q4_0 or Q6_K weights")
+        dtype = p.get("outer_shared_dtype", "float16")
+        algorithm = outer_product_matmul(
+            r, k, o, rounded, read_rhs, epilogue, parts=parts, dtype=dtype, **p["outer"]
+        )
+    elif p.get("schedule") == "partitioned":
+        if q != 1:
+            raise ValueError("searched partitioned profile requires F16 weights")
+        config = {
+            name: p[name]
+            for name in ("threads", "partitions", "unroll", "dot_width", "owner_axis", "k_layout")
+        }
+        algorithm = partitioned_matmul(
+            r,
+            k,
+            o,
+            rounded,
+            read_rhs,
+            epilogue,
+            parts=parts,
+            tile_m=tm,
+            tile_n=tn,
+            explicit_unroll=p.get("explicit_unroll", False),
+            **config,
+        )
+    else:
+        algorithm = register_matmul(
+            r,
+            k,
+            o,
+            rounded,
+            read_rhs,
+            epilogue,
+            parts=parts,
+            tile_m=tm,
+            tile_n=tn,
+            tile_k=bk,
+            threads=p.get("threads", 128),
+            pad=p.get("pad", 0),
+            lhs_pad=p.get("lhs_pad", 0),
+            lhs_transpose=p.get("lhs_transpose", False),
+            dot_width=p.get("dot_width", 4 if q == 1 or k >= 2048 else 1),
+            unroll=p.get("unroll", False),
+            explicit_unroll=p.get("explicit_unroll", False),
+        )
+    return projection_abi(kind, p, algorithm)
+
+
+def decode_kernel(kind, p):
+    import tilelang.language as T
+    from tensor.compiler.webgpu_templates import registers, shared_buffers, streamed_gemv
+
+    k, o, q = p["k"], p["o"], p["type"]
+    parts = 2 if kind == "ffn" else 1
+    epilogue = projection_epilogue(kind)
+    if p.get("decode_schedule") == "streamed":
+        if q != 1:
+            raise ValueError("streamed GEMV requires native F16 weights")
+        config = {
+            name: p[name]
+            for name in (
+                "lanes",
+                "threads",
+                "micro_rows",
+                "dot_width",
+                "unroll",
+                "accumulators",
+                "k_layout",
+                "shared_input",
+            )
+        }
+        return projection_abi(kind, p, streamed_gemv(k, o, epilogue, parts=parts, **config))
+    byte, half_value, word_value = packed_loads()
+    decoder = weight_decoder(q, k, packed_words=True)
+    wide = q == 2 and p.get("sg") and k % 256 == 0 and min(k, o) >= 2048
+    lanes, threads, chains = (16 if q == 2 else 32), 128, 1
+    fast_q4 = q == 2 and k % 128 == 0
+    if fast_q4:
+        lanes, threads, chains = (
+            p.get("gemv_lanes", 32 if wide else 16),
+            p.get("gemv_threads", 128),
+            p.get("gemv_accumulators", 1),
+        )
+        if (
+            lanes not in (8, 16, 32, 64)
+            or threads not in (64, 128, 256, 512)
+            or threads % lanes
+            or chains not in (1, 4)
+            or k % (lanes * 8)
+        ):
+            raise ValueError("unsupported packed Q4 decode schedule")
+    if q == 14:
+        threads = p.get("gemv_threads", 128)
+        if threads not in (64, 128, 256, 512):
+            raise ValueError("invalid Q6 decode workgroup")
+    row_count = threads // lanes
+    tiles = (
+        k // (lanes * 8)
+        if fast_q4
+        else k // 256
+        if q == 14
+        else k // 128
+        if q in (0, 1) and k % 128 == 0
+        else k // 32
+    )
+    unroll, independent = p.get("gemv_unroll", 1), p.get("gemv_chains", 1)
+    dot_q4, dot_q6 = fast_q4 and p.get("gemv_dot", wide), q == 14 and p.get("gemv_q6_dot")
+    if dot_q4 and chains != 1:
+        raise ValueError("packed dot schedule uses one accumulator")
+    if unroll != 1 or independent != 1:
+        if (
+            q not in (2, 14)
+            or type(unroll) is not int
+            or unroll not in (1, 2, 4, 8, 16)
+            or type(independent) is not int
+            or independent not in (1, 2, 4, 8)
+            or independent > unroll
+            or chains != 1
+            or tiles % unroll
+        ):
+            raise ValueError("invalid packed decode unroll or accumulator chains")
+        chains = independent
+
+    def q4_terms(acc, x, index, scale, packed, slot):
+        if dot_q4:
             for component in range(2):
-                packed=' | '.join(f'((T.reinterpret("uint32", T.call_extern("int32", "subgroupShuffle", quant, T.uint32((tx // 4) * 4 + {i}))) & 255) << {i*8})' for i in range(4))
-                factor='factor / 254' if component and p.get('fixed_residual') else 'T.max(T.call_extern("float32", "subgroupMax", T.abs(value)) / 127, 1.0e-20)'
-                fast += [f'        factor = {factor}',
-                         '        quant = T.cast(T.round(value / factor), "int32")',f'        bits = {packed}',
-                         '        total = T.call_extern("int32", "subgroupAdd", quant)',
-                         '        if tx % 4 == 0:',f'            packed[block * 8 + tx // 4 + {component*words}] = bits',
-                         '        if tx == 0:',f'            scales[block + {component*blocks}] = factor',f'            sums[block + {component*blocks}] = total',
-                         '        value = value - T.cast(quant, "float32") * factor']
-            fast += ['    else:']+['    '+line for line in '\n'.join(lines[6:]).splitlines()]
-            lines=lines[:6]+fast
-        return emit([a('x',r*k),a('packed',2*words,'uint32'),a('scales',2*blocks),a('sums',2*blocks,'int32')],'\n'.join(lines))
-    if kind in ('linear_q16','ffn_q16'):
-        from tensor.compiler.webgpu_lowering import packed_integer_matmul_schedule
-        k,o=p['k'],p['o'];count=k*o//32*18//4;parts=2 if kind=='ffn_q16' else 1
-        base=f'(({{column}}) * {k//32} + {{block}}) * 18'
-        words=[packed_word(base+' + 2 + ({word}) * 4').replace('w[',name+'[') for name in ('w','w2')[:parts]]
-        scales=[packed_half(base).replace('w[',name+'[') for name in ('w','w2')[:parts]]
-        if p.get('q4_prepacked'):
-            count=k*o//32*9
-            base=f'(({{column}}) * {k//32} + {{block}}) * 9'
-            words=[f'{name}[{base} + {{word}}]' for name in ('w','w2')[:parts]]
-            scales=[f'T.reinterpret("float32", {name}[{base} + 8])' for name in ('w','w2')[:parts]]
-        args=[a('packed',r*k//2,'uint32'),a('scales',r*k//16),a('sums',r*k//16,'int32'),a('w',count,'uint32')]
-        if parts==2:args += [a('w2',count,'uint32')]
-        args += [a('out',r*o)]
-        config=dict(p.get('integer',{}))
-        if p.get('q4_prepacked'):config['signed_rhs']=True
-        return emit(args,packed_integer_matmul_schedule(r,k,o,words,scales,**config))
-    if kind=='quantize_q8':
-        k=p['k']
-        packed=' | '.join(f'((T.reinterpret("uint32", quants[tx * 4 + {i}]) & 255) << {i*8})' for i in range(4))
-        return emit([a('x',k),a('out',k//4,'uint32'),a('scales',k//32),a('sums',k//32,'int32')],f'''with T.Kernel({k//32},threads=32) as block:
-    tx=T.get_thread_binding()
-    scratch=T.alloc_shared((32,),"float32")
-    quants=T.alloc_shared((32,),"int32")
-    scale=T.alloc_var("float32")
-    scratch[tx]=T.abs(x[block * 32 + tx])
-    T.sync_threads()
-{tree_reduce(32,'max')}
-    scale=T.max(scratch[0] / 127, 1.0e-20)
-    quants[tx]=T.cast(T.round(x[block * 32 + tx] / scale),"int32")
-    T.sync_threads()
-    if tx < 8:
-        out[block * 8 + tx]={packed}
-    scratch[tx]=T.cast(quants[tx],"float32")
-    T.sync_threads()
-{tree_reduce(32)}
-    if tx == 0:
-        scales[block]=scale
-        sums[block]=T.cast(scratch[0],"int32")''')
-    if kind=='linear_q8':
-        k,o=p['k'],p['o'];lanes=16;row_count=8
-        base=f'((bx * 8 + row) * {k//32} + tile * 4 + lane // 4) * 18'
-        block='tile * 4 + lane // 4'
-        return emit([a('x',k//4,'uint32'),a('scales',k//32),a('sums',k//32,'int32'),a('w',k*o//32*18//4,'uint32'),a('out',o)],f'''with T.Kernel(T.ceildiv({o},8),threads=128) as bx:
-    tx=T.get_thread_binding()
-    row=tx // 16
-    lane=tx % 16
-    accum=T.alloc_var("float32")
-    scratch=T.alloc_shared((128,),"float32")
-    accum=0
-    if bx * 8 + row < {o}:
-        for tile in T.serial({k//128}):
-            packed={packed_word(base+' + 2 + lane % 4 * 4')}
-            low=T.call_extern("int32","dot4I8Packed",packed & T.uint32(252645135),x[({block}) * 8 + lane % 4])
-            high=T.call_extern("int32","dot4I8Packed",(packed >> 4) & T.uint32(252645135),x[({block}) * 8 + lane % 4 + 4])
-            accum=accum + T.cast(low + high - 2 * sums[{block}],"float32") * scales[{block}] * ({packed_half(base)})
-{segmented_reduce(lanes)}
-    if (lane == 0) & (bx * 8 + row < {o}):
-        out[bx * 8 + row]=scratch[tx]''')
-    if kind=='ffn':
-        # Reuse the projection layouts/decoders for two matrices. The pair
-        # shares activation loads, synchronization and the SwiGLU epilogue.
-        text=source('linear',p);q=p['type'];k,o=p['k'],p['o'];_,block,size=TYPES[q]
-        count=k*o if q in (0,1) else k*o//block*size//4
-        dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
-        text=text.replace(', out: T.Tensor',f', w2: T.Tensor(({count},), "{dtype}"), out: T.Tensor')
-        def paired(line):
-            def replace(match):
-                name=match[0]
-                if name.startswith('acc'):return name.replace('acc','up',1)
-                return name+'2'
-            return re.sub(r'\b(?:accum|acc\d+(?:_\d+)?|partial\d+_\d+|total|scale|packed|low\d+|high\d+|scratch|rhs|right\d+|value\d*|w)\b',replace,line)
-        lines=[]
-        for line in text.splitlines():
-            if 'out[' in line and ' = ' in line:
-                destination,gate=line.split(' = ',1);up=paired(gate)
-                lines.append(destination+f' = ({gate}) / (1 + T.exp(-({gate}))) * ({up})')
-                continue
-            lines.append(line)
-            stripped=line.strip()
-            if (' = ' in line and (re.match(r'(accum|acc\d+(?:_\d+)?|partial\d+_\d+|total|scratch(?:\[.*?\])?|rhs(?:\[.*?\])?|right\d+|scale|packed|low\d+|high\d+) = ',stripped)
-                                      or re.match(r'value\d* = T.if_then_else\(bx',stripped))):
-                lines.append(paired(line))
-            elif re.fullmatch(r'value\d* = T.alloc_var\("float32"\)',stripped):lines.append(paired(line))
-        return '\n'.join(lines)+'\n'
-    if kind=='linear_add':
-        if r!=1:raise ValueError('residual projection fusion requires decode rows')
-        text=source('linear',p)
-        text=text.replace(', out: T.Tensor',f', residual: T.Tensor(({p["o"]},), "float32"), out: T.Tensor')
-        lines=[]
-        for line in text.splitlines():
-            if 'out[' in line and ' = ' in line:
-                destination,value=line.split(' = ',1)
-                index=destination.strip()[4:-1]
-                line=destination+f' = residual[{index}] + ({value})'
-            lines.append(line)
-        return '\n'.join(lines)+'\n'
-    if kind=='add_rms':
-        c=p['c'];text=source('rms',p)
-        text=text.replace(', w: T.Tensor',f', mixed: T.Tensor(({r*c},), "float32"), residual: T.Tensor(({r*c},), "float32"), w: T.Tensor')
-        text=re.sub(r'x\[([^\]]+)\]',lambda m:f'(x[{m[1]}] + mixed[{m[1]}])',text)
-        index=f'row * {c} + i * {rms_width(c)} + tx'
-        text=text.replace(f'            out[{index}]',f'            residual[{index}] = x[{index}] + mixed[{index}]\n            out[{index}]')
-        return text
-    if kind=='argmax':
-        n=p['n'];threads=256
-        reduce='\n'.join(f'''    if tx < {stride}:
-        if (values[tx + {stride}] > values[tx]) | ((values[tx + {stride}] == values[tx]) & (indices[tx + {stride}] < indices[tx])):
-            values[tx] = values[tx + {stride}]
-            indices[tx] = indices[tx + {stride}]
-    T.sync_threads()''' for stride in (128,64,32,16,8,4,2,1))
-        return emit([a('logits',n),a('token',1,'int32'),a('pos',2,'int32')],f'''with T.Kernel(1, threads={threads}):
-    tx = T.get_thread_binding()
-    best = T.alloc_var("float32")
-    index = T.alloc_var("int32")
-    values = T.alloc_shared(({threads},), "float32")
-    indices = T.alloc_shared(({threads},), "int32")
-    best = -T.infinity("float32")
-    index = {n}
-    for tile in T.serial(T.ceildiv({n}, {threads})):
-        i = tile * {threads} + tx
-        if i < {n}:
-            if (logits[i] > best) | ((logits[i] == best) & (i < index)):
-                best = logits[i]
-                index = i
-    values[tx] = best
-    indices[tx] = index
-    T.sync_threads()
-{reduce}
-    if tx == 0:
-        token[0] = indices[0]
-        pos[1] = 1''')
-    if kind=='rms' and (r==1 or p.get('parallel_rows')):
-        c=p['c'];threads=rms_width(c)
-        reduce=subgroup_reduce(threads,'total') if p.get('sg') else '    scratch[tx] = total\n    T.sync_threads()\n'+tree_reduce(threads)
-        return emit([a('x',r*c),a('w',c),a('out',r*c)],f'''with T.Kernel({r}, threads={threads}) as row:
-    tx = T.get_thread_binding()
-    total = T.alloc_var("float32")
-    scratch = T.alloc_shared(({threads},), "float32")
-    total = 0
-    for i in T.serial({c//threads}):
-        total = total + x[row * {c} + i * {threads} + tx] * x[row * {c} + i * {threads} + tx]
-{reduce}
-    for i in T.serial({c//threads}):
-        out[row * {c} + i * {threads} + tx] = x[row * {c} + i * {threads} + tx] * T.rsqrt(scratch[0] / {c} + {p['eps']}) * w[i * {threads} + tx]''')
-    if kind in ('linear','embedding'):
-        text=cuda_source(kind,p)
-        q=p['type']
-        if kind=='linear' and r==1:
-            k,o=p['k'],p['o'];_,block,size=TYPES[q]
-            count=k*o if q in (0,1) else k*o//block*size//4
-            dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
-            if p.get('decode_schedule')=='streamed':
-                if q!=1:raise ValueError('streamed GEMV requires native F16 weights')
-                from tensor.compiler.webgpu_lowering import streamed_gemv_schedule
-                body=streamed_gemv_schedule(k,o,**{name:p[name] for name in
-                    ('lanes','threads','micro_rows','dot_width','unroll','accumulators','k_layout','shared_input')})
-                return emit([a('x',k),a('w',count,dtype),a('out',o)],body)
-            threads=128;lanes=16 if q==2 else 32
-            accumulators=1
-            if q==2 and k%128==0:
-                # The larger streamed matrices benefit from shorter K chains.
-                # Narrow shapes retain their measured 16-lane schedule.
-                wide=p.get('sg') and k%256==0 and min(k,o)>=2048
-                lanes=p.get('gemv_lanes',32 if wide else 16);threads=p.get('gemv_threads',128)
-                accumulators=p.get('gemv_accumulators',1)
-                if lanes not in (8,16,32,64) or threads not in (64,128,256,512) or threads%lanes or accumulators not in (1,4) or k%(lanes*8):
-                    raise ValueError('unsupported packed Q4 decode schedule')
-            if q==14:
-                threads=p.get('gemv_threads',128)
-                if threads not in (64,128,256,512):raise ValueError('invalid Q6 decode workgroup')
-            row_count=threads//lanes
-            expr=weight(q,f'bx * {row_count} + row','tile * 32 + lane',k,packed_words=True)
-            if q==2 and k%128==0:
-                tile_width=lanes*8
-                base=f'((bx * {row_count} + row) * {k//32} + tile * {lanes//4} + lane // 4) * 18'
-                terms=[]
-                for byte in range(4):
-                    low=f'((packed >> {byte*8}) & 15)'
-                    high=f'((packed >> {byte*8+4}) & 15)'
-                    index=f'tile * {tile_width} + lane // 4 * 32 + lane % 4 * 4 + {byte}'
-                    acc='accum' if accumulators==1 else f'acc{byte}'
-                    terms.extend((f'            {acc} = {acc} + x[{index}] * (scale * (T.cast({low}, "float32") - 8))',
-                                  f'            {acc} = {acc} + x[{index} + 16] * (scale * (T.cast({high}, "float32") - 8))'))
-                loop=f'''        for tile in T.serial({k//tile_width}):
-            scale = {packed_half(base)}
-            packed = {packed_word(base+' + 2 + lane % 4 * 4')}
-'''+ '\n'.join(terms)
-                if p.get('gemv_dot',wide):
-                    if accumulators!=1:raise ValueError('packed dot schedule uses one accumulator')
-                    loads=[]
-                    index=f'tile * {tile_width} + lane // 4 * 32 + lane % 4 * 4'
-                    for half in range(2):
-                        lhs=', '.join(f'x[{index} + {half*16+byte}]' for byte in range(4))
-                        rhs=', '.join(f'T.cast((packed >> {byte*8+half*4}) & 15, "float32") - 8' for byte in range(4))
-                        loads.extend((f'            left{half} = T.call_extern("float32x4", "vec4<f32>", {lhs})',
-                                      f'            right{half} = T.call_extern("float32x4", "vec4<f32>", {rhs})',
-                                      f'            accum = accum + scale * T.call_extern("float32", "dot", left{half}, right{half})'))
-                    loop=f'''        for tile in T.serial({k//tile_width}):
-            scale = {packed_half(base)}
-            packed = {packed_word(base+' + 2 + lane % 4 * 4')}
-'''+ '\n'.join(loads)
-            elif q==14:
-                base=f'((bx * {row_count} + row) * {k//256} + tile) * 210'
-                reads='\n'.join(f'            low{i} = {packed_byte(base+f" + {i*32} + lane")}' for i in range(4))
-                reads+='\n'+'\n'.join(f'            high{i} = {packed_byte(base+f" + {128+i*32} + lane")}' for i in range(2))
-                terms=[]
-                for group in range(8):
-                    byte=f'low{group//4*2+group%2}'
-                    value=f'(({byte} >> {4*(group%4//2)}) & 15) | ((high{group//4} >> {2*(group%4)} & 3) << 4)'
-                    scale=packed_byte(base+f' + {192+group*2} + lane // 16')
-                    signed=f'T.cast(T.cast({scale}, "int32") - T.if_then_else({scale} >= 128, 256, 0), "float32")'
-                    terms.append(f'            accum = accum + x[tile * 256 + {group*32} + lane] * (scale * {signed} * (T.cast({value}, "float32") - 32))')
-                loop=f'''        for tile in T.serial({k//256}):
-            scale = {packed_half(base+' + 208')}
-{reads}
-'''+ '\n'.join(terms)
-                if p.get('gemv_q6_dot'):
-                    body=[f'            scale = {packed_half(base+" + 208")}']
-                    for half in range(2):
-                        low_address=base+f' + {half*64} + (lane // 8 % 2) * 32 + lane % 8 * 4'
-                        high_address=base+f' + {128+half*32} + lane % 8 * 4'
-                        body += [f'            low{half} = {packed_word(low_address)}',f'            high{half} = {packed_word(high_address)}']
-                        lhs=', '.join(f'x[tile * 256 + {half*128} + lane * 4 + {byte}]' for byte in range(4))
-                        rhs=', '.join(f'T.cast(((low{half} >> ({byte*8} + lane // 16 * 4)) & 15) | (((high{half} >> ({byte*8} + lane // 8 * 2)) & 3) << 4), "float32") - 32' for byte in range(4))
-                        bits=packed_byte(base+f' + {192+half*8} + lane // 4')
-                        signed=f'T.cast(T.cast({bits}, "int32") - T.if_then_else({bits} >= 128, 256, 0), "float32")'
-                        body += [f'            left{half} = T.call_extern("float32x4", "vec4<f32>", {lhs})',
-                                 f'            right{half} = T.call_extern("float32x4", "vec4<f32>", {rhs})',
-                                 f'            accum = accum + scale * {signed} * T.call_extern("float32", "dot", left{half}, right{half})']
-                    loop=f'        for tile in T.serial({k//256}):\n'+'\n'.join(body)
-            elif q in (0,1) and k%128==0:
-                index='tile * 128 + lane * 4'
-                lhs=', '.join(f'x[{index} + {i}]' for i in range(4))
-                rhs=', '.join(f'T.cast(w[(bx * 4 + row) * {k} + {index} + {i}], "float32")' for i in range(4))
-                loop=f'''        for tile in T.serial({k//128}):
-            accum = accum + T.call_extern("float32", "dot", T.call_extern("float32x4", "vec4<f32>", {lhs}), T.call_extern("float32x4", "vec4<f32>", {rhs}))'''
+                vector_term(acc[slot][0], x, index, scale, packed, component)
+        else:
+            for component in range(4):
+                chain = component if p.get("gemv_accumulators", 1) == 4 else slot
+                scalar_term(acc[chain][0], x, index + component, scale, packed, component * 8, 0)
+                scalar_term(
+                    acc[chain][0], x, index + component, scale, packed, component * 8 + 4, 16
+                )
+
+    def q6_terms(acc, x, w, base, tile, lane, slot, scale):
+        if dot_q6:
+            for half in range(2):
+                q6_vector(acc[slot][0], x, w, base, tile, lane, half, scale)
+        else:
+            for group in range(8):
+                q6_scalar(acc[slot][0], x, w, base, tile, lane, group, scale)
+
+    def compute_slots(acc, x, weights, chunk, lane, row, bx):
+        for slot in range(unroll):
+            for part in range(parts):
+                compute(
+                    {j: acc[part, j] for j in range(chains)},
+                    x,
+                    weights[part],
+                    chunk * unroll + slot,
+                    lane,
+                    row,
+                    bx,
+                    slot % independent,
+                )
+
+    def combine(acc, totals):
+        for part in range(parts):
+            if chains == 4:
+                combine4(totals[part,][0], *(acc[part, j][0] for j in range(4)))
             else:
-                if q==2:expr=weight(q,f'bx * {row_count} + row','tile * 32 + lane',k,packed_words=True)
-                if q==2:
-                    base=f'((bx * {row_count} + row) * {k//32} + tile) * 18'
-                    loop=f'''        for tile in T.serial({k//32}):
-            scale = {packed_half(base)}
-            packed = {packed_byte(base+' + 2 + lane')}
-            accum = accum + x[tile * 32 + lane] * (scale * (T.cast(packed & 15, "float32") - 8))
-            accum = accum + x[tile * 32 + lane + 16] * (scale * (T.cast(packed >> 4, "float32") - 8))'''
+                for j in range(chains):
+                    add(totals[part,][0], acc[part, j][0])
+
+    def shuffles(totals):
+        for stride in (lanes >> i for i in range(1, lanes.bit_length())):
+            for part in range(parts):
+                shuffle(totals[part,][0], stride)
+
+    def spills(totals, scratch, tx):
+        for part in range(parts):
+            spill(scratch[part], totals[part,][0], tx)
+
+    def steps(scratch, tx, stride):
+        for part in range(parts):
+            shared_step(scratch[part], tx, stride)
+
+    def reduction(scratch, tx, lane):
+        for stride in (lanes >> i for i in range(1, lanes.bit_length())):
+            reduction_step(scratch, tx, lane, stride)
+
+    @T.macro
+    def scalar_term(acc: T.Ref, x, index, scale, packed, shift, offset):
+        acc = acc + x[index + offset] * (scale * (T.cast((packed >> shift) & 15, "float32") - 8))
+
+    @T.macro
+    def vector_term(acc: T.Ref, x, index, scale, packed, component):
+        left = T.call_extern(
+            "float32x4",
+            "vec4<f32>",
+            x[index + component * 16],
+            x[index + component * 16 + 1],
+            x[index + component * 16 + 2],
+            x[index + component * 16 + 3],
+        )
+        right = T.call_extern(
+            "float32x4",
+            "vec4<f32>",
+            T.cast((packed >> (component * 4)) & 15, "float32") - 8,
+            T.cast((packed >> (8 + component * 4)) & 15, "float32") - 8,
+            T.cast((packed >> (16 + component * 4)) & 15, "float32") - 8,
+            T.cast((packed >> (24 + component * 4)) & 15, "float32") - 8,
+        )
+        acc = acc + scale * T.call_extern("float32", "dot", left, right)
+
+    @T.macro
+    def q6_scalar(acc: T.Ref, x, w, base, tile, lane, group, scale):
+        low = byte(w, base + (group // 4 * 2 + group % 2) * 32 + lane)
+        high = byte(w, base + 128 + group // 4 * 32 + lane)
+        bits = byte(w, base + 192 + group * 2 + lane // 16)
+        signed_scale = T.cast(
+            T.cast(bits, "int32") - T.if_then_else(T.cast(bits, "int32") >= 128, 256, 0), "float32"
+        )
+        value = ((low >> (4 * (group % 4 // 2))) & 15) | (((high >> (2 * (group % 4))) & 3) << 4)
+        acc = acc + x[tile * 256 + group * 32 + lane] * (
+            scale * signed_scale * (T.cast(value, "float32") - 32)
+        )
+
+    @T.macro
+    def q6_vector(acc: T.Ref, x, w, base, tile, lane, half, scale):
+        low = word_value(w, base + half * 64 + (lane // 8 % 2) * 32 + lane % 8 * 4)
+        high = word_value(w, base + 128 + half * 32 + lane % 8 * 4)
+        j = tile * 256 + half * 128 + lane * 4
+        left = T.call_extern("float32x4", "vec4<f32>", x[j], x[j + 1], x[j + 2], x[j + 3])
+        right = T.call_extern(
+            "float32x4",
+            "vec4<f32>",
+            T.cast(
+                ((low >> (lane // 16 * 4)) & 15) | (((high >> (lane // 8 * 2)) & 3) << 4), "float32"
+            )
+            - 32,
+            T.cast(
+                ((low >> (8 + lane // 16 * 4)) & 15) | (((high >> (8 + lane // 8 * 2)) & 3) << 4),
+                "float32",
+            )
+            - 32,
+            T.cast(
+                ((low >> (16 + lane // 16 * 4)) & 15) | (((high >> (16 + lane // 8 * 2)) & 3) << 4),
+                "float32",
+            )
+            - 32,
+            T.cast(
+                ((low >> (24 + lane // 16 * 4)) & 15) | (((high >> (24 + lane // 8 * 2)) & 3) << 4),
+                "float32",
+            )
+            - 32,
+        )
+        bits = byte(w, base + 192 + half * 8 + lane // 4)
+        signed_scale = T.cast(
+            T.cast(bits, "int32") - T.if_then_else(T.cast(bits, "int32") >= 128, 256, 0), "float32"
+        )
+        acc = acc + scale * signed_scale * T.call_extern("float32", "dot", left, right)
+
+    @T.macro
+    def update_native(acc: T.Ref, x, w, tile, lane, row, bx):
+        index = tile * 128 + lane * 4
+        left = T.call_extern(
+            "float32x4", "vec4<f32>", x[index], x[index + 1], x[index + 2], x[index + 3]
+        )
+        base = (bx * 4 + row) * k + index
+        right = T.call_extern(
+            "float32x4",
+            "vec4<f32>",
+            T.cast(w[base], "float32"),
+            T.cast(w[base + 1], "float32"),
+            T.cast(w[base + 2], "float32"),
+            T.cast(w[base + 3], "float32"),
+        )
+        acc = acc + T.call_extern("float32", "dot", left, right)
+
+    @T.macro
+    def update_scalar(acc: T.Ref, x, w, tile, lane, row, bx):
+        acc = acc + x[tile * 32 + lane] * decoder(w, bx * row_count + row, tile * 32 + lane)
+
+    @T.macro
+    def compute(acc, x, w, tile, lane, row, bx, slot):
+        if fast_q4:
+            base = ((bx * row_count + row) * (k // 32) + tile * (lanes // 4) + lane // 4) * 18
+            scale = half_value(w, base)
+            packed = word_value(w, base + 2 + lane % 4 * 4)
+            index = tile * (lanes * 8) + lane // 4 * 32 + lane % 4 * 4
+            q4_terms(acc, x, index, scale, packed, slot)
+        elif q == 14:
+            base = ((bx * row_count + row) * (k // 256) + tile) * 210
+            scale = half_value(w, base + 208)
+            q6_terms(acc, x, w, base, tile, lane, slot, scale)
+        elif q in (0, 1) and k % 128 == 0:
+            update_native(acc[slot][0], x, w, tile, lane, row, bx)
+        elif q == 2:
+            base = ((bx * row_count + row) * (k // 32) + tile) * 18
+            scale = half_value(w, base)
+            packed = byte(w, base + 2 + lane)
+            scalar_term(acc[slot][0], x, tile * 32 + lane, scale, packed, 0, 0)
+            scalar_term(acc[slot][0], x, tile * 32 + lane, scale, packed, 4, 16)
+        else:
+            update_scalar(acc[slot][0], x, w, tile, lane, row, bx)
+
+    @T.macro
+    def combine4(out: T.Ref, a, b, c, d):
+        out = (a + b) + (c + d)
+
+    @T.macro
+    def add(out: T.Ref, value):
+        out = out + value
+
+    @T.macro
+    def shuffle(acc: T.Ref, stride):
+        acc = acc + T.call_extern("float32", "subgroupShuffleXor", acc, T.uint32(stride))
+
+    @T.macro
+    def spill(scratch, value, tx):
+        scratch[tx] = value
+
+    @T.macro
+    def shared_step(scratch, tx, stride):
+        scratch[tx] = scratch[tx] + scratch[tx + stride]
+
+    @T.macro
+    def reduction_step(scratch, tx, lane, stride):
+        if lane < stride:
+            steps(scratch, tx, stride)
+        T.sync_threads()
+
+    @T.macro
+    def gemv(x, w, out, w2=None, residual=None):
+        with T.Kernel(T.ceildiv(o, row_count), threads=threads) as bx:
+            tx = T.get_thread_binding()
+            row = tx // lanes
+            lane = tx % lanes
+            accum = registers((parts, chains))
+            totals = registers((parts,))
+            scratch = shared_buffers((threads,), "float32", parts)
+            if bx * row_count + row < o:
+                for chunk in T.serial(tiles // unroll):
+                    compute_slots(accum, x, (w, w2), chunk, lane, row, bx)
+            combine(accum, totals)
+            if p.get("sg"):
+                if T.call_extern("uint32", "tensor_subgroup_size") >= lanes:
+                    shuffles(totals)
+                    spills(totals, scratch, tx)
                 else:
-                    loop=f'''        for tile in T.serial({k//32}):
-            accum = accum + x[tile * 32 + lane] * ({expr})'''
-            unroll=p.get('gemv_unroll',1);chains=p.get('gemv_chains',1)
-            if unroll!=1 or chains!=1:
-                match=re.match(r'        for tile in T.serial\((\d+)\):',loop)
-                if (q not in (2,14) or type(unroll) is not int or unroll not in (1,2,4,8,16)
-                    or type(chains) is not int or chains not in (1,2,4,8) or chains>unroll
-                    or accumulators!=1 or match is None or int(match[1])%unroll):
-                    raise ValueError('invalid packed decode unroll or accumulator chains')
-                body='\n'.join(loop.splitlines()[1:]);parts=[]
-                for slot in range(unroll):
-                    part=re.sub(r'\btile\b',f'(tile * {unroll} + {slot})',body)
-                    if chains>1:part=re.sub(r'\baccum\b',f'acc{slot%chains}',part)
-                    parts.append(part)
-                loop=f'        for tile in T.serial({int(match[1])//unroll}):\n'+'\n'.join(parts)
-                if chains>1:accumulators=chains
-            reduction='\n'.join(f'''    if lane < {stride}:
-        scratch[tx] = scratch[tx] + scratch[tx + {stride}]
-    T.sync_threads()''' for stride in (lanes>>i for i in range(1,lanes.bit_length())))
-            reduction = segmented_reduce(lanes) if p.get('sg') else '    scratch[tx] = accum\n    T.sync_threads()\n'+reduction
-            extra='' if accumulators==1 else '\n'+'\n'.join(f'    acc{i} = T.alloc_var("float32")\n    acc{i} = 0' for i in range(accumulators))
-            combine='' if accumulators==1 else '\n    accum = '+('(acc0 + acc1) + (acc2 + acc3)' if accumulators==4 else ' + '.join(f'acc{i}' for i in range(accumulators)))
-            return emit([a('x',k),a('w',count,dtype),a('out',o)],f'''with T.Kernel(T.ceildiv({o}, {row_count}), threads={threads}) as bx:
-    tx = T.get_thread_binding()
-    row = tx // {lanes}
-    lane = tx % {lanes}
-    accum = T.alloc_var("float32")
-    scratch = T.alloc_shared(({threads},), "float32")
-    accum = 0{extra}
-    if bx * {row_count} + row < {o}:
-{loop}{combine}
-{reduction}
-    if (lane == 0) & (bx * {row_count} + row < {o}):
-        out[bx * {row_count} + row] = scratch[tx]''')
-        if kind=='linear' and r>1:
-            k,o=p['k'],p['o'];_,block,size=TYPES[q]
-            count=k*o if q in (0,1) else k*o//block*size//4
-            dtype='float16' if q==1 else 'float32' if q==0 else 'uint32'
-            args=[a('x',r*k),a('w',count,dtype),a('out',r*o)]
-            from tensor.compiler.webgpu_lowering import register_matmul_schedule,partitioned_matmul_schedule,outer_product_matmul_schedule
-            tm,tn,bk=p.get('tile',(16,32,64))
-            if p.get('schedule')=='outer':
-                if q not in (1,2,14):raise ValueError('outer-product prefill requires F16, Q4_0 or Q6_K weights')
-                shared_dtype=p.get('outer_shared_dtype','float16')
-                if shared_dtype not in ('float16','float32'):raise ValueError('invalid outer-product shared dtype')
-                loads={} if q==1 else dict(rhs_value=weight(q,'{column}','{k}',k,packed_words=True),rhs_transform=round_half('{value}'))
-                if q==1 and shared_dtype=='float32':loads=dict(rhs_value='T.cast(w[({column}) * '+str(k)+' + ({k})], "float32")')
-                body=outer_product_matmul_schedule(r,k,o,dtype=shared_dtype,
-                    lhs_value=round_half('x[({row}) * '+str(k)+' + ({k})]'),**loads,**p['outer'])
-                return emit(args,body)
-            if p.get('schedule')=='partitioned':
-                if q!=1:raise ValueError('searched partitioned profile requires F16 weights')
-                lhs=round_half('x[({row}) * '+str(k)+' + ({k})]')
-                rhs='T.cast(w[({column}) * '+str(k)+' + ({k})], "float32")'
-                body=partitioned_matmul_schedule(r,k,o,lhs,rhs,tile_m=tm,tile_n=tn,
-                    **{name:p[name] for name in ('threads','partitions','unroll','dot_width','owner_axis','k_layout')})
-                if p.get('explicit_unroll'):body='T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})\n'+body
-                return emit(args,body)
-            expr=weight(q,f'bx * {tn} + i',f'tile * {bk} + j',k,packed_words=True)
-            value=round_half('value') if q!=1 else 'value'
-            rhs=f'T.if_then_else(bx * {tn} + i < {o}, {expr}, 0)'
-            body=register_matmul_schedule(r,k,o,round_half('value'),rhs,tile_m=tm,tile_n=tn,tile_k=bk,threads=p.get('threads',128),pad=p.get('pad',0),
-                lhs_pad=p.get('lhs_pad',0),lhs_transpose=p.get('lhs_transpose',False),
-                dot_width=p.get('dot_width',4 if q==1 or k>=2048 else 1),unroll=p.get('unroll',False))
-            body=body.replace('rhs[j, i] = value',f'rhs[j, i] = {value}')
-            if p.get('explicit_unroll'):body='T.func_attr({"tensor.webgpu.loop_unroll":"explicit"})\n'+body
-            return emit(args,body)
-        if q in (0,1):return text
-        _,block,size=TYPES[q]
-        k=p['k'] if kind=='linear' else p['c']
-        o=p['o'] if kind=='linear' else p['v']
-        count=k*o//block*size
-        if count%4:raise ValueError('WebGPU packed matrices must align to four bytes')
-        text=text.replace(f'w: T.Tensor(({count},), "uint8")',f'w: T.Tensor(({count//4},), "uint32")')
-        coordinates=[('bx * 4 + row','tile * 32 + lane'),('bx * 64 + i','tile * 32 + j')] if kind=='linear' else [('tokens[row]','col')]
-        for row,col in coordinates:
-            text=text.replace(weight(q,row,col,k),weight(q,row,col,k,packed_words=True))
-        return text
-    if kind in ('qnorm','kvnorm'):
-        h,kh,d,cap=p['h'],p['kh'],p['d'],p['cap']
-        query=kind=='qnorm';heads=h if query else kh
-        args=([a('q',r*h*d),a('qw',d),a('qo',r*h*d),a('pos',2,'int32')] if query else
-              [a('k',r*kh*d),a('v',r*kh*d),a('kw',d),a('kc',cap*kh*d,'float16'),a('vc',cap*kh*d,'float16'),a('pos',2,'int32')])
-        x,w,out=('q','qw','qo') if query else ('k','kw','kc')
-        target=f'(row * {heads} + head) * {d}' if query else f'((pos[0] + row) * {heads} + head) * {d}'
-        store=f'''for i in T.Parallel({d//2}):
-    angle = T.cast(pos[0] + row, "float32") * T.exp(-{math.log(p['theta'])*2/d} * i)
-    {out}[{target} + i] = norm[i] * T.cos(angle) - norm[i + {d//2}] * T.sin(angle)
-    {out}[{target} + i + {d//2}] = norm[i] * T.sin(angle) + norm[i + {d//2}] * T.cos(angle)'''
-        if not query:
-            for expression in (f'norm[i] * T.cos(angle) - norm[i + {d//2}] * T.sin(angle)',
-                               f'norm[i] * T.sin(angle) + norm[i + {d//2}] * T.cos(angle)'):
-                store=store.replace(expression,round_half('('+expression+')'))
-            store+='\n'+f'''for i in T.Parallel({d}):
-    vc[{target} + i] = {round_half(f'v[(row * {heads} + head) * {d} + i]')}'''
-            store='if row < pos[1]:\n'+'\n'.join('    '+line for line in store.splitlines())
-        return emit(args,f'''with T.Kernel({heads}, {r}, threads=64) as (head, row):
-    square = T.alloc_fragment(({d},), "float32")
-    total = T.alloc_fragment((1,), "float32")
-    norm = T.alloc_shared(({d},), "float32")
-    for i in T.Parallel({d}):
-        square[i] = {x}[(row * {heads} + head) * {d} + i] * {x}[(row * {heads} + head) * {d} + i]
-    T.reduce_sum(square, total, dim=0)
-    for i in T.Parallel({d}):
-        norm[i] = {x}[(row * {heads} + head) * {d} + i] * T.rsqrt(total[0] / {d} + {p['eps']}) * {w}[i]
-'''+ '\n'.join('    '+line for line in store.splitlines()))
-    if kind=='attention_scores':
-        h,kh,d,cap=p['h'],p['kh'],p['d'],p['cap']
-        shuffles='\n'.join(f'            dot = dot + T.call_extern("float32", "subgroupShuffleXor", dot, T.uint32({stride}))' for stride in (16,8,4,2,1))
-        return emit([a('q',h*d),a('kc',cap*kh*d,'float16'),a('out',h*cap),a('pos',2,'int32')],f'''with T.Kernel({h}, T.ceildiv({cap},32), threads=128) as (head,block):
-    tx = T.get_thread_binding()
-    dot = T.alloc_var("float32")
-    if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
-        lane = tx % 32
-        for tile in T.serial(8):
-            token = block * 32 + tile * 4 + tx // 32
-            dot = 0
-            if token <= pos[0]:
-                for j in T.serial({d//32}):
-                    channel = j * 32 + lane
-                    dot = dot + q[head * {d} + channel] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + channel], "float32")
-{shuffles}
-            if (lane == 0) & (token < {cap}):
-                out[head * {cap} + token] = T.if_then_else(token <= pos[0],dot * {d**-0.5},-T.infinity("float32"))
-    else:
-        if tx < 32:
-            token = block * 32 + tx
-            if token < {cap}:
-                dot = -T.infinity("float32")
-                if token <= pos[0]:
+                    spills(totals, scratch, tx)
+                    T.sync_threads()
+                    reduction(scratch, tx, lane)
+            else:
+                spills(totals, scratch, tx)
+                T.sync_threads()
+                reduction(scratch, tx, lane)
+            if (lane == 0) & (bx * row_count + row < o):
+                epilogue(
+                    out,
+                    residual,
+                    bx * row_count + row,
+                    scratch[0][tx],
+                    scratch[1][tx] if parts == 2 else 0,
+                )
+
+    return projection_abi(kind, p, gemv)
+
+
+def quantize_kernel(kind, p):
+    import tilelang.language as T
+    from tensor.compiler.entry import primitive
+
+    r, k = (p.get("r", 1) if kind == "quantize_q16" else 1), p["k"]
+    if k % 32:
+        raise ValueError("activation blocks require depth divisible by 32")
+    blocks, words, components = r * k // 32, r * k // 4, 2 if kind == "quantize_q16" else 1
+    maximum, total_reduce, rounded = tree_reduce(32, "max"), tree_reduce(32), round_half()
+
+    def shared_components(packed, scales, sums, quants, values, scratch, factor, block, tx):
+        for component in range(components):
+            component_shared(
+                packed, scales, sums, quants, values, scratch, factor, block, tx, component
+            )
+
+    def subgroup_components(packed, scales, sums, value, factor, block, tx):
+        for component in range(components):
+            component_subgroup(packed, scales, sums, value, factor, block, tx, component)
+
+    @T.macro
+    def component_shared(
+        packed, scales, sums, quants, values, scratch, factor: T.Ref, block, tx, component
+    ):
+        scratch[tx] = T.abs(values[tx])
+        T.sync_threads()
+        maximum(scratch, tx)
+        if component == 1 and p.get("fixed_residual"):
+            factor = scales[block] / 254
+        else:
+            factor = T.max(scratch[0] / 127, 1.0e-20)
+        quants[component, tx] = T.cast(T.round(values[tx] / factor), "int32")
+        T.sync_threads()
+        if tx < 8:
+            packed[block * 8 + tx + component * words] = (
+                (T.reinterpret("uint32", quants[component, tx * 4]) & 255)
+                | ((T.reinterpret("uint32", quants[component, tx * 4 + 1]) & 255) << 8)
+                | ((T.reinterpret("uint32", quants[component, tx * 4 + 2]) & 255) << 16)
+                | ((T.reinterpret("uint32", quants[component, tx * 4 + 3]) & 255) << 24)
+            )
+        if components == 2:
+            values[tx] = values[tx] - T.cast(quants[component, tx], "float32") * factor
+        scratch[tx] = T.cast(quants[component, tx], "float32")
+        T.sync_threads()
+        total_reduce(scratch, tx)
+        if tx == 0:
+            scales[block + component * blocks] = factor
+            sums[block + component * blocks] = T.cast(scratch[0], "int32")
+        if components == 2:
+            T.sync_threads()
+
+    @T.macro
+    def component_subgroup(packed, scales, sums, value: T.Ref, factor: T.Ref, block, tx, component):
+        if component == 1 and p.get("fixed_residual"):
+            factor = factor / 254
+        else:
+            factor = T.max(T.call_extern("float32", "subgroupMax", T.abs(value)) / 127, 1.0e-20)
+        quant = T.cast(T.round(value / factor), "int32")
+        bits = (
+            (
+                T.reinterpret(
+                    "uint32",
+                    T.call_extern("int32", "subgroupShuffle", quant, T.uint32((tx // 4) * 4)),
+                )
+                & 255
+            )
+            | (
+                (
+                    T.reinterpret(
+                        "uint32",
+                        T.call_extern(
+                            "int32", "subgroupShuffle", quant, T.uint32((tx // 4) * 4 + 1)
+                        ),
+                    )
+                    & 255
+                )
+                << 8
+            )
+            | (
+                (
+                    T.reinterpret(
+                        "uint32",
+                        T.call_extern(
+                            "int32", "subgroupShuffle", quant, T.uint32((tx // 4) * 4 + 2)
+                        ),
+                    )
+                    & 255
+                )
+                << 16
+            )
+            | (
+                (
+                    T.reinterpret(
+                        "uint32",
+                        T.call_extern(
+                            "int32", "subgroupShuffle", quant, T.uint32((tx // 4) * 4 + 3)
+                        ),
+                    )
+                    & 255
+                )
+                << 24
+            )
+        )
+        total = T.call_extern("int32", "subgroupAdd", quant)
+        if tx % 4 == 0:
+            packed[block * 8 + tx // 4 + component * words] = bits
+        if tx == 0:
+            scales[block + component * blocks] = factor
+            sums[block + component * blocks] = total
+        value = value - T.cast(quant, "float32") * factor
+
+    @T.macro
+    def quantize(x, packed, scales, sums):
+        with T.Kernel(blocks, threads=32) as block:
+            tx = T.get_thread_binding()
+            scratch = T.alloc_shared((32,), "float32")
+            quants = T.alloc_shared((components, 32), "int32")
+            values = T.alloc_shared((32,), "float32")
+            factor = T.alloc_var("float32")
+            if components == 2 and p.get("sg"):
+                value = T.alloc_var("float32")
+                value = rounded(x[block * 32 + tx])
+                if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
+                    subgroup_components(packed, scales, sums, value, factor, block, tx)
+                else:
+                    values[tx] = rounded(x[block * 32 + tx])
+                    shared_components(
+                        packed, scales, sums, quants, values, scratch, factor, block, tx
+                    )
+            else:
+                values[tx] = rounded(x[block * 32 + tx]) if components == 2 else x[block * 32 + tx]
+                shared_components(packed, scales, sums, quants, values, scratch, factor, block, tx)
+
+    return primitive(
+        [
+            ("x", r * k, "float32"),
+            ("packed" if components == 2 else "out", components * words, "uint32"),
+            ("scales", components * blocks, "float32"),
+            ("sums", components * blocks, "int32"),
+        ],
+        quantize,
+    )
+
+
+def integer_prefill_kernel(kind, p):
+    import tilelang.language as T
+    from tensor.compiler.entry import primitive
+    from tensor.compiler.webgpu_templates import packed_integer_matmul
+
+    r, k, o = p.get("r", 1), p["k"], p["o"]
+    parts = 2 if kind == "ffn_q16" else 1
+    byte, half_value, word_value = packed_loads()
+    prepacked = p.get("q4_prepacked", False)
+    count = k * o // 32 * (9 if prepacked else 18) // (1 if prepacked else 4)
+
+    @T.macro
+    def read_word(w, col, block, word):
+        if prepacked:
+            return w[(col * (k // 32) + block) * 9 + word]
+        else:
+            return word_value(w, (col * (k // 32) + block) * 18 + 2 + word * 4)
+
+    @T.macro
+    def read_scale(w, col, block):
+        if prepacked:
+            return T.reinterpret("float32", w[(col * (k // 32) + block) * 9 + 8])
+        else:
+            return half_value(w, (col * (k // 32) + block) * 18)
+
+    config = dict(p.get("integer", {}))
+    if prepacked:
+        config["signed_rhs"] = True
+    algorithm = packed_integer_matmul(
+        r, k, o, read_word, read_scale, projection_epilogue(kind), parts=parts, **config
+    )
+    args = [
+        ("packed", r * k // 2, "uint32"),
+        ("scales", r * k // 16, "float32"),
+        ("sums", r * k // 16, "int32"),
+        ("w", count, "uint32"),
+    ]
+    if parts == 2:
+
+        @T.macro
+        def call(packed, scales, sums, w, w2, out):
+            algorithm(packed, scales, sums, w, out, w2)
+
+        return primitive([*args, ("w2", count, "uint32"), ("out", r * o, "float32")], call)
+    return primitive([*args, ("out", r * o, "float32")], algorithm)
+
+
+def q8_kernel(p):
+    import tilelang.language as T
+
+    k, o, lanes = p["k"], p["o"], 16
+    segmented = segmented_reduce(lanes)
+    byte, half_value, word_value = packed_loads()
+
+    @T.prim_func
+    def kernel(
+        x: T.Tensor((k // 4,), "uint32"),
+        scales: T.Tensor((k // 32,), "float32"),
+        sums: T.Tensor((k // 32,), "int32"),
+        w: T.Tensor((k * o // 32 * 18 // 4,), "uint32"),
+        out: T.Tensor((o,), "float32"),
+    ):
+        with T.Kernel(T.ceildiv(o, 8), threads=128) as bx:
+            tx = T.get_thread_binding()
+            row = tx // lanes
+            lane = tx % lanes
+            accum = T.alloc_var("float32")
+            scratch = T.alloc_shared((128,), "float32")
+            accum = 0
+            if bx * 8 + row < o:
+                for tile in T.serial(k // 128):
+                    block = tile * 4 + lane // 4
+                    base = ((bx * 8 + row) * (k // 32) + block) * 18
+                    packed = word_value(w, base + 2 + lane % 4 * 4)
+                    low = T.call_extern(
+                        "int32",
+                        "dot4I8Packed",
+                        packed & T.uint32(252645135),
+                        x[block * 8 + lane % 4],
+                    )
+                    high = T.call_extern(
+                        "int32",
+                        "dot4I8Packed",
+                        (packed >> 4) & T.uint32(252645135),
+                        x[block * 8 + lane % 4 + 4],
+                    )
+                    accum = accum + T.cast(low + high - 2 * sums[block], "float32") * scales[
+                        block
+                    ] * half_value(w, base)
+            segmented(accum, scratch, tx, lane)
+            if (lane == 0) & (bx * 8 + row < o):
+                out[bx * 8 + row] = scratch[tx]
+
+    return kernel
+
+
+def segmented_reduce(lanes):
+    import tilelang.language as T
+
+    def shuffles(acc):
+        for stride in (lanes >> i for i in range(1, lanes.bit_length())):
+            shuffle(acc, stride)
+
+    def steps(scratch, tx, lane):
+        for stride in (lanes >> i for i in range(1, lanes.bit_length())):
+            step(scratch, tx, lane, stride)
+
+    @T.macro
+    def shuffle(acc: T.Ref, stride):
+        acc = acc + T.call_extern("float32", "subgroupShuffleXor", acc, T.uint32(stride))
+
+    @T.macro
+    def step(scratch, tx, lane, stride):
+        if lane < stride:
+            scratch[tx] = scratch[tx] + scratch[tx + stride]
+        T.sync_threads()
+
+    @T.macro
+    def segmented(acc: T.Ref, scratch, tx, lane):
+        if T.call_extern("uint32", "tensor_subgroup_size") >= lanes:
+            shuffles(acc)
+            scratch[tx] = acc
+        else:
+            scratch[tx] = acc
+            T.sync_threads()
+            steps(scratch, tx, lane)
+
+    return segmented
+
+
+def rms_kernel(kind, p):
+    import tilelang.language as T
+    from tensor.compiler.entry import primitive
+
+    r, c, eps = p.get("r", 1), p["c"], p["eps"]
+    threads, fused = rms_width(c), kind == "add_rms"
+    reduce = subgroup_reduce(threads) if p.get("sg") else tree_reduce(threads)
+
+    @T.macro
+    def value(x, mixed, index):
+        if fused:
+            return x[index] + mixed[index]
+        else:
+            return x[index]
+
+    @T.macro
+    def normalize(x, w, out, mixed=None, residual=None):
+        with T.Kernel(r, threads=threads) as row:
+            tx = T.get_thread_binding()
+            total = T.alloc_var("float32")
+            scratch = T.alloc_shared((threads,), "float32")
+            total = 0
+            for i in T.serial(c // threads):
+                total = total + value(x, mixed, row * c + i * threads + tx) * value(
+                    x, mixed, row * c + i * threads + tx
+                )
+            if p.get("sg"):
+                reduce(scratch, tx, total)
+            else:
+                scratch[tx] = total
+                T.sync_threads()
+                reduce(scratch, tx)
+            for i in T.serial(c // threads):
+                if fused:
+                    residual[row * c + i * threads + tx] = (
+                        x[row * c + i * threads + tx] + mixed[row * c + i * threads + tx]
+                    )
+                out[row * c + i * threads + tx] = (
+                    value(x, mixed, row * c + i * threads + tx)
+                    * T.rsqrt(scratch[0] / c + eps)
+                    * w[i * threads + tx]
+                )
+
+    if fused:
+
+        @T.macro
+        def call(x, mixed, residual, w, out):
+            normalize(x, w, out, mixed, residual)
+
+        return primitive(
+            [
+                ("x", r * c, "float32"),
+                ("mixed", r * c, "float32"),
+                ("residual", r * c, "float32"),
+                ("w", c, "float32"),
+                ("out", r * c, "float32"),
+            ],
+            call,
+        )
+    return primitive(
+        [("x", r * c, "float32"), ("w", c, "float32"), ("out", r * c, "float32")], normalize
+    )
+
+
+def normalization_kernel(kind, p):
+    import tilelang.language as T
+    from tensor.compiler.entry import primitive
+
+    r, h, kh, d, cap = p.get("r", 1), p["h"], p["kh"], p["d"], p["cap"]
+    query = kind == "qnorm"
+    heads, eps, angle_scale = h if query else kh, p["eps"], math.log(p["theta"]) * 2 / d
+    rounded = round_half()
+
+    @T.macro
+    def normalize(x, w, out, pos, v=None, vc=None):
+        with T.Kernel(heads, r, threads=64) as (head, row):
+            square = T.alloc_fragment((d,), "float32")
+            total = T.alloc_fragment((1,), "float32")
+            norm = T.alloc_shared((d,), "float32")
+            for i in T.Parallel(d):
+                square[i] = x[(row * heads + head) * d + i] * x[(row * heads + head) * d + i]
+            T.reduce_sum(square, total, dim=0)
+            for i in T.Parallel(d):
+                norm[i] = x[(row * heads + head) * d + i] * T.rsqrt(total[0] / d + eps) * w[i]
+            if query:
+                for i in T.Parallel(d // 2):
+                    angle = T.cast(pos[0] + row, "float32") * T.exp(-angle_scale * i)
+                    out[(row * heads + head) * d + i] = norm[i] * T.cos(angle) - norm[
+                        i + d // 2
+                    ] * T.sin(angle)
+                    out[(row * heads + head) * d + i + d // 2] = norm[i] * T.sin(angle) + norm[
+                        i + d // 2
+                    ] * T.cos(angle)
+            else:
+                if row < pos[1]:
+                    for i in T.Parallel(d // 2):
+                        angle = T.cast(pos[0] + row, "float32") * T.exp(-angle_scale * i)
+                        out[((pos[0] + row) * heads + head) * d + i] = rounded(
+                            norm[i] * T.cos(angle) - norm[i + d // 2] * T.sin(angle)
+                        )
+                        out[((pos[0] + row) * heads + head) * d + i + d // 2] = rounded(
+                            norm[i] * T.sin(angle) + norm[i + d // 2] * T.cos(angle)
+                        )
+                    for i in T.Parallel(d):
+                        vc[((pos[0] + row) * heads + head) * d + i] = rounded(
+                            v[(row * heads + head) * d + i]
+                        )
+
+    @T.macro
+    def call(k, v, kw, kc, vc, pos):
+        normalize(k, kw, kc, pos, v, vc)
+
+    if query:
+        return primitive(
+            [
+                ("q", r * h * d, "float32"),
+                ("qw", d, "float32"),
+                ("qo", r * h * d, "float32"),
+                ("pos", 2, "int32"),
+            ],
+            normalize,
+        )
+    return primitive(
+        [
+            ("k", r * kh * d, "float32"),
+            ("v", r * kh * d, "float32"),
+            ("kw", d, "float32"),
+            ("kc", cap * kh * d, "float16"),
+            ("vc", cap * kh * d, "float16"),
+            ("pos", 2, "int32"),
+        ],
+        call,
+    )
+
+
+def score_shuffle():
+    import tilelang.language as T
+
+    def reduce(dot):
+        for stride in (16, 8, 4, 2, 1):
+            step(dot, stride)
+
+    @T.macro
+    def step(dot: T.Ref, stride):
+        dot = dot + T.call_extern("float32", "subgroupShuffleXor", dot, T.uint32(stride))
+
+    return reduce
+
+
+def attention_scores_kernel(p):
+    import tilelang.language as T
+
+    h, kh, d, cap = (p[n] for n in ("h", "kh", "d", "cap"))
+    shuffle = score_shuffle()
+
+    @T.prim_func
+    def kernel(
+        q: T.Tensor((h * d,), "float32"),
+        kc: T.Tensor((cap * kh * d,), "float16"),
+        out: T.Tensor((h * cap,), "float32"),
+        pos: T.Tensor((2,), "int32"),
+    ):
+        with T.Kernel(h, T.ceildiv(cap, 32), threads=128) as (head, block):
+            tx = T.get_thread_binding()
+            dot = T.alloc_var("float32")
+            if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
+                lane = tx % 32
+                for tile in T.serial(8):
+                    token = block * 32 + tile * 4 + tx // 32
                     dot = 0
-                    for j in T.serial({d}):
-                        dot = dot + q[head * {d} + j] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + j], "float32")
-                    dot = dot * {d**-0.5}
-                out[head * {cap} + token] = dot''')
-    if kind=='attention':
-        h,kh,d,cap=p['h'],p['kh'],p['d'],p['cap'];threads=128
-        if r==1 and p.get('attention_schedule')=='partitioned_values':
-            channels=p['channels'];parts=p['value_parts'];threads=channels*parts
-            if channels not in (16,32,64) or d%channels or parts not in (1,2,4,8,16) or threads>1024:
-                raise ValueError('unsupported decode attention distribution')
-            maximum_reduce=subgroup_reduce(threads,'maximum','max')
-            sum_reduce=subgroup_reduce(threads,'total')
-            arguments=[a('q',h*cap),a('vc',cap*kh*d,'float16'),a('out',h*d),a('pos',2,'int32')]
-            score_loop=f'''    for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
-        token = tile * {threads} + tx
-        if token <= pos[0]:
-            scores[token] = q[head * {cap} + token]
-            maximum = T.max(maximum, scores[token])'''
-            if p.get('fused_scores'):
-                if threads%32 or d%32:raise ValueError('fused attention requires complete 32-lane reductions')
-                arguments=[a('q',h*d),a('kc',cap*kh*d,'float16'),*arguments[1:]]
-                shuffles='\n'.join(f'            dot = dot + T.call_extern("float32", "subgroupShuffleXor", dot, T.uint32({stride}))' for stride in (16,8,4,2,1))
-                score_loop=f'''    if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
-        lane = tx % 32
-        for tile in T.serial(T.ceildiv(pos[0] + 1, {threads//32})):
-            token = tile * {threads//32} + tx // 32
-            dot = 0
-            if token <= pos[0]:
-                for j in T.unroll({d//32}):
-                    qchannel = j * 32 + lane
-                    dot = dot + q[head * {d} + qchannel] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + qchannel], "float32")
-{shuffles}
-            if (lane == 0) & (token <= pos[0]):
-                scores[token] = dot * {d**-0.5}
-    else:
-        for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
-            token = tile * {threads} + tx
-            if token <= pos[0]:
+                    if token <= pos[0]:
+                        for j in T.serial(d // 32):
+                            channel = j * 32 + lane
+                            dot = dot + q[head * d + channel] * T.cast(
+                                kc[(token * kh + head // (h // kh)) * d + channel], "float32"
+                            )
+                    shuffle(dot)
+                    if (lane == 0) & (token < cap):
+                        out[head * cap + token] = T.if_then_else(
+                            token <= pos[0], dot * d**-0.5, -T.infinity("float32")
+                        )
+            else:
+                if tx < 32:
+                    token = block * 32 + tx
+                    if token < cap:
+                        dot = -T.infinity("float32")
+                        if token <= pos[0]:
+                            dot = 0
+                            for j in T.serial(d):
+                                dot = dot + q[head * d + j] * T.cast(
+                                    kc[(token * kh + head // (h // kh)) * d + j], "float32"
+                                )
+                            dot = dot * d**-0.5
+                        out[head * cap + token] = dot
+
+    return kernel
+
+
+def attention_kernel(p):
+    import tilelang.language as T
+    from tensor.compiler.entry import primitive
+
+    r, h, kh, d, cap = p.get("r", 1), p["h"], p["kh"], p["d"], p["cap"]
+    partitioned = r == 1 and p.get("attention_schedule") == "partitioned_values"
+    channels, parts = (p["channels"], p["value_parts"]) if partitioned else (d, 1)
+    threads = channels * parts if partitioned else 128
+    if partitioned and (
+        channels not in (16, 32, 64)
+        or d % channels
+        or parts not in (1, 2, 4, 8, 16)
+        or threads > 1024
+    ):
+        raise ValueError("unsupported decode attention distribution")
+    fused_scores = partitioned and p.get("fused_scores", False)
+    if fused_scores and (threads % 32 or d % 32):
+        raise ValueError("fused attention requires complete 32-lane reductions")
+    split = partitioned and not fused_scores or not partitioned and p.get("sg") and r == 1
+    sg = partitioned or p.get("sg", False)
+    max_reduce = subgroup_reduce(threads, "max") if sg else tree_reduce(threads, "max")
+    sum_reduce = subgroup_reduce(threads) if sg else tree_reduce(threads)
+    shuffle = score_shuffle()
+    score_loop = T.unroll if partitioned else T.serial
+
+    @T.macro
+    def scores_serial(q, kc, scores, maximum: T.Ref, dot: T.Ref, head, row, pos, tx):
+        for tile in T.serial(T.ceildiv(cap, threads)):
+            token = tile * threads + tx
+            if token < cap:
+                dot = -T.infinity("float32")
+                if token <= pos[0] + row:
+                    dot = 0
+                    for j in T.serial(d):
+                        dot = dot + q[(row * h + head) * d + j] * T.cast(
+                            kc[(token * kh + head // (h // kh)) * d + j], "float32"
+                        )
+                    dot = dot * d**-0.5
+                scores[token] = dot
+                maximum = T.max(maximum, dot)
+
+    @T.macro
+    def scores_subgroup(q, kc, scores, maximum: T.Ref, dot: T.Ref, head, row, pos, tx):
+        if not partitioned:
+            for token in T.Parallel(cap):
+                scores[token] = -T.infinity("float32")
+            T.sync_threads()
+        if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
+            lane = tx % 32
+            for tile in T.serial(T.ceildiv(pos[0] + row + 1, threads // 32)):
+                token = tile * (threads // 32) + tx // 32
                 dot = 0
-                for j in T.serial({d}):
-                    dot = dot + q[head * {d} + j] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + j], "float32")
-                scores[token] = dot * {d**-0.5}
-    T.sync_threads()
-    for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
-        token = tile * {threads} + tx
-        if token <= pos[0]:
-            maximum = T.max(maximum, scores[token])'''
-            return emit(arguments,f'''with T.Kernel({h}, {d//channels}, threads={threads}) as (head, block):
-    tx = T.get_thread_binding()
-    channel = tx % {channels}
-    part = tx // {channels}
-    scores = T.alloc_shared(({cap},), "float32")
-    scratch = T.alloc_shared(({threads},), "float32")
-    partials = T.alloc_shared(({threads},), "float32")
-    maximum = T.alloc_var("float32")
-    total = T.alloc_var("float32")
-    result = T.alloc_var("float32")
-    dot = T.alloc_var("float32")
-    maximum = -T.infinity("float32")
-{score_loop}
-{maximum_reduce}
-    total = 0
-    for tile in T.serial(T.ceildiv(pos[0] + 1, {threads})):
-        token = tile * {threads} + tx
-        if token <= pos[0]:
-            scores[token] = T.exp(scores[token] - scratch[0])
-            total = total + scores[token]
-    T.sync_threads()
-{sum_reduce}
-    result = 0
-    for tile in T.serial(T.ceildiv(pos[0] + 1, {parts})):
-        token = tile * {parts} + part
-        if token <= pos[0]:
-            result = result + scores[token] * T.cast(vc[(token * {kh} + head // {h//kh}) * {d} + block * {channels} + channel], "float32")
-    partials[tx] = result
-    T.sync_threads()
-    if part == 0:
-        result = 0
-        for other in T.unroll({parts}):
-            result = result + partials[other * {channels} + channel]
-        out[head * {d} + block * {channels} + channel] = result / scratch[0]''')
-        maximum_reduce=subgroup_reduce(threads,'maximum','max') if p.get('sg') else '    scratch[tx] = maximum\n    T.sync_threads()\n'+tree_reduce(threads,'max')
-        sum_reduce=subgroup_reduce(threads,'total') if p.get('sg') else '    scratch[tx] = total\n    T.sync_threads()\n'+tree_reduce(threads)
-        score_loop=f'''    for tile in T.serial(T.ceildiv({cap}, {threads})):
-        token = tile * {threads} + tx
-        if token < {cap}:
-            dot = -T.infinity("float32")
-            if token <= pos[0] + row:
-                dot = 0
-                for j in T.serial({d}):
-                    dot = dot + q[(row * {h} + head) * {d} + j] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + j], "float32")
-                dot = dot * {d**-0.5}
-            scores[token] = dot
-            maximum = T.max(maximum, dot)'''
-        if p.get('sg'):
-            shuffles='\n'.join(f'            dot = dot + T.call_extern("float32", "subgroupShuffleXor", dot, T.uint32({stride}))' for stride in (16,8,4,2,1))
-            fallback='\n'.join('    '+line for line in score_loop.splitlines())
-            score_loop=f'''    for token in T.Parallel({cap}):
-        scores[token] = -T.infinity("float32")
-    T.sync_threads()
-    if T.call_extern("uint32", "tensor_subgroup_size") >= 32:
-        lane = tx % 32
-        for tile in T.serial(T.ceildiv(pos[0] + row + 1, 4)):
-            token = tile * 4 + tx // 32
-            dot = 0
-            if token <= pos[0] + row:
-                for j in T.serial({d//32}):
-                    channel = j * 32 + lane
-                    dot = dot + q[(row * {h} + head) * {d} + channel] * T.cast(kc[(token * {kh} + head // {h//kh}) * {d} + channel], "float32")
-{shuffles}
-            if (lane == 0) & (token <= pos[0] + row):
-                scores[token] = dot * {d**-0.5}
-    else:
-{fallback}
-    T.sync_threads()
-    for tile in T.serial(T.ceildiv({cap}, {threads})):
-        token = tile * {threads} + tx
-        if token < {cap}:
-            maximum = T.max(maximum, scores[token])'''
-        split = p.get('sg') and r==1
-        if split:
-            score_loop=f'''    for tile in T.serial(T.ceildiv({cap}, {threads})):
-        token = tile * {threads} + tx
-        if token < {cap}:
-            scores[token] = q[head * {cap} + token]
-            maximum = T.max(maximum,scores[token])'''
-        arguments=[a('q',h*cap if split else r*h*d),*([] if split else [a('kc',cap*kh*d,'float16')]),a('vc',cap*kh*d,'float16'),a('out',r*h*d),a('pos',2,'int32')]
-        text=emit(arguments,f'''with T.Kernel({h}, {r}, threads={threads}) as (head, row):
-    tx = T.get_thread_binding()
-    dot = T.alloc_var("float32")
-    maximum = T.alloc_var("float32")
-    total = T.alloc_var("float32")
-    result = T.alloc_var("float32")
-    scores = T.alloc_shared(({cap},), "float32")
-    scratch = T.alloc_shared(({threads},), "float32")
-    maximum = -T.infinity("float32")
-{score_loop}
-{maximum_reduce}
-    total = 0
-    for tile in T.serial(T.ceildiv({cap}, {threads})):
-        token = tile * {threads} + tx
-        if token < {cap}:
-            scores[token] = T.exp(scores[token] - scratch[0])
-            total = total + scores[token]
-    T.sync_threads()
-{sum_reduce}
-    result = 0
-    if tx < {d}:
-        for token in T.serial({cap}):
-            if token <= pos[0] + row:
-                result = result + scores[token] * T.cast(vc[(token * {kh} + head // {h//kh}) * {d} + tx], "float32")
-        out[(row * {h} + head) * {d} + tx] = result / scratch[0]''')
-        if p.get('sg'):
-            text=text.replace(f'T.ceildiv({cap}, {threads})','T.ceildiv(pos[0] + row + 1, '+str(threads)+')')
-            text=text.replace(f'for token in T.serial({cap}):','for token in T.serial(pos[0] + row + 1):')
-            text=text.replace('            if token <= pos[0] + row:\n                result =','            result =')
-        return text
-    if kind=='qkv':raise ValueError('WebGPU uses separate query/cache normalization kernels')
-    return cuda_source(kind,p)
+                if token <= pos[0] + row:
+                    for j in score_loop(d // 32):
+                        channel = j * 32 + lane
+                        dot = dot + q[(row * h + head) * d + channel] * T.cast(
+                            kc[(token * kh + head // (h // kh)) * d + channel], "float32"
+                        )
+                shuffle(dot)
+                if (lane == 0) & (token <= pos[0] + row):
+                    scores[token] = dot * d**-0.5
+        else:
+            if partitioned:
+                for tile in T.serial(T.ceildiv(pos[0] + 1, threads)):
+                    token = tile * threads + tx
+                    if token <= pos[0]:
+                        dot = 0
+                        for j in T.serial(d):
+                            dot = dot + q[head * d + j] * T.cast(
+                                kc[(token * kh + head // (h // kh)) * d + j], "float32"
+                            )
+                        scores[token] = dot * d**-0.5
+            else:
+                scores_serial(q, kc, scores, maximum, dot, head, row, pos, tx)
+        T.sync_threads()
+        for tile in T.serial(T.ceildiv(pos[0] + row + 1, threads)):
+            token = tile * threads + tx
+            if token < cap:
+                if not partitioned or token <= pos[0]:
+                    maximum = T.max(maximum, scores[token])
+
+    @T.macro
+    def attention(q, vc, out, pos, kc=None):
+        with T.Kernel(h, d // channels if partitioned else r, threads=threads) as (head, block):
+            row = 0 if partitioned else block
+            tx = T.get_thread_binding()
+            dot = T.alloc_var("float32")
+            maximum = T.alloc_var("float32")
+            total = T.alloc_var("float32")
+            result = T.alloc_var("float32")
+            scores = T.alloc_shared((cap,), "float32")
+            scratch = T.alloc_shared((threads,), "float32")
+            if partitioned:
+                partials = T.alloc_shared((threads,), "float32")
+                channel = tx % channels
+                part = tx // channels
+            maximum = -T.infinity("float32")
+            if split:
+                for tile in T.serial(T.ceildiv(pos[0] + row + 1 if sg else cap, threads)):
+                    token = tile * threads + tx
+                    if token < cap:
+                        if not partitioned or token <= pos[0]:
+                            scores[token] = q[head * cap + token]
+                            maximum = T.max(maximum, scores[token])
+            elif sg:
+                scores_subgroup(q, kc, scores, maximum, dot, head, row, pos, tx)
+            else:
+                scores_serial(q, kc, scores, maximum, dot, head, row, pos, tx)
+            if sg:
+                max_reduce(scratch, tx, maximum)
+            else:
+                scratch[tx] = maximum
+                T.sync_threads()
+                max_reduce(scratch, tx)
+            total = 0
+            for tile in T.serial(T.ceildiv(pos[0] + row + 1 if sg else cap, threads)):
+                token = tile * threads + tx
+                if token < cap:
+                    if not partitioned or token <= pos[0]:
+                        scores[token] = T.exp(scores[token] - scratch[0])
+                        total = total + scores[token]
+            T.sync_threads()
+            if sg:
+                sum_reduce(scratch, tx, total)
+            else:
+                scratch[tx] = total
+                T.sync_threads()
+                sum_reduce(scratch, tx)
+            result = 0
+            if partitioned:
+                for tile in T.serial(T.ceildiv(pos[0] + 1, parts)):
+                    token = tile * parts + part
+                    if token <= pos[0]:
+                        result = result + scores[token] * T.cast(
+                            vc[(token * kh + head // (h // kh)) * d + block * channels + channel],
+                            "float32",
+                        )
+                partials[tx] = result
+                T.sync_threads()
+                if part == 0:
+                    result = 0
+                    for other in T.unroll(parts):
+                        result = result + partials[other * channels + channel]
+                    out[head * d + block * channels + channel] = result / scratch[0]
+            else:
+                if tx < d:
+                    if sg:
+                        for token in T.serial(pos[0] + row + 1):
+                            result = result + scores[token] * T.cast(
+                                vc[(token * kh + head // (h // kh)) * d + tx], "float32"
+                            )
+                    else:
+                        for token in T.serial(cap):
+                            if token <= pos[0] + row:
+                                result = result + scores[token] * T.cast(
+                                    vc[(token * kh + head // (h // kh)) * d + tx], "float32"
+                                )
+                    out[(row * h + head) * d + tx] = result / scratch[0]
+
+    @T.macro
+    def call(q, kc, vc, out, pos):
+        attention(q, vc, out, pos, kc)
+
+    args = [("q", h * cap if split else r * h * d, "float32")]
+    if not split:
+        args += [("kc", cap * kh * d, "float16")]
+    args += [("vc", cap * kh * d, "float16"), ("out", r * h * d, "float32"), ("pos", 2, "int32")]
+    if split:
+        return primitive(args, attention)
+    return primitive(args, call)
+
+
+def make_kernel(kind, p):
+    import tilelang.language as T
+
+    r = p.get("r", 1)
+    if kind in ("linear", "ffn") and p.get("q16"):
+        return integer_prefill_kernel(kind + "_q16", p)
+    if kind in ("linear_q16", "ffn_q16"):
+        return integer_prefill_kernel(kind, p)
+    if kind in ("linear", "ffn", "linear_add"):
+        if kind == "linear_add" and r != 1:
+            raise ValueError("residual projection fusion requires decode rows")
+        return decode_kernel(kind, p) if r == 1 else prefill_kernel(kind, p)
+    if kind in ("quantize_q8", "quantize_q16"):
+        return quantize_kernel(kind, p)
+    if kind == "linear_q8":
+        return q8_kernel(p)
+    if kind == "rms" and (r == 1 or p.get("parallel_rows")) or kind == "add_rms":
+        return rms_kernel(kind, p)
+    if kind in ("qnorm", "kvnorm"):
+        return normalization_kernel(kind, p)
+    if kind == "attention_scores":
+        return attention_scores_kernel(p)
+    if kind == "attention":
+        return attention_kernel(p)
+    if kind == "embedding":
+        c, q, v = p["c"], p["type"], p["v"]
+        count, dtype = weight_storage(q, v * c, packed_words=True)
+        decoder = weight_decoder(q, c, packed_words=True)
+
+        @T.prim_func
+        def kernel(
+            tokens: T.Tensor((r,), "int32"),
+            w: T.Tensor((count,), dtype),
+            out: T.Tensor((r * c,), "float32"),
+        ):
+            with T.Kernel(T.ceildiv(c, 256), r, threads=256) as (bx, row):
+                for lane in T.Parallel(256):
+                    col = bx * 256 + lane
+                    if col < c:
+                        out[row * c + col] = decoder(w, tokens[row], col)
+
+        return kernel
+    if kind == "argmax":
+        # This shared-memory reduction has identical CUDA and WebGPU semantics.
+        from .kernels import argmax_kernel
+
+        return argmax_kernel(p, explicit_unroll=True)
+    if kind == "prefill_tail":
+        c, t = p["c"], p["t"]
+
+        @T.prim_func
+        def kernel(
+            x: T.Tensor((r * c,), "float32"),
+            out: T.Tensor((t * c,), "float32"),
+            control: T.Tensor((2,), "int32"),
+            tail_control: T.Tensor((2,), "int32"),
+        ):
+            with T.Kernel(T.ceildiv(t * c, 256), threads=256) as block:
+                tx = T.get_thread_binding()
+                index = block * 256 + tx
+                start = T.max(control[1] - t, 0)
+                count = T.min(control[1], t)
+                if index < t * c:
+                    out[index] = T.if_then_else(index // c < count, x[start * c + index], 0)
+                if index == 0:
+                    tail_control[0] = control[0] + start
+                    tail_control[1] = count
+
+        return kernel
+    if kind == "qkv":
+        raise ValueError("WebGPU uses separate query/cache normalization kernels")
+    return baseline_kernel(kind, p)

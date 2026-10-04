@@ -13,8 +13,8 @@ from tensor.compiler.webgpu_lowering import partitioned_matmul_schedule
 from tensor.compiler.search import ScheduleSearch
 from tensor.compiler.webgpu_schedules import SPACES, coupled_moves
 from tensor_llm import GGUF
-from tensor_llm.kernels import emit
-from tensor_llm.webgpu_kernels import source,round_half
+from benchmarks.lfm2.text_helpers import emit, round_half
+from tensor_llm.webgpu_kernels import source
 from wgpu.backends.wgpu_native.extras import write_timestamp
 
 class TimestampAdapter:

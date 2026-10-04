@@ -14,7 +14,8 @@ import tensor
 from tensor.artifacts.format import read_artifact
 from tensor.runtime.abi import BoundCall
 from tensor_llm import LFM2
-from tensor_llm.kernels import emit, source
+from tensor_llm.kernels import source
+from benchmarks.lfm2.text_helpers import emit, reference_attention_source
 from benchmarks.lfm2.fp16_decode import linear_source, HALF2
 
 
@@ -131,7 +132,7 @@ def prefetch_source(p,ahead=8):
 def partial_source(p,splits):
     if type(splits) is not int or splits<1:raise ValueError('positive split count required')
     h,kh,d,cap=p['h'],p['kh'],p['d'],p['cap'];stride=d+2
-    original=source('attention',p)
+    original=reference_attention_source('attention',p)
     # Retain the original online-softmax arithmetic within each partition.
     body=textwrap.dedent(original.split(' as head:\n',1)[1].split('\ndef tensor_export',1)[0]).rstrip()
     body=body.replace('for tile in T.serial(T.ceildiv(pos[0] + 1, 64)):',

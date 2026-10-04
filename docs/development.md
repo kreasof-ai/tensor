@@ -62,12 +62,31 @@ deterministic restarts, legality filtering and target-bound producer profiles.
 Benchmarks supply workloads, independent correctness gates and timing. The old
 `tensor.compiler.webgpu_search` module has been removed.
 
-LLM CUDA algorithms in `packages/tensor-llm` emit TileLang/TIRx and compile
-through `tensor.build`. Small hardware operations are lowered in
-`tensor.compiler.cuda_lowering`; complete CUDA algorithms do not live there.
-Measured model settings live in `benchmarks/lfm2/profiles`, outside the runtime
-package. Bundles record the selected schedules and profile fingerprint; standalone
-execution does not import the compiler or read producer profile files.
+Package kernels are ordinary Python TileLang DSL factories, with lazy compiler
+imports. Read the algorithms in
+[`tensor_llm/kernels.py`](../packages/tensor-llm/src/tensor_llm/kernels.py),
+[`cuda_kernels.py`](../packages/tensor-llm/src/tensor_llm/cuda_kernels.py),
+[`webgpu_kernels.py`](../packages/tensor-llm/src/tensor_llm/webgpu_kernels.py),
+[`tensor_nn/kernels.py`](../packages/tensor-nn/src/tensor_nn/kernels.py) and
+[`tensor_torch/kernels.py`](../packages/tensor-torch/src/tensor_torch/kernels.py).
+`@T.prim_func` defines kernels; `@T.macro` composes decoders, fused epilogues and
+schedules. WebGPU SIMT schedule macros live in `tensor.compiler.webgpu_templates`.
+Python expands register microtiles into separate scalar registers during
+specialization, preserving the chosen ownership, layouts and accumulation order.
+
+Producers write small export files that call these factories with specialization
+metadata, then compile through `tensor.build`. `tensor.compiler.entry` fingerprints
+the factory files and their dependencies in each export file, so changing a
+shared decoder or schedule invalidates the build cache. The `.tbin` still embeds
+portable TIRx and compiled device code; consumers execute it without importing
+factories or compiler dependencies. Rebuild package inference/training bundles
+after changing their implementation fingerprints.
+
+Small hardware operations are lowered in `tensor.compiler.cuda_lowering`;
+complete CUDA algorithms do not live there. Measured model settings live in
+`benchmarks/lfm2/profiles`, outside the runtime package. Bundles record selected
+schedules and their profile fingerprint. Historical source-text experiments use
+`benchmarks/lfm2/text_helpers`; production package factories do not use them.
 
 ## Development environment
 

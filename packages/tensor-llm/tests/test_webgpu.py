@@ -13,17 +13,14 @@ ROOT=Path(__file__).resolve().parents[3]
 
 
 def test_explicit_half_rounding_ties_subnormals_and_random_values(tmp_path):
-    from tensor_llm.kernels import emit
-    from tensor_llm.webgpu_kernels import round_half
+    from tensor.compiler.entry import export_source
     rng=np.random.default_rng(342)
     x=np.concatenate((np.array([0.,-0.,2**-25,-2**-25,np.nextafter(np.float32(2**-25),np.float32(1)),2**-24,-2**-24,2**-14,1+2**-11,1+3*2**-11,-1-2**-11,65504.,-65504.],np.float32),
                       rng.normal(size=256).astype(np.float32),rng.uniform(-1e-4,1e-4,size=256).astype(np.float32)))
     n=len(x);source=tmp_path/'round.py';artifact=tmp_path/'round.tbin'
-    source.write_text(emit([('x',n,'float32'),('out',n,'float32')],f'''with T.Kernel(T.ceildiv({n}, 128), threads=128) as block:
-    for lane in T.Parallel(128):
-        i=block*128+lane
-        if i < {n}:
-            out[i]={round_half('x[i]')}'''))
+    source.write_text(export_source(
+        'benchmarks.lfm2.dsl_probes', 'half_conversion_kernel', n,
+        dependencies=('tensor_llm.webgpu_kernels',)))
     tensor.build(source,artifact,provider='webgpu')
     with tensor.Device(provider='webgpu') as device:
         kernel=device.load(artifact);input=device.from_numpy(x);out=device.zeros(n)
@@ -121,7 +118,9 @@ def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup,unroll,dot
     tolerance=np.sum(np.abs(decoded*x),axis=1)*3e-6+1e-10
     path=tmp_path/'projection.py';artifact=tmp_path/'projection.tbin'
     text=source('linear',dict(r=1,k=k,o=o,type=kind,sg=bool(subgroup),gemv_unroll=unroll,gemv_chains=unroll,gemv_q6_dot=dot))
-    if subgroup=='fallback':text=text.replace('T.call_extern("uint32", "tensor_subgroup_size")','T.uint32(8)')
+    if subgroup=='fallback':
+        from benchmarks.lfm2.dsl_probes import subgroup_source
+        text=subgroup_source('linear',dict(r=1,k=k,o=o,type=kind,sg=True,gemv_unroll=unroll,gemv_chains=unroll,gemv_q6_dot=dot),8)
     path.write_text(text);tensor.build(path,artifact,provider='webgpu')
     with tensor.Device(provider='webgpu') as device:
         kernel=device.load(artifact);out=device.zeros(o)
@@ -158,7 +157,9 @@ def test_q4_decode_schedules_tail_and_paired_accumulators(tmp_path,schedule,subg
         tolerance=1.1*bounds[0]*np.abs(references[1])+np.abs(activated)*bounds[1]+1e-7
         expected=activated*references[1]
     text=source(kind,dict(r=1,k=k,o=o,type=2,sg=bool(subgroup),**schedule))
-    if subgroup=='fallback':text=text.replace('T.call_extern("uint32", "tensor_subgroup_size")','T.uint32(4)')
+    if subgroup=='fallback':
+        from benchmarks.lfm2.dsl_probes import subgroup_source
+        text=subgroup_source(kind,dict(r=1,k=k,o=o,type=2,sg=True,**schedule),4)
     path=tmp_path/'decode.py';artifact=path.with_suffix('.tbin');path.write_text(text)
     tensor.build(path,artifact,provider='webgpu')
     with tensor.Device(provider='webgpu') as device:
@@ -196,13 +197,11 @@ def test_decode_residual_projection_matches_separate_add(tmp_path,encoding,subgr
 
 
 def test_native_half_unpack_all_bit_patterns(tmp_path):
-    from tensor_llm.kernels import emit
-    from tensor_llm.webgpu_kernels import half_bits
+    from tensor.compiler.entry import export_source
     n=65536;path=tmp_path/'half.py';artifact=path.with_suffix('.tbin')
-    path.write_text(emit([('x',n,'uint32'),('out',n,'float32')],f'''with T.Kernel({n//128},threads=128) as block:
-    tx=T.get_thread_binding()
-    i=block * 128 + tx
-    out[i]={half_bits('x[i]')}'''))
+    path.write_text(export_source(
+        'benchmarks.lfm2.dsl_probes', 'half_conversion_kernel', n, True,
+        dependencies=('tensor_llm.webgpu_kernels',)))
     tensor.build(path,artifact,provider='webgpu')
     bits=np.arange(n,dtype=np.uint16);expected=bits.view(np.float16).astype(np.float32)
     with tensor.Device(provider='webgpu') as device:

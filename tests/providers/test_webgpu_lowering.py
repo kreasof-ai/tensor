@@ -15,8 +15,7 @@ NATIVE=pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires 
 @pytest.mark.parametrize('dot_width',[1,2,4])
 def test_partitioned_matmul_tail_outputs_and_half_subnormals(tmp_path,owner_axis,tile_n,k_layout,dot_width):
     from tensor.compiler.webgpu_lowering import partitioned_matmul_schedule
-    from tensor_llm.kernels import emit
-    from tensor_llm.webgpu_kernels import round_half
+    from benchmarks.lfm2.text_helpers import emit, round_half
     r,k,o=3,128,7
     lhs=round_half('x[({row}) * 128 + ({k})]')
     rhs='T.cast(w[({column}) * 128 + ({k})], "float32")'
@@ -213,7 +212,9 @@ def test_streamed_gemv_fused_tail_and_f32_activation_contract(tmp_path,force_fal
     p=dict(r=1,k=depth,o=7,type=1,sg=True,decode_schedule='streamed',lanes=32,threads=64,
            micro_rows=2,dot_width=4,unroll=unroll,accumulators=accumulators,k_layout='striped',shared_input=shared_input)
     text=source('ffn',p)
-    if force_fallback:text=text.replace('T.call_extern("uint32", "tensor_subgroup_size")','T.uint32(0)')
+    if force_fallback:
+        from benchmarks.lfm2.dsl_probes import subgroup_source
+        text=subgroup_source('ffn',p,0)
     path=tmp_path/'gemv.py';artifact=path.with_suffix('.tbin');path.write_text(text)
     tensor.build(path,artifact,provider='webgpu')
     rng=np.random.default_rng(172);weights=[rng.normal(size=(7,depth)).astype(np.float16) for _ in range(2)]
@@ -303,7 +304,9 @@ def test_fused_attention_active_tail_and_qk_fallback(tmp_path,force_fallback):
     h,kh,d,cap=4,2,64,96
     text=source('attention',dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,
                 attention_schedule='partitioned_values',channels=32,value_parts=16,fused_scores=True))
-    if force_fallback:text=text.replace('T.call_extern("uint32", "tensor_subgroup_size") >= 32','False')
+    if force_fallback:
+        from benchmarks.lfm2.dsl_probes import subgroup_source
+        text=subgroup_source('attention',dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,attention_schedule='partitioned_values',channels=32,value_parts=16,fused_scores=True),0)
     path=tmp_path/'attention.py';path.write_text(text)
     artifact=tmp_path/'attention.tbin';tensor.build(path,artifact,provider='webgpu')
     with tensor.Device(provider='webgpu') as device:

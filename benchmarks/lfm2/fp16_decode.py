@@ -17,7 +17,8 @@ import shutil
 import numpy as np
 import tensor
 from tensor_llm import GGUF
-from tensor_llm.kernels import emit, source, weight
+from tensor_llm.kernels import source
+from benchmarks.lfm2.text_helpers import emit, weight
 from tensor.providers.cuda_graph import CudaGraph
 from tensor.compiler.tuning import measure_cuda
 from tensor.artifacts.format import read_artifact
