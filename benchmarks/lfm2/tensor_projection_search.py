@@ -10,7 +10,8 @@ from tensor.providers.webgpu import Device
 from tensor.runtime.abi import BoundCall
 from tensor.artifacts.format import read_artifact
 from tensor.compiler.webgpu_lowering import partitioned_matmul_schedule
-from tensor.compiler.webgpu_search import ScheduleSearch
+from tensor.compiler.search import ScheduleSearch
+from tensor.compiler.webgpu_schedules import SPACES, coupled_moves
 from tensor_llm import GGUF
 from tensor_llm.kernels import emit
 from tensor_llm.webgpu_kernels import source,round_half
@@ -104,11 +105,11 @@ def run(model,out,minutes,resume=False):
             expected,bound=oracle(inputs,weight);directory=out/suffix;directory.mkdir(exist_ok=True)
             args=(device.from_numpy(inputs.ravel()),device.from_numpy(weight.ravel()),device.full(r*o,np.nan))
             sentinel=np.full(r*o,np.nan,dtype=np.float32).tobytes()
-            search=ScheduleSearch(seeds());row=next((v for v in report['records'] if v['weight']==suffix),None)
+            search=ScheduleSearch(seeds(),spaces=SPACES,coupled=coupled_moves);row=next((v for v in report['records'] if v['weight']==suffix),None)
             if row is None:
                 row={'weight':suffix,'shape':[r,k,o],'candidates':[],'incumbents':[]};report['records'].append(row)
             else:
-                from tensor.compiler.webgpu_search import key
+                from tensor.compiler.search import key
                 search.seen={key(c['config']) for c in row['candidates'] if 'output must not exist' not in c.get('error','')}
                 for c in row['candidates']:
                     if c['status']=='passed':search.record(c['config'],c['median_gpu_seconds'])

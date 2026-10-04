@@ -79,8 +79,10 @@ The latter is implemented in the reusable compiler schedule helper
 `partitioned_matmul_schedule`. It retains private FP32 partial accumulators,
 stores them into workgroup memory, synchronizes once, then reduces K partitions
 locally. It requires neither atomic output updates nor a second dispatch.
-The GPU-independent discovery layer is `tensor.compiler.webgpu_search`; the
-benchmark supplies compilation, the oracle, Vulkan timing, and checkpoints.
+The GPU-independent discovery layer now lives in `tensor.compiler.search`;
+WebGPU spaces and coupled moves live in `tensor.compiler.webgpu_schedules`.
+At the measured revision the two lived in `tensor.compiler.webgpu_search`.
+The benchmark supplies compilation, the oracle, Vulkan timing, and checkpoints.
 
 The search resumed twice while retaining prior candidates and subtracting
 elapsed controller time from the original 30-minute budget: first to add row

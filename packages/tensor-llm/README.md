@@ -195,6 +195,17 @@ measured the separate QAD Q4_0 checkpoint; that format retains a correctness
 regression check. Other GPUs and model shapes need their own measurements.
 The producer default remains `--cuda-profile default`.
 
+CUDA kernels are expressed in TileLang/TIRx, including packed dequantization,
+warp reductions and grouped attention. They use the ordinary `tensor.build`
+interface. The shared discovery engine is `tensor.compiler.search`; CUDA and
+WebGPU provide their own schedule spaces. Measured SM86 settings live in
+[`benchmarks/lfm2/profiles`](../../benchmarks/lfm2/profiles), outside this package.
+Use `--schedule-profile PATH` to supply a target-bound profile when building.
+The bundle records selected schedules and the profile SHA256; the consumer
+executes compiled artifacts without importing discovery or compiler modules.
+See the [compiler cleanup report](../../docs/research/lfm2-compiler-cleanup.md)
+for the fresh comparison with the frozen native CUDA implementation.
+
 ## Run without a compiler
 
 ```sh

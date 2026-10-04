@@ -24,12 +24,12 @@ jobs:
         with:
           version: "0.12.9"
       - run: uv sync --locked
-      - run: uv run --locked python -m pytest packages/tensor-llm/tests -o addopts='' -q
+      - run: uv run --locked python -m pytest packages/tensor-llm/tests tests/compiler/test_search.py tests/compiler/test_cuda_lowering.py -o addopts='' -q
       - run: uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
       - run: uv run --locked python benchmarks/lfm2/diagnostic.py --out build/lfm2-diagnostic.gguf
       - run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-diagnostic --context 384 --target sm_86
       - name: Compile the Vulkan-to-CUDA transfer profile without a GPU
-        run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-cuda-transfer/diagnostic-optimized --context 384 --target sm_86 --cuda-profile optimized --prefill-chunks 32 128
+        run: uv run --locked python benchmarks/lfm2/producer.py --model build/lfm2-diagnostic.gguf --out build/lfm2-cuda-transfer/diagnostic-optimized --context 384 --target sm_86 --cuda-profile optimized --prefill-chunks 32 128 --schedule-profile benchmarks/lfm2/profiles/cuda-sm86-lfm2.5-2.6b.json
       - name: Compile the guarded CUDA suffix templates
         shell: bash
         run: |
@@ -98,6 +98,9 @@ jobs:
           assert optimized['implementation']==implementation_hashes()
           assert optimized['cuda_profile']=='optimized'
           assert optimized['rows']==[1,32,128]
+          assert optimized['schedule_profile']['schema']=='tensor.schedule-profile.v1'
+          assert optimized['schedule_profile']['target']=='sm_86'
+          assert len(optimized['schedule_profile']['sha256'])==64
           assert {d.metadata['Name'].lower() for d in metadata.distributions()}=={'tensor-workspace','tensor-llm','numpy','regex'}
           assert not {'tilelang','tvm','tvm_ffi','torch','triton','wgpu'} & sys.modules.keys()
           PY

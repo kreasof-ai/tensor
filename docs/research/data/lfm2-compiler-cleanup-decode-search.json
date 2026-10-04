@@ -1,0 +1,2435 @@
+{
+  "schema": "tensor.lfm2-cuda-format-search.v1",
+  "phase": "decode",
+  "family": "tiles",
+  "adapter": {
+    "ordinal": 0,
+    "name": "NVIDIA A10G",
+    "arch": "sm_86",
+    "provider": "cuda"
+  },
+  "cases": [
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "token_embd.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 128000,
+        "type": 14
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.5713345111532108e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.0004410880088806152,
+              0.0004410367965698242,
+              0.0004411392211914063,
+              0.0004410367965698242,
+              0.00044098558425903326
+            ],
+            "completed_seconds": [
+              0.0004419245000462979,
+              0.00044158595001135835,
+              0.00044169644997964496,
+              0.0004415784499542497,
+              0.00044152949994895606
+            ],
+            "median_gpu_seconds": 0.0004410367965698242,
+            "median_completed_seconds": 0.00044158595001135835,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2805c602f2397d3a75a5a29d9fa1d91fb597f091c405ae438b8fcad668c1addb"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.5713345111532108e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.00044098558425903326,
+              0.00044098558425903326,
+              0.0004410880088806152,
+              0.000440934419631958,
+              0.0004410367965698242
+            ],
+            "completed_seconds": [
+              0.0004416779999701248,
+              0.00044167044998175695,
+              0.00044175249995532796,
+              0.0004415019499901973,
+              0.0004415824000716384
+            ],
+            "median_gpu_seconds": 0.00044098558425903326,
+            "median_completed_seconds": 0.00044167044998175695,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2805c602f2397d3a75a5a29d9fa1d91fb597f091c405ae438b8fcad668c1addb"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.5713345111532108e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.00044165120124816894,
+              0.0004415999889373779,
+              0.00044149761199951173,
+              0.0004415999889373779,
+              0.0004415999889373779
+            ],
+            "completed_seconds": [
+              0.0004424759000357881,
+              0.0004422104500008572,
+              0.00044213150003997727,
+              0.0004422949499712558,
+              0.00044224499997653767
+            ],
+            "median_gpu_seconds": 0.0004415999889373779,
+            "median_completed_seconds": 0.00044224499997653767,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9685d98d126147a23f8c43a52a8a0eba30dd84b6f031038c0c4ac288a537fb39"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.5713345111532108e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.0004460031986236572,
+              0.0004461056232452393,
+              0.00044595198631286616,
+              0.00044610238075256346,
+              0.000445849609375
+            ],
+            "completed_seconds": [
+              0.00044681710005534114,
+              0.00044682504994852934,
+              0.0004465530500056047,
+              0.00044663404996754253,
+              0.00044649459996435323
+            ],
+            "median_gpu_seconds": 0.0004460031986236572,
+            "median_completed_seconds": 0.00044663404996754253,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8730fc8fb4b877ce78641751745e0894c32922f338b8c0bc01c0b38d0596129c"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.5619716156570547e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.00046822400093078615,
+              0.0004681215763092041,
+              0.00046817278861999514,
+              0.0004683263778686523,
+              0.00046817278861999514
+            ],
+            "completed_seconds": [
+              0.0004690180499892449,
+              0.00046872150005583535,
+              0.00046880805002729175,
+              0.0004689939999479975,
+              0.00046916444998714726
+            ],
+            "median_gpu_seconds": 0.00046817278861999514,
+            "median_completed_seconds": 0.0004689939999479975,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2b2a0efbe15e8762f8dd72f4478de53b512c77a3a37754dc70892e14044b7420"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.6042607197751766e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.00042782721519470215,
+              0.00042782721519470215,
+              0.0004320767879486084,
+              0.00043023362159729005,
+              0.00043110399246215825
+            ],
+            "completed_seconds": [
+              0.00042867014999501405,
+              0.00042842670000027284,
+              0.00043266279999443213,
+              0.000430869700085168,
+              0.0004317453000112437
+            ],
+            "median_gpu_seconds": 0.00043023362159729005,
+            "median_completed_seconds": 0.000430869700085168,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "19f321a8a2161d243c062f899fb171c095a181e4288c64a76a764862fb808982"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.6042607197751766e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.0004189184188842773,
+              0.0004192768096923828,
+              0.0004195839881896973,
+              0.000419379186630249,
+              0.0004194303989410401
+            ],
+            "completed_seconds": [
+              0.000419685050019325,
+              0.0004198890000225219,
+              0.0004201169999760168,
+              0.00041994650000560797,
+              0.000419930049974937
+            ],
+            "median_gpu_seconds": 0.000419379186630249,
+            "median_completed_seconds": 0.000419930049974937,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f0ace10ed146cf14e37503ba6407c65e2cd5a753832588578eab19502173f957"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.6042607197751766e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.0005181951999664307,
+              0.0005187583923339843,
+              0.0005188591957092285,
+              0.0005182975769042968,
+              0.0005179391860961914
+            ],
+            "completed_seconds": [
+              0.000519021550007892,
+              0.0005194815500544792,
+              0.0005194815500544792,
+              0.0005189125000470085,
+              0.0005185215500205231
+            ],
+            "median_gpu_seconds": 0.0005182975769042968,
+            "median_completed_seconds": 0.000519021550007892,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "3ea83b6340523d9f25c73de76762d2037cfa80f155069172704792c65ed412e2"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.5619716156570547e-07,
+          "timing": {
+            "gpu_seconds": [
+              0.0004689407825469971,
+              0.0004691455841064453,
+              0.0004689919948577881,
+              0.0004689407825469971,
+              0.0004690944194793701
+            ],
+            "completed_seconds": [
+              0.00046972905001894103,
+              0.0004697874999692431,
+              0.00046961504995124415,
+              0.0004695375499977672,
+              0.0004696824999882665
+            ],
+            "median_gpu_seconds": 0.0004689919948577881,
+            "median_completed_seconds": 0.0004696824999882665,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ee0fbe9e49e096e2bdc5515b853ccf3e5f158a9860acf47b615ced0dd39e2085"
+        }
+      },
+      "selected": "candidate-5"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.ffn_down.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 14
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 3.5175027039816397e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.416960120201111e-05,
+              5.432320237159729e-05,
+              5.4220801591873166e-05,
+              5.427200198173523e-05,
+              5.416960120201111e-05
+            ],
+            "completed_seconds": [
+              5.475759999171714e-05,
+              5.485709998538368e-05,
+              5.4694650043529694e-05,
+              5.469210000228486e-05,
+              5.463010002131341e-05
+            ],
+            "median_gpu_seconds": 5.4220801591873166e-05,
+            "median_completed_seconds": 5.4694650043529694e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "bd8b89fabe48a0017e69f7b91dc78cff55b4cdd5aebc48661e6a6fce3afb29bb"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.5175027039816397e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.401600003242492e-05,
+              5.375999808311463e-05,
+              5.381119847297669e-05,
+              5.396159887313843e-05,
+              5.386239886283875e-05
+            ],
+            "completed_seconds": [
+              5.4629100031888814e-05,
+              5.423559996415861e-05,
+              5.429809998531709e-05,
+              5.43940999705228e-05,
+              5.427059995781747e-05
+            ],
+            "median_gpu_seconds": 5.386239886283875e-05,
+            "median_completed_seconds": 5.429809998531709e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "1c923502bc3763a5dcc70172c82596f5cc9d736e256cf0cceeead924f8a149d1"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.5175027039816397e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.427200198173523e-05,
+              5.432320237159729e-05,
+              5.427200198173523e-05,
+              5.401600003242492e-05,
+              5.406559705734252e-05
+            ],
+            "completed_seconds": [
+              5.485165002028225e-05,
+              5.4775100034021305e-05,
+              5.471009999382659e-05,
+              5.4452099993795856e-05,
+              5.451859997265274e-05
+            ],
+            "median_gpu_seconds": 5.427200198173523e-05,
+            "median_completed_seconds": 5.471009999382659e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "bd8b89fabe48a0017e69f7b91dc78cff55b4cdd5aebc48661e6a6fce3afb29bb"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.4906511575452583e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.480000138282776e-05,
+              4.480000138282776e-05,
+              4.4543999433517456e-05,
+              4.4646400213241574e-05,
+              4.47488009929657e-05
+            ],
+            "completed_seconds": [
+              4.543794993878691e-05,
+              4.525790000116103e-05,
+              4.532545008260058e-05,
+              4.513390003921813e-05,
+              4.520744996625581e-05
+            ],
+            "median_gpu_seconds": 4.47488009929657e-05,
+            "median_completed_seconds": 4.525790000116103e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "5b3cb024e2a910883171b02f72ac36519da138c5cf159090ed49ed1876ff3b1a"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 3.46000764679094e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.678079724311828e-05,
+              5.6627202033996587e-05,
+              5.6627202033996587e-05,
+              5.642240047454834e-05,
+              5.6576001644134524e-05
+            ],
+            "completed_seconds": [
+              5.744620002587908e-05,
+              5.706965002900688e-05,
+              5.707714999516611e-05,
+              5.682814999090624e-05,
+              5.6996649982465895e-05
+            ],
+            "median_gpu_seconds": 5.6627202033996587e-05,
+            "median_completed_seconds": 5.706965002900688e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8de20698aa4f794f9a6aef1f9465b5965a73182cda73a324edfd248f7fed4892"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.4906511575452583e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.5158401131629944e-05,
+              4.5056000351905825e-05,
+              4.500479996204376e-05,
+              4.510720074176788e-05,
+              4.500479996204376e-05
+            ],
+            "completed_seconds": [
+              4.5700400005443956e-05,
+              4.5549949936685154e-05,
+              4.541890002656146e-05,
+              4.555145005724626e-05,
+              4.546689997368958e-05
+            ],
+            "median_gpu_seconds": 4.5056000351905825e-05,
+            "median_completed_seconds": 4.5549949936685154e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ec7312462a3fe01c9ce4e72a6b25754db9ceee24ff29dddce946d84ad2ea2012"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 1,
+            "family": "gemv"
+          },
+          "relative_rms": 3.5375458325371263e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.546560049057007e-05,
+              4.546560049057007e-05,
+              4.531199932098389e-05,
+              4.530879855155945e-05,
+              4.531199932098389e-05
+            ],
+            "completed_seconds": [
+              4.602544995577773e-05,
+              4.592844998114742e-05,
+              4.571539993776241e-05,
+              4.573745000016061e-05,
+              4.581244993460132e-05
+            ],
+            "median_gpu_seconds": 4.531199932098389e-05,
+            "median_completed_seconds": 4.581244993460132e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "011c064d87888ae811594e312018201d7a814e3b3e81a55460091214180bad48"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.5175027039816397e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.4681599140167235e-05,
+              5.4835200309753416e-05,
+              5.463039875030517e-05,
+              5.462880134582519e-05,
+              5.4681599140167235e-05
+            ],
+            "completed_seconds": [
+              5.528464998860727e-05,
+              5.5281599998124875e-05,
+              5.507064997800626e-05,
+              5.505210001501837e-05,
+              5.511659992407658e-05
+            ],
+            "median_gpu_seconds": 5.4681599140167235e-05,
+            "median_completed_seconds": 5.511659992407658e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "fcd71ae432951d450c5d7d554efe3ecb0ed3b877854490ea895dfa5f44aa922f"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 3.46000764679094e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.708799958229065e-05,
+              5.698559880256653e-05,
+              5.6931197643280025e-05,
+              5.683199763298034e-05,
+              5.6883198022842404e-05
+            ],
+            "completed_seconds": [
+              5.771565001850831e-05,
+              5.7485150045977206e-05,
+              5.73606999751064e-05,
+              5.729664999307715e-05,
+              5.736564999097027e-05
+            ],
+            "median_gpu_seconds": 5.6931197643280025e-05,
+            "median_completed_seconds": 5.736564999097027e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "b4fc9d03abda0a84dc8a40959c6ec3aac997fcc0a40d1af4cedf81fd647f1324"
+        }
+      },
+      "selected": "candidate-2"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.ffn_gate.weight",
+      "kind": "ffn",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 10752,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 3.0127382104058187e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.729280114173889e-05,
+              5.724160075187684e-05,
+              5.729280114173889e-05,
+              5.718719959259033e-05,
+              5.713919997215271e-05
+            ],
+            "completed_seconds": [
+              5.7932199979404686e-05,
+              5.770919997303281e-05,
+              5.7695649957167916e-05,
+              5.7642699994175926e-05,
+              5.759215000580298e-05
+            ],
+            "median_gpu_seconds": 5.724160075187684e-05,
+            "median_completed_seconds": 5.7695649957167916e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "539dcbda753639bff0a00b12c19ad7b729eefe4e003d5a8075889047c42a6d92"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.0127382104058187e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.724160075187684e-05,
+              5.729280114173889e-05,
+              5.7190400362014774e-05,
+              5.724160075187684e-05,
+              5.7190400362014774e-05
+            ],
+            "completed_seconds": [
+              5.779269995400682e-05,
+              5.7749650022742574e-05,
+              5.766069998571766e-05,
+              5.7748149993130936e-05,
+              5.769320005128975e-05
+            ],
+            "median_gpu_seconds": 5.724160075187684e-05,
+            "median_completed_seconds": 5.7748149993130936e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "539dcbda753639bff0a00b12c19ad7b729eefe4e003d5a8075889047c42a6d92"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.0127382104058187e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.724160075187684e-05,
+              5.7190400362014774e-05,
+              5.724160075187684e-05,
+              5.7190400362014774e-05,
+              5.708799958229065e-05
+            ],
+            "completed_seconds": [
+              5.784969998785527e-05,
+              5.766565000158153e-05,
+              5.774719993496546e-05,
+              5.764919997091056e-05,
+              5.756464997830335e-05
+            ],
+            "median_gpu_seconds": 5.7190400362014774e-05,
+            "median_completed_seconds": 5.766565000158153e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "56efdcf40e163af01e7835bb457f4fa006c8a9665a91e4534cb65feedc69899b"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.0127382104058187e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.959680080413818e-05,
+              5.949440002441407e-05,
+              5.934079885482788e-05,
+              5.949440002441407e-05,
+              5.939199924468994e-05
+            ],
+            "completed_seconds": [
+              6.0187199960637375e-05,
+              6.030174999978044e-05,
+              5.984919998809346e-05,
+              5.99507499828178e-05,
+              5.990569998175488e-05
+            ],
+            "median_gpu_seconds": 5.949440002441407e-05,
+            "median_completed_seconds": 5.99507499828178e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "6caefa7e7b7e825896ec03e884c58ae0ed80e2e8e60758ccdb7c8ff5b1160814"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.015512733270151e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.7651197910308836e-05,
+              5.749760270118713e-05,
+              5.754879713058471e-05,
+              5.759999752044677e-05,
+              5.749760270118713e-05
+            ],
+            "completed_seconds": [
+              5.8265150073566474e-05,
+              5.7955699958256446e-05,
+              5.797719995825901e-05,
+              5.804715001431759e-05,
+              5.7938200006901754e-05
+            ],
+            "median_gpu_seconds": 5.754879713058471e-05,
+            "median_completed_seconds": 5.797719995825901e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "32d79376df0355d86ccafb23d70237ee9c573641b1df8c00e16c7529fb793eb1"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 3.016337737622047e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.0159999132156375e-05,
+              6.0159999132156375e-05,
+              6.036480069160461e-05,
+              6.026239991188049e-05,
+              6.026239991188049e-05
+            ],
+            "completed_seconds": [
+              6.075825003790669e-05,
+              0.000429090699981316,
+              6.0961749932175734e-05,
+              6.07276999289752e-05,
+              6.074875000194879e-05
+            ],
+            "median_gpu_seconds": 6.026239991188049e-05,
+            "median_completed_seconds": 6.075825003790669e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "52e5448adf4a576b10f2580b78952afd1997140ae87814eb00e16c228beb2892"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.015512733270151e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.713919997215271e-05,
+              5.708799958229065e-05,
+              5.698559880256653e-05,
+              5.708799958229065e-05,
+              5.7036799192428586e-05
+            ],
+            "completed_seconds": [
+              5.7823150018521116e-05,
+              5.761820002589957e-05,
+              5.7475149969832276e-05,
+              5.751915005021146e-05,
+              5.7519199981470595e-05
+            ],
+            "median_gpu_seconds": 5.708799958229065e-05,
+            "median_completed_seconds": 5.7519199981470595e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9099283235263063be69214b8176b8e5b1548171c4f862ac41460a5751bc2051"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 3.016337737622047e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.959680080413818e-05,
+              5.954560041427612e-05,
+              5.949440002441407e-05,
+              5.959680080413818e-05,
+              5.9648001194000243e-05
+            ],
+            "completed_seconds": [
+              6.0212750031496395e-05,
+              6.000419998599682e-05,
+              5.998269998599426e-05,
+              6.0104249951109526e-05,
+              6.010520000927499e-05
+            ],
+            "median_gpu_seconds": 5.959680080413818e-05,
+            "median_completed_seconds": 6.0104249951109526e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9b6420607c609a96942913d89f4205eb0e0dccedd24d9f508d236b92f9d00210"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.015512733270151e-07,
+          "timing": {
+            "gpu_seconds": [
+              5.939199924468994e-05,
+              5.939199924468994e-05,
+              5.9289598464965824e-05,
+              5.923839807510376e-05,
+              5.923680067062378e-05
+            ],
+            "completed_seconds": [
+              5.999470004098839e-05,
+              5.990919999021571e-05,
+              5.975069998385152e-05,
+              5.968525001662783e-05,
+              5.971219998173183e-05
+            ],
+            "median_gpu_seconds": 5.9289598464965824e-05,
+            "median_completed_seconds": 5.975069998385152e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "5947c3c41dba8c7bad52310a94f4473be7d7fb5dc907bb64335fd0d241c93f8d"
+        }
+      },
+      "selected": "candidate-5"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.shortconv.in_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 6144,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.9222773887326227e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.6998399794101716e-05,
+              1.6947199404239654e-05,
+              1.6894400119781493e-05,
+              1.684480011463165e-05,
+              1.6896000504493713e-05
+            ],
+            "completed_seconds": [
+              1.760434997777338e-05,
+              1.7417349954484963e-05,
+              1.731985003061709e-05,
+              1.7275350001000333e-05,
+              1.734534998831805e-05
+            ],
+            "median_gpu_seconds": 1.6896000504493713e-05,
+            "median_completed_seconds": 1.734534998831805e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ba59a229f5891ffb5503c3ba89f7f6a9761aa9fd514c44a7bf41fad7dec0fe4a"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.9222773887326227e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.6896000504493713e-05,
+              1.684480011463165e-05,
+              1.6947199404239654e-05,
+              1.684480011463165e-05,
+              1.6998399794101716e-05
+            ],
+            "completed_seconds": [
+              1.7332350034848786e-05,
+              1.7317349920631388e-05,
+              1.743085003909073e-05,
+              1.731984993966762e-05,
+              1.7383350041200174e-05
+            ],
+            "median_gpu_seconds": 1.6896000504493713e-05,
+            "median_completed_seconds": 1.7332350034848786e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ba59a229f5891ffb5503c3ba89f7f6a9761aa9fd514c44a7bf41fad7dec0fe4a"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.9222773887326227e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.684480011463165e-05,
+              1.6793599724769595e-05,
+              1.6793599724769595e-05,
+              1.684480011463165e-05,
+              1.6793599724769595e-05
+            ],
+            "completed_seconds": [
+              1.7390850007359405e-05,
+              1.724385001580231e-05,
+              1.7246849984076108e-05,
+              1.7243350066564743e-05,
+              1.7226350064447615e-05
+            ],
+            "median_gpu_seconds": 1.6793599724769595e-05,
+            "median_completed_seconds": 1.724385001580231e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "e59725b2b7323825ca18c39215a5bc13b768e97b1b572d0b2435587ab8685387"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.9222773887326227e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.9148799777030945e-05,
+              1.9046400487422942e-05,
+              1.8995200097560883e-05,
+              1.9097599387168886e-05,
+              1.9097599387168886e-05
+            ],
+            "completed_seconds": [
+              1.9693400008691243e-05,
+              1.9480900027701865e-05,
+              1.9529400015017016e-05,
+              1.9599899951572296e-05,
+              1.9506900025589856e-05
+            ],
+            "median_gpu_seconds": 1.9097599387168886e-05,
+            "median_completed_seconds": 1.9529400015017016e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "1a135bbfc5d3001692dc4bc546391eef0e8785761da275f3d93dbc0e7976eadb"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.9357838463282404e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.6998399794101716e-05,
+              1.6998399794101716e-05,
+              1.6998399794101716e-05,
+              1.6947199404239654e-05,
+              1.6998399794101716e-05
+            ],
+            "completed_seconds": [
+              1.755835000949446e-05,
+              1.753839997036266e-05,
+              1.7495350039098412e-05,
+              1.7435350036976162e-05,
+              1.7421350003132828e-05
+            ],
+            "median_gpu_seconds": 1.6998399794101716e-05,
+            "median_completed_seconds": 1.7495350039098412e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "3f2307cecdfd5b293bb77cd2658fae396482018a7b2f82ab8b61180b9802d02b"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.947157786400346e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.7510400712490082e-05,
+              1.7664000391960145e-05,
+              1.7510400712490082e-05,
+              1.7561599612236023e-05,
+              1.7561599612236023e-05
+            ],
+            "completed_seconds": [
+              1.8050349990517133e-05,
+              1.8130899934476475e-05,
+              1.7934350034920497e-05,
+              1.7961849971470655e-05,
+              1.7989899970416445e-05
+            ],
+            "median_gpu_seconds": 1.7561599612236023e-05,
+            "median_completed_seconds": 1.7989899970416445e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8f42b8e689c3d72f2a14aed46e38018f6cd522fcd584ea6022e91c7ffbbdd389"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.9357838463282404e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.6988800466060637e-05,
+              1.6947199404239654e-05,
+              1.6843199729919433e-05,
+              1.684480011463165e-05,
+              1.684480011463165e-05
+            ],
+            "completed_seconds": [
+              1.749434995872434e-05,
+              1.7364349969284375e-05,
+              1.724584999465151e-05,
+              1.720035006655962e-05,
+              1.7251850022148573e-05
+            ],
+            "median_gpu_seconds": 1.684480011463165e-05,
+            "median_completed_seconds": 1.7251850022148573e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "b8126c17a25eb5b4e3ff31f27191a69489ea8d494c39caa0977032c4ce110f64"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.947157786400346e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.8380799889564514e-05,
+              1.8380799889564514e-05,
+              1.827840059995651e-05,
+              1.8329599499702454e-05,
+              1.8329599499702454e-05
+            ],
+            "completed_seconds": [
+              1.9012900065717985e-05,
+              1.8828849988494767e-05,
+              1.8695400012802565e-05,
+              1.873439996415982e-05,
+              1.8766350058285754e-05
+            ],
+            "median_gpu_seconds": 1.8329599499702454e-05,
+            "median_completed_seconds": 1.8766350058285754e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "d51bf7a810170ff8b5d3f63b9b388b4c4294726d5f4104f87c48fee7b509814b"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.9357838463282404e-07,
+          "timing": {
+            "gpu_seconds": [
+              1.7459200322628023e-05,
+              1.730560064315796e-05,
+              1.720319986343384e-05,
+              1.720319986343384e-05,
+              1.715199947357178e-05
+            ],
+            "completed_seconds": [
+              1.8178850041294936e-05,
+              1.7853899953479414e-05,
+              1.7689850028546062e-05,
+              1.762784995662514e-05,
+              1.7592350013728718e-05
+            ],
+            "median_gpu_seconds": 1.720319986343384e-05,
+            "median_completed_seconds": 1.7689850028546062e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9cdb374a134ce0d47f5de4543c13875a62460faa45fd3c6fbac7ed2b6f566505"
+        }
+      },
+      "selected": "candidate-1"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.0.shortconv.out_proj.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 2048,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 2.595429054176597e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.654399633407593e-06,
+              6.553599983453751e-06,
+              6.604799628257751e-06,
+              6.553599983453751e-06,
+              6.656000018119811e-06
+            ],
+            "completed_seconds": [
+              7.229649963846896e-06,
+              7.007149997662055e-06,
+              6.998650042078225e-06,
+              7.035650014586281e-06,
+              7.103099960659165e-06
+            ],
+            "median_gpu_seconds": 6.604799628257751e-06,
+            "median_completed_seconds": 7.035650014586281e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "fc0181e3a03217fe13039a656e66bd4f08ac443ada1d8ae1dbe3ed39a420e515"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 2.582354702472655e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.246399879455567e-06,
+              6.246399879455567e-06,
+              6.246399879455567e-06,
+              6.246399879455567e-06,
+              6.195199862122536e-06
+            ],
+            "completed_seconds": [
+              6.776099962735316e-06,
+              6.6855999648396395e-06,
+              6.667150046268944e-06,
+              6.68815000608447e-06,
+              6.671600021945778e-06
+            ],
+            "median_gpu_seconds": 6.246399879455567e-06,
+            "median_completed_seconds": 6.6855999648396395e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8e91e9fad3951a2599b9408c447c25af53cc5b296775cd24d45fee5bae19b952"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 2.582354702472655e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.348799914121628e-06,
+              6.297600269317626e-06,
+              6.348799914121628e-06,
+              6.348799914121628e-06,
+              6.348799914121628e-06
+            ],
+            "completed_seconds": [
+              6.836149987066165e-06,
+              6.732600013492629e-06,
+              6.770149957446847e-06,
+              6.82065001456067e-06,
+              6.785650020901812e-06
+            ],
+            "median_gpu_seconds": 6.348799914121628e-06,
+            "median_completed_seconds": 6.785650020901812e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "f8b5e3e3002f7ad58f480a1454ec1984c1df9997824082a41ee5811dbd6b2b32"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 2.582354702472655e-07,
+          "timing": {
+            "gpu_seconds": [
+              9.216000139713287e-06,
+              9.164799749851227e-06,
+              9.164799749851227e-06,
+              9.163200110197066e-06,
+              9.164799749851227e-06
+            ],
+            "completed_seconds": [
+              9.676199988462031e-06,
+              9.579200013831724e-06,
+              9.558200054016197e-06,
+              9.565199979988392e-06,
+              9.550200047669932e-06
+            ],
+            "median_gpu_seconds": 9.164799749851227e-06,
+            "median_completed_seconds": 9.565199979988392e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "747d470c3ffb67bb4abec31e8b1efd8b5e39f0dae02ff78ca2622f136c03586d"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 2.595429054176597e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.553599983453751e-06,
+              6.553599983453751e-06,
+              6.553599983453751e-06,
+              6.553599983453751e-06,
+              6.550399959087373e-06
+            ],
+            "completed_seconds": [
+              7.058650044200476e-06,
+              6.967650006117765e-06,
+              6.9321500632213425e-06,
+              6.923650016688043e-06,
+              6.928099992364878e-06
+            ],
+            "median_gpu_seconds": 6.553599983453751e-06,
+            "median_completed_seconds": 6.9321500632213425e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "fc0181e3a03217fe13039a656e66bd4f08ac443ada1d8ae1dbe3ed39a420e515"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 2.595429054176597e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.553599983453751e-06,
+              6.553599983453751e-06,
+              6.553599983453751e-06,
+              6.553599983453751e-06,
+              6.50240033864975e-06
+            ],
+            "completed_seconds": [
+              7.0886499997868665e-06,
+              6.9641499976569324e-06,
+              6.940649927855702e-06,
+              6.949149974389002e-06,
+              6.918649978615576e-06
+            ],
+            "median_gpu_seconds": 6.553599983453751e-06,
+            "median_completed_seconds": 6.949149974389002e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "7344c2abc8b54cf12227e04642a02f8cd2ff3d2ef16f5a6f6c975a522414ecf5"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 2.595429054176597e-07,
+          "timing": {
+            "gpu_seconds": [
+              7.372800260782241e-06,
+              7.321599870920181e-06,
+              7.2704002261161795e-06,
+              7.2704002261161795e-06,
+              7.2704002261161795e-06
+            ],
+            "completed_seconds": [
+              7.858200024202234e-06,
+              7.786150035826722e-06,
+              7.709150031587341e-06,
+              7.703650044277311e-06,
+              7.71214999986114e-06
+            ],
+            "median_gpu_seconds": 7.2704002261161795e-06,
+            "median_completed_seconds": 7.71214999986114e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "5984932aa1c750f9ae1a8902ad5ebffe6b8b2eb598e255e8897df48fc5bb1b05"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 2.5642599736000696e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.143999844789505e-06,
+              6.092799827456474e-06,
+              6.092799827456474e-06,
+              6.092799827456474e-06,
+              6.041600182652474e-06
+            ],
+            "completed_seconds": [
+              6.608149942621822e-06,
+              6.5205999817408156e-06,
+              6.526650031446479e-06,
+              6.504649991256883e-06,
+              6.538149955304107e-06
+            ],
+            "median_gpu_seconds": 6.092799827456474e-06,
+            "median_completed_seconds": 6.526650031446479e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9d0d3bb02fabbad41ebbaf623cadb8b9be5bf1485d8a8ec916640a05bd675f62"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 2.5642599736000696e-07,
+          "timing": {
+            "gpu_seconds": [
+              6.400000303983688e-06,
+              6.246399879455567e-06,
+              6.246399879455567e-06,
+              6.246399879455567e-06,
+              6.246399879455567e-06
+            ],
+            "completed_seconds": [
+              6.926650075911311e-06,
+              6.720150031469529e-06,
+              6.685649987048237e-06,
+              6.642649987043115e-06,
+              6.664600005024113e-06
+            ],
+            "median_gpu_seconds": 6.246399879455567e-06,
+            "median_completed_seconds": 6.685649987048237e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "9cd1dfd329d468a899ace31488281e4b5c03f857b30236f8f3415529f11e4442"
+        }
+      },
+      "selected": "candidate-6"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.2.attn_k.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 2.3889059962526934e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.9423998445272446e-06,
+              3.840000182390213e-06,
+              3.891199827194214e-06,
+              3.888000175356865e-06,
+              3.891199827194214e-06
+            ],
+            "completed_seconds": [
+              4.4925999645784035e-06,
+              4.3080500290670894e-06,
+              4.312599958211649e-06,
+              4.270600038580597e-06,
+              4.286599960323656e-06
+            ],
+            "median_gpu_seconds": 3.891199827194214e-06,
+            "median_completed_seconds": 4.3080500290670894e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "531d756bc390c4f16587d734a3858e798d58dcc2ad5a82df1aaf103a94367698"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 2.3889059962526934e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.7376001477241516e-06,
+              3.7376001477241516e-06,
+              3.7376001477241516e-06,
+              3.7376001477241516e-06,
+              3.7344001233577726e-06
+            ],
+            "completed_seconds": [
+              4.284099941287423e-06,
+              4.186550086160423e-06,
+              4.139100019528996e-06,
+              4.1526000131852925e-06,
+              4.4780999814975075e-06
+            ],
+            "median_gpu_seconds": 3.7376001477241516e-06,
+            "median_completed_seconds": 4.186550086160423e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "32aa7fdaaeffdae8536a8b0954a790a4de472f00e2d13b9a49e704a5624c7fdc"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 2.3889059962526934e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.9423998445272446e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06,
+              3.840000182390213e-06,
+              3.891199827194214e-06
+            ],
+            "completed_seconds": [
+              4.5215999307401946e-06,
+              4.3110499973408874e-06,
+              4.278100004739827e-06,
+              4.276599975128193e-06,
+              4.292599987820722e-06
+            ],
+            "median_gpu_seconds": 3.891199827194214e-06,
+            "median_completed_seconds": 4.292599987820722e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "531d756bc390c4f16587d734a3858e798d58dcc2ad5a82df1aaf103a94367698"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 2.3294819013614573e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.147199913859367e-06,
+              4.095999896526337e-06,
+              4.095999896526337e-06,
+              4.147199913859367e-06,
+              4.198399931192399e-06
+            ],
+            "completed_seconds": [
+              4.740599979413673e-06,
+              4.609600000549108e-06,
+              4.543550039670663e-06,
+              4.64155000372557e-06,
+              4.649600032280432e-06
+            ],
+            "median_gpu_seconds": 4.147199913859367e-06,
+            "median_completed_seconds": 4.64155000372557e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "a67335be48ea2fbd676584abb1ee2fc1ced6fb8155aa4877b888411d45344a63"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 2.4237637144432627e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.532800078392029e-06,
+              3.4816000610589983e-06,
+              3.532800078392029e-06,
+              3.532800078392029e-06,
+              3.4816000610589983e-06
+            ],
+            "completed_seconds": [
+              4.121100027987268e-06,
+              5.001599947718205e-06,
+              4.0016000639298e-06,
+              3.931050014216453e-06,
+              3.8850999771966596e-06
+            ],
+            "median_gpu_seconds": 3.532800078392029e-06,
+            "median_completed_seconds": 4.0016000639298e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "0a5c6ad7ea71068f712194a86a00457e3583a7e53575a400c6fde1707485033b"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 2.4237637144432627e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.6320000886917113e-06,
+              3.532800078392029e-06,
+              3.532800078392029e-06,
+              3.532800078392029e-06,
+              3.532800078392029e-06
+            ],
+            "completed_seconds": [
+              4.1500500628899316e-06,
+              3.988049957115436e-06,
+              3.934600044885883e-06,
+              3.968549935962073e-06,
+              4.2835499698412605e-06
+            ],
+            "median_gpu_seconds": 3.532800078392029e-06,
+            "median_completed_seconds": 3.988049957115436e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "27f01c2be34f51a317eaa78bad182b5b676ceed5a4045c81c60e4c290144abf8"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 2.3889059962526934e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.993599861860275e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06
+            ],
+            "completed_seconds": [
+              4.593099947669543e-06,
+              4.364599953987636e-06,
+              4.336600068199914e-06,
+              4.327050010033417e-06,
+              4.3361000280128795e-06
+            ],
+            "median_gpu_seconds": 3.891199827194214e-06,
+            "median_completed_seconds": 4.336600068199914e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "7c520cae9a3cfafacbe3e8f3d1e34c2a68cfd68c16ddf2f8e82067a8912c92f3"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 2.3294819013614573e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.095999896526337e-06,
+              4.095999896526337e-06,
+              4.095999896526337e-06,
+              4.0447998791933055e-06,
+              4.095999896526337e-06
+            ],
+            "completed_seconds": [
+              4.649600032280432e-06,
+              4.504100070334971e-06,
+              4.489100047067041e-06,
+              4.488049944484373e-06,
+              4.494099994190037e-06
+            ],
+            "median_gpu_seconds": 4.095999896526337e-06,
+            "median_completed_seconds": 4.494099994190037e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2ca602477551c00bfbfe2c865476aea230a388f3f44620971a3cb17d16cdbbcc"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 1,
+            "family": "gemv"
+          },
+          "relative_rms": 2.4237637144432627e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.398399963974953e-06,
+              4.30079996585846e-06,
+              4.30079996585846e-06,
+              4.30079996585846e-06,
+              4.345599934458732e-06
+            ],
+            "completed_seconds": [
+              4.782599989994196e-06,
+              4.716599960374879e-06,
+              4.673600051319226e-06,
+              4.6631000259367285e-06,
+              4.721100049209781e-06
+            ],
+            "median_gpu_seconds": 4.30079996585846e-06,
+            "median_completed_seconds": 4.716599960374879e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "6ee9ccfdd8a37d5856e90c4c997b2dc8c8e63d0ab228529943e5c5d607f4159f"
+        }
+      },
+      "selected": "candidate-3"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.2.attn_v.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 14
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 1.8257669141601205e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.993599861860275e-06,
+              3.9423998445272446e-06,
+              3.993599861860275e-06,
+              3.9423998445272446e-06,
+              3.9423998445272446e-06
+            ],
+            "completed_seconds": [
+              4.531099966698093e-06,
+              4.390100002638064e-06,
+              4.373549927549902e-06,
+              4.3695999920601025e-06,
+              4.367099973023869e-06
+            ],
+            "median_gpu_seconds": 3.9423998445272446e-06,
+            "median_completed_seconds": 4.373549927549902e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2611bba1e5ebd82d390fb5b6396695bc588ef7a25427789ae53cc67e5a6f5a75"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8257669141601205e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.993599861860275e-06,
+              3.9423998445272446e-06,
+              3.9423998445272446e-06,
+              3.939199820160866e-06,
+              3.9423998445272446e-06
+            ],
+            "completed_seconds": [
+              4.495099983614637e-06,
+              4.36609998359927e-06,
+              4.31910002589575e-06,
+              4.328599970904179e-06,
+              4.306050050217891e-06
+            ],
+            "median_gpu_seconds": 3.9423998445272446e-06,
+            "median_completed_seconds": 4.328599970904179e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2611bba1e5ebd82d390fb5b6396695bc588ef7a25427789ae53cc67e5a6f5a75"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8257669141601205e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.993599861860275e-06,
+              3.891199827194214e-06,
+              3.9423998445272446e-06,
+              3.891199827194214e-06,
+              3.9423998445272446e-06
+            ],
+            "completed_seconds": [
+              4.4475999857240826e-06,
+              4.36609998359927e-06,
+              4.341549993114313e-06,
+              4.327100032242015e-06,
+              4.343099953985075e-06
+            ],
+            "median_gpu_seconds": 3.9423998445272446e-06,
+            "median_completed_seconds": 4.343099953985075e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "d36409df583479d4c7aa2002707b7df0539e753ac505dfedcea536879add24fa"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8257669141601205e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.30079996585846e-06,
+              4.249599948525429e-06,
+              4.1967999190092085e-06,
+              4.198399931192399e-06,
+              4.198399931192399e-06
+            ],
+            "completed_seconds": [
+              4.783599979418795e-06,
+              4.648100002668798e-06,
+              4.627099951903802e-06,
+              4.633600019587902e-06,
+              4.602100034389878e-06
+            ],
+            "median_gpu_seconds": 4.198399931192399e-06,
+            "median_completed_seconds": 4.633600019587902e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ad14215b3f4a88de2cfac42e368c9465b054ff788627788b920007c799002e7d"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8535106491226867e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.095999896526337e-06,
+              4.095999896526337e-06,
+              4.095999896526337e-06,
+              4.0447998791933055e-06,
+              4.095999896526337e-06
+            ],
+            "completed_seconds": [
+              4.5881000005465465e-06,
+              4.490599985729205e-06,
+              4.487600017455407e-06,
+              4.476100002648309e-06,
+              4.474600063986145e-06
+            ],
+            "median_gpu_seconds": 4.095999896526337e-06,
+            "median_completed_seconds": 4.487600017455407e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "c869271394d5ac1c663646f4641d03d536d30c500dddf844065202f508d29e50"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8531691731872914e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.095999896526337e-06,
+              4.0447998791933055e-06,
+              3.993599861860275e-06,
+              3.9423998445272446e-06,
+              3.9423998445272446e-06
+            ],
+            "completed_seconds": [
+              4.6936000217101535e-06,
+              4.463599998416612e-06,
+              4.376599918032298e-06,
+              4.360100047051674e-06,
+              4.406049993121997e-06
+            ],
+            "median_gpu_seconds": 3.993599861860275e-06,
+            "median_completed_seconds": 4.406049993121997e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "8605d3958f3a3f6d8cad5644ac0ec23e1bbd4ace299d41e6e392ef4ad057a6b3"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8535106491226867e-07,
+          "timing": {
+            "gpu_seconds": [
+              4.095999896526337e-06,
+              4.19359989464283e-06,
+              4.147199913859367e-06,
+              4.0447998791933055e-06,
+              4.0447998791933055e-06
+            ],
+            "completed_seconds": [
+              4.6405500143009705e-06,
+              5.960599992249627e-06,
+              4.644100044970401e-06,
+              4.454600002645748e-06,
+              4.444099977263249e-06
+            ],
+            "median_gpu_seconds": 4.095999896526337e-06,
+            "median_completed_seconds": 4.6405500143009705e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "2006aea038b2aece0640547c2210a379e1911387bb7501c6c11a1e3b5c392823"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8531691731872914e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.9423998445272446e-06,
+              3.840000182390213e-06,
+              3.840000182390213e-06,
+              3.840000182390213e-06,
+              3.840000182390213e-06
+            ],
+            "completed_seconds": [
+              4.467550024855882e-06,
+              4.277600055502262e-06,
+              4.238600013195537e-06,
+              4.245600030117202e-06,
+              4.245600030117202e-06
+            ],
+            "median_gpu_seconds": 3.840000182390213e-06,
+            "median_completed_seconds": 4.245600030117202e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "ab30cbb7783f5bb820502e26f2f7739dd00729710b535ce948cfcb82c06f2eec"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 1.8531691731872914e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.891199827194214e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06,
+              3.891199827194214e-06
+            ],
+            "completed_seconds": [
+              4.385099964565598e-06,
+              4.316600006859517e-06,
+              4.302549950807588e-06,
+              4.278600044926861e-06,
+              4.311100019549485e-06
+            ],
+            "median_gpu_seconds": 3.891199827194214e-06,
+            "median_completed_seconds": 4.311100019549485e-06,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "4f0e78842a22368510167394fdc6c8e0d6f6574ca5863e5f80a8c75ecb867697"
+        }
+      },
+      "selected": "candidate-6"
+    },
+    {
+      "model": "LFM2.5-2.6B-Q4_K_M.gguf",
+      "tensor": "blk.3.ffn_down.weight",
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 12
+      },
+      "candidates": {
+        "before": {
+          "status": "passed",
+          "config": null,
+          "relative_rms": 3.7960877327564103e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.409920036792755e-05,
+              3.389439880847931e-05,
+              3.3792001008987427e-05,
+              3.389439880847931e-05,
+              3.3792001008987427e-05
+            ],
+            "completed_seconds": [
+              3.470869996817783e-05,
+              3.436920005697175e-05,
+              3.427419997024117e-05,
+              3.4403199970256536e-05,
+              3.4283199966012035e-05
+            ],
+            "median_gpu_seconds": 3.389439880847931e-05,
+            "median_completed_seconds": 3.436920005697175e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "d9dbb4a22ef53a03f21b1f5e44cd19630aa7860a604a1e9fb257691efe4a8761"
+        },
+        "candidate-0": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.7960877327564103e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.3788800239562985e-05,
+              3.3740800619125364e-05,
+              3.3535999059677126e-05,
+              3.36896002292633e-05,
+              3.384320139884949e-05
+            ],
+            "completed_seconds": [
+              3.438869998717564e-05,
+              3.421615001570899e-05,
+              3.3997650007222546e-05,
+              3.416669997022836e-05,
+              3.427770006965147e-05
+            ],
+            "median_gpu_seconds": 3.3740800619125364e-05,
+            "median_completed_seconds": 3.421615001570899e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "0b0b6fefb633d54e9344d4dbeeaf3d65c2f32478ecf6b98bf396457f0d047ff7"
+        },
+        "candidate-1": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.7960877327564103e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.399679958820343e-05,
+              3.394559919834137e-05,
+              3.384320139884949e-05,
+              3.389439880847931e-05,
+              3.36896002292633e-05
+            ],
+            "completed_seconds": [
+              3.446370001256582e-05,
+              3.439719994275947e-05,
+              3.4286200025235304e-05,
+              3.4276699989277407e-05,
+              3.4196649994555625e-05
+            ],
+            "median_gpu_seconds": 3.389439880847931e-05,
+            "median_completed_seconds": 3.4286200025235304e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "d9dbb4a22ef53a03f21b1f5e44cd19630aa7860a604a1e9fb257691efe4a8761"
+        },
+        "candidate-2": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.841665426550175e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.461120128631592e-05,
+              3.4508800506591795e-05,
+              3.445760011672973e-05,
+              3.445760011672973e-05,
+              3.4508800506591795e-05
+            ],
+            "completed_seconds": [
+              3.5230699995736356e-05,
+              3.500120001262985e-05,
+              3.491970001050504e-05,
+              3.484170001684106e-05,
+              3.495974997349549e-05
+            ],
+            "median_gpu_seconds": 3.4508800506591795e-05,
+            "median_completed_seconds": 3.495974997349549e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "99b0144f6d78860935192a0d4ace337a04200c08f440fc9938eb4585122ae331"
+        },
+        "candidate-3": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 3.7689078153757e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.430399894714356e-05,
+              3.409920036792755e-05,
+              3.404799997806549e-05,
+              3.4150400757789614e-05,
+              3.420160114765167e-05
+            ],
+            "completed_seconds": [
+              3.487169997242745e-05,
+              3.4525699993537275e-05,
+              3.4548199982964435e-05,
+              3.4619699999893785e-05,
+              3.46867500411463e-05
+            ],
+            "median_gpu_seconds": 3.4150400757789614e-05,
+            "median_completed_seconds": 3.4619699999893785e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "853a22bf7867b76806faf70be6fa1ef04169ad54173a5696e78d2ad209af6e33"
+        },
+        "candidate-4": {
+          "status": "passed",
+          "config": {
+            "threads": 256,
+            "unroll": 4,
+            "family": "gemv"
+          },
+          "relative_rms": 3.7960877327564103e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.5020801424980165e-05,
+              3.507199883460998e-05,
+              3.481599986553192e-05,
+              3.486720025539398e-05,
+              3.481599986553192e-05
+            ],
+            "completed_seconds": [
+              3.5712750013772164e-05,
+              3.551119998519425e-05,
+              3.524924995872425e-05,
+              3.5299699993629476e-05,
+              3.523969999150722e-05
+            ],
+            "median_gpu_seconds": 3.486720025539398e-05,
+            "median_completed_seconds": 3.5299699993629476e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "de853d4a10c22cc2d16f797ad691d0a836c05341e8c9c74d495beb9931769d4f"
+        },
+        "candidate-5": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 2,
+            "family": "gemv"
+          },
+          "relative_rms": 3.841665426550175e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.517439961433411e-05,
+              3.5123199224472046e-05,
+              3.517439961433411e-05,
+              3.5225600004196164e-05,
+              3.5225600004196164e-05
+            ],
+            "completed_seconds": [
+              3.5761750041274354e-05,
+              3.5640700025396656e-05,
+              3.561624998837942e-05,
+              3.569669997887104e-05,
+              3.563275004125899e-05
+            ],
+            "median_gpu_seconds": 3.517439961433411e-05,
+            "median_completed_seconds": 3.5640700025396656e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "430598a4abf33271244fa517fea594305aa34296278919e9b76c21686eca10f5"
+        },
+        "candidate-6": {
+          "status": "passed",
+          "config": {
+            "threads": 128,
+            "unroll": 8,
+            "family": "gemv"
+          },
+          "relative_rms": 3.7689078153757e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.404799997806549e-05,
+              3.420160114765167e-05,
+              3.4150400757789614e-05,
+              3.430399894714356e-05,
+              3.404799997806549e-05
+            ],
+            "completed_seconds": [
+              3.461619999143295e-05,
+              3.469270004643477e-05,
+              3.4749200040096184e-05,
+              3.489324999463861e-05,
+              3.450069998507388e-05
+            ],
+            "median_gpu_seconds": 3.4150400757789614e-05,
+            "median_completed_seconds": 3.469270004643477e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "a7d5af6e22d5e72824eeb16d19909ff67642c7c874e9ce08f5db7e9bb7155bfb"
+        },
+        "candidate-7": {
+          "status": "passed",
+          "config": {
+            "threads": 64,
+            "unroll": 1,
+            "family": "gemv"
+          },
+          "relative_rms": 3.9022825365377114e-07,
+          "timing": {
+            "gpu_seconds": [
+              3.537920117378235e-05,
+              3.5225600004196164e-05,
+              3.532800078392029e-05,
+              3.527680039405823e-05,
+              3.537920117378235e-05
+            ],
+            "completed_seconds": [
+              3.59582500095712e-05,
+              3.5663200014823816e-05,
+              3.5752250005316456e-05,
+              3.57182500010822e-05,
+              3.5791700065601616e-05
+            ],
+            "median_gpu_seconds": 3.532800078392029e-05,
+            "median_completed_seconds": 3.5752250005316456e-05,
+            "warmup": 3,
+            "samples": 5,
+            "repeats": 1,
+            "graph_nodes": 20
+          },
+          "source_sha256": "87cc2509023fbc695c386df9be9c364c78b9ddc707f0679c3d60caf65fdf593d"
+        }
+      },
+      "selected": "candidate-0"
+    }
+  ],
+  "model_sha256": {
+    "LFM2.5-2.6B-Q4_K_M.gguf": "02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed"
+  },
+  "sources": {
+    "benchmarks/lfm2/cuda_format_search.py": {
+      "sha256": "fb44646edccdf6076364049c29490933268e7f02412043b9e2a4252cd2b3aa53",
+      "text": "\"\"\"Bounded CUDA projection search with checkpoint weights and independent math.\"\"\"\nfrom pathlib import Path as _Path\nimport sys as _sys\n_sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))\nimport argparse\nimport hashlib\nimport json\nfrom pathlib import Path\nimport numpy as np\nimport tensor\nfrom tensor.providers.cuda_graph import CudaGraph\nfrom tensor.compiler.tuning import measure_cuda\nfrom tensor.compiler.search import ScheduleSearch,ScheduleProfile\nfrom tensor.compiler.cuda_schedules import projection_space,projection_legal\nfrom tensor.artifacts.format import read_artifact\nfrom tensor_llm import GGUF\nfrom tensor_llm.cuda_kernels import gemv_source, fused_source, prefill_source\nfrom tensor_llm.kernels import source as baseline_source\n\n\ndef current_source(kind,p):\n    if kind in ('linear','linear_add','ffn'):\n        return gemv_source(kind,p) if p['r']==1 else fused_source(kind,p)\n    return baseline_source(kind,p)\n\ndef compile_source(text, out):\n    key=hashlib.sha256(text.encode()).hexdigest()[:24]\n    out=Path(out);out.mkdir(parents=True,exist_ok=True)\n    path=out/(key+'.py');artifact=path.with_suffix('.tbin')\n    if not path.exists() or path.read_text()!=text:path.write_text(text);artifact.unlink(missing_ok=True)\n    if artifact.exists():\n        manifest,_=read_artifact(artifact)\n        expected=hashlib.sha256(Path(tensor.__file__).parent.joinpath('compiler/cuda_lowering.py').read_bytes()).hexdigest()\n        if manifest['compiler'].get('lowering_sha256')!=expected:artifact.unlink()\n    if not artifact.exists():tensor.build(path,artifact,compiler='nvrtc',target='sm_86',cache_dir=out/'cache')\n    return artifact\n\n\ndef search(models, out, phase='prefill', rows=(128,), family='tiles', formats=('F16','Q4_0','Q4_K_M'), max_candidates=8):\n    if type(max_candidates) is not int or max_candidates<1:raise ValueError('positive candidate budget required')\n    import torch\n    torch.backends.cuda.matmul.allow_tf32=False\n    models=Path(models);out=Path(out);out.mkdir(parents=True,exist_ok=True)\n    repo=Path(__file__).resolve().parents[2]\n    sources={name:hashlib.sha256((repo/name).read_bytes()).hexdigest() for name in ('benchmarks/lfm2/cuda_format_search.py', 'src/tensor/compiler/search.py', 'src/tensor/compiler/cuda_schedules.py', 'src/tensor/compiler/cuda_lowering.py', 'packages/tensor-llm/src/tensor_llm/cuda_kernels.py')}\n    cases=[];seen=set();model_hashes={};profile_entries=[]\n    profile=ScheduleProfile(json.loads(Path(__file__).with_name('profiles').joinpath('cuda-sm86-lfm2.5-2.6b.json').read_text()))\n    for fmt in formats:\n        path=models/f'LFM2.5-2.6B-{fmt}.gguf';gguf=GGUF(path)\n        with path.open('rb') as stream:model_hashes[path.name]=hashlib.file_digest(stream,'sha256').hexdigest()\n        for name,info in gguf.tensors.items():\n            if len(info.shape)!=2 or name.endswith('conv.weight'):continue\n            o,k=info.shape;q=info.type\n            if phase=='prefill' and name=='token_embd.weight':continue\n            kind='ffn' if name.endswith('ffn_gate.weight') else 'linear'\n            if name.endswith('ffn_up.weight'):continue\n            for r in rows if phase=='prefill' else (1,):\n                key=(kind,r,k,o,q)\n                if key in seen:continue\n                seen.add(key);parameters=dict(r=r,k=k,o=o,type=q)\n                spaces=projection_space(phase,f16_vectors=q==1,family=family)\n                defaults=(dict(block_m=32,block_n=64,block_k=64,stages=2,threads=128,packed_pairs=family!='tiles')\n                          if phase=='prefill' else dict(threads=128,unroll=4,**({'f16_values':4} if q==1 else {})))\n                seed={**defaults,**profile.select(kind,parameters,provider='cuda',target='sm_86')}\n                if phase=='prefill' and family=='paired-loads':seed['packed_pairs']=True\n                seed['family']=next(iter(spaces))\n                discovery=ScheduleSearch([seed],spaces=spaces,width=4,\n                    legal=lambda cfg:projection_legal(cfg,depth=k,paired=kind=='ffn',packed_pairs=q in (1,2,12,14)))\n                def candidates():\n                    yield 'before',(None,current_source(kind,parameters))\n                    if phase=='decode' and kind=='ffn' and q==1:\n                        yield 'separate',(dict(paired=False),current_source('linear',parameters))\n                    for index in range(max_candidates):\n                        try:config=discovery.next()\n                        except StopIteration:break\n                        p={**parameters,**{key:value for key,value in config.items() if key!='family'}}\n                        text=prefill_source(kind,p) if phase=='prefill' else current_source(kind,p)\n                        yield f'candidate-{index}',(config,text)\n                rng=np.random.default_rng(2093)\n                x=rng.normal(size=(r,k)).astype(np.float32)*.3\n                decoded=torch.from_numpy(np.array(gguf.array(name),copy=True)).cuda()\n                tx=torch.from_numpy(x).cuda()\n                expected=torch.mm(tx.half(),decoded.half().T,out_dtype=torch.float32) if r>1 else torch.mm(tx,decoded.T)\n                arrays=[x.ravel(),np.array(gguf.packed(name),copy=True)]\n                if q in (0,1):arrays[1]=arrays[1].view(np.float32 if q==0 else np.float16)\n                if kind=='ffn':\n                    upname=name.replace('ffn_gate','ffn_up')\n                    up=torch.from_numpy(np.array(gguf.array(upname),copy=True)).cuda()\n                    updot=torch.mm(tx.half(),up.half().T,out_dtype=torch.float32) if r>1 else torch.mm(tx,up.T)\n                    expected=torch.nn.functional.silu(expected)*updot\n                    packed=np.array(gguf.packed(upname),copy=True)\n                    arrays.append(packed.view(np.float16 if q==1 else np.float32) if q in (0,1) else packed)\n                    del up,updot\n                expected=expected.cpu().numpy().ravel()\n                del decoded,tx;torch.cuda.empty_cache()\n                row=dict(model=path.name,tensor=name,kind=kind,parameters=parameters,candidates={})\n                with tensor.Device() as device:\n                    buffers=[device.from_numpy(a) for a in arrays];output=device.empty(r*o)\n                    for label,(config,text) in candidates():\n                        kernel=swiglu=gate=up=None\n                        try:\n                            artifact=compile_source(text,out/'kernels');kernel=device.load(artifact)\n                            if label=='separate':\n                                gate=device.empty(o);up=device.empty(o)\n                                swiglu=device.load(compile_source(current_source('swiglu',dict(r=1,c=o)),out/'kernels'))\n                                def launch():\n                                    kernel.launch(buffers[0],buffers[1],gate)\n                                    kernel.launch(buffers[0],buffers[2],up)\n                                    swiglu.launch(gate,up,output)\n                            else:\n                                def launch():kernel.launch(*buffers,output)\n                            launch();actual=output.to_numpy()\n                            relative=float(np.linalg.norm(actual.astype(np.float64)-expected)/np.linalg.norm(expected))\n                            assert np.isfinite(actual).all() and relative<.002,(label,relative)\n                            def batch():\n                                for _ in range(20):launch()\n                            with CudaGraph(device,batch,resources=(*buffers,output,kernel)) as graph:\n                                timing=measure_cuda(device,graph.launch,warmup=3,samples=5,repeats=1)\n                            for metric in ('gpu_seconds','completed_seconds'):timing[metric]=[x/20 for x in timing[metric]]\n                            for metric in ('median_gpu_seconds','median_completed_seconds'):timing[metric]/=20\n                            timing['graph_nodes']=20\n                            row['candidates'][label]=dict(status='passed',config=config,relative_rms=relative,timing=timing,\n                                                          source_sha256=hashlib.sha256(text.encode()).hexdigest())\n                            print(key,label,round(timing['median_gpu_seconds']*1e6,2),'us',flush=True)\n                            if config and 'family' in config:discovery.record(config,timing['median_gpu_seconds'])\n                        except Exception as exc:\n                            row['candidates'][label]=dict(status='rejected',config=config,reason=str(exc))\n                            print(key,label,'rejected',str(exc)[:160],flush=True)\n                        finally:\n                            for resource in (kernel,swiglu,gate,up):\n                                if resource is not None:resource.release()\n                    passed=[n for n,v in row['candidates'].items() if v['status']=='passed' and n!='separate']\n                    assert passed,row\n                    row['selected']=min(passed,key=lambda n:row['candidates'][n]['timing']['median_gpu_seconds'])\n                    selected=row['candidates'][row['selected']]\n                    config={name:value for name,value in (selected['config'] or {}).items() if name!='family'}\n                    profile_entries.append(dict(operation=kind,parameters=parameters,schedule=config,\n                                                source_sha256=selected['source_sha256'],median_gpu_seconds=selected['timing']['median_gpu_seconds']))\n                    adapter=device.info\n                cases.append(row)\n                report=dict(schema='tensor.lfm2-cuda-format-search.v1',phase=phase,family=family,\n                            adapter=adapter,cases=cases,model_sha256=model_hashes,sources=sources,\n                            protocol=dict(seed=2093,gpu_concurrency=1,warmups=3,samples=5,\n                                          graph_repetitions=20,times_divided_by=20,relative_rms_max=.002,\n                                          baseline='generic packed schedule, not the frozen full-model before profile',\n                                          reference='independent Torch FP16 prefill/FP32 decode operators',\n                                          discovery='tensor.compiler.search.ScheduleSearch',max_candidates_per_shape=max_candidates))\n                selected_profile=dict(schema='tensor.schedule-profile.v1',provider='cuda',target='sm_86',entries=profile_entries,\n                                      provenance=dict(method='shared beam discovery; independent correctness gate then GPU timing'))\n                (out/'profile.json').write_text(json.dumps(selected_profile,indent=2)+'\\n')\n                (out/'search.json').write_text(json.dumps(report,indent=2)+'\\n')\n    return cases\n\n\nif __name__=='__main__':\n    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--models',type=Path,default=Path('build/lfm2-models'))\n    p.add_argument('--out',type=Path,required=True);p.add_argument('--phase',choices=('prefill','decode'),default='prefill')\n    p.add_argument('--rows',type=int,nargs='+',default=[128])\n    p.add_argument('--family',choices=('tiles','paired-loads','small-rows'),default='tiles')\n    p.add_argument('--formats',nargs='+',choices=('F16','Q4_0','Q4_K_M'),default=['F16','Q4_0','Q4_K_M'])\n    p.add_argument('--candidates',type=int,default=8)\n    args=p.parse_args();search(args.models,args.out,args.phase,tuple(args.rows),args.family,tuple(args.formats),args.candidates)\n"
+    },
+    "src/tensor/compiler/search.py": {
+      "sha256": "826ccbd9e003e4d67fa40b031d26866d7f38ea7ae28f4bd8f2a63cda9a207865",
+      "text": "\"\"\"Device-independent schedule discovery and producer profile selection.\n\nBackends supply spaces, legality predicates and coupled moves. Callers own\ncompilation, correctness checks, timing and budgets; no device is opened here.\n\"\"\"\nfrom __future__ import annotations\nimport hashlib\nimport itertools\nimport json\nimport math\n\n\ndef key(config):\n    return tuple(sorted(config.items()))\n\n\ndef neighbors(config, spaces, *, coupled=None):\n    space = spaces[config['family']]\n    for axis, values in space.items():\n        index = values.index(config.get(axis, values[0]))\n        for offset in (-1, 1):\n            if 0 <= index + offset < len(values):\n                yield {**config, axis: values[index + offset]}\n    if coupled is not None:\n        yield from coupled(config, space)\n\n\nclass ScheduleSearch:\n    \"\"\"Beam exploration with family retention and deterministic restarts.\n\n    Only correctness-checked positive finite timings should be recorded. A\n    finite space ends with StopIteration; rejected candidates are still seen.\n    \"\"\"\n    def __init__(self, seeds, *, spaces, width=8, coupled=None, legal=None):\n        if type(width) is not int or width <= 0:\n            raise ValueError('beam width must be a positive integer')\n        if not spaces or any(not axes or any(not values for values in axes.values()) for axes in spaces.values()):\n            raise ValueError('schedule spaces must have nonempty families and axes')\n        self.width = width\n        self.spaces = {family: {axis: tuple(values) for axis, values in axes.items()} for family, axes in spaces.items()}\n        self.coupled, self.legal = coupled, legal\n        self.pending = [dict(seed) for seed in seeds]\n        self.seen, self.results = set(), []\n        for seed in self.pending:\n            if seed.get('family') not in self.spaces:\n                raise ValueError('seed family is absent from the schedule space')\n            for axis, values in self.spaces[seed['family']].items():\n                if axis in seed and seed[axis] not in values:\n                    raise ValueError('seed axis is absent from the schedule space: ' + axis)\n        self.restarts = self._restarts()\n\n    def _restarts(self):\n        for family, space in self.spaces.items():\n            axes = list(space)\n            for values in itertools.product(*(space[axis] for axis in axes)):\n                yield {'family': family, **dict(zip(axes, values))}\n\n    def next(self):\n        while True:\n            if not self.pending:\n                ranked = sorted(self.results, key=lambda row: row[0])\n                selected = ranked[:self.width]\n                for family in self.spaces:\n                    selected += [row for row in ranked if row[1]['family'] == family][:2]\n                self.pending = [candidate for _, config in selected\n                                for candidate in neighbors(config, self.spaces, coupled=self.coupled)\n                                if key(candidate) not in self.seen]\n                if not self.pending:\n                    self.pending = [next(self.restarts)]\n            config = self.pending.pop(0)\n            identity = key(config)\n            if identity in self.seen:\n                continue\n            self.seen.add(identity)\n            if self.legal is None or self.legal(config):\n                return config\n\n    def record(self, config, seconds):\n        if math.isfinite(seconds) and seconds > 0:\n            self.results.append((seconds, dict(config)))\n\n\nclass ScheduleProfile:\n    \"\"\"Target-bound producer settings keyed by operation and semantic parameters.\n\n    Selectors may be partial; the most specific match wins. Conflicting matches\n    at equal specificity are rejected instead of depending on record order.\n    Runtime consumers use compiled artifacts, never this producer utility.\n    \"\"\"\n    def __init__(self, data):\n        if data.get('schema') != 'tensor.schedule-profile.v1':\n            raise ValueError('unsupported schedule profile schema')\n        if not isinstance(data.get('provider'), str) or not isinstance(data.get('target'), str):\n            raise ValueError('schedule profile needs provider and target')\n        if not isinstance(data.get('entries'), list):\n            raise ValueError('schedule profile needs entries')\n        seen = set()\n        for entry in data['entries']:\n            if (not isinstance(entry.get('operation'), str) or not isinstance(entry.get('parameters'), dict)\n                    or not isinstance(entry.get('schedule'), dict)):\n                raise ValueError('invalid schedule profile entry')\n            identity = json.dumps([entry['operation'], entry['parameters']], sort_keys=True)\n            if identity in seen:\n                raise ValueError('duplicate schedule profile selector')\n            seen.add(identity)\n        self.data = json.loads(json.dumps(data, allow_nan=False))\n\n    @property\n    def sha256(self):\n        return hashlib.sha256(json.dumps(self.data, sort_keys=True, separators=(',', ':')).encode()).hexdigest()\n\n    def select(self, operation, parameters, *, provider, target):\n        if (provider, target) != (self.data['provider'], self.data['target']):\n            raise ValueError('schedule profile provider/target mismatch')\n        matches = [entry for entry in self.data['entries'] if entry['operation'] == operation\n                   and all(name in parameters and parameters[name] == value for name, value in entry['parameters'].items())]\n        if not matches:\n            return {}\n        specificity = max(len(entry['parameters']) for entry in matches)\n        matches = [entry for entry in matches if len(entry['parameters']) == specificity]\n        if any(entry['schedule'] != matches[0]['schedule'] for entry in matches[1:]):\n            raise ValueError('ambiguous schedule profile selector')\n        return dict(matches[0]['schedule'])\n"
+    },
+    "src/tensor/compiler/cuda_schedules.py": {
+      "sha256": "ecf7f4617fe9594cb0069a50684a6b7b5747c70eaec4c8a84f93d98c36ee0c9b",
+      "text": "\"\"\"CUDA schedule spaces supplied to device-independent discovery.\"\"\"\n\nPREFILL_SPACE = dict(block_m=(16,32,64),block_n=(64,128),block_k=(32,64,128),\n                     stages=(2,3),threads=(128,256),packed_pairs=(False,True))\nDECODE_SPACE = dict(threads=(64,128,256),unroll=(1,2,4,8))\nATTENTION_SPACES = {'partial': {'splits': (16,)},\n                    'grouped': {'stage': (16,32,64), 'warps': (2,4)}}\n\n\ndef projection_space(phase, *, f16_vectors=False, family='tiles'):\n    if phase=='decode':\n        return {'gemv': {**DECODE_SPACE, **({'f16_values': (4,8,16)} if f16_vectors else {})}}\n    if phase!='prefill':raise ValueError('requires prefill or decode schedule space')\n    space=dict(PREFILL_SPACE)\n    if family=='paired-loads':space['packed_pairs']=(True,)\n    if family=='small-rows':space.update(block_m=(16,32),block_n=(64,),stages=(2,),threads=(128,))\n    return {'mma': space}\n\n\ndef projection_legal(config, *, depth, paired=False, packed_pairs=True, shared_limit=99*1024):\n    if config['family']=='gemv':\n        width=config.get('f16_values',4)\n        return depth%256==0 and depth%(32*width)==0\n    bk,bm,bn,stages=(config[name] for name in ('block_k','block_m','block_n','stages'))\n    # SM86 has a 99 KiB opt-in shared-memory limit per CTA. Padding/layout\n    # details remain the compiler's responsibility and may reject a candidate.\n    shared=(bm+(2 if paired else 1)*bn)*bk*2*stages\n    return depth%bk==0 and shared<=shared_limit and (not config['packed_pairs'] or packed_pairs)\n"
+    },
+    "src/tensor/compiler/cuda_lowering.py": {
+      "sha256": "02aecf8d285ea654919642392bf608992e1b7e9ea2573e660d7fa57bb020fcd9",
+      "text": "\"\"\"Typed CUDA operations used by inspectable TileLang/TIRx algorithms.\n\nOnly scalar loads and FP16 pair conversion need helpers. Loops, quantization,\nreductions, fusion and attention remain in frontend IR. TileLang already owns\nwarp shuffles, vectorized loads and IEEE FP32 FMA lowering.\n\"\"\"\n\n\ndef lower_cuda_intrinsics(source):\n    helpers = {\n        'tensor_load_u16': '''__device__ __forceinline__ unsigned int tensor_load_u16(const void* ptr) {\n    return *reinterpret_cast<const unsigned short*>(ptr);\n}''',\n        'tensor_pack_f16x2': '''__device__ __forceinline__ unsigned int tensor_pack_f16x2(float lo, float hi) {\n    __half2_raw bits = __floats2half2_rn(lo, hi);\n    return unsigned(bits.x) | (unsigned(bits.y) << 16);\n}''',\n    }\n    used = [definition for name, definition in helpers.items() if name + '(' in source]\n    if not used:\n        return source\n    return '#include <cuda_fp16.h>\\n' + '\\n'.join(used) + '\\n' + source\n"
+    },
+    "packages/tensor-llm/src/tensor_llm/cuda_kernels.py": {
+      "sha256": "0e5ba091ed42fb8954859b4dd3e88c984cb0e53c2df7da2697933611ed3068c7",
+      "text": "\"\"\"Inspectable TileLang/TIRx CUDA algorithms for packed LFM2 inference.\n\nMeasured schedules belong to producer profiles. All model arithmetic and\ncontrol flow stay in IR; the backend lowers only typed scalar/vector operations.\nRuntime imports remain compiler-free.\n\"\"\"\nimport re\nimport textwrap\nfrom .kernels import emit, weight, source as baseline_source\nfrom .gguf import TYPES\n\nCUDA_PROFILES = ('default', 'optimized')\nCUDA_GROUPED_THRESHOLD = 4096\n\ndef _u16(buffer, offset):\n    return f'T.call_extern(\"uint32\", \"tensor_load_u16\", T.address_of({buffer}[{offset}]))'\n\n\ndef _word(buffer, offset):\n    return f'({_u16(buffer,offset)} | ({_u16(buffer,f\"({offset}) + 2\")} << 16))'\n\n\ndef _half(buffer, offset):\n    return f'T.cast(T.reinterpret(\"float16\", T.cast({_u16(buffer,offset)}, \"uint16\")), \"float32\")'\n\n\ndef _vector(buffer, index, name, dtype='float32', width=4):\n    return f'''{name} = T.alloc_local(({width},), \"{dtype}\")\nfor component in T.vectorized({width}):\n    {name}[component] = {buffer}[({index}) + component]'''\n\n\ndef _dot(q,k,row_bytes,buffer,width=4):\n    \"\"\"Packed GGML arithmetic expressed completely in frontend scalar/vector IR.\"\"\"\n    if q in (0,1):\n        return f'''j = tile * {32*width} + lane * {width}\n{_vector('x','j','activation',width=width)}\n{_vector(buffer,f'row * {k} + j','coefficient','float16' if q==1 else 'float32',width)}\ndot = T.alloc_var(\"float32\")\ndot = 0\nfor component in T.unroll({width}):\n    dot = T.ieee_fmaf(activation[component], T.cast(coefficient[component], \"float32\"), dot)'''\n    if q==2:\n        body=f'''base = row * {row_bytes} + (tile * 8 + lane // 4) * 18\nscale = {_half(buffer,'base')}\npacked = {_word(buffer,'base + 2 + lane % 4 * 4')}\nj = tile * 256 + lane // 4 * 32 + lane % 4 * 4\n{_vector('x','j','activation')}\n{_vector('x','j + 16','activation_hi')}\ndot = T.alloc_var(\"float32\")\ndot = 0\nfor component in T.unroll(4):\n    dot = T.ieee_fmaf(activation[component], T.cast((packed >> (component * 8)) & 15, \"float32\") - 8, dot)\nfor component in T.unroll(4):\n    dot = T.ieee_fmaf(activation_hi[component], T.cast((packed >> (component * 8 + 4)) & 15, \"float32\") - 8, dot)\ndot = scale * dot'''\n        return body\n    if q==12:\n        return f'''base = row * {row_bytes} + tile * 144\ngroup = lane // 8 * 2\npacked = {_word(buffer,'base + 16 + lane // 8 * 32 + lane % 8 * 4')}\nj = tile * 256 + lane // 8 * 64 + lane % 8 * 4\n{_vector('x','j','activation')}\n{_vector('x','j + 32','activation_hi')}\nlo = T.alloc_var(\"float32\")\nhi = T.alloc_var(\"float32\")\nlo = 0\nhi = 0\nfor component in T.unroll(4):\n    lo = T.ieee_fmaf(activation[component], T.cast((packed >> (component * 8)) & 15, \"float32\"), lo)\n    hi = T.ieee_fmaf(activation_hi[component], T.cast((packed >> (component * 8 + 4)) & 15, \"float32\"), hi)\ns0 = T.if_then_else(group < 4, {buffer}[base + 4 + group] & 63, ({buffer}[base + 8 + group] & 15) | (({buffer}[base + group] >> 6) << 4))\ns1 = T.if_then_else(group < 4, {buffer}[base + 5 + group] & 63, ({buffer}[base + 9 + group] & 15) | (({buffer}[base + 1 + group] >> 6) << 4))\nm0 = T.if_then_else(group < 4, {buffer}[base + 8 + group] & 63, ({buffer}[base + 8 + group] >> 4) | (({buffer}[base + 4 + group] >> 6) << 4))\nm1 = T.if_then_else(group < 4, {buffer}[base + 9 + group] & 63, ({buffer}[base + 9 + group] >> 4) | (({buffer}[base + 5 + group] >> 6) << 4))\nsum0 = (activation[0] + activation[1]) + (activation[2] + activation[3])\nsum1 = (activation_hi[0] + activation_hi[1]) + (activation_hi[2] + activation_hi[3])\ndot = {_half(buffer,'base')} * (T.cast(s0, \"float32\") * lo + T.cast(s1, \"float32\") * hi) - {_half(buffer,'base + 2')} * (T.cast(m0, \"float32\") * sum0 + T.cast(m1, \"float32\") * sum1)'''\n    if q==14:\n        return f'''base = row * {row_bytes} + tile * 210\ndot = T.alloc_var(\"float32\")\ndot = 0\nfor half in T.unroll(2):\n    low = {_word(buffer,'base + half * 64 + (lane // 8 % 2) * 32 + lane % 8 * 4')}\n    high = {_word(buffer,'base + 128 + half * 32 + lane % 8 * 4')}\n    {_vector('x','tile * 256 + half * 128 + lane * 4','activation').replace(chr(10),chr(10)+'    ')}\n    value = T.alloc_var(\"float32\")\n    value = 0\n    for component in T.unroll(4):\n        quant = T.cast((low >> (component * 8 + lane // 16 * 4)) & 15, \"int32\") | T.cast(((high >> (component * 8 + lane // 8 * 2)) & 3) << 4, \"int32\")\n        value = T.ieee_fmaf(activation[component], T.cast(quant - 32, \"float32\"), value)\n    scale = T.cast(T.reinterpret(\"int8\", {buffer}[base + 192 + half * 8 + lane // 4]), \"float32\")\n    dot = T.ieee_fmaf(scale, value, dot)\ndot = {_half(buffer,'base + 208')} * dot'''\n    raise ValueError('unsupported packed dot encoding')\n\n\ndef gemv_source(kind,p):\n    k,o,q=p['k'],p['o'],p['type']\n    if q not in (0,1,2,12,14) or k%256:return fused_source(kind,p)\n    threads,unroll,width=p.get('threads',128),p.get('unroll',4),p.get('f16_values',4)\n    if threads not in (64,128,256) or unroll not in (1,2,4,8) or width not in (4,8,16) or k%(32*width):\n        raise ValueError('unsupported CUDA packed GEMV schedule')\n    _,block,size=TYPES[q]\n    row_bytes=k*(4 if q==0 else 2) if q in (0,1) else k//block*size\n    tiles=k//(32*width) if q in (0,1) else k//256\n    paired,residual=kind=='ffn',kind=='linear_add'\n    args=[('x',k,'float32'),('w',k*o if q in (0,1) else row_bytes*o,'float16' if q==1 else 'float32' if q==0 else 'uint8')]\n    if paired:args.append(('w2',args[1][1],args[1][2]))\n    if residual:args.append(('residual',o,'float32'))\n    args.append(('out',o,'float32'))\n    declarations='\\n    ups = T.alloc_local(('+str(unroll)+',), \"float32\")' if paired else ''\n    initialize='\\n        ups[slot] = 0' if paired else ''\n    compute='\\n'.join('                    '+line for line in _dot(q,k,row_bytes,'w',width).splitlines())+'\\n                    sums[slot] = sums[slot] + dot'\n    if paired:compute+='\\n'+'\\n'.join('                    '+line for line in _dot(q,k,row_bytes,'w2',width).splitlines())+'\\n                    ups[slot] = ups[slot] + dot'\n    total='\\n    up = T.alloc_var(\"float32\")\\n    up = 0' if paired else ''\n    add='\\n        up = up + ups[slot]' if paired else ''\n    reduce='\\n'.join(f'    total = total + T.shfl_down(total, {delta})'+(f'\\n    up = up + T.shfl_down(up, {delta})' if paired else '') for delta in (16,8,4,2,1))\n    value='total / (1 + T.exp(-total)) * up' if paired else 'residual[row] + total' if residual else 'total'\n    return emit(args,f'''with T.Kernel(T.ceildiv({o}, {threads//32}), threads={threads}) as bx:\n    tx = T.get_thread_binding()\n    lane = tx % 32\n    row = bx * {threads//32} + tx // 32\n    sums = T.alloc_local(({unroll},), \"float32\"){declarations}\n    for slot in T.unroll({unroll}):\n        sums[slot] = 0{initialize}\n    if row < {o}:\n        for chunk in T.serial(T.ceildiv({tiles}, {unroll})):\n            for slot in T.unroll({unroll}):\n                tile = chunk * {unroll} + slot\n                if tile < {tiles}:\n{compute}\n    total = T.alloc_var(\"float32\")\n    total = 0{total}\n    for slot in T.unroll({unroll}):\n        total = total + sums[slot]{add}\n{reduce}\n    if (lane == 0) & (row < {o}):\n        out[row] = {value}''')\n\n\ndef warp_partial_source(p,splits):\n    h,kh,d,cap=(p[n] for n in ('h','kh','d','cap'))\n    if d!=64 or type(splits) is not int or splits<1:raise ValueError('unsupported warp attention schedule')\n    shuffle='\\n'.join(f'        score = score + T.shfl_down(score, {delta})' for delta in (16,8,4,2,1))\n    return emit([('q',h*d,'float32'),('kc',cap*kh*d,'float16'),('vc',cap*kh*d,'float16'),('parts',h*splits*66,'float32'),('pos',2,'int32')],f'''with T.Kernel({h}, {splits}, threads=128) as (head, split):\n    tx = T.get_thread_binding()\n    lane = tx % 32\n    warp = tx // 32\n    chunk = T.ceildiv(pos[0] + 1, {splits})\n    begin = split * chunk\n    end = T.min(begin + chunk, pos[0] + 1)\n    kvhead = head // {h//kh}\n    q0 = q[head * 64 + lane]\n    q1 = q[head * 64 + lane + 32]\n    maxima = T.alloc_shared((4,), \"float32\")\n    sums = T.alloc_shared((4,), \"float32\")\n    values = T.alloc_shared((4, 64), \"float32\")\n    maximum = T.alloc_var(\"float32\")\n    normalizer = T.alloc_var(\"float32\")\n    a0 = T.alloc_var(\"float32\")\n    a1 = T.alloc_var(\"float32\")\n    maximum = -T.infinity(\"float32\")\n    normalizer = 0\n    a0 = 0\n    a1 = 0\n    for offset in T.serial(T.ceildiv(T.max(end - begin - warp, 0), 4)):\n        token = begin + warp + offset * 4\n        base = (token * {kh} + kvhead) * 64\n        score = q0 * T.cast(kc[base + lane], \"float32\") + q1 * T.cast(kc[base + lane + 32], \"float32\")\n{shuffle}\n        score = T.shfl_sync(score, 0) * 0.125\n        next_max = T.max(maximum, score)\n        correction = T.exp(maximum - next_max)\n        probability = T.exp(score - next_max)\n        a0 = a0 * correction + probability * T.cast(vc[base + lane], \"float32\")\n        a1 = a1 * correction + probability * T.cast(vc[base + lane + 32], \"float32\")\n        normalizer = normalizer * correction + probability\n        maximum = next_max\n    values[warp, lane] = a0\n    values[warp, lane + 32] = a1\n    if lane == 0:\n        maxima[warp] = maximum\n        sums[warp] = normalizer\n    T.sync_threads()\n    if warp == 0:\n        merged_max = T.max(T.max(maxima[0], maxima[1]), T.max(maxima[2], maxima[3]))\n        total = T.alloc_var(\"float32\")\n        result0 = T.alloc_var(\"float32\")\n        result1 = T.alloc_var(\"float32\")\n        total = 0\n        result0 = 0\n        result1 = 0\n        for other in T.unroll(4):\n            factor = T.if_then_else(T.isfinite(merged_max), T.exp(maxima[other] - merged_max), 0)\n            total = total + sums[other] * factor\n            result0 = result0 + values[other, lane] * factor\n            result1 = result1 + values[other, lane + 32] * factor\n        base = (head * {splits} + split) * 66\n        parts[base + lane] = result0\n        parts[base + lane + 32] = result1\n        if lane == 0:\n            parts[base + 64] = merged_max\n            parts[base + 65] = total''')\n\n\ndef grouped_source(p,stage=32,warps=2):\n    h,kh,d,cap,splits=(p[n] for n in ('h','kh','d','cap','splits'))\n    group=h//kh;threads=group*warps*32\n    if d!=64 or h%kh or group not in (2,4) or stage not in (16,32,64) or warps not in (2,4):\n        raise ValueError('unsupported grouped attention schedule')\n    shuffle='\\n'.join(f'            score = score + T.shfl_down(score, {delta})' for delta in (16,8,4,2,1))\n    return emit([('q',h*d,'float32'),('kc',cap*kh*d,'float16'),('vc',cap*kh*d,'float16'),('parts',h*splits*66,'float32'),('pos',2,'int32')],f'''with T.Kernel({kh}, {splits}, threads={threads}) as (kvhead, split):\n    tx = T.get_thread_binding()\n    lane = tx % 32\n    warp = tx // 32\n    local = warp // {warps}\n    worker = warp % {warps}\n    head = kvhead * {group} + local\n    chunk = T.ceildiv(pos[0] + 1, {splits})\n    begin = split * chunk\n    end = T.min(begin + chunk, pos[0] + 1)\n    keys = T.alloc_shared(({stage}, 64), \"float16\")\n    vals = T.alloc_shared(({stage}, 64), \"float16\")\n    maxima = T.alloc_shared(({group*warps},), \"float32\")\n    sums = T.alloc_shared(({group*warps},), \"float32\")\n    values = T.alloc_shared(({group*warps}, 64), \"float32\")\n    q0 = q[head * 64 + lane]\n    q1 = q[head * 64 + lane + 32]\n    maximum = T.alloc_var(\"float32\")\n    normalizer = T.alloc_var(\"float32\")\n    a0 = T.alloc_var(\"float32\")\n    a1 = T.alloc_var(\"float32\")\n    maximum = -T.infinity(\"float32\")\n    normalizer = 0\n    a0 = 0\n    a1 = 0\n    for block in T.serial(T.ceildiv(T.max(end - begin, 0), {stage})):\n        base = begin + block * {stage}\n        for token, col in T.Parallel({stage}, 64):\n            keys[token, col] = T.if_then_else(base + token < end, kc[((base + token) * {kh} + kvhead) * 64 + col], 0)\n            vals[token, col] = T.if_then_else(base + token < end, vc[((base + token) * {kh} + kvhead) * 64 + col], 0)\n        T.sync_threads()\n        for offset in T.serial(T.ceildiv(T.max(T.min({stage}, end - base) - worker, 0), {warps})):\n            token = worker + offset * {warps}\n            score = q0 * T.cast(keys[token, lane], \"float32\") + q1 * T.cast(keys[token, lane + 32], \"float32\")\n{shuffle}\n            score = T.shfl_sync(score, 0) * 0.125\n            next_max = T.max(maximum, score)\n            correction = T.exp(maximum - next_max)\n            probability = T.exp(score - next_max)\n            a0 = a0 * correction + probability * T.cast(vals[token, lane], \"float32\")\n            a1 = a1 * correction + probability * T.cast(vals[token, lane + 32], \"float32\")\n            normalizer = normalizer * correction + probability\n            maximum = next_max\n        T.sync_threads()\n    values[warp, lane] = a0\n    values[warp, lane + 32] = a1\n    if lane == 0:\n        maxima[warp] = maximum\n        sums[warp] = normalizer\n    T.sync_threads()\n    if worker == 0:\n        merged_max = T.alloc_var(\"float32\")\n        total = T.alloc_var(\"float32\")\n        result0 = T.alloc_var(\"float32\")\n        result1 = T.alloc_var(\"float32\")\n        merged_max = -T.infinity(\"float32\")\n        total = 0\n        result0 = 0\n        result1 = 0\n        for other in T.unroll({warps}):\n            merged_max = T.max(merged_max, maxima[local * {warps} + other])\n        for other in T.unroll({warps}):\n            index = local * {warps} + other\n            factor = T.if_then_else(T.isfinite(merged_max), T.exp(maxima[index] - merged_max), 0)\n            total = total + sums[index] * factor\n            result0 = result0 + values[index, lane] * factor\n            result1 = result1 + values[index, lane + 32] * factor\n        base = (head * {splits} + split) * 66\n        parts[base + lane] = result0\n        parts[base + lane + 32] = result1\n        if lane == 0:\n            parts[base + 64] = merged_max\n            parts[base + 65] = total''')\n\n\ndef fused_source(kind, p):\n    \"\"\"Retain baseline arithmetic for unsupported packed encodings and prefill.\"\"\"\n    text = baseline_source('linear', p)\n    if kind == 'linear': return text\n    if kind == 'linear_add':\n        text = text.replace(', out: T.Tensor', f', residual: T.Tensor(({p[\"r\"] * p[\"o\"]},), \"float32\"), out: T.Tensor')\n        return re.sub(r'out\\[([^\\]]+)\\] = (.+)', r'out[\\1] = residual[\\1] + (\\2)', text)\n    k, o, q = p['k'], p['o'], p['type']\n    _, block, size = TYPES[q]\n    count = k * o if q in (0, 1) else k * o // block * size\n    dtype = 'float16' if q == 1 else 'float32' if q == 0 else 'uint8'\n    text = text.replace(', out: T.Tensor', f', w2: T.Tensor(({count},), \"{dtype}\"), out: T.Tensor')\n    pair = lambda line: re.sub(r'\\b(rhs|accum|total|w)\\b', lambda m: {'w': 'w2'}.get(m[0], m[0] + '2'), line)\n    lines = []\n    for line in text.splitlines():\n        if 'out[' in line and ' = ' in line:\n            destination, gate = line.split(' = ', 1)\n            lines.append(destination + f' = ({gate}) / (1 + T.exp(-({gate}))) * ({pair(gate)})')\n        else:\n            lines.append(line)\n            if re.search(r'\\b(rhs|accum|total)\\b', line) and not line.startswith(('def ', '    return')):\n                lines.append(pair(line))\n    return '\\n'.join(lines) + '\\n'\n\ndef source(kind, p):\n    a = lambda name, n, dtype='float32': (name, n, dtype)\n    if kind in ('linear', 'linear_add', 'ffn'):\n        if p['r']==1:\n            return gemv_source(kind,p)\n        return prefill_source(kind,p) if 'block_m' in p else fused_source(kind,p)\n    if kind == 'attention_partial': return warp_partial_source(p, p['splits'])\n    if kind == 'attention_grouped': return grouped_source(p,p.get('stage',32),p.get('warps',2))\n    if kind == 'attention_merge': return merge_source(p, p['splits'])\n    if kind in ('qnorm', 'kvnorm'):\n        r, h, kh, d, cap = (p[name] for name in ('r', 'h', 'kh', 'd', 'cap'))\n        original = baseline_source('qkv', p)\n        body = original.split(' as (head, row):\\n', 1)[1].split('\\ndef tensor_export', 1)[0]\n        query, keys = body.split(f'        if head < {kh}:\\n', 1)\n        declarations = '\\n'.join(query.splitlines()[:3]) + '\\n'\n        if kind == 'qnorm':\n            args = [a('q', r*h*d), a('qw', d), a('qo', r*h*d), a('pos', 2, 'int32')]\n            body = textwrap.dedent(query).rstrip()\n            heads = h\n        else:\n            args = [a('k', r*kh*d), a('v', r*kh*d), a('kw', d),\n                    a('kc', cap*kh*d, 'float16'), a('vc', cap*kh*d, 'float16'), a('pos', 2, 'int32')]\n            body = textwrap.dedent(declarations).rstrip() + '\\n' + textwrap.dedent(keys).rstrip()\n            heads = kh\n        return emit(args, f'with T.Kernel({heads}, {r}, threads=64) as (head, row):\\n' +\n                    '\\n'.join('    ' + line for line in body.splitlines()))\n    if kind == 'prefill_tail':\n        r, c, t = p['r'], p['c'], p['t']\n        return emit([a('x', r*c), a('out', t*c), a('pos', 2, 'int32'), a('tail_pos', 2, 'int32')], f'''with T.Kernel(T.ceildiv({t*c}, 256), threads=256) as bx:\n    for lane in T.Parallel(256):\n        i = bx * 256 + lane\n        if i < {t*c}:\n            out[i] = T.if_then_else(i // {c} < T.min(pos[1], {t}), x[(T.max(pos[1] - {t}, 0) + i // {c}) * {c} + i % {c}], 0)\n        if (bx == 0) & (lane == 0):\n            tail_pos[0] = pos[0] + T.max(pos[1] - {t}, 0)\n            tail_pos[1] = T.min(pos[1], {t})''')\n    if kind == 'add_rms':\n        text = baseline_source('rms', p)\n        n = p['r'] * p['c']\n        text = text.replace(', w: T.Tensor', f', mixed: T.Tensor(({n},), \"float32\"), residual: T.Tensor(({n},), \"float32\"), w: T.Tensor')\n        text = re.sub(r'x\\[([^\\]]+)\\]', lambda m: f'(x[{m[1]}] + mixed[{m[1]}])', text)\n        index = f'row * {p[\"c\"]} + i'\n        return text.replace(f'            out[{index}]', f'            residual[{index}] = x[{index}] + mixed[{index}]\\n            out[{index}]')\n    if kind=='argmax':\n        n=p['n'];threads=256\n        reduce='\\n'.join(f'''    if tx < {stride}:\n        if (values[tx + {stride}] > values[tx]) | ((values[tx + {stride}] == values[tx]) & (indices[tx + {stride}] < indices[tx])):\n            values[tx] = values[tx + {stride}]\n            indices[tx] = indices[tx + {stride}]\n    T.sync_threads()''' for stride in (128,64,32,16,8,4,2,1))\n        return emit([a('logits',n),a('token',1,'int32'),a('pos',2,'int32')],f'''with T.Kernel(1, threads={threads}):\n    tx = T.get_thread_binding()\n    best = T.alloc_var(\"float32\")\n    index = T.alloc_var(\"int32\")\n    values = T.alloc_shared(({threads},), \"float32\")\n    indices = T.alloc_shared(({threads},), \"int32\")\n    best = -T.infinity(\"float32\")\n    index = {n}\n    for tile in T.serial(T.ceildiv({n}, {threads})):\n        i = tile * {threads} + tx\n        if i < {n}:\n            if (logits[i] > best) | ((logits[i] == best) & (i < index)):\n                best = logits[i]\n                index = i\n    values[tx] = best\n    indices[tx] = index\n    T.sync_threads()\n{reduce}\n    if tx == 0:\n        token[0] = indices[0]\n        pos[1] = 1''')\n    return baseline_source(kind, p)\n\ndef merge_source(p,splits):\n    h,d=p['h'],p['d'];stride=d+2\n    return emit([('parts',h*splits*stride,'float32'),('out',h*d,'float32')],f'''with T.Kernel({h}, threads=128) as head:\n    maxima = T.alloc_fragment(({splits},), \"float32\")\n    maximum = T.alloc_fragment((1,), \"float32\")\n    sums = T.alloc_fragment(({splits},), \"float32\")\n    normalizer = T.alloc_fragment((1,), \"float32\")\n    products = T.alloc_fragment(({splits}, {d}), \"float32\")\n    result = T.alloc_fragment(({d},), \"float32\")\n    for i in T.Parallel({splits}):\n        maxima[i] = parts[(head * {splits} + i) * {stride} + {d}]\n    T.reduce_max(maxima, maximum, dim=0)\n    for i in T.Parallel({splits}):\n        sums[i] = parts[(head * {splits} + i) * {stride} + {d+1}] * T.exp(maxima[i] - maximum[0])\n    T.reduce_sum(sums, normalizer, dim=0)\n    for i, j in T.Parallel({splits}, {d}):\n        products[i, j] = parts[(head * {splits} + i) * {stride} + j] * T.exp(maxima[i] - maximum[0])\n    T.reduce_sum(products, result, dim=0)\n    for j in T.Parallel({d}):\n        out[head * {d} + j] = result[j] / normalizer[0]''')\n\ndef pair_load(q,k,buffer,row,col):\n    _,block,size=TYPES[q]\n    row_bytes=k*2 if q==1 else k//block*size\n    if q==1:\n        return f'bits = T.ldg32({buffer}[({row}) * {k} + ({col})])'\n    if q==2:\n        return f'''base = ({row}) * {row_bytes} + ({col}) // 32 * 18\nscale = {_half(buffer,'base')}\npacked = {_u16(buffer,f'base + 2 + ({col}) % 16')}\nshift = ({col}) % 32 // 16 * 4\nlo = scale * (T.cast((packed >> shift) & 15, \"float32\") - 8)\nhi = scale * (T.cast((packed >> (shift + 8)) & 15, \"float32\") - 8)\nbits = T.call_extern(\"uint32\", \"tensor_pack_f16x2\", lo, hi)'''\n    if q==12:\n        return f'''base = ({row}) * {row_bytes} + ({col}) // 256 * 144\nweight_col = ({col}) % 256\ngroup = weight_col // 32\nscale = T.if_then_else(group < 4, {buffer}[base + 4 + group] & 63, ({buffer}[base + 8 + group] & 15) | (({buffer}[base + group] >> 6) << 4))\nminimum = T.if_then_else(group < 4, {buffer}[base + 8 + group] & 63, ({buffer}[base + 8 + group] >> 4) | (({buffer}[base + 4 + group] >> 6) << 4))\nds = {_half(buffer,'base')} * T.cast(scale, \"float32\")\ndm = {_half(buffer,'base + 2')} * T.cast(minimum, \"float32\")\npacked = {_u16(buffer,'base + 16 + weight_col // 64 * 32 + weight_col % 32')}\nshift = group % 2 * 4\nlo = ds * T.cast((packed >> shift) & 15, \"float32\") - dm\nhi = ds * T.cast((packed >> (shift + 8)) & 15, \"float32\") - dm\nbits = T.call_extern(\"uint32\", \"tensor_pack_f16x2\", lo, hi)'''\n    if q==14:\n        return f'''base = ({row}) * {row_bytes} + ({col}) // 256 * 210\nweight_col = ({col}) % 256\ngroup = weight_col % 128 // 32\nlow = {_u16(buffer,'base + weight_col // 128 * 64 + group % 2 * 32 + weight_col % 32')}\nhigh = {_u16(buffer,'base + 128 + weight_col // 128 * 32 + weight_col % 32')}\na = T.cast((low >> (group // 2 * 4)) & 15, \"int32\") | T.cast(((high >> (group * 2)) & 3) << 4, \"int32\")\nb = T.cast((low >> (group // 2 * 4 + 8)) & 15, \"int32\") | T.cast(((high >> (group * 2 + 8)) & 3) << 4, \"int32\")\nscale = {_half(buffer,'base + 208')} * T.cast(T.reinterpret(\"int8\", {buffer}[base + 192 + weight_col // 16]), \"float32\")\nbits = T.call_extern(\"uint32\", \"tensor_pack_f16x2\", scale * T.cast(a - 32, \"float32\"), scale * T.cast(b - 32, \"float32\"))'''\n    raise ValueError('unsupported packed pair encoding')\n\n\ndef prefill_source(kind, p):\n    \"\"\"FP16 tensor-core operands, FP32 accumulation, larger staged tiles.\"\"\"\n    r,k,o,q=(p[n] for n in ('r','k','o','type'))\n    bm,bn,bk=p.get('block_m',32),p.get('block_n',64),p.get('block_k',32)\n    stages,threads=p.get('stages',2),p.get('threads',128)\n    paired=kind=='ffn'\n    _,block,size=TYPES[q];count=k*o if q in (0,1) else k*o//block*size\n    dtype='float16' if q==1 else 'float32' if q==0 else 'uint8'\n    args=[('x',r*k,'float32'),('w',count,dtype)]\n    if paired:args.append(('w2',count,dtype))\n    if kind=='linear_add':args.append(('residual',r*o,'float32'))\n    args.append(('out',r*o,'float32'))\n    read=lambda w:weight(q,f'bx * {bn} + i',f'tile * {bk} + j',k,buffer=w)\n    declarations=''\n    loads=''\n    gemm=''\n    if paired:\n        declarations=f'\\n    rhs2 = T.alloc_shared(({bn}, {bk}), \"float16\")\\n    accum2 = T.alloc_fragment(({bm}, {bn}), \"float32\")\\n    T.clear(accum2)'\n        loads=f'\\n            rhs2[i, j] = T.if_then_else(bx * {bn} + i < {o}, {read(\"w2\")}, 0)'\n        gemm='\\n        T.gemm(lhs, rhs2, accum2, transpose_B=True)'\n    value='accum[i, j]'\n    if paired:value=f'({value}) / (1 + T.exp(-({value}))) * accum2[i, j]'\n    if kind=='linear_add':value=f'residual[(by * {bm} + i) * {o} + bx * {bn} + j] + ({value})'\n    result=emit(args,f'''with T.Kernel(T.ceildiv({r}, {bm}), T.ceildiv({o}, {bn}), threads={threads}) as (by, bx):\n    lhs = T.alloc_shared(({bm}, {bk}), \"float16\")\n    rhs = T.alloc_shared(({bn}, {bk}), \"float16\")\n    accum = T.alloc_fragment(({bm}, {bn}), \"float32\")\n    T.clear(accum){declarations}\n    for tile in T.Pipelined({k//bk}, num_stages={stages}):\n        for i, j in T.Parallel({bm}, {bk}):\n            lhs[i, j] = T.if_then_else(by * {bm} + i < {r}, x[(by * {bm} + i) * {k} + tile * {bk} + j], 0)\n        for i, j in T.Parallel({bn}, {bk}):\n            rhs[i, j] = T.if_then_else(bx * {bn} + i < {o}, {read(\"w\")}, 0){loads}\n        T.gemm(lhs, rhs, accum, transpose_B=True){gemm}\n    for i, j in T.Parallel({bm}, {bn}):\n        if (by * {bm} + i < {r}) & (bx * {bn} + j < {o}):\n            out[(by * {bm} + i) * {o} + bx * {bn} + j] = {value}''')\n    if p.get('packed_pairs'):\n        old=f'        for i, j in T.Parallel({bn}, {bk}):\\n            rhs[i, j] = T.if_then_else(bx * {bn} + i < {o}, {read(\"w\")}, 0){loads}'\n        replacement=f'        for i, j in T.Parallel({bn}, {bk//2}):'\n        for rhs,w in [('rhs','w'),*([('rhs2','w2')] if paired else [])]:\n            body=pair_load(q,k,w,f'bx * {bn} + i',f'tile * {bk} + j * 2')\n            replacement+=f'\\n            if bx * {bn} + i < {o}:\\n'+ '\\n'.join('                '+line for line in body.splitlines())\n            replacement+=f'\\n                {rhs}[i, j * 2] = T.reinterpret(\"float16\", T.cast(bits & T.uint32(65535), \"uint16\"))\\n                {rhs}[i, j * 2 + 1] = T.reinterpret(\"float16\", T.cast(bits >> 16, \"uint16\"))\\n            else:\\n                {rhs}[i, j * 2] = 0\\n                {rhs}[i, j * 2 + 1] = 0'\n        old='\\n'.join('    '+line for line in old.splitlines())\n        replacement='\\n'.join('    '+line for line in replacement.splitlines())\n        assert old in result\n        result=result.replace(old,replacement)\n    return result\n"
+    }
+  },
+  "protocol": {
+    "seed": 2093,
+    "gpu_concurrency": 1,
+    "warmups": 3,
+    "samples": 5,
+    "graph_repetitions": 20,
+    "times_divided_by": 20,
+    "relative_rms_max": 0.002,
+    "baseline": "generic packed schedule, not the frozen full-model before profile",
+    "reference": "independent Torch FP16 prefill/FP32 decode operators",
+    "discovery": "tensor.compiler.search.ScheduleSearch",
+    "max_candidates_per_shape": 8
+  }
+}

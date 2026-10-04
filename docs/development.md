@@ -11,7 +11,7 @@ repository rather than entering the runtime wheel.
 src/tensor/
   runtime/       buffers, executables, ABI, signatures, DLPack, manual backward
   providers/     CUDA, CPU and WebGPU execution; shared WebGPU metadata contract
-  compiler/      build/cache, NVRTC/nvcc, CUDA/CPU/WebGPU lowering, tuning
+  compiler/      build/cache, NVRTC/nvcc, lowering, shared discovery and tuning
   artifacts/     formats, portable IR, module packages, registry transport
   cli/           argument handling, run/bench/inspect and diagnostics
   include/       installed native ABI headers
@@ -55,6 +55,19 @@ core: `tx.ManualFunction` and `tx.BackwardContext`. Training uses the optional
 `from tensor_nn import GPTConfig, NanoGPT`; the `tensor.nn` namespace has been
 removed. The core wheel depends only on NumPy and can import and run the CLI
 without NN, Torch, wgpu or compiler packages.
+
+Schedule discovery lives in `tensor.compiler.search`: beam exploration,
+deterministic restarts, legality filtering and target-bound producer profiles.
+`cuda_schedules` and `webgpu_schedules` supply backend spaces and constraints.
+Benchmarks supply workloads, independent correctness gates and timing. The old
+`tensor.compiler.webgpu_search` module has been removed.
+
+LLM CUDA algorithms in `packages/tensor-llm` emit TileLang/TIRx and compile
+through `tensor.build`. Small hardware operations are lowered in
+`tensor.compiler.cuda_lowering`; complete CUDA algorithms do not live there.
+Measured model settings live in `benchmarks/lfm2/profiles`, outside the runtime
+package. Bundles record the selected schedules and profile fingerprint; standalone
+execution does not import the compiler or read producer profile files.
 
 ## Development environment
 

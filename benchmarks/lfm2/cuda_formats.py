@@ -15,10 +15,12 @@ BEFORE_COMMIT='4c6872674756454982af8c87c6a1d77b3fc5ef02'
 def compile_templates(out):
     """Compile every selected 2.6B prefill schedule without a GPU or checkpoint."""
     from benchmarks.lfm2.cuda_format_search import compile_source
-    from tensor_llm.cuda_kernels import CUDA_PREFILL, source
+    from tensor_llm.cuda_kernels import source
+    profile=json.loads(Path(__file__).with_name('profiles').joinpath('cuda-sm86-lfm2.5-2.6b.json').read_text())
     specs=[]
-    for kind,r,k,o,q in CUDA_PREFILL:
-        specs.append((kind,dict(r=r,k=k,o=o,type=q)))
+    for entry in profile['entries']:
+        if entry['parameters']['r']>1:
+            specs.append((entry['operation'],{**entry['parameters'],**entry['schedule']}))
     for q in (1,2,12,14):
         specs.append(('linear_add',dict(r=1,k=256,o=7,type=q)))
         specs.append(('ffn',dict(r=1,k=2048,o=10752,type=q)))
@@ -31,13 +33,13 @@ def compile_templates(out):
     (Path(out)/'coverage.json').write_text(json.dumps(records,indent=2)+'\n')
 
 
-def before_runner(directory):
+def before_runner(directory,commit=BEFORE_COMMIT):
     path=Path(directory).resolve()
     repo=Path(__file__).resolve().parents[2]
     for file in path.glob('*.py'):
         original=subprocess.check_output(['git','-C',str(repo),'show',
-                    f'{BEFORE_COMMIT}:packages/tensor-llm/src/tensor_llm/{file.name}'])
-        if file.read_bytes()!=original:raise ValueError('frozen before source differs from '+BEFORE_COMMIT+': '+file.name)
+                    f'{commit}:packages/tensor-llm/src/tensor_llm/{file.name}'])
+        if file.read_bytes()!=original:raise ValueError('frozen before source differs from '+commit+': '+file.name)
     spec=importlib.util.spec_from_file_location('tensor_llm_before',path/'__init__.py',submodule_search_locations=[str(path)])
     module=importlib.util.module_from_spec(spec);_sys.modules[spec.name]=module
     spec.loader.exec_module(module)

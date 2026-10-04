@@ -20,7 +20,7 @@ def run(root,out):
     sources={}
     paths=['src/tensor/providers/webgpu.py','packages/tensor-llm/src/tensor_llm/model.py',
            'packages/tensor-llm/src/tensor_llm/webgpu_kernels.py','src/tensor/compiler/webgpu_lowering.py',
-           'src/tensor/compiler/webgpu_search.py','tests/providers/test_webgpu.py',
+           'src/tensor/compiler/search.py','src/tensor/compiler/webgpu_schedules.py','tests/providers/test_webgpu.py',
            'tests/providers/test_webgpu_lowering.py','tests/compiler/test_webgpu_decode_schedule.py']
     paths += [str(p) for p in Path('benchmarks/lfm2').glob('runtime*.py')]
     paths += ['benchmarks/lfm2/decode_fusion_search.py','benchmarks/lfm2/decode_kernel_search.py',

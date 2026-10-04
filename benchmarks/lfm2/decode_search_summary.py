@@ -14,7 +14,7 @@ def run(root,out):
         raise ValueError('requires completed and validated measurements')
     profiles={name:load('profile-'+name+'.json') for name in ('before','after')}
     source_paths=['packages/tensor-llm/src/tensor_llm/model.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py',
-                  'src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/webgpu_search.py','benchmarks/lfm2/producer.py',
+                  'src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/search.py','src/tensor/compiler/webgpu_schedules.py','benchmarks/lfm2/producer.py',
                   'benchmarks/lfm2/webgpu_profile.py','benchmarks/lfm2/decode_kernel_search.py',
                   'benchmarks/lfm2/decode_attention_search.py','benchmarks/lfm2/decode_search_recheck.py',
                   'benchmarks/lfm2/decode_search_compare.py','benchmarks/lfm2/decode_search_summary.py',

@@ -1,0 +1,918 @@
+{
+  "schema": "tensor.schedule-profile.v1",
+  "provider": "cuda",
+  "target": "sm_86",
+  "name": "lfm2.5-2.6b-a10g",
+  "entries": [
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 1
+      },
+      "schedule": {
+        "threads": 256,
+        "unroll": 4
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 1
+      },
+      "schedule": {
+        "threads": 256,
+        "unroll": 4
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 10752,
+        "type": 2
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 2
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 2
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 2
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 2
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 12
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 12
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 4
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 4
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 10752,
+        "o": 2048,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 10752,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 6144,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 2048,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 512,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 16,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 10752,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 6144,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 32,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 10752,
+        "o": 2048,
+        "type": 14
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 10752,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 64,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 6144,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 512,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 512,
+        "type": 14
+      },
+      "schedule": {
+        "block_m": 16,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 10752,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 16,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 16,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 1
+      },
+      "schedule": {
+        "block_m": 16,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 14
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 14
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 12
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    },
+    {
+      "operation": "attention_grouped",
+      "parameters": {
+        "r": 1,
+        "h": 32,
+        "kh": 8,
+        "d": 64
+      },
+      "schedule": {
+        "stage": 32,
+        "warps": 2
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 128000,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 128000,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      }
+    }
+  ],
+  "provenance": {
+    "reference_commit": "0cffba8584b1a4da051202591c5a04b57d7233f1",
+    "method": "correctness-gated measured template schedules",
+    "adapter": "NVIDIA A10G",
+    "frontend_reselection": {
+      "frontend_source_sha256": "0e5ba091ed42fb8954859b4dd3e88c984cb0e53c2df7da2697933611ed3068c7",
+      "evidence": "docs/research/data/lfm2-compiler-cleanup-decode-search.json",
+      "method": "two independent correctness-gated shared-discovery runs; require >2% GPU improvement in both; validate and remeasure full model",
+      "updates": [
+        {
+          "operation": "linear",
+          "parameters": {
+            "r": 1,
+            "k": 2048,
+            "o": 128000,
+            "type": 14
+          },
+          "schedule": {
+            "threads": 64,
+            "unroll": 8
+          },
+          "speedup_vs_frontend_seed": [
+            1.0503536459770428,
+            1.0515199569210711
+          ],
+          "source_sha256": "f0ace10ed146cf14e37503ba6407c65e2cd5a753832588578eab19502173f957"
+        },
+        {
+          "operation": "linear",
+          "parameters": {
+            "r": 1,
+            "k": 10752,
+            "o": 2048,
+            "type": 14
+          },
+          "schedule": {
+            "threads": 64,
+            "unroll": 2
+          },
+          "speedup_vs_frontend_seed": [
+            1.202981593963385,
+            1.203661275110045
+          ],
+          "source_sha256": "5b3cb024e2a910883171b02f72ac36519da138c5cf159090ed49ed1876ff3b1a"
+        },
+        {
+          "operation": "linear",
+          "parameters": {
+            "r": 1,
+            "k": 2048,
+            "o": 2048,
+            "type": 12
+          },
+          "schedule": {
+            "threads": 128,
+            "unroll": 2
+          },
+          "speedup_vs_frontend_seed": [
+            1.0252100932820594,
+            1.0252100932820594
+          ],
+          "source_sha256": "9d0d3bb02fabbad41ebbaf623cadb8b9be5bf1485d8a8ec916640a05bd675f62"
+        },
+        {
+          "operation": "linear",
+          "parameters": {
+            "r": 1,
+            "k": 2048,
+            "o": 512,
+            "type": 12
+          },
+          "schedule": {
+            "threads": 64,
+            "unroll": 8
+          },
+          "speedup_vs_frontend_seed": [
+            1.073529435367509,
+            1.0579710328316507
+          ],
+          "source_sha256": "0a5c6ad7ea71068f712194a86a00457e3583a7e53575a400c6fde1707485033b"
+        },
+        {
+          "operation": "linear",
+          "parameters": {
+            "r": 1,
+            "k": 2048,
+            "o": 512,
+            "type": 14
+          },
+          "schedule": {
+            "threads": 64,
+            "unroll": 8
+          },
+          "speedup_vs_frontend_seed": [
+            1.0266665774149242,
+            1.0266665774149242
+          ],
+          "source_sha256": "ab30cbb7783f5bb820502e26f2f7739dd00729710b535ce948cfcb82c06f2eec"
+        }
+      ]
+    }
+  },
+  "runtime": {
+    "grouped_attention_threshold": 4096
+  }
+}

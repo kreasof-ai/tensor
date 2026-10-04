@@ -300,6 +300,8 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
         if self.cuda_profile not in CUDA_PROFILES:raise ValueError('unsupported CUDA kernel profile')
         self.cuda_optimized=self.provider=='cuda' and self.cuda_profile=='optimized'
         self.grouped_decode=self.cuda_optimized and (self.config.heads,self.config.kv_heads,self.config.head_dim)==(32,8,64)
+        self.grouped_threshold=self.manifest.get('schedule_profile',{}).get('runtime',{}).get('grouped_attention_threshold',CUDA_GROUPED_THRESHOLD)
+        if type(self.grouped_threshold) is not int or self.grouped_threshold<1:raise ValueError('invalid grouped attention threshold')
         profile=self.cuda_profile if self.provider=='cuda' else self.manifest.get('webgpu_profile','portable')
         if not valid_rows(self.provider,self.rows,profile) or self.capacity % 64:
             raise ValueError('unsupported LFM2 prefill/capacity profile')
@@ -565,7 +567,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 mode='state' if not last and r in self.state_plans else 'greedy' if _greedy and last and self.cuda_optimized else 'full'
                 plans=self.state_plans if mode=='state' else self.greedy_plans if mode=='greedy' else self.plans
                 graphs=self.state_graphs if mode=='state' else self.greedy if mode=='greedy' else self.graphs
-                if r==1 and self.long_plan and self.position+1>=CUDA_GROUPED_THRESHOLD:
+                if r==1 and self.long_plan and self.position+1>=self.grouped_threshold:
                     if self.graphs_enabled:(self.long_greedy_graph if mode=='greedy' else self.long_graph).launch()
                     else:self._submit(self.long_greedy_plan if mode=='greedy' else self.long_plan)
                 elif self.graphs_enabled:graphs[r].launch()
@@ -587,7 +589,7 @@ GGML encodings. Convolution history is FP32 and attention caches are FP16.
                 if step+1==max_tokens:break
                 if self.provider=='webgpu':next_token=self.greedy[1].launch(readback=self.workspaces[1]['tokens'])
                 else:
-                    long=bool(self.long_plan) and self.position+1>=CUDA_GROUPED_THRESHOLD
+                    long=bool(self.long_plan) and self.position+1>=self.grouped_threshold
                     if self.graphs_enabled:(self.long_greedy_graph if long else self.greedy[1]).launch()
                     else:self._submit(self.long_greedy_plan if long else self.greedy_plans[1])
                     next_token=self.workspaces[1]['tokens'].to_numpy()

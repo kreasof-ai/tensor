@@ -4,7 +4,6 @@ from tensor.runtime import Buffer, Executable, Event, bench, TensorRuntimeError
 from tensor.providers import Device
 from tensor.artifacts.modules import Project, Module, ModuleError
 from tensor.runtime.manual import ManualFunction, BackwardContext
-from tensor.compiler.build import build_artifact as _build_artifact
 
 
 def assert_close(actual, expected, *, rtol=1e-5, atol=1e-8) -> None:
@@ -22,6 +21,7 @@ def build(source, out, *, target=None, nvcc=None, cache_dir=None, compiler=None,
           provider="cuda") -> dict:
     """Build a TileLang source file through the same path as `tensor build`."""
     from pathlib import Path
+    from tensor.compiler.build import build_artifact as _build_artifact
     return _build_artifact(Path(source), Path(out), target=target, nvcc=nvcc, cache_dir=cache_dir,
                           compiler=compiler, nvrtc_home=nvrtc_home, provider=provider)
 

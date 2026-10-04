@@ -213,7 +213,8 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         resolved = Target({"kind": "cuda", "arch": target})
         with tilelang.transform.PassContext(opt_level=3), resolved:
             lowered = tilelang.lower(kernel, target=resolved, enable_device_compile=False)
-        cuda = str(lowered.kernel_source)
+        from tensor.compiler.cuda_lowering import lower_cuda_intrinsics
+        cuda = lower_cuda_intrinsics(str(lowered.kernel_source))
     except Exception as exc:
         raise BuildError(f"TileLang lowering failed: {type(exc).__name__}: {exc}") from exc
     try:
@@ -228,6 +229,7 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         if not path.is_dir():
             raise BuildError(f"required TileLang headers missing: {path}")
     compiler_identity = backend.identity(target, includes)
+    compiler_identity['lowering_sha256'] = hashlib.sha256(Path(__file__).with_name('cuda_lowering.py').read_bytes()).hexdigest()
     hashed_includes = (*includes, backend.root / "include") if compiler_identity["name"] == "nvrtc" else includes
     cache_identity = {
         "source_sha256": checked[0]["source_sha256"] if checked else hashlib.sha256(source_path.read_bytes()).hexdigest(),

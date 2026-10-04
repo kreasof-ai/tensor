@@ -1,0 +1,963 @@
+{
+  "status": "passed",
+  "profile_sha256": "4a56e23237b1f3102646e1479814021ab98857eb7f25fd8d23c09becc62431e8",
+  "kernels": [
+    {
+      "kind": "embedding",
+      "parameters": {
+        "r": 1,
+        "c": 2048,
+        "v": 128000,
+        "type": 14
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "dd75c937cac2455c9ecdd0f664d9fd5cc74da069e5eca1cdf0c7653faba59ce7"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 128000,
+        "type": 14
+      },
+      "schedule": {
+        "threads": 64,
+        "unroll": 8
+      },
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 11,
+      "artifact_sha256": "96d5724789404b56022a7835eea582898e7dd4f24df2dac03f462f726b02889c"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "4c3bd6c47c366ed1a16e27bea30ea8beca3e53d041601012384e61196ee791b3"
+    },
+    {
+      "kind": "linear_add",
+      "parameters": {
+        "r": 1,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "0059a95994b338563845f6935e57773e1a2e9b7d622d0d2aa66bd8ea2c75f092"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 10752,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "a44826732f40a8b17884a49e15d865075b5736c64d4749d9159c73e85f19e4f6"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 6144,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "bf47bcdfd513e012412988124cb6a71fd2240fd858e5d88ddca0806064667a50"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "ad8b193e5a5d181f8ef905a72d2f06bbf4d4827ee7bc9a103313ed894ace0ea4"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      },
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "6490b7581e3bbeaba16e6b99c3f733fdc23644617f7162192b7c807a62b5a737"
+    },
+    {
+      "kind": "rms",
+      "parameters": {
+        "r": 1,
+        "c": 2048,
+        "eps": 9.999999747378752e-06
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "831e980a7f7edb824311f37d64f819fe3e056e40fa7c855e25cae5322396b026"
+    },
+    {
+      "kind": "add_rms",
+      "parameters": {
+        "r": 1,
+        "c": 2048,
+        "eps": 9.999999747378752e-06
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "bd6694979fb8d6f07256995604961f3e0ad61898793074b1d7cd22b8783106d6"
+    },
+    {
+      "kind": "ffn",
+      "parameters": {
+        "r": 1,
+        "k": 2048,
+        "o": 10752,
+        "type": 2
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      },
+      "hardware_externs": [
+        "tensor_load_u16"
+      ],
+      "frontend_loops": 16,
+      "artifact_sha256": "1c4eee8c43bc4716ebd8c0fc6eb744f4de263effc99d84c12ae85f110675163f"
+    },
+    {
+      "kind": "add",
+      "parameters": {
+        "r": 1,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "8f24e7df403020c5ef7c186841373442bf24be66930301ad0bf4d935c5b883c0"
+    },
+    {
+      "kind": "swiglu",
+      "parameters": {
+        "r": 1,
+        "c": 10752
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "15f0584979a33defc60dce25b1147e12f9b66a473cf910b12fa43ca3436c219d"
+    },
+    {
+      "kind": "conv",
+      "parameters": {
+        "r": 1,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "38b28443be15e63abfcf041a0c205196c316b206095c8d244b7c57da2d5fc2da"
+    },
+    {
+      "kind": "qkv",
+      "parameters": {
+        "r": 1,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "eps": 9.999999747378752e-06,
+        "theta": 10000000.0
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 11,
+      "artifact_sha256": "fc7d7736d084c31d7dc73fa8cb1c4cd1ad3ce7afc48e3c85e039b0d3fe932213"
+    },
+    {
+      "kind": "attention_partial",
+      "parameters": {
+        "r": 1,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "splits": 16
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 7,
+      "artifact_sha256": "d9233286b5357f7d3846869e5d4255be5f39b0c39e2fc7a718098cee56f93db7"
+    },
+    {
+      "kind": "attention_grouped",
+      "parameters": {
+        "r": 1,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "splits": 16
+      },
+      "schedule": {
+        "stage": 32,
+        "warps": 2
+      },
+      "hardware_externs": [],
+      "frontend_loops": 11,
+      "artifact_sha256": "4f9d2ee680d370d85282cae1e217c7646ecf91a64f6444f014c3907e83e7eed7"
+    },
+    {
+      "kind": "attention_merge",
+      "parameters": {
+        "h": 32,
+        "d": 64,
+        "splits": 16
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 9,
+      "artifact_sha256": "b79e6869a7d07522151a265f8f3c807372ab6cf69594c8c5de6ce037441fd6e3"
+    },
+    {
+      "kind": "last",
+      "parameters": {
+        "r": 1,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "fde5e1a73a58b0eac54f3e6b371cd045693520f3a895f678624f8322e0ce4f04"
+    },
+    {
+      "kind": "advance",
+      "parameters": {
+        "r": 1
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "181e0d25963b9a28c0d2f4b3f8d12cecb9cb59ec490e68ec94a446b0fc497805"
+    },
+    {
+      "kind": "embedding",
+      "parameters": {
+        "r": 32,
+        "c": 2048,
+        "v": 128000,
+        "type": 14
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "1b4454b69ba47bbc6408b8be85a27238639b040fa23bb532e980a08b74f5dafe"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "00ed7fbc61febbaacfcc5ba95212e3509a246f61645c658a219da98b4af7abf1"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "b21f5988d3c99f3241d38d8bdaabdc5eaa3282a9a9fc9dcab4df399741f6f8ec"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 6144,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "ff5c4c85912a7a8fd2f3de9a581fa5cc0b7f9a30f07c0443b3cfc6615d1c9a37"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "50f5f0c15e08c3d86666c4b9b93f8d6e59d0cc9d346c3f740c559448f764c6d3"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "688d3d32710a93ca8d6e2c7e4cccb683047b3b93d8e055d373152add009d9c4d"
+    },
+    {
+      "kind": "rms",
+      "parameters": {
+        "r": 32,
+        "c": 2048,
+        "eps": 9.999999747378752e-06
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "e6d80541b3cd3a3533483a645ea2289f5d1b95874ebb58b26d4edbc797d35a22"
+    },
+    {
+      "kind": "ffn",
+      "parameters": {
+        "r": 32,
+        "k": 2048,
+        "o": 10752,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      },
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "2d85be0f8f03888b5e95606ababdb7c403a340928694b3a8d15c0df57ebffe0b"
+    },
+    {
+      "kind": "add",
+      "parameters": {
+        "r": 32,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "19a88be85c29a1c26d0759173ca697cd816f89c22aaf5fb85d0bc22546d79ef7"
+    },
+    {
+      "kind": "swiglu",
+      "parameters": {
+        "r": 32,
+        "c": 10752
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "1969a9b104f5857ff78fbb0e2038c84050231931a15c6bdccb21c7fb5ee069ac"
+    },
+    {
+      "kind": "conv",
+      "parameters": {
+        "r": 32,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "aa26767b1e746192bcc05e568a83d2cc05b746e52ce07287bab7520d82c89601"
+    },
+    {
+      "kind": "qkv",
+      "parameters": {
+        "r": 32,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "eps": 9.999999747378752e-06,
+        "theta": 10000000.0
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 11,
+      "artifact_sha256": "3ff719382809460a9f01e23b64b2a8b38e6235c1cda57c5e8f064a311ce3c267"
+    },
+    {
+      "kind": "attention",
+      "parameters": {
+        "r": 32,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 20,
+      "artifact_sha256": "9da8139a02ba042232d7205606f5343497486a2f1339c18385cf7def5ec15739"
+    },
+    {
+      "kind": "last",
+      "parameters": {
+        "r": 32,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "910ca35755cf15b07499e6bee59aac68f4dc2fbfc78899d1cf93c4b491db0b18"
+    },
+    {
+      "kind": "advance",
+      "parameters": {
+        "r": 32
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "7eb4484a58055aeaeb789520fe78c4e155e31df9d5c263e521042d38274bac11"
+    },
+    {
+      "kind": "embedding",
+      "parameters": {
+        "r": 128,
+        "c": 2048,
+        "v": 128000,
+        "type": 14
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "2693f5311639b51f659d191b1c8685a06b99ae03106bf23f371ad7e1ba37c459"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "41388ae718c41ce2e052cc61eabed2f0a58a4d69b6b249e40cd592a9cd908110"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 10752,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "8d3c6661a0b554471c38b32164f671349d7a5fa614b0b4fbd123d2bc3301cdb9"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 6144,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 32,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "b934e6c33ae731bbe7a9fe897ced4b5e4861be33f50b7f163383a95379f817a4"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "a93ba594ab6ffdb5c41d96cccd972494f6ee824cc3c2a9589ae4beadd3ee5d50"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 512,
+        "type": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 128,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "ca963bb237773497ad7a28d3f3d1af18ce895d15bcb9bc48da9b9234b84c007b"
+    },
+    {
+      "kind": "rms",
+      "parameters": {
+        "r": 128,
+        "c": 2048,
+        "eps": 9.999999747378752e-06
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "61bcaa3cb4afd6476ea966dce3c89578282ef4517a62a31397ad6e344c66a7f6"
+    },
+    {
+      "kind": "ffn",
+      "parameters": {
+        "r": 128,
+        "k": 2048,
+        "o": 10752,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      },
+      "hardware_externs": [
+        "tensor_load_u16",
+        "tensor_pack_f16x2"
+      ],
+      "frontend_loops": 12,
+      "artifact_sha256": "75d91016cff3b393517d474468d62513450a742d2e8c5ed21b04d2fcbf3a816f"
+    },
+    {
+      "kind": "add",
+      "parameters": {
+        "r": 128,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "97d2d2d966cd1cd1b6e458906ec29becf2c30054d71afec6c0a0181054d2089c"
+    },
+    {
+      "kind": "swiglu",
+      "parameters": {
+        "r": 128,
+        "c": 10752
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "5987a5b1cb523d4da75a0e6b32a538d82a1dc79ad804afecffb9c17207924796"
+    },
+    {
+      "kind": "conv",
+      "parameters": {
+        "r": 128,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "490991d888b008e78f37cf5634186bdaa97ae6e9336c74652fa8d82390745457"
+    },
+    {
+      "kind": "qkv",
+      "parameters": {
+        "r": 128,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "eps": 9.999999747378752e-06,
+        "theta": 10000000.0
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 11,
+      "artifact_sha256": "1a392cefe9a828a005783bca5f3db1aea78292715e6678eec6a0709594f01758"
+    },
+    {
+      "kind": "attention",
+      "parameters": {
+        "r": 128,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 20,
+      "artifact_sha256": "769a56542ae7d342dee48538a00472978e15e60adb238f91b0d7aa0cb4a025bc"
+    },
+    {
+      "kind": "last",
+      "parameters": {
+        "r": 128,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "8d0d76b59244cfec051ac068f25324c0c2bb063fea9bf30d689d663e502bc4f1"
+    },
+    {
+      "kind": "advance",
+      "parameters": {
+        "r": 128
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "ada5052574c9a28fcf96af492ed8782d1f7806033600c251d4b1a7f0a11aab10"
+    },
+    {
+      "kind": "kvnorm",
+      "parameters": {
+        "r": 128,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "eps": 9.999999747378752e-06,
+        "theta": 10000000.0
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 8,
+      "artifact_sha256": "2e0aca177a3ca5c8923ca28dfbaac55f9824265acfeaf0211fdc11f9daf5686c"
+    },
+    {
+      "kind": "prefill_tail",
+      "parameters": {
+        "r": 128,
+        "c": 2048,
+        "t": 8
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "bd7e2a37fcbf2f4059f29458f98e1c058fda808dbe62546f132819a2ea1be0d8"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 8,
+        "k": 10752,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "001446ee88498d7acd2ec14c0506a047c27a9aeb01c8b5dcc8eb2ec5a682a382"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 8,
+        "k": 2048,
+        "o": 2048,
+        "type": 2
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "23a242859c5ac8b11fdc3198beedf115b707734c03e0eb4f7373af19e40fe0e0"
+    },
+    {
+      "kind": "ffn",
+      "parameters": {
+        "r": 8,
+        "k": 2048,
+        "o": 10752,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "a81c8218b9017e650464baf3ee5301b0efdf0f06621ad6d57faf8f9476a6cf73"
+    },
+    {
+      "kind": "linear",
+      "parameters": {
+        "r": 8,
+        "k": 2048,
+        "o": 6144,
+        "type": 2,
+        "tile": [
+          32,
+          32,
+          64
+        ]
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 12,
+      "artifact_sha256": "921fa74377cd117d73ac611b616920fa0eedea8859c4be43444a0e59b1508b25"
+    },
+    {
+      "kind": "rms",
+      "parameters": {
+        "r": 8,
+        "c": 2048,
+        "eps": 9.999999747378752e-06
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "14d7ad5d6f04b6927e1d82d3963dba205a1ae88413098469bf64b10c8ff10a04"
+    },
+    {
+      "kind": "add",
+      "parameters": {
+        "r": 8,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "c73d5eb0de558db59b033e1383faf06e1d43a5512f337893588bf70fcd3a8334"
+    },
+    {
+      "kind": "conv",
+      "parameters": {
+        "r": 8,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 6,
+      "artifact_sha256": "0f5e8f42a981907b0cde38e16ff43f3c2b9dcc34c23eedf473898768b7962f6e"
+    },
+    {
+      "kind": "last",
+      "parameters": {
+        "r": 8,
+        "c": 2048
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "79491ccf2a866212403c35ae5ac26b5f1fdcaf3856d6465c889a9220244a162c"
+    },
+    {
+      "kind": "attention",
+      "parameters": {
+        "r": 8,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 20,
+      "artifact_sha256": "ca4e345d0ae5e260be2f64378a977c32bce162bd5943da28f30004eb5d732ffd"
+    },
+    {
+      "kind": "qnorm",
+      "parameters": {
+        "r": 8,
+        "h": 32,
+        "kh": 8,
+        "d": 64,
+        "cap": 8576,
+        "eps": 9.999999747378752e-06,
+        "theta": 10000000.0
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 8,
+      "artifact_sha256": "a77e725331f482a61a6a235c12229533a1d01f7824d8a8d56afcbeb04cfd6b31"
+    },
+    {
+      "kind": "argmax",
+      "parameters": {
+        "n": 128000
+      },
+      "schedule": {},
+      "hardware_externs": [],
+      "frontend_loops": 5,
+      "artifact_sha256": "009a1606e9c86e5f3e724b8f4a29be5af5722e73e5afc7877a6dd2a8c796a3e6"
+    }
+  ]
+}

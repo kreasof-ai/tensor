@@ -9,6 +9,12 @@ prefill uses FP16 tensor-core operands with FP32 accumulation, and decode uses
 FP32 activations and arithmetic. The installed consumer needs only Tensor,
 Tensor LLM, NumPy, regex and the NVIDIA driver.
 
+These measurements describe revision `0cffba8`, which used native CUDA
+algorithm bodies. The current implementation expresses those algorithms in
+TileLang/TIRx and uses shared discovery. Its fresh correctness and performance
+checks are recorded in the [compiler cleanup report](lfm2-compiler-cleanup.md).
+The tables and original evidence below retain their measured revision.
+
 ## Completed-forward measurements
 
 ### Prefill (tok/s)

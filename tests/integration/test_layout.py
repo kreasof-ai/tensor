@@ -29,6 +29,8 @@ def test_core_and_cli_do_not_require_optional_training_or_compiler_packages():
     code = '''import importlib.abc, sys
 class Guard(importlib.abc.MetaPathFinder):
  def find_spec(self, fullname, path=None, target=None):
+  if fullname == 'tensor.compiler' or fullname.startswith('tensor.compiler.'):
+   raise ModuleNotFoundError(fullname, name=fullname)
   if fullname.split('.')[0] in {'tensor_nn','tensor_torch','torch','tilelang','tvm','tvm_ffi','triton','wgpu'}:
    raise ModuleNotFoundError(fullname, name=fullname.split('.')[0])
 sys.meta_path.insert(0, Guard())
@@ -38,6 +40,7 @@ from tensor.runtime.manual import ManualFunction
 assert ManualFunction is tensor.ManualFunction
 assert callable(tensor.build)
 assert not {'tensor_nn','torch','tilelang','tvm','wgpu'} & set(sys.modules)
+assert not any(name == 'tensor.compiler' or name.startswith('tensor.compiler.') for name in sys.modules)
 '''
     subprocess.run([sys.executable, '-c', code], check=True)
 

@@ -8,7 +8,8 @@ import numpy as np
 import tensor
 from tensor.providers.webgpu import Device
 from tensor.compiler.webgpu_lowering import outer_product_matmul_schedule
-from tensor.compiler.webgpu_search import ScheduleSearch
+from tensor.compiler.search import ScheduleSearch
+from tensor.compiler.webgpu_schedules import coupled_moves
 from benchmarks.inference.clblast_comparison import TimestampAdapter,check
 from benchmarks.lfm2.tensor_projection_search import Timer,bind
 
@@ -55,7 +56,7 @@ def run(out,minutes,size,explicit=False,seeds_report=None,shape=None):
                 input_sha256=[hashlib.sha256(v.tobytes()).hexdigest() for v in (x,w)],search_space=SPACE,
                 protocol='native F32 operands/accumulators/output; same FP32 CLBlast reference gate; output NaN sentinel; 3 warm and 7 timestamp samples; compilation/download/validation excluded from candidate score',
                 sources={p:dict(sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest(),text=Path(p).read_text())
-                         for p in (__file__,'src/tensor/compiler/webgpu.py','src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/webgpu_search.py')})
+                         for p in (__file__,'src/tensor/compiler/webgpu.py','src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/search.py','src/tensor/compiler/webgpu_schedules.py')})
     report.update(timestamp_period_ns=10,dispatches_per_sample=dispatches,warm_dispatches_per_sample=warm_dispatches)
     report['protocol']=f'Native F32 operands/accumulators/output; FP32 CLBlast reference gate; NaN output sentinel; 3 warm batches of {warm_dispatches} and 7 timestamp batches of {dispatches}, normalized per dispatch. Compilation/download/validation excluded from score.'
     start=time.perf_counter();deadline=start+minutes*60
@@ -82,7 +83,7 @@ def run(out,minutes,size,explicit=False,seeds_report=None,shape=None):
             report['seeds_report_sha256']=hashlib.sha256(Path(seeds_report).read_bytes()).hexdigest()
         space={**SPACE,'explicit_unroll':(explicit,)}
         report['search_space']=space
-        search=ScheduleSearch([dict(family='outer',**{**c,'explicit_unroll':explicit}) for c in initial],width=12,spaces={'outer':space})
+        search=ScheduleSearch([dict(family='outer',**{**c,'explicit_unroll':explicit}) for c in initial],width=12,spaces={'outer':space},coupled=coupled_moves)
         while time.perf_counter()<deadline:
             config=search.next();config.pop('family');i=len(report['records']);row=dict(index=i,config=config)
             kernel=plan=timer=None

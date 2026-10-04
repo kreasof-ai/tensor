@@ -1,6 +1,6 @@
 """Search grammar contracts independent of GPU and producer dependencies."""
 import pytest
-from tensor.compiler.webgpu_search import ScheduleSearch
+from tensor.compiler.search import ScheduleSearch
 from tensor.compiler.webgpu_lowering import streamed_gemv_schedule
 
 

@@ -86,6 +86,10 @@ LFM2 inference against llama.cpp CUDA. The ordinary LFM2 runner offers an opt-in
 `optimized` CUDA profile with packed decode, fused projections, tuned prefill,
 and shared K/V attention at long context. See the
 [F16/Q4_0/Q4_K_M measurements](docs/research/lfm2-cuda-formats.md).
+The CUDA algorithms now remain visible in TileLang/TIRx, with shared CUDA/WebGPU
+schedule discovery and producer profiles. The
+[compiler cleanup report](docs/research/lfm2-compiler-cleanup.md) records the
+fresh correctness checks and comparison with the frozen native implementation.
 
 Standalone autograd, arbitrary graph fusion, complete TileLang/TIRx coverage on
 WebGPU, and general GGUF model support remain future work. Direct PTX compilation

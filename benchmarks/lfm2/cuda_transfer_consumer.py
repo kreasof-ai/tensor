@@ -12,7 +12,7 @@ FORBIDDEN = {'tilelang', 'tvm', 'tvm_ffi', 'torch', 'triton', 'wgpu'}
 
 class BlockCompilerImports(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
-        if fullname.split('.')[0] in FORBIDDEN:
+        if fullname.split('.')[0] in FORBIDDEN or fullname == 'tensor.compiler' or fullname.startswith('tensor.compiler.'):
             raise ImportError('compiler/framework import in standalone consumer: ' + fullname)
 
 
@@ -52,8 +52,10 @@ def consume(model, bundle, reference, out):
                       distributions=sorted(installed), steps=observations, generation=generated,
                       long_generation_equal=bool(long),
                       forbidden_imports=sorted(FORBIDDEN & {name.split('.')[0] for name in sys.modules}),
+                      compiler_imports=sorted(name for name in sys.modules if name == 'tensor.compiler' or name.startswith('tensor.compiler.')),
                       consumer_source_sha256=digest(__file__))
     assert not report['forbidden_imports']
+    assert not report['compiler_imports']
     out.write_text(json.dumps(report, indent=2) + '\n')
     return report
 

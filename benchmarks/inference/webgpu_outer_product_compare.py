@@ -175,7 +175,7 @@ def refine(directory, comparison, skinny_reports, consumer_site=None):
     cl=OpenCL(ROOT/'build/clblast-build/Release/clblast.dll',ROOT/'build/clblast-probe-build/Release/tensor_clblast_probe.dll')
     device=Device();device._adapter=TimestampAdapter(device._adapter)
     result=dict(status='running',sources={str(p):dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(),text=p.read_text())
-        for p in (Path(__file__),ROOT/'src/tensor/compiler/webgpu.py',ROOT/'src/tensor/compiler/webgpu_lowering.py',ROOT/'src/tensor/compiler/webgpu_search.py')},
+        for p in (Path(__file__),ROOT/'src/tensor/compiler/webgpu.py',ROOT/'src/tensor/compiler/webgpu_lowering.py',ROOT/'src/tensor/compiler/search.py',ROOT/'src/tensor/compiler/webgpu_schedules.py')},
         comparison_sha256=hashlib.sha256(Path(comparison).read_bytes()).hexdigest(),
         clblast_dll_sha256=hashlib.sha256((ROOT/'build/clblast-build/Release/clblast.dll').read_bytes()).hexdigest(),
         clblast_commit=subprocess.check_output(['git','-C','build/clblast-source','rev-parse','HEAD'],text=True).strip(),
