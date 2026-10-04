@@ -2,6 +2,10 @@
 
 [Documentation](../README.md) · [Validation plans](README.md) · [Research evidence](../research/README.md)
 
+For future development and stable-release gates, use the proposed
+[path to Tensor 1.0](v1.md). This page retains the accepted phase scopes and
+historical measurements behind the current implementation.
+
 **Phases 0–6 are complete within their measured profiles.** The phase sections
 below define what was accepted and what remains outside each profile. Test counts
 and benchmark numbers record milestone evidence, rather than the current total

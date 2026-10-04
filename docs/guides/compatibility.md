@@ -7,6 +7,10 @@ baseline; it is not a promise of a stable API or artifact format. Until release
 versions distinguish revisions, record the Git revision with experimental bundles
 as well as the package version. Keep producer and consumer wheels together.
 
+The proposed [1.0 roadmap](../plan/v1.md) describes the compatibility guarantees
+and support-tier qualification work to complete before a stable release. Those
+future commitments are not yet implemented or current support claims.
+
 ## Current validation scope
 
 | Path | Environment and evidence | Boundary |

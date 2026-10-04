@@ -2,9 +2,13 @@
 
 [Documentation](../README.md) · [Research evidence](../research/README.md)
 
-The [roadmap](roadmap.md) defines the agreed phase scopes and deferred work.
-Phases 0–6 are complete within their measured profiles. Standalone LFM2 inference
-and its decode experiments extend those profiles as a concrete workload.
+The [path to 1.0](v1.md) proposes the next development milestones, stability
+boundary, and release acceptance criteria. Start there for future work.
+
+The [milestone history](roadmap.md) records the agreed Phase 0–6 scopes and their
+accepted evidence. Those phases are complete within measured profiles;
+standalone LFM2 inference and its experiments extend them as concrete workloads.
+Completion of those experiments does not by itself establish 1.0 readiness.
 
 ## Workload contract
 

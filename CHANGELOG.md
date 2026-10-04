@@ -6,6 +6,8 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Add a proposed 1.0 roadmap with public-contract, compatibility, discovery,
+  hardware-validation, onboarding, and release-candidate acceptance milestones.
 - Add a schedule discovery guide and bounded CUDA/WebGPU example with
   correctness checks, measured scores, producer profiles, and a deployable winner.
 - Add a migration guide and runnable examples for existing TileLang kernels,

@@ -6,6 +6,10 @@ Tensor is pre-1.0. Distribution checks prepare files for review; they do not
 upload to a registry or create a GitHub release. The package names remain
 `tensor-workspace`, `tensor-nn`, `tensor-llm`, and `tensor-torch`.
 
+The proposed [path to 1.0](plan/v1.md) defines the stability and acceptance work
+before a stable release. The checks below prepare candidate files; passing them
+alone does not close the API, compatibility, hardware, or onboarding gates.
+
 ## Build reviewable files
 
 With Python 3.12 and uv, from a clean checkout:

@@ -101,6 +101,7 @@ to the specific workloads and hardware in the [benchmark reports](docs/research/
 - [Documentation](docs/README.md): installation, guides, and API contracts.
 - [Contributing](CONTRIBUTING.md): setup, tests, and how to propose a change.
 - [Changelog](CHANGELOG.md) and [release guide](docs/releases.md).
+- [Path to 1.0](docs/plan/v1.md): planned stability contracts and release milestones.
 - [GitHub issues](https://github.com/kreasof-ai/tensor/issues): bugs and ideas.
 - [Project history](docs/research/README.md): experiments, measurements, and provenance.
 
