@@ -48,6 +48,9 @@ profile and its canonical SHA256. The grouped-attention transition is runtime
 policy recorded in the bundle. No producer profile file, discovery engine,
 TileLang or CUDA compiler is needed by the consumer.
 
+Rebuild existing inference bundles after this update; runtime/template
+fingerprints have changed.
+
 An explicit profile replaces the default producer profile. Unmatched operations
 use frontend defaults; a partial profile does not implicitly inherit all the
 measured settings. Other GPU targets require their own measurements.
