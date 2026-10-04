@@ -14,9 +14,9 @@ requires-python = ">=3.12,<3.13"
 dependencies = ["tensor-workspace==0.1.0", "torch>=2.8,<2.15"]
 
 [project.urls]
-Repository = "https://github.com/akbar2habibullah/tensor"
-Documentation = "https://github.com/akbar2habibullah/tensor/blob/main/docs/guides/pytorch.md"
-Issues = "https://github.com/akbar2habibullah/tensor/issues"
+Repository = "https://github.com/kreasof-ai/tensor"
+Documentation = "https://github.com/kreasof-ai/tensor/blob/main/docs/guides/pytorch.md"
+Issues = "https://github.com/kreasof-ai/tensor/issues"
 
 [project.entry-points.torch_dynamo_backends]
 tensor = "tensor_torch:backend"

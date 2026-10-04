@@ -25,7 +25,7 @@ features you choose. Start with the core before attempting model benchmarks.
 Install [uv](https://docs.astral.sh/uv/), clone the repository, and run:
 
 ```sh
-git clone https://github.com/akbar2habibullah/tensor.git
+git clone https://github.com/kreasof-ai/tensor.git
 cd tensor
 uv sync --locked --no-default-groups
 uv run --locked --no-default-groups tensor --version

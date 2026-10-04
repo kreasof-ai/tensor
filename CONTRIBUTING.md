@@ -10,7 +10,7 @@ scope and compatibility implications can be discussed.
 Install [uv](https://docs.astral.sh/uv/) and use 64-bit Python 3.12:
 
 ```sh
-git clone https://github.com/akbar2habibullah/tensor.git
+git clone https://github.com/kreasof-ai/tensor.git
 cd tensor
 uv sync --locked
 uv run --locked tensor --version
@@ -57,7 +57,7 @@ it requires migrating package dependencies and artifact recipes together.
 
 ## Report a problem
 
-Use [GitHub issues](https://github.com/akbar2habibullah/tensor/issues). Include
+Use [GitHub issues](https://github.com/kreasof-ai/tensor/issues). Include
 the Tensor version or Git revision, OS, Python version, exact command, traceback,
 and a small reproduction. For provider issues, include GPU/driver information and
 `tensor doctor --json` (or `tensor doctor --provider webgpu --json`). Remove local

@@ -14,9 +14,9 @@ requires-python = ">=3.12,<3.13"
 dependencies = ["tensor-workspace==0.1.0", "regex==2026.9.29"]
 
 [project.urls]
-Repository = "https://github.com/akbar2habibullah/tensor"
-Documentation = "https://github.com/akbar2habibullah/tensor/blob/main/packages/tensor-llm/README.md"
-Issues = "https://github.com/akbar2habibullah/tensor/issues"
+Repository = "https://github.com/kreasof-ai/tensor"
+Documentation = "https://github.com/kreasof-ai/tensor/blob/main/packages/tensor-llm/README.md"
+Issues = "https://github.com/kreasof-ai/tensor/issues"
 
 [project.scripts]
 tensor-llm = "tensor_llm.cli:main"

@@ -28,7 +28,7 @@ Use 64-bit Python **3.12** and [uv](https://docs.astral.sh/uv/). Start from a
 checkout; these commands work in PowerShell and a POSIX shell:
 
 ```sh
-git clone https://github.com/akbar2habibullah/tensor.git
+git clone https://github.com/kreasof-ai/tensor.git
 cd tensor
 uv sync --locked --no-default-groups
 uv run --locked --no-default-groups tensor --version
@@ -101,7 +101,7 @@ to the specific workloads and hardware in the [benchmark reports](docs/research/
 - [Documentation](docs/README.md): installation, guides, and API contracts.
 - [Contributing](CONTRIBUTING.md): setup, tests, and how to propose a change.
 - [Changelog](CHANGELOG.md) and [release guide](docs/releases.md).
-- [GitHub issues](https://github.com/akbar2habibullah/tensor/issues): bugs and ideas.
+- [GitHub issues](https://github.com/kreasof-ai/tensor/issues): bugs and ideas.
 - [Project history](docs/research/README.md): experiments, measurements, and provenance.
 
 Tensor is licensed under [MIT](LICENSE). Compiler dependencies and model weights

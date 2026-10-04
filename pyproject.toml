@@ -17,11 +17,11 @@ requires-python = ">=3.12,<3.13"
 dependencies = ["numpy==2.5.3"]
 
 [project.urls]
-Homepage = "https://github.com/akbar2habibullah/tensor"
-Documentation = "https://github.com/akbar2habibullah/tensor/blob/main/docs/README.md"
-Repository = "https://github.com/akbar2habibullah/tensor"
-Issues = "https://github.com/akbar2habibullah/tensor/issues"
-Changelog = "https://github.com/akbar2habibullah/tensor/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/kreasof-ai/tensor"
+Documentation = "https://github.com/kreasof-ai/tensor/blob/main/docs/README.md"
+Repository = "https://github.com/kreasof-ai/tensor"
+Issues = "https://github.com/kreasof-ai/tensor/issues"
+Changelog = "https://github.com/kreasof-ai/tensor/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 compiler = ["tilelang==0.1.14", "apache-tvm-ffi==0.1.12"]
