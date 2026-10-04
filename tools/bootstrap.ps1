@@ -3,7 +3,7 @@
     Set up the Tensor development environment on Windows.
 
 .DESCRIPTION
-    Synchronizes the locked Phase 0 toolchain with Python 3.12.
+    Synchronizes the locked compiler and development environment with Python 3.12.
 
     Python 3.12 specifically, not 3.13/3.14: tilelang declares
     `torch-c-dlpack-ext; python_version < "3.14"`, so on 3.14 the DLPack tensor
@@ -39,7 +39,7 @@ if ($Force -and (Test-Path $venv)) {
     Write-Host "  -> moved to $bak"
 }
 
-Write-Host "Synchronizing the locked Phase 0 toolchain..." -ForegroundColor Cyan
+Write-Host "Synchronizing the locked development environment..." -ForegroundColor Cyan
 Push-Location $repoRoot
 try {
     uv sync --locked --python $pythonVersion
@@ -50,5 +50,6 @@ try {
 
 Write-Host ""
 Write-Host "Environment ready. Verify with:" -ForegroundColor Green
-Write-Host "  $venv\Scripts\python.exe -m experiments.p0.harness --list"
-Write-Host "  $venv\Scripts\python.exe -m experiments.p0.harness"
+Write-Host "  $venv\Scripts\python.exe -m tensor --version"
+Write-Host "  $venv\Scripts\python.exe -m pytest"
+Write-Host "Build your first kernel: docs/guides/quickstart.md"

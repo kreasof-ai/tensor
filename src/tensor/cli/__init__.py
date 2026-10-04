@@ -18,6 +18,8 @@ def _execution_target(provider, ordinal):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tensor", description="Tensor kernel tooling")
+    from tensor import __version__
+    parser.add_argument("--version", action="version", version=f"Tensor {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     add = commands.add_parser("add", help="add a local module, Tensor wheel or pypi:distribution==version")
     add.add_argument("source")

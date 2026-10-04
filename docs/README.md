@@ -1,14 +1,20 @@
 # Tensor documentation
 
-Start with the [project README](../README.md) for an overview, then follow the
-[quickstart](guides/quickstart.md) to build and execute a kernel. Commands in the
-guides run from the repository root unless stated otherwise.
+Start with [installation](guides/installation.md) to choose a runtime or producer
+environment, then follow the [quickstart](guides/quickstart.md) to build and
+execute your first kernel. Tensor is pre-1.0; read
+[support and compatibility](guides/compatibility.md) before transferring or
+upgrading artifacts. Commands run from the repository root unless stated otherwise.
 
 ## Guides
 
 | I want to… | Read |
 |---|---|
+| Try the CLI or install a compiler-free runtime | [Installation](guides/installation.md) |
+| Check tested platforms and upgrade expectations | [Compatibility](guides/compatibility.md) |
 | Install a producer, build a kernel, and run it without compiler packages | [Quickstart](guides/quickstart.md) |
+| Bring an existing TileLang kernel into Tensor | [From TileLang to Tensor](guides/from-tilelang.md) |
+| Discover schedules and reuse measured producer settings | [Schedule search](guides/schedule-search.md) |
 | Work with device buffers, loaded kernels, timing, and CUDA streams | [Python runtime](guides/runtime.md) |
 | Package exports, pin dependencies, and publish through PyPI | [Tensor modules](guides/modules.md) |
 | Use Tensor kernels with `torch.compile` or custom operators | [PyTorch integration](guides/pytorch.md) |
@@ -19,6 +25,8 @@ guides run from the repository root unless stated otherwise.
 
 ## Reference and development
 
+- [Contributing](../CONTRIBUTING.md): first setup, focused checks, and pull requests.
+- [Release preparation](releases.md) and [changelog](../CHANGELOG.md).
 - [Runtime ABI](reference/runtime-abi.md): descriptor layouts, capabilities,
   scalar and buffer rules, executable/event lifetimes, and native hosts.
 - [Development](development.md): source layout, environments, wheel builds,

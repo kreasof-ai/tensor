@@ -2,6 +2,11 @@
 
 [Documentation](README.md) · [Quickstart](guides/quickstart.md)
 
+New contributors should start with [Contributing](../CONTRIBUTING.md).
+Package verification and release preparation are covered in the
+[release guide](releases.md); tested hardware and upgrade rules are in
+[compatibility](guides/compatibility.md).
+
 The runtime wheel contains reusable execution, compilation entry points and
 artifact/module tooling. Optional framework adapters and training templates have
 separate distributions. Benchmark workloads and acceptance scripts stay in the
@@ -59,6 +64,8 @@ without NN, Torch, wgpu or compiler packages.
 Schedule discovery lives in `tensor.compiler.search`: beam exploration,
 deterministic restarts, legality filtering and target-bound producer profiles.
 `cuda_schedules` and `webgpu_schedules` supply backend spaces and constraints.
+The [schedule discovery guide](guides/schedule-search.md) shows how to use these
+APIs with a small, correctness-gated factory search and reusable profiles.
 Benchmarks supply workloads, independent correctness gates and timing. The old
 `tensor.compiler.webgpu_search` module has been removed.
 

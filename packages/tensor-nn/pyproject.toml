@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,8 +7,16 @@ name = "tensor-nn"
 version = "0.1.0"
 description = "Optional manual training templates for Tensor"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3.12"]
 requires-python = ">=3.12,<3.13"
 dependencies = ["tensor-workspace==0.1.0"]
+
+[project.urls]
+Repository = "https://github.com/akbar2habibullah/tensor"
+Documentation = "https://github.com/akbar2habibullah/tensor/blob/main/packages/tensor-nn/README.md"
+Issues = "https://github.com/akbar2habibullah/tensor/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

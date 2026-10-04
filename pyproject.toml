@@ -1,10 +1,27 @@
 [project]
 name = "tensor-workspace"
 version = "0.1.0"
-description = "Development workspace for the Tensor tensor-program runtime and compiler product layer"
+description = "Build, package, and run tensor kernels with a lightweight runtime"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["tensor", "gpu", "cuda", "tilelang", "webgpu", "kernels"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
 requires-python = ">=3.12,<3.13"
 dependencies = ["numpy==2.5.3"]
+
+[project.urls]
+Homepage = "https://github.com/akbar2habibullah/tensor"
+Documentation = "https://github.com/akbar2habibullah/tensor/blob/main/docs/README.md"
+Repository = "https://github.com/akbar2habibullah/tensor"
+Issues = "https://github.com/akbar2habibullah/tensor/issues"
+Changelog = "https://github.com/akbar2habibullah/tensor/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 compiler = ["tilelang==0.1.14", "apache-tvm-ffi==0.1.12"]
@@ -15,7 +32,7 @@ webgpu = ["wgpu==0.29.0"]
 tensor = "tensor.cli:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

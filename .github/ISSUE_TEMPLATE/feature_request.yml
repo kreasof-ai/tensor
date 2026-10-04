@@ -1,0 +1,15 @@
+name: Feature request
+description: Propose an API, provider, tooling, or documentation improvement
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+      description: Describe the use case and the current limitation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include a small API or CLI example and any compatibility implications.

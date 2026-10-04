@@ -1,0 +1,24 @@
+name: Bug report
+description: Report a reproducible setup, build, or runtime problem
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe expected behavior and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include the exact command, a small example, and the traceback.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include tensor --version, Git revision if using a checkout, OS, Python, GPU/driver and provider. For device issues include tensor doctor --json or tensor doctor --provider webgpu --json. Remove private paths or secrets.
+    validations:
+      required: true

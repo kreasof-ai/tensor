@@ -99,7 +99,7 @@ jobs:
         env:
           TENSOR_TORCH_BUILD_NATIVE: "1"
         run: |
-          uv pip install "setuptools>=68" torch==2.14.0
+          uv pip install "setuptools>=77" torch==2.14.0
           uv build --wheel --no-build-isolation packages/tensor-torch --out-dir build/torch-native-wheel
       - name: Check installed PyTorch backend without compiler packages or GPU
         shell: bash

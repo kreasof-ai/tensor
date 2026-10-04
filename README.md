@@ -1,17 +1,76 @@
 # Tensor
 
-Build, package, and run tensor kernels with a small runtime and one CLI.
+Build tensor kernels once. Run them with a small runtime.
 
-Tensor uses TileLang and TIRx to compile kernels into `.tbin` artifacts. You can
-ship those artifacts to a separate machine and execute them without the compiler
-stack. Named modules add reusable exports, pinned dependencies, and offline or
-PyPI distribution.
+Tensor compiles TileLang/TIRx kernels into `.tbin` artifacts that can run on a
+separate machine without the compiler stack. A Python API and one CLI cover
+building, inspection, execution, and reusable kernel modules.
 
-CUDA is the primary backend. Compilation uses a local NVRTC bundle; execution
-needs only the Tensor wheel, NumPy, and an NVIDIA driver. An optional native
-WebGPU provider runs a bounded inference profile through wgpu.
+**Pre-1.0 software:** the current package version is `0.1.0`. APIs and artifact
+compatibility can change; pin versions and rebuild artifacts when upgrading.
+See [support and compatibility](docs/guides/compatibility.md) for the tested scope.
 
-## How it works
+## Start here
+
+| Your goal | Next step |
+|---|---|
+| Explore the CLI without a GPU or compiler | Install the runtime below |
+| Build and execute your first kernel | [Quickstart](docs/guides/quickstart.md) |
+| Package a TileLang kernel you already wrote | [From TileLang to Tensor](docs/guides/from-tilelang.md) |
+| Search schedule choices for a kernel | [Schedule discovery](docs/guides/schedule-search.md) |
+| Run an artifact someone shared with you | [Runtime installation](docs/guides/installation.md) |
+| Use AMD/Intel/Apple through native wgpu | [WebGPU guide](docs/guides/webgpu.md) |
+| Work on Tensor | [Contributing](CONTRIBUTING.md) |
+
+## Install the runtime
+
+Use 64-bit Python **3.12** and [uv](https://docs.astral.sh/uv/). Start from a
+checkout; these commands work in PowerShell and a POSIX shell:
+
+```sh
+git clone https://github.com/akbar2habibullah/tensor.git
+cd tensor
+uv sync --locked --no-default-groups
+uv run --locked --no-default-groups tensor --version
+uv run --locked --no-default-groups tensor --help
+```
+
+This installs the core and NumPy. Exploring the CLI requires no GPU. Executing
+an artifact requires the corresponding driver and hardware. The distribution is
+named `tensor-workspace`; the import and CLI are named `tensor`.
+
+To build your own kernels, install the pinned development/compiler environment:
+
+```sh
+uv sync --locked
+uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
+```
+
+Set the NVRTC bundle location in your shell:
+
+```sh
+export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
+```
+
+```powershell
+$env:TENSOR_NVRTC_HOME = "$PWD/build/nvrtc-12.9"
+```
+
+With an NVIDIA GPU, build and check the included example:
+
+```sh
+uv run --locked tensor doctor
+uv run --locked tensor build examples/elementwise.py --out build/elementwise.tbin
+uv run --locked python examples/run_elementwise.py build/elementwise.tbin
+```
+
+The runner compares `relu(2 * a + b)` against NumPy and prints a success message.
+Use a new artifact output path each time. A GPU-free producer can build with an
+explicit `--target sm_86`; execution requires a GPU with that exact architecture.
+The [quickstart](docs/guides/quickstart.md) explains each step and the separate
+compiler-free consumer path.
+
+## What you can do
 
 ```text
 TileLang kernel → TIRx lowering → provider compiler → .tbin artifact
@@ -19,86 +78,31 @@ TileLang kernel → TIRx lowering → provider compiler → .tbin artifact
                                              Tensor runtime → GPU
 ```
 
-The build environment owns compiler dependencies. The runtime owns buffers,
-kernel loading, argument validation, streams, and execution. CUDA artifacts
-target one exact GPU architecture; portable TIRx can be recompiled on a producer
-for another target. WebGPU artifacts contain WGSL and negotiate adapter features
-and limits when loaded.
-
-## Quickstart
-
-From a checkout, install [uv](https://docs.astral.sh/uv/) and prepare the pinned
-Python 3.12 compiler environment. On Linux, with an NVIDIA GPU:
-
-```sh
-uv sync --locked
-uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
-export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
-uv run --locked tensor doctor
-uv run --locked tensor build examples/elementwise.py --out build/elementwise.tbin
-```
-
-Run the compiled kernel from Python:
-
-```python
-import tensor as tx
-
-with tx.Device() as device:
-    kernel = device.load("build/elementwise.tbin")
-    a = device.arange(129)
-    b = device.ones((129,))
-    result = kernel(a, b)  # relu(2 * a + b)
-    print(result.to_numpy())
-```
-
-Use `uv run --locked python` for this example in the checkout. A GPU-free build
-host can select an explicit target with `--target sm_86`; the consuming GPU must
-match that target. Output paths must be new.
-
-The [full quickstart](docs/guides/quickstart.md) covers Windows, CLI execution,
-benchmarking, and installing a separate compiler-free consumer.
-
-## What is available
-
-| Component | Current scope | Guide |
+| Component | Scope | Guide |
 |---|---|---|
-| Core runtime and CLI | CUDA kernels, contiguous buffers, symbolic dimensions, typed scalars, DLPack, streams, inspection, and caching | [Runtime](docs/guides/runtime.md) |
-| Modules | Named exports, exact versions, verified `.tpack` archives, lockfiles, and PyPI transport wheels | [Modules](docs/guides/modules.md) |
-| PyTorch adapter | `torch.compile` inference regions and installed kernels as custom operators; optional C++ executor | [PyTorch](docs/guides/pytorch.md) |
-| WebGPU provider | Elementwise, GEMM/linear, device-resident MLPs, and forward attention | [WebGPU](docs/guides/webgpu.md) |
-| Manual training | Public backward callbacks and optional `tensor-nn` nanoGPT templates | [Manual backward](docs/guides/manual-backward.md) |
-| GGUF inference | Optional `tensor-llm` single-sequence LFM2.5-2.6B inference with F16, Q4_0, and Q4_K_M weights | [Tensor LLM](packages/tensor-llm/README.md) |
+| Runtime and CLI | CUDA kernels, contiguous buffers, symbolic dimensions, typed scalars, DLPack, streams, inspection, caching | [Runtime](docs/guides/runtime.md) |
+| Kernel modules | Named exports, pinned dependencies, `.tpack` archives, offline distribution and PyPI transport wheels | [Modules](docs/guides/modules.md) |
+| `tensor-torch` | Optional `torch.compile` inference adapter and custom operators | [PyTorch](docs/guides/pytorch.md) |
+| WebGPU | Optional native wgpu provider for bounded elementwise, linear/MLP and forward-attention profiles | [WebGPU](docs/guides/webgpu.md) |
+| `tensor-nn` | Optional manual nanoGPT training templates | [Tensor NN](packages/tensor-nn/README.md) |
+| `tensor-llm` | Optional single-sequence LFM2 GGUF inference | [Tensor LLM](packages/tensor-llm/README.md) |
 
-The core wheel depends only on NumPy. Compiler packages, PyTorch, training and
-model templates, and wgpu are installed separately for the paths that use them.
-A Linux x86-64 CPU provider also exercises the shared runtime contract.
-
-## Status and measurements
-
-Phases 0–6 are complete within the profiles defined in the
-[roadmap](docs/plan/roadmap.md). CUDA execution has been measured on NVIDIA A10G;
-WebGPU transfer and execution have been validated on Windows RX 6700 XT through
-Vulkan. Other hardware requires its own validation.
-
-The [research index](docs/research/README.md) collects reproducible benchmarks:
-Torch/TileLang/Triton/WebGPU latency scaling, ten-update nanoGPT training, and
-LFM2 inference against llama.cpp CUDA. The ordinary LFM2 runner offers an opt-in
-`optimized` CUDA profile with packed decode, fused projections, tuned prefill,
-and shared K/V attention at long context. See the
-[F16/Q4_0/Q4_K_M measurements](docs/research/lfm2-cuda-formats.md).
-The CUDA algorithms now remain visible in TileLang/TIRx, with shared CUDA/WebGPU
-schedule discovery and producer profiles. The
-[compiler cleanup report](docs/research/lfm2-compiler-cleanup.md) records the
-fresh correctness checks and comparison with the frozen native implementation.
+CUDA is the primary backend. CUDA compilation uses a local NVRTC bundle;
+consumers need only the core wheel, NumPy, an NVIDIA driver, and matching hardware.
+WebGPU artifacts carry WGSL and explicit adapter feature/limit requirements.
+A Linux x86-64 CPU provider exercises the shared runtime contract.
 
 Standalone autograd, arbitrary graph fusion, complete TileLang/TIRx coverage on
-WebGPU, and general GGUF model support remain future work. Direct PTX compilation
-remains experimental work after v1.
+WebGPU, and general GGUF model support are future work. Performance claims apply
+to the specific workloads and hardware in the [benchmark reports](docs/research/README.md).
 
-## Documentation and development
+## Documentation and community
 
-- [Documentation index](docs/README.md): setup, usage guides, contracts, and evidence.
-- [Development guide](docs/development.md): repository layout, optional packages, and tests.
-- [Runtime ABI reference](docs/reference/runtime-abi.md): descriptors, ownership, and compatibility.
-- [Architecture decisions](docs/adr/README.md): the reasons behind the current design.
-- [Original proposal](docs/architecture/proposal.md): design background and longer-term goals.
+- [Documentation](docs/README.md): installation, guides, and API contracts.
+- [Contributing](CONTRIBUTING.md): setup, tests, and how to propose a change.
+- [Changelog](CHANGELOG.md) and [release guide](docs/releases.md).
+- [GitHub issues](https://github.com/akbar2habibullah/tensor/issues): bugs and ideas.
+- [Project history](docs/research/README.md): experiments, measurements, and provenance.
+
+Tensor is licensed under [MIT](LICENSE). Compiler dependencies and model weights
+retain their own licenses.

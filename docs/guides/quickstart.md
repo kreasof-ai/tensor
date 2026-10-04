@@ -6,6 +6,13 @@ This guide builds the included CUDA elementwise kernel, executes it, and prepare
 a separate consumer without compiler dependencies. Python 3.12 is required.
 Run commands from the repository root.
 
+If you only want to execute a shared artifact, use the
+[runtime installation guide](installation.md). See [compatibility](compatibility.md)
+for hardware requirements and upgrade expectations.
+
+Already have a TileLang kernel? Follow [From TileLang to Tensor](from-tilelang.md)
+for the export hook, JIT/factory adaptation, and runtime argument mapping.
+
 ## 1. Prepare the producer
 
 Install [uv](https://docs.astral.sh/uv/) and sync the pinned workspace:
@@ -79,6 +86,16 @@ extents, and typed scalar arguments. See
 [examples/dynamic_affine.py](../../examples/dynamic_affine.py).
 
 ## 3. Execute from Python
+
+Run the included consumer example:
+
+```sh
+uv run --locked python examples/run_elementwise.py build/elementwise.tbin
+```
+
+It prints `PASS: 129 elementwise results match NumPy` and the first eight values.
+The script imports only Tensor and NumPy, so it also works with the separate
+consumer in step 5. Its runtime calls are equivalent to the following:
 
 Save this as a Python script, or run it in `uv run --locked python`:
 
@@ -154,6 +171,10 @@ build/consumer/bin/tensor run build/elementwise.tbin \
 
 On Windows the executable paths are `build/consumer/Scripts/python.exe` and
 `build/consumer/Scripts/tensor.exe`.
+
+Check the installed version with the consumer Python's `-m tensor --version`.
+You can run `examples/run_elementwise.py build/elementwise.tbin` with that same
+Python to verify the result without compiler packages.
 
 To run on another machine, transfer the wheel, `.tbin`, and input files. The
 consumer needs Python 3.12, NumPy, a compatible NVIDIA driver, and a GPU matching

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,8 +7,16 @@ name = "tensor-llm"
 version = "0.1.0"
 description = "Standalone GGUF LFM2 inference on Tensor"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3.12"]
 requires-python = ">=3.12,<3.13"
 dependencies = ["tensor-workspace==0.1.0", "regex==2026.9.29"]
+
+[project.urls]
+Repository = "https://github.com/akbar2habibullah/tensor"
+Documentation = "https://github.com/akbar2habibullah/tensor/blob/main/packages/tensor-llm/README.md"
+Issues = "https://github.com/akbar2habibullah/tensor/issues"
 
 [project.scripts]
 tensor-llm = "tensor_llm.cli:main"
