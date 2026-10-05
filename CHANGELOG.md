@@ -6,6 +6,15 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Plan live progress bars and retained BEAM/agent refinement trajectories from
+  shared event logs, including budgets, lineage and independent winner verification.
+- Propose shared human/agent profiling reports, visual tuning tools, bounded
+  kernel refinement and verified reconstruction from stored kernel recipes.
+- Extend the 1.0 demonstration plan to the full pinned llama.cpp quantization
+  lineup, with preset/type coverage, packed execution, quality and memory checks.
+- Plan the 1.0 Qwen inference and FA/MLA/GDN kernel comparisons, sustained
+  1B-token nanoGPT training, image/audio demonstrations, and reproducible evidence.
+- Record CPU/GPU composition and SSD offloading as proposed post-1.0 addons.
 - Add a proposed 1.0 roadmap with public-contract, compatibility, discovery,
   hardware-validation, onboarding, and release-candidate acceptance milestones.
 - Add a schedule discovery guide and bounded CUDA/WebGPU example with

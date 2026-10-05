@@ -5,6 +5,13 @@
 The [path to 1.0](v1.md) proposes the next development milestones, stability
 boundary, and release acceptance criteria. Start there for future work.
 
+The [1.0 benchmark and demonstration program](v1-benchmarks.md) specifies the
+requested models, operators, GPUs, baselines, implementation prerequisites and
+measurement rules. It is planned work, separate from retained experimental results.
+
+The proposed [tuning workbench](tuning-workbench.md) covers shared profiling
+reports, visual/text interfaces, AI kernel refinement and recipe-only reconstruction.
+
 The [milestone history](roadmap.md) records the agreed Phase 0–6 scopes and their
 accepted evidence. Those phases are complete within measured profiles;
 standalone LFM2 inference and its experiments extend them as concrete workloads.

@@ -28,6 +28,8 @@ upgrading artifacts. Commands run from the repository root unless stated otherwi
 - [Contributing](../CONTRIBUTING.md): first setup, focused checks, and pull requests.
 - [Release preparation](releases.md) and [changelog](../CHANGELOG.md).
 - [Path to 1.0](plan/v1.md): proposed stability boundary, remaining work, and acceptance criteria.
+- [1.0 benchmarks and demonstrations](plan/v1-benchmarks.md): requested comparison matrix and reproducible evaluation plan.
+- [Tuning workbench proposal](plan/tuning-workbench.md): human/agent profiling, refinement and verified kernel reconstruction.
 - [Runtime ABI](reference/runtime-abi.md): descriptor layouts, capabilities,
   scalar and buffer rules, executable/event lifetimes, and native hosts.
 - [Development](development.md): source layout, environments, wheel builds,

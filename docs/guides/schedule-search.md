@@ -273,6 +273,14 @@ protect selector usage, not performance portability across devices. Keep actual
 GPU identity, compiler versions, source hashes, shape, dtype, reference tolerance,
 and the timing protocol in provenance. Revalidate after any change.
 
+You can retain the profile and referenced factory source instead of the compiled
+winner, then rebuild using the selected knobs without rerunning search. The
+producer toolchain and source dependencies must remain available; schedule knobs
+alone do not reconstruct an unknown implementation. `profile.sha256` hashes
+settings, not compiled code. The proposed [kernel recipe workflow](../plan/tuning-workbench.md)
+adds explicit source/toolchain closure, fresh-build identity checks, numerical
+verification and performance replay; those interfaces are planned, not current APIs.
+
 ## 6. Deploy the winner and confirm it helps
 
 The selected artifact is already compiled. A consumer executes it without
