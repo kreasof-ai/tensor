@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "test": "test_inference_weight_cache_refresh_lifetime_and_training",
+  "passed": 1,
+  "torch": "2.14.0+cu130",
+  "gpu": "NVIDIA L40S",
+  "sm": "sm_89",
+  "sources": {
+    "packages/tensor-torch/src/tensor_torch/llt.py": "93589da11faf1cebf9034cad13ba47399ef70ca71cddafff605e3f1a15a95cb5",
+    "packages/tensor-torch/tests/test_llt.py": "0aa39016531d2aaa121e9ea67d05b6719cabb32b24ba14a0e5f1882fc5ccce0b"
+  }
+}

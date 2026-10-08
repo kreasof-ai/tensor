@@ -31,3 +31,10 @@ bounded `torch.compile` backend. The default GEMM profile uses coalesced MMA and
 small-input GEMV schedules; `gemm_profile="legacy"` retains the original GEMM.
 See the [L40S optimization study](../../docs/research/llt-optimization.md) for
 qualification, schedule search evidence and measured limits.
+
+`cache_inference_weights=True` optionally retains prepared parameter casts under
+`torch.inference_mode()`. It refreshes eager casts after versioned updates and
+releases entries when parameters die. It leaves training unchanged and counts
+prepared copies as resident storage. See the
+[inference cache contract](../../docs/research/llt-inference-weight-cache.md),
+including the lifetime requirements for captured CUDA graphs.
