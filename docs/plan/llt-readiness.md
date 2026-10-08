@@ -203,7 +203,7 @@ it does not require LLT to win every shape or prove its architecture claims.
 2. T02–T04: attention forward, backward, and positional paths.
 3. T05–T07: model kernels, loss/update, and checkpoint integration.
 4. T08–T09: execution overhead, caches, compiler, and packaging evidence.
-5. Pass T10 on the L40S and pin the accepted Tensor revision.
+5. Passed T10 on the L40S: pin [ab17948](https://github.com/kreasof-ai/tensor/commit/ab17948fe94dd7c7b857c8f067c465e901329b94) as the accepted implementation.
 6. Resume the [LLT research roadmap](https://github.com/kreasof-ai/loop-latent-transformer/blob/main/research/ROADMAP.md).
 
 This dependency gate is complete for the declared profile. It does not establish LLT's open

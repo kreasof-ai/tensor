@@ -6,6 +6,9 @@ in the [LLT guide](../guides/llt.md); the [dependency checklist](../plan/llt-rea
 tracks T01–T10. This scope is separate from Tensor 1.0, model quality, and LLT's
 architecture performance targets.
 
+Qualified implementation: [ab17948](https://github.com/kreasof-ai/tensor/commit/ab17948fe94dd7c7b857c8f067c465e901329b94). Subsequent documentation-only
+commits do not change the qualified source or wheel hashes.
+
 ## Implementation and numerical contract
 
 ABI 1.3 adds permanent BF16 ID 13 and `bfloat16_storage`, preserving IDs 1–12 and
