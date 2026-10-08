@@ -5,7 +5,9 @@
 Planning baseline: **2026-10-05**. This records the requested 1.0 comparison
 program. All work below is planned; it contains no new benchmark results or
 claim that the requested models already run in Tensor. CPU/GPU composition and
-SSD offloading remain proposed extras/addons after 1.0.
+SSD offloading remain proposed extras/addons after 1.0. The **2026-10-07** addition
+below scopes a minimalist Strata-inspired hybrid MoE demonstration in that
+follow-on track; it does not add a core 1.0 release gate.
 
 The program has three outputs: comparable kernel measurements, complete model
 inference comparisons, and reproducible demonstrations of sustained training,
@@ -34,6 +36,7 @@ The matrix lists evaluation targets, not blanket backend support guarantees.
 | [Qwen-Image-2.1](https://huggingface.co/Qwen/Qwen-Image-2.1) image generation | Tensor versus baseline Diffusers | Complete text-to-image pipeline, retained outputs, quality checks and end-to-end timing |
 | [LFM2.5-Audio-1.5B-GGUF](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-GGUF) audio-to-audio | Tensor versus the checkpoint's audio runner | Input waveform through generated waveform, retained audio/text, quality and latency checks |
 | Full llama.cpp GGUF weight-quantization lineup | Tensor versus pinned llama.cpp, using identical GGUF files | Exhaustive preset inventory, decoded-weight/operator checks, full-model quality, size/memory and prefill/decode measurements |
+| Minimalist hybrid MoE block (**post-1.0 addon**) | Tensor CPU/GPU composition versus matched all-CPU and, where it fits, all-GPU execution | Correct routed-expert outputs under a fixed VRAM budget, residency/transfer accounting and completed-operation timing |
 
 Demonstration GPU profiles, training model size/dataset, and resource allocation
 are still decisions to make. The 1B requirement counts training tokens, not model
@@ -60,6 +63,7 @@ windows. Neither is evidence of a continuous 1B-token training run.
 | BENCH-07 — Audio pipeline | Audio preprocessing/encoder, projectors, interleaved generation, audio token decoding/vocoder, complete checkpoint closure | Complete audio-to-audio outputs and streaming/reset checks where streaming is claimed |
 | BENCH-08 — Release report | Physical hardware runs, raw records, reproduction commands, coverage table and published methodology | Exact candidate provenance; every planned cell has a result or documented disposition |
 | BENCH-09 — llama.cpp quantization lineup | Complete preset/type inventory, GGUF readers and packed execution kernels, calibration/quantization pipeline, representative dense/MoE model profiles | Every canonical preset has explicit coverage; applicable Tensor paths pass decoded-weight, operator and complete inference checks against the same GGUF files |
+| BENCH-10 — Minimalist hybrid MoE (post-1.0) | Model-correct top-k routing, packed CPU/GPU expert kernels, fixed residency plan, bounded device buffers and weighted result merge | One MoE block passes an independent reference across residency cases; complete latency and memory accounting establish when the split helps |
 
 Workload-specific backward callbacks can fulfill the kernel and training tracks;
 these requirements do not require a general autograd framework. Optional model
@@ -297,6 +301,63 @@ lists every preset and its applicable model/device cells, including failures,
 OOMs and unsupported reference paths. Broad quantization coverage requires these
 new kernels and checks; it is not already supplied by the current GGUF reader.
 
+## Minimalist Strata-inspired hybrid MoE demonstration (post-1.0)
+
+Borrow the architectural recipe from
+[Strata](https://github.com/Niko1221/Strata) and its
+[design explanation](https://github.com/Niko1221/Strata/blob/main/docs/HOW_IT_WORKS.md):
+retain frequently used experts on the GPU, compute remaining selected experts
+on the CPU, and merge their weighted outputs. Implement this as an experimental
+inference workload using Tensor's providers, rather than porting Strata's engine
+or adding a new raw Vulkan backend. Exercise CUDA and native wgpu/Vulkan as
+separate device profiles; qualify each claimed profile on physical hardware.
+
+The first deliverable is **one routed MoE block**, not a complete Strata model.
+Select a small compatible MoE checkpoint or an explicitly labeled block fixture
+in BENCH-01. Existing LFM2 inference supplies reusable packed-projection and
+prepared-plan infrastructure, but its dense FFNs do not establish MoE support.
+Pin expert shapes, activation function, shared-expert behavior where applicable,
+router scoring, top-k selection/normalization and tie handling. Begin with an
+independent high-precision reference and one packed weight format; use identical
+packed bytes for all execution placements.
+
+Keep the first implementation to one GPU, one sequence and one-token decode
+steps, RAM-resident packed weights, a fixed VRAM budget and fixed expert
+residency. Choose resident experts from a separate calibration routing trace;
+freeze that selection before held-out evaluation. Reserve memory for persistent
+activations, router metadata, result buffers and scratch before assigning expert
+slots. Use bounded buffer segments and explicit offsets compatible with the
+provider's binding limits. GPU hits and CPU misses may initially run sequentially;
+merge every selected expert with the model's routing weight before continuing.
+An efficient native packed CPU path is new work; a NumPy correctness reference
+alone does not establish competitive CPU expert performance.
+
+Validate router selections, per-expert outputs and the complete weighted result,
+including shared experts where required. Cover no resident experts, partial
+residency, all selected experts resident, selection ties and repeated calls with
+changed inputs. Check resource lifetime and reset behavior. Freeze tolerances
+before tuning, and disclose CPU/GPU arithmetic differences. Hold weights, inputs
+and routing semantics constant across matched all-CPU, hybrid and all-GPU controls;
+record an all-GPU OOM explicitly where it cannot fit.
+
+Measure the complete block from host input through host-visible merged output,
+including routing, metadata readback, uploads, CPU/GPU expert work, transfers,
+merge and synchronization. Report stage costs, completed latency distributions,
+RAM/VRAM use, expert hit rate, bytes transferred, startup/upload cost and CPU
+thread settings across budget and routing-locality sweeps. Include cold setup
+and steady-state runs separately. Fixed-routing kernel replay is a separate
+microbenchmark, not evidence of complete hybrid execution. Retain cases where
+the split loses; acceptance requires correct execution and evidence of the
+conditions under which residency pays off, not a universal speedup.
+
+After the block qualifies, evaluate CPU/GPU overlap and adaptive residency as
+separate ablations. Chunked prefill, speculative decoding, KV offloading, SSD
+streaming and multi-GPU execution remain later extensions. A complete model
+demonstration needs its own checkpoint, architecture, tokenizer/state and quality
+gates under the LLM protocol; the block does not establish Strata's GDN/QSA,
+quantization or full-model support. Keep BENCH-10 evidence separately labeled
+from the required 1.0 program and BENCH-09's resident-placement comparisons.
+
 ## Execution sequence and release evidence
 
 1. **Specify:** BENCH-01 defines exact cases, quality gates, reference revisions,
@@ -316,6 +377,9 @@ new kernels and checks; it is not already supplied by the current GGUF reader.
    manifests/hashes, scripts/commands, outputs, methodological limits and results
    tied to the accepted candidate. Keep baselines reproducible in separate
    environments; include their versions and dependency locks.
+6. **Follow-on composition:** BENCH-10 qualifies the minimal hybrid MoE block
+   after 1.0, then uses its correctness and transfer/latency evidence to scope
+   an end-to-end MoE workload and additional scheduling features.
 
 For the requested 1.0 program, a successful Tensor demonstration requires a
 complete correct run; an unimplemented Tensor path is unfinished work. Unavailable
