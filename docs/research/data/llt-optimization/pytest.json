@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "selected_existing_contracts": 3,
+  "affine_regressions": 3,
+  "commands": [
+    "pytest packages/tensor-torch/tests/test_llt.py -q -k 'model_operators or aliased_latent_gradient or chunked'",
+    "pytest packages/tensor-torch/tests/test_llt.py --override-ini addopts='' -q -k 'affine_layer_norm or channel_bias'"
+  ],
+  "cuda_opt_in": true
+}

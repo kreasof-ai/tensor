@@ -1,0 +1,1021 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "parameters": {
+        "kind": "gemm",
+        "m": 3072,
+        "k": 1024,
+        "c": 768,
+        "ta": true,
+        "tb": false,
+        "dtype": "bfloat16",
+        "out_dtype": "bfloat16"
+      },
+      "baseline": {
+        "samples_ms": [
+          0.20782079696655273,
+          0.207206392288208,
+          0.20725760459899903,
+          0.20730879306793212,
+          0.20741119384765624,
+          0.20750880241394043,
+          0.20746240615844727,
+          0.20746240615844727,
+          0.20730879306793212
+        ],
+        "median_ms": 0.20741119384765624
+      },
+      "candidates": [
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.06297600269317627,
+              0.06282240152359009,
+              0.06236159801483154,
+              0.062457597255706786,
+              0.06272000074386597,
+              0.06154239773750305,
+              0.06174719929695129,
+              0.06169599890708923,
+              0.061337602138519284
+            ],
+            "median_ms": 0.06236159801483154
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.04362240135669708,
+              0.042905598878860474,
+              0.042854401469230655,
+              0.042854401469230655,
+              0.042752000689506534,
+              0.042803201079368594,
+              0.043007999658584595,
+              0.042803201079368594,
+              0.042910400032997134
+            ],
+            "median_ms": 0.042854401469230655
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.051712000370025636,
+              0.051660799980163576,
+              0.05120000243186951,
+              0.051148802042007446,
+              0.051609599590301515,
+              0.051712000370025636,
+              0.05129439830780029,
+              0.05120000243186951,
+              0.051507198810577394
+            ],
+            "median_ms": 0.051507198810577394
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 128,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.05119040012359619,
+              0.050628799200057986,
+              0.050425601005554196,
+              0.050483202934265135,
+              0.050432002544403075,
+              0.050380802154541014,
+              0.050432002544403075,
+              0.050432002544403075,
+              0.050380802154541014
+            ],
+            "median_ms": 0.050432002544403075
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 64,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.04382719993591309,
+              0.04270080029964447,
+              0.043110400438308716,
+              0.04270719885826111,
+              0.042803201079368594,
+              0.043110400438308716,
+              0.042854401469230655,
+              0.043007999658584595,
+              0.04352000057697296
+            ],
+            "median_ms": 0.043007999658584595
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 32,
+            "threads": 128,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.043007999658584595,
+              0.0421887993812561,
+              0.042444801330566405,
+              0.04208639860153198,
+              0.04213759899139404,
+              0.042803201079368594,
+              0.042444801330566405,
+              0.04253920018672943,
+              0.04259839951992035
+            ],
+            "median_ms": 0.042444801330566405
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 64,
+            "threads": 256,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.04341759979724884,
+              0.042752000689506534,
+              0.043161600828170776,
+              0.042854401469230655,
+              0.043059200048446655,
+              0.042803201079368594,
+              0.0429504007101059,
+              0.043315199017524716,
+              0.043161600828170776
+            ],
+            "median_ms": 0.043059200048446655
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.041223999857902524,
+              0.040755200386047366,
+              0.040703999996185306,
+              0.04131839871406555,
+              0.040550398826599124,
+              0.040601599216461184,
+              0.04106239974498749,
+              0.04095999896526337,
+              0.040601599216461184
+            ],
+            "median_ms": 0.040755200386047366
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 16,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.07864320278167725,
+              0.07838720083236694,
+              0.07833279967308045,
+              0.078438401222229,
+              0.07864320278167725,
+              0.07838720083236694,
+              0.07807520031929016,
+              0.07828480005264282,
+              0.07823359966278076
+            ],
+            "median_ms": 0.07838720083236694
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.03932160139083862,
+              0.0387584000825882,
+              0.038553598523139956,
+              0.03851040005683899,
+              0.03834879994392395,
+              0.03845120072364807,
+              0.03850240111351013,
+              0.03845120072364807,
+              0.03886080086231232
+            ],
+            "median_ms": 0.03851040005683899
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 32,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.07009279727935791,
+              0.06958079934120179,
+              0.06988800168037415,
+              0.06999040246009827,
+              0.06973440051078797,
+              0.06963199973106385,
+              0.06937919855117798,
+              0.06937599778175355,
+              0.0694271981716156
+            ],
+            "median_ms": 0.06963199973106385
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 128,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.053964799642562865,
+              0.05360640287399292,
+              0.053401601314544675,
+              0.053504002094268796,
+              0.053350400924682614,
+              0.05375999808311462,
+              0.053913599252700804,
+              0.054016000032424925,
+              0.05385919809341431
+            ],
+            "median_ms": 0.05375999808311462
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 64,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.05437440276145935,
+              0.053913599252700804,
+              0.054067200422286986,
+              0.054527997970581055,
+              0.05437440276145935,
+              0.05416960120201111,
+              0.05436639785766602,
+              0.05391200184822083,
+              0.05432320237159729
+            ],
+            "median_ms": 0.05432320237159729
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 256,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.054118400812149046,
+              0.053401601314544675,
+              0.05360640287399292,
+              0.05355520248413086,
+              0.053504002094268796,
+              0.05370879769325256,
+              0.05375999808311462,
+              0.05381119847297668,
+              0.053913599252700804
+            ],
+            "median_ms": 0.05370879769325256
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 1
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.07505919933319091,
+              0.07485120296478272,
+              0.07516160011291503,
+              0.07490559816360473,
+              0.07495200037956237,
+              0.07480319738388061,
+              0.07470080256462097,
+              0.07475200295448303,
+              0.07485439777374267
+            ],
+            "median_ms": 0.07485439777374267
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 3
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.054016000032424925,
+              0.053504002094268796,
+              0.053913599252700804,
+              0.05416960120201111,
+              0.053504002094268796,
+              0.053299200534820554,
+              0.053452801704406736,
+              0.05324800014495849,
+              0.0535103976726532
+            ],
+            "median_ms": 0.053504002094268796
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 128,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.03752799928188324,
+              0.037376001477241516,
+              0.03706879913806915,
+              0.03665919899940491,
+              0.03681280016899109,
+              0.037171199917793274,
+              0.03665919899940491,
+              0.03701759874820709,
+              0.03660799860954285
+            ],
+            "median_ms": 0.03701759874820709
+          },
+          "max_error": 0.0009767115116119385
+        },
+        {
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 32,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          },
+          "status": "passed",
+          "timing": {
+            "samples_ms": [
+              0.06292480230331421,
+              0.06220800280570984,
+              0.06220800280570984,
+              0.06281920075416565,
+              0.06246079802513123,
+              0.0625104010105133,
+              0.062412798404693604,
+              0.061843198537826535,
+              0.06302719712257385
+            ],
+            "median_ms": 0.06246079802513123
+          },
+          "max_error": 0.0009767115116119385
+        }
+      ],
+      "winner": {
+        "family": "mma",
+        "bm": 128,
+        "bn": 64,
+        "bk": 32,
+        "threads": 128,
+        "stages": 2
+      },
+      "winner_recheck": {
+        "samples_ms": [
+          0.037171199917793274,
+          0.03753440082073212,
+          0.03706879913806915,
+          0.03671039938926697,
+          0.03665919899940491,
+          0.036556801199913024,
+          0.036759999394416806,
+          0.03670560121536255,
+          0.03676159977912903
+        ],
+        "median_ms": 0.036759999394416806
+      },
+      "elapsed_seconds": 46.396275137001794,
+      "speedup": 5.642306780863504
+    }
+  ],
+  "coverage": {
+    "artifacts": [
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/24bcd8b5a59f93558f3c226587ffd492145bbc90f46d4217db398301457e6957.tbin",
+        "sha256": "535237967fdc0d6b2cc99b9df389f1916926e18b7f5c3c9e9bfd8e6e57717294",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/6f1467598222c4971c851130ee3f42f0d252841ac08f766a7e8cf123d97dccda.tbin",
+        "sha256": "0b93ac0865ce3947cb0e1da6800ef2b60826d0509442ad827c40fe3cdc08ffe0",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/1bd4781f05247265c6a3b82cf83651c21bed29bea20c841334e890582ed35c05.tbin",
+        "sha256": "c2bf7676c9abfdd5eacc316a4d597ecc34e65a824aa073e5f421e018336d08a6",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/dad7f786e5468a5c136453e7194abb042e814053418624533c6b5455d4121ccd.tbin",
+        "sha256": "b202ea1ed9c31034b11a424774c92d34daf64cdae033f0f94e7aebb463ffd78a",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 128,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/b2ec445fbf7c191be20dc44d3ac42b4770a59e136e354cd4638dc8db18cec171.tbin",
+        "sha256": "a9e2492175686a6965e85821bf38dce46b741acda724ce462a4e870e8f943f23",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 64,
+            "bk": 64,
+            "threads": 128,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/086d4277fdef3250adf82b49ebd620c7d6f6b2c1d6c45c3c1bdd2058d5f03123.tbin",
+        "sha256": "f5c0976c5d03d014c25e4e13cdf3793524521b147062498e122ce1f0e0285615",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 32,
+            "threads": 128,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/5f47cb32a28b4cebf433ddea8ddae2b53e4f1a6dd0b82d3c0e9f08d11d8a0d43.tbin",
+        "sha256": "d29c22be45e8d9902fb88adecee1f5c912ea4da55b892445649f9b73e9359a4e",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 64,
+            "threads": 256,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/02816165b42323695737504f01021b3e64b0457a9e270cd7c4088b66d910dd74.tbin",
+        "sha256": "e3509d0ca95392400a04ef5fdd1183def57ccd5086fde2305a35ef8b6756f509",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 128,
+            "bk": 64,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/019c3c98e29270d08daeb977418d894ffdcf1fdc72dc668caa700bd4db1e369e.tbin",
+        "sha256": "7bc79e3458b450a1cf90890cb405d0ec9577ad948db8cddb864e23752fab2b02",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 16,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/5577dac3665af5bd29fb97ba54c0bb5595f306eee2793ebd6e3614b23217d9d9.tbin",
+        "sha256": "ddc4316ab459cc182c2050323cab9fe98387e003771ac763a96a079288016264",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/558bbb103382e73c416a55f4e4688c556655133427610808916056b9c1675b83.tbin",
+        "sha256": "61dcf54b733c9e82ac0774a7f4eb55839d4269e81aa40caaad36406aaff02c5a",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 32,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/6fe94779b2a4e9c866c4cde2eddd4df359fc55769aeb3aa9e06b8fbe1ca8e127.tbin",
+        "sha256": "349101acf3d256429dbcc6983ea182fa48e195fab89bb27271423eed715a8c1a",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 128,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/83b10bb2ea7d384a34009a5ce610ddb1603d32dfc9d4bc1ad065d46255a2fc97.tbin",
+        "sha256": "0ffcc1c40c905a18a3895852014778a8a020102d37095a83c2048b375fa3666c",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 64,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/7ec2fd85bde6075118aecedd00c2c437a1cb2ad5619a1ae66515c280a3215b41.tbin",
+        "sha256": "d6f70e32457fdd9bff0f3f444e74483f2b4f7dc5a7c84cadc23eb10430d61711",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 256,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/671e9216f499b09a155c7e3509bc9c076c113ad9b93192e8d66c02f0f95fdc53.tbin",
+        "sha256": "1b9db2ad80cd60896c49c745a1cacebe59c820e4b4e9300a788f2f20d94fe952",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 1
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/6a0ebd1f8387c30a0388c0f17011c5a01a85a65182345780d61cb7204e3611b6.tbin",
+        "sha256": "60c999cda1ec2ee054f7d3189fac3843cabc9f06e31c3fd892cb25863918184d",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 32,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 3
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/c1eac81dc7832bfb44e957e7440945c7e9550f8af7370f382c8a68c5ff5b7ec5.tbin",
+        "sha256": "6d6406f6fa9b569d654eba0b7ac01552702c220eb043154b61f512ae1dca0245",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 128,
+            "bn": 64,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/f80ad2954f1463043a540b092a421846a726922522955f2b3498e2469d4822bf.tbin",
+        "sha256": "06b45c1a0f13343ecf204c7635bd15e08cfcb92093f99933be006a9c7da21a65",
+        "cache_hit": false
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_gemm",
+        "parameters": {
+          "kind": "gemm",
+          "m": 3072,
+          "k": 1024,
+          "c": 768,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16",
+          "schedule": {
+            "family": "mma",
+            "bm": 64,
+            "bn": 32,
+            "bk": 32,
+            "threads": 128,
+            "stages": 2
+          }
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/95380d6b18324290d5986c875da7ab9a87da78615938abf6880fedbafbbd3fde.tbin",
+        "sha256": "d5c73e6812547a3b36fa8ca602a08bf73a23c6d1873bbe637d0f1a008c4a7920",
+        "cache_hit": false
+      }
+    ],
+    "calls": {
+      "make_kernel:gemm": 159
+    },
+    "fallbacks": [],
+    "layout_copies": 0,
+    "compute_dtype": "torch.bfloat16"
+  }
+}

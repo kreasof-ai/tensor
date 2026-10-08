@@ -1,0 +1,734 @@
+{
+  "status": "passed",
+  "rows": [
+    {
+      "shape": [
+        1,
+        3072,
+        768
+      ],
+      "ta": false,
+      "tb": true,
+      "timings": {
+        "torch": {
+          "samples_ms": [
+            0.00936639979481697,
+            0.008908800035715102,
+            0.008908800035715102,
+            0.008857599645853042,
+            0.008806400001049042,
+            0.008857599645853042,
+            0.008908800035715102,
+            0.008851200342178345,
+            0.008959999680519104
+          ],
+          "median_ms": 0.008908800035715102
+        },
+        "legacy": {
+          "samples_ms": [
+            0.1311743974685669,
+            0.13101439476013182,
+            0.13107199668884278,
+            0.13107199668884278,
+            0.13112319707870485,
+            0.13102079629898072,
+            0.13107199668884278,
+            0.13096799850463867,
+            0.13096799850463867
+          ],
+          "median_ms": 0.13107199668884278
+        },
+        "optimized": {
+          "samples_ms": [
+            0.005119999870657921,
+            0.0048640001565217975,
+            0.004862400144338608,
+            0.004812800139188766,
+            0.004769600182771683,
+            0.004812800139188766,
+            0.004763200134038925,
+            0.004812800139188766,
+            0.005227199941873551
+          ],
+          "median_ms": 0.004812800139188766
+        }
+      },
+      "speedup": 27.234041077578585,
+      "coverage": {
+        "legacy": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_ops",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1,
+                "k": 3072,
+                "c": 768,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16"
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/7f577ce94dcf0ed08a14f30ccaf525dd13c129ed25ddbbe5d14b28c10f353322.tbin",
+              "sha256": "b65c77be2bfb6666d1a03d44e331a64234d5cced93f19a864e1efd5711cc2848",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "legacy"
+        },
+        "optimized": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_gemm",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1,
+                "k": 3072,
+                "c": 768,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16",
+                "schedule": {
+                  "family": "gemv",
+                  "rows": 8,
+                  "chunk": 256,
+                  "threads": 256
+                }
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/55f9a8a865fa9c2e3fcb99ddcb0805754d2a966cab569efb5dc4b054f14a6662.tbin",
+              "sha256": "f25e9755120e892a8c8ff30ccbb3c1afa7084a13cb87337755a068d242007440",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "optimized"
+        }
+      }
+    },
+    {
+      "shape": [
+        1,
+        768,
+        3072
+      ],
+      "ta": false,
+      "tb": true,
+      "timings": {
+        "legacy": {
+          "samples_ms": [
+            0.034406399726867674,
+            0.03415040075778961,
+            0.03415040075778961,
+            0.03409920036792755,
+            0.03430399894714355,
+            0.03430399894714355,
+            0.034201601147651674,
+            0.03414719998836517,
+            0.034143999218940735
+          ],
+          "median_ms": 0.03415040075778961
+        },
+        "optimized": {
+          "samples_ms": [
+            0.003942399844527244,
+            0.0037376001477241517,
+            0.0036848001182079315,
+            0.004812800139188766,
+            0.004556800052523613,
+            0.004095999896526337,
+            0.0037376001477241517,
+            0.0050687998533248905,
+            0.005119999870657921
+          ],
+          "median_ms": 0.004095999896526337
+        },
+        "torch": {
+          "samples_ms": [
+            0.006809599697589874,
+            0.006552000343799591,
+            0.00650240033864975,
+            0.006553599983453751,
+            0.006548800319433212,
+            0.00650240033864975,
+            0.00650240033864975,
+            0.00650240033864975,
+            0.006451199948787689
+          ],
+          "median_ms": 0.00650240033864975
+        }
+      },
+      "speedup": 8.337500395630205,
+      "coverage": {
+        "legacy": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_ops",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1,
+                "k": 768,
+                "c": 3072,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16"
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/3a791fc867885c4d979f7f0fa68b270e36105eb302e34fdc09145abb527d2ccc.tbin",
+              "sha256": "de909e3876eb5759e6cecf97673492951ef52d079fb085a6a968f432a59caf8a",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "legacy"
+        },
+        "optimized": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_gemm",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1,
+                "k": 768,
+                "c": 3072,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16",
+                "schedule": {
+                  "family": "gemv",
+                  "rows": 8,
+                  "chunk": 256,
+                  "threads": 256
+                }
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/d47c2380d186097bde8e8169f0a0ad577b342cfdc33033c2cde7afda7442799a.tbin",
+              "sha256": "3d1d576abe648b8af50fb32c7ed9e3d2987468030e62346c79e1aec7a5e3fac6",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "optimized"
+        }
+      }
+    },
+    {
+      "shape": [
+        1024,
+        768,
+        3072
+      ],
+      "ta": false,
+      "tb": true,
+      "timings": {
+        "optimized": {
+          "samples_ms": [
+            0.037520000338554384,
+            0.03660799860954285,
+            0.036556801199913024,
+            0.036556801199913024,
+            0.03665919899940491,
+            0.03660799860954285,
+            0.03660799860954285,
+            0.03676159977912903,
+            0.03660480082035065
+          ],
+          "median_ms": 0.03660799860954285
+        },
+        "torch": {
+          "samples_ms": [
+            0.0336896002292633,
+            0.03317759931087494,
+            0.0331743985414505,
+            0.03312639892101288,
+            0.03348479866981506,
+            0.033118399977684024,
+            0.03328000009059906,
+            0.03307519853115082,
+            0.033024001121521
+          ],
+          "median_ms": 0.0331743985414505
+        },
+        "legacy": {
+          "samples_ms": [
+            0.3087791919708252,
+            0.30853919982910155,
+            0.3086335897445679,
+            0.30868480205535886,
+            0.30853118896484377,
+            0.3086335897445679,
+            0.3085263967514038,
+            0.308787202835083,
+            0.3099744081497192
+          ],
+          "median_ms": 0.3086335897445679
+        }
+      },
+      "speedup": 8.430769270847664,
+      "coverage": {
+        "legacy": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_ops",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1024,
+                "k": 768,
+                "c": 3072,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16"
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/69c84f293742484cb3d7fade10d08fb0cba4354eca9c35c1d178309db7f32ec7.tbin",
+              "sha256": "91065c4ceb044907a8e9fac7255d64e2435e15417d491c77a82d0dd92e0eb8f3",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "legacy"
+        },
+        "optimized": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_gemm",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1024,
+                "k": 768,
+                "c": 3072,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16",
+                "schedule": {
+                  "family": "mma",
+                  "bm": 64,
+                  "bn": 128,
+                  "bk": 64,
+                  "threads": 256,
+                  "stages": 3
+                }
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/8d754dabd612d58f5aa0ca9a0113e87141f9cdf1e145e8cdb724350a9b67ea70.tbin",
+              "sha256": "84ccb83e3887db234a5410067713aaa84e8fb3b78162e759f8499a266d3739c7",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "optimized"
+        }
+      }
+    },
+    {
+      "shape": [
+        1024,
+        3072,
+        768
+      ],
+      "ta": false,
+      "tb": false,
+      "timings": {
+        "torch": {
+          "samples_ms": [
+            0.03051519989967346,
+            0.0302592009305954,
+            0.03020800054073334,
+            0.03056640028953552,
+            0.030156800150871278,
+            0.03020800054073334,
+            0.03031040132045746,
+            0.030110400915145875,
+            0.03020800054073334
+          ],
+          "median_ms": 0.03020800054073334
+        },
+        "legacy": {
+          "samples_ms": [
+            0.051097601652145386,
+            0.05079039931297302,
+            0.050892800092697144,
+            0.050944000482559204,
+            0.05073919892311096,
+            0.05058559775352478,
+            0.0506879985332489,
+            0.05079039931297302,
+            0.05079039931297302
+          ],
+          "median_ms": 0.05079039931297302
+        },
+        "optimized": {
+          "samples_ms": [
+            0.03962559998035431,
+            0.0392192006111145,
+            0.03927040100097656,
+            0.03911679983139038,
+            0.03906559944152832,
+            0.03927040100097656,
+            0.039164799451828006,
+            0.03916800022125244,
+            0.03932160139083862
+          ],
+          "median_ms": 0.0392192006111145
+        }
+      },
+      "speedup": 1.295039126793913,
+      "coverage": {
+        "legacy": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_ops",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1024,
+                "k": 3072,
+                "c": 768,
+                "ta": false,
+                "tb": false,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16"
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/0bc7ee674580173da1378942441d4339d5b0e9b0c605ab22662dd789f24137f6.tbin",
+              "sha256": "8cd6786b28f53b58918e7549822eda851535ce345759860fbd830a1bcb9033b2",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "legacy"
+        },
+        "optimized": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_gemm",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1024,
+                "k": 3072,
+                "c": 768,
+                "ta": false,
+                "tb": false,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16",
+                "schedule": {
+                  "family": "mma",
+                  "bm": 64,
+                  "bn": 128,
+                  "bk": 64,
+                  "threads": 256,
+                  "stages": 3
+                }
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/a234da69ba20be47ee63dde374936c8d18f57442cb9e73bda435efe2e1c7c8f7.tbin",
+              "sha256": "b8093650704ffd5e1583a4dc5dcf447604403a3442ca43a12561a00b7724dfa2",
+              "cache_hit": false
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "optimized"
+        }
+      }
+    },
+    {
+      "shape": [
+        3072,
+        1024,
+        768
+      ],
+      "ta": true,
+      "tb": false,
+      "timings": {
+        "legacy": {
+          "samples_ms": [
+            0.20746240615844727,
+            0.20751359462738037,
+            0.2071552038192749,
+            0.20735199451446534,
+            0.20736958980560302,
+            0.20710399150848388,
+            0.207206392288208,
+            0.20726559162139893,
+            0.2071552038192749
+          ],
+          "median_ms": 0.20726559162139893
+        },
+        "optimized": {
+          "samples_ms": [
+            0.037324801087379456,
+            0.03665919899940491,
+            0.03645919859409332,
+            0.03665919899940491,
+            0.03650560081005096,
+            0.03701759874820709,
+            0.03691360056400299,
+            0.03635840117931366,
+            0.036556801199913024
+          ],
+          "median_ms": 0.03665919899940491
+        },
+        "torch": {
+          "samples_ms": [
+            0.04076319932937622,
+            0.04085760116577149,
+            0.040652799606323245,
+            0.040601599216461184,
+            0.040294399857521056,
+            0.040038400888442995,
+            0.040191999077796935,
+            0.040243199467658995,
+            0.040140798687934874
+          ],
+          "median_ms": 0.040294399857521056
+        }
+      },
+      "speedup": 5.65384943693842,
+      "coverage": {
+        "legacy": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_ops",
+              "parameters": {
+                "kind": "gemm",
+                "m": 3072,
+                "k": 1024,
+                "c": 768,
+                "ta": true,
+                "tb": false,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16"
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/24bcd8b5a59f93558f3c226587ffd492145bbc90f46d4217db398301457e6957.tbin",
+              "sha256": "535237967fdc0d6b2cc99b9df389f1916926e18b7f5c3c9e9bfd8e6e57717294",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "legacy"
+        },
+        "optimized": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_gemm",
+              "parameters": {
+                "kind": "gemm",
+                "m": 3072,
+                "k": 1024,
+                "c": 768,
+                "ta": true,
+                "tb": false,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16",
+                "schedule": {
+                  "family": "mma",
+                  "bm": 128,
+                  "bn": 64,
+                  "bk": 32,
+                  "threads": 128,
+                  "stages": 2
+                }
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/c7ffc795e12b964a80d3f7cd78dd32c42bcc98bc87976c7eddcefa2ddfb801d7.tbin",
+              "sha256": "3b9e657adf346c84f6686aef2f95377e42ae60a70ae89ebd546e4e1cefe9928d",
+              "cache_hit": false
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "optimized"
+        }
+      }
+    },
+    {
+      "shape": [
+        1024,
+        768,
+        50304
+      ],
+      "ta": false,
+      "tb": true,
+      "timings": {
+        "optimized": {
+          "samples_ms": [
+            0.43468642234802246,
+            0.43105278015136717,
+            0.43023362159729006,
+            0.43048958778381347,
+            0.43089919090270995,
+            0.4334591865539551,
+            0.4358640193939209,
+            0.45409278869628905,
+            0.4547584056854248
+          ],
+          "median_ms": 0.4334591865539551
+        },
+        "torch": {
+          "samples_ms": [
+            0.3919856071472168,
+            0.3911168098449707,
+            0.382207989692688,
+            0.37360639572143556,
+            0.37504000663757325,
+            0.40064001083374023,
+            0.40560641288757326,
+            0.42158079147338867,
+            0.42414078712463377
+          ],
+          "median_ms": 0.3919856071472168
+        },
+        "legacy": {
+          "samples_ms": [
+            4.944895935058594,
+            4.945555114746094,
+            4.944793701171875,
+            4.944895935058594,
+            4.944947052001953,
+            4.944734573364258,
+            4.945203018188477,
+            4.94469108581543,
+            4.9440254211425785
+          ],
+          "median_ms": 4.944895935058594
+        }
+      },
+      "speedup": 11.407985084757398,
+      "coverage": {
+        "legacy": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_ops",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1024,
+                "k": 768,
+                "c": 50304,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16"
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/c16be4663379631447112348ea1c6663c67528fa6259d961da638d5f01214832.tbin",
+              "sha256": "e788846284a9aad363fa8a1cbe9539b19bb75f703bf0e6a43e40f37703b11aad",
+              "cache_hit": true
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "legacy"
+        },
+        "optimized": {
+          "artifacts": [
+            {
+              "factory": "make_kernel",
+              "module": "tensor_torch.templates.llt_gemm",
+              "parameters": {
+                "kind": "gemm",
+                "m": 1024,
+                "k": 768,
+                "c": 50304,
+                "ta": false,
+                "tb": true,
+                "dtype": "bfloat16",
+                "out_dtype": "bfloat16",
+                "schedule": {
+                  "family": "mma",
+                  "bm": 128,
+                  "bn": 128,
+                  "bk": 32,
+                  "threads": 128,
+                  "stages": 3
+                }
+              },
+              "target": "sm_89",
+              "path": "/home/sagemaker-user/tensor/build/llt-optimization/artifacts/af56736a029bf6bfff3e78d2854b52b338bd720f226901de17a47b6fe68d5bb0.tbin",
+              "sha256": "b782685ecf8717df584f00410613cbe5acb3c80a9ed1959ee06d68e5fb06adbc",
+              "cache_hit": false
+            }
+          ],
+          "calls": {
+            "make_kernel:gemm": 8
+          },
+          "fallbacks": [],
+          "layout_copies": 0,
+          "compute_dtype": "torch.bfloat16",
+          "gemm_profile": "optimized"
+        }
+      }
+    }
+  ],
+  "protocol": "production dispatch; independently measured after search; rotating backend order; hot-L2 isolated kernels, not full-model claims"
+}

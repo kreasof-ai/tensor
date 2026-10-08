@@ -1,0 +1,214 @@
+{
+  "status": "passed",
+  "config": {
+    "kind": "llt",
+    "width": 768,
+    "heads": 12,
+    "layers": 12,
+    "loops": 1,
+    "rank": 64,
+    "vocab": 256,
+    "max_seq": 1028,
+    "untied": false,
+    "gelu": "none"
+  },
+  "operators": [
+    {
+      "operation": "tensor:gemm:m=1,k=3072,c=768",
+      "count": 12,
+      "cpu_total_us": 0,
+      "device_total_us": 1778.9819999999936,
+      "self_device_total_us": 1778.9819999999936
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=768",
+      "count": 24,
+      "cpu_total_us": 0,
+      "device_total_us": 914.0840000000089,
+      "self_device_total_us": 914.0840000000089
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=3072",
+      "count": 12,
+      "cpu_total_us": 0,
+      "device_total_us": 474.5959999999968,
+      "self_device_total_us": 474.5959999999968
+    },
+    {
+      "operation": "tensor:decode_partial",
+      "count": 12,
+      "cpu_total_us": 0,
+      "device_total_us": 45.279999999998836,
+      "self_device_total_us": 45.279999999998836
+    },
+    {
+      "operation": "tensor:rms:c=768",
+      "count": 26,
+      "cpu_total_us": 0,
+      "device_total_us": 42.8470000000043,
+      "self_device_total_us": 42.8470000000043
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=256",
+      "count": 1,
+      "cpu_total_us": 0,
+      "device_total_us": 38.11200000000099,
+      "self_device_total_us": 38.11200000000099
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=64",
+      "count": 1,
+      "cpu_total_us": 0,
+      "device_total_us": 37.3119999999999,
+      "self_device_total_us": 37.3119999999999
+    },
+    {
+      "operation": "tensor:cast",
+      "count": 26,
+      "cpu_total_us": 0,
+      "device_total_us": 30.752999999997883,
+      "self_device_total_us": 30.752999999997883
+    },
+    {
+      "operation": "tensor:add",
+      "count": 25,
+      "cpu_total_us": 0,
+      "device_total_us": 30.24100000000817,
+      "self_device_total_us": 30.24100000000817
+    },
+    {
+      "operation": "tensor:decode_merge",
+      "count": 12,
+      "cpu_total_us": 0,
+      "device_total_us": 25.793000000002394,
+      "self_device_total_us": 25.793000000002394
+    },
+    {
+      "operation": "tensor:gelu",
+      "count": 12,
+      "cpu_total_us": 0,
+      "device_total_us": 15.264999999993961,
+      "self_device_total_us": 15.264999999993961
+    },
+    {
+      "operation": "tensor:embedding:c=768",
+      "count": 2,
+      "cpu_total_us": 0,
+      "device_total_us": 3.2960000000002765,
+      "self_device_total_us": 3.2960000000002765
+    },
+    {
+      "operation": "tensor:decode_merge",
+      "count": 12,
+      "cpu_total_us": 758.9989999999998,
+      "device_total_us": 1.6639999999988504,
+      "self_device_total_us": 0.0
+    },
+    {
+      "operation": "tensor:cache_append",
+      "count": 1,
+      "cpu_total_us": 0,
+      "device_total_us": 1.568000000000211,
+      "self_device_total_us": 1.568000000000211
+    },
+    {
+      "operation": "tensor:cache_advance",
+      "count": 1,
+      "cpu_total_us": 0,
+      "device_total_us": 1.1520000000000437,
+      "self_device_total_us": 1.1520000000000437
+    },
+    {
+      "operation": "tensor:embedding:c=768",
+      "count": 2,
+      "cpu_total_us": 269.41599999999926,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:add",
+      "count": 25,
+      "cpu_total_us": 1752.969999999993,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:rms:c=768",
+      "count": 26,
+      "cpu_total_us": 2022.3319999999894,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:cast",
+      "count": 26,
+      "cpu_total_us": 1802.640999999996,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=64",
+      "count": 1,
+      "cpu_total_us": 76.08200000000033,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:cache_advance",
+      "count": 1,
+      "cpu_total_us": 71.48199999999997,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:cache_append",
+      "count": 1,
+      "cpu_total_us": 68.97199999999975,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=768",
+      "count": 24,
+      "cpu_total_us": 1626.5009999999993,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:decode_partial",
+      "count": 12,
+      "cpu_total_us": 992.9820000000054,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=3072",
+      "count": 12,
+      "cpu_total_us": 799.0069999999987,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:gelu",
+      "count": 12,
+      "cpu_total_us": 783.156,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=3072,c=768",
+      "count": 12,
+      "cpu_total_us": 810.2880000000023,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    },
+    {
+      "operation": "tensor:gemm:m=1,k=768,c=256",
+      "count": 1,
+      "cpu_total_us": 68.69200000000274,
+      "device_total_us": 0,
+      "self_device_total_us": 0
+    }
+  ],
+  "protocol": "CUPTI attribution; profiler overhead excluded from benchmark comparisons"
+}

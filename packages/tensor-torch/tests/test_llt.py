@@ -514,3 +514,37 @@ def test_adamw_infinite_norm_disables_clipping(ops):
         a.step()
         b.step()
         torch.testing.assert_close(p, q, atol=2e-6, rtol=2e-6)
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_affine_layer_norm_tails_and_parameter_gradients(ops, dtype):
+    torch.manual_seed(9511)
+    x = torch.randn(37, 79, device="cuda", dtype=dtype, requires_grad=True)
+    weight = torch.randn(79, device="cuda", requires_grad=True)
+    bias = torch.randn(79, device="cuda", requires_grad=True)
+    result = ops.layer_norm(x, weight, bias)
+    reference = torch.nn.functional.layer_norm(x.float(), (79,), weight, bias).to(dtype)
+    upstream = torch.randn_like(result)
+    actual = torch.autograd.grad(result, (x, weight, bias), upstream)
+    expected = torch.autograd.grad(reference, (x, weight, bias), upstream)
+    tolerance = 0.035 if dtype == torch.bfloat16 else 2e-5
+    torch.testing.assert_close(result, reference, atol=tolerance, rtol=tolerance)
+    for a, b in zip(actual, expected):
+        assert (a.float() - b.float()).norm() / b.float().norm() < 0.025
+
+
+def test_linear_channel_bias_gradient(ops):
+    torch.manual_seed(9512)
+    x = torch.randn(37, 79, device="cuda", requires_grad=True)
+    weight = torch.randn(53, 79, device="cuda", requires_grad=True)
+    bias = torch.randn(53, device="cuda", requires_grad=True)
+    result = ops.linear(x, weight, bias)
+    with torch.autocast("cuda", dtype=torch.bfloat16):
+        reference = torch.nn.functional.linear(x, weight, bias)
+    upstream = torch.randn_like(result)
+    actual = torch.autograd.grad(result, (x, weight, bias), upstream)
+    expected = torch.autograd.grad(reference, (x, weight, bias), upstream)
+    # Tensor's separate bias epilogue adds one BF16 rounding before addition.
+    torch.testing.assert_close(result, reference, atol=0.125, rtol=0.04)
+    for a, b in zip(actual, expected):
+        torch.testing.assert_close(a, b, atol=0.125, rtol=0.04)

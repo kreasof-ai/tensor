@@ -23,3 +23,11 @@ is available during the build. The full C++ executor is a separate opt-in build.
 The distribution is `tensor-torch`; the Python import is `tensor_torch`.
 Install a matching `tensor-workspace` wheel alongside it when consuming a local
 release bundle. Tensor Torch is licensed under [MIT](LICENSE).
+
+The explicit `tensor_torch.llt.Operators` API also supplies first-order autograd
+for BF16/FP16 matrix projections, attention, RMSNorm, affine LayerNorm, GELU,
+embeddings, loss, residuals and optional linear bias. It is separate from the
+bounded `torch.compile` backend. The default GEMM profile uses coalesced MMA and
+small-input GEMV schedules; `gemm_profile="legacy"` retains the original GEMM.
+See the [L40S optimization study](../../docs/research/llt-optimization.md) for
+qualification, schedule search evidence and measured limits.
