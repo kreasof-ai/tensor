@@ -1,0 +1,171 @@
+{
+  "status": "passed",
+  "cold_compile_and_first_backward_wall_ms": 12914.111983998737,
+  "warm_wall_samples_ms": [
+    0.8086500001809327,
+    0.4483109987631906,
+    0.38339899947459344,
+    0.3831590001937002,
+    0.3703600013977848,
+    0.3627400001278147,
+    0.35714900150196627,
+    0.37095900006534066,
+    0.4084899992449209
+  ],
+  "warm_wall_median_ms": 0.3831590001937002,
+  "reload_exact": true,
+  "reload_cache_hits": true,
+  "coverage": {
+    "artifacts": [
+      {
+        "factory": "attention_forward",
+        "module": "tensor_torch.templates.llt",
+        "parameters": [
+          1,
+          4,
+          1,
+          49,
+          49,
+          64,
+          64,
+          "bfloat16",
+          true,
+          0,
+          0.125
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/cold-artifacts/40df59dcee2e634059fd6a0d7ca223ad191cea60d6c48ad64ba79560a2f362d1.tbin",
+        "sha256": "592d678e10d08a0f678467ac4c0fa2f8b9e1f65c9b85e74cdab67992069d4f11",
+        "cache_hit": false
+      },
+      {
+        "factory": "attention_delta",
+        "module": "tensor_torch.templates.llt",
+        "parameters": [
+          1,
+          4,
+          49,
+          64,
+          "bfloat16"
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/cold-artifacts/f34be13505db3078ebb9c9456046f2542e2234cb7f94c7165792be06f739e646.tbin",
+        "sha256": "2dca29840ad69bfd189753412cd34c9a92cfa4263d97be071ab59712ba6f30bd",
+        "cache_hit": false
+      },
+      {
+        "factory": "attention_dq",
+        "module": "tensor_torch.templates.llt",
+        "parameters": [
+          1,
+          4,
+          1,
+          49,
+          49,
+          64,
+          64,
+          "bfloat16",
+          true,
+          0,
+          0.125
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/cold-artifacts/52d5c78ff9bfdd7443be0d06f53463e98e1ed28b2fd1f99852371726e4a3c698.tbin",
+        "sha256": "2ad98a9bb7ff2fa63c61d42011b64210f30b2fd0c0694464d07bb548b7d64cda",
+        "cache_hit": false
+      },
+      {
+        "factory": "attention_dkv",
+        "module": "tensor_torch.templates.llt",
+        "parameters": [
+          1,
+          4,
+          1,
+          49,
+          49,
+          64,
+          64,
+          "bfloat16",
+          true,
+          0,
+          0.125,
+          false
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/cold-artifacts/89517b4315a6c7ca07ced39cccea82c277eb2c49ad107c3e544294a9ec6899d7.tbin",
+        "sha256": "fd084783f6ad291c0906083d409a48c2baefd8a4c026b1af0cde0fabb7a76095",
+        "cache_hit": false
+      }
+    ],
+    "calls": {
+      "attention_forward": 10,
+      "attention_delta": 10,
+      "attention_dq": 10,
+      "attention_dkv": 10
+    },
+    "fallbacks": [],
+    "layout_copies": 0,
+    "compute_dtype": "torch.bfloat16"
+  },
+  "environment": {
+    "torch": "2.14.0+cu130",
+    "cuda": "13.0",
+    "driver": "595.91.07",
+    "tilelang": "0.1.14",
+    "tvm_ffi": "0.1.12",
+    "nvrtc": "12.9",
+    "cuda_timing_policy": "single qualification process; no concurrent GPU experiments",
+    "python": "3.12.14",
+    "gpu": "NVIDIA L40S",
+    "sm": [
+      8,
+      9
+    ],
+    "commit": "da7e487298933b87862ea04f586f6a06752a4423",
+    "sources": {
+      "benchmarks/llt/qualify.py": "0b349d1bea8f7dab50e1fb900809d28f8db39d21e85cf6044648a260785acdd1",
+      "benchmarks/llt/model.py": "f04ba02a9fc9f493554bd57ba314bb71f9e59ddf7bd9172b07b119d3c980b54e",
+      "packages/tensor-torch/src/tensor_torch/__init__.py": "0ee573ab2ae74d722768aa8e6f5d95aa9f8070f6a6ee75a2e03ce582cc9d13e6",
+      "packages/tensor-torch/src/tensor_torch/backend.py": "8604b6c7fb3d542d5b3668f2d4cce659a2454b075d844c17046f11067d50c7b4",
+      "packages/tensor-torch/src/tensor_torch/bridge.py": "00567da5fb27f5ca575dcfad36bf9712383f477307a1663fd8e0e9d3cf147ddd",
+      "packages/tensor-torch/src/tensor_torch/kernels.py": "1ef8e9c1e5585536b1ca238f2d5c5b1b752a09bf7ace08ba3e96d582f3669a6a",
+      "packages/tensor-torch/src/tensor_torch/lowering.py": "b50b26053ea407b9687b3ce8f5db79e8dbd63fc903a4501d49b267b7d465236c",
+      "packages/tensor-torch/src/tensor_torch/llt.py": "9d8d5046cfd9e1c3b91dd998fd023281c4f58e7761aea5aff15928c0ab207a74",
+      "packages/tensor-torch/src/tensor_torch/templates/llt.py": "36b6b24c49f44ac83a72dfd52a87869957c49986067659b87a4e3ad17623e6b9",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_ops.py": "6bed590c308d3922f18765942b3c419e8214040fffe732c84a5f42f57f9ea8c8",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_decode.py": "1d1f93332eb47929238a07f666154dc2c40eb7eecc207760caa2d91e82032c7e",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_bmm.py": "3670b9b6d824615045a2bf83506f30c10dbd10c27799e14f13b1c396a291bd32",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_accumulate.py": "147c9891d60fd9412c25b2cc89e68accc713da106aa8efb816ee0598e6e1adca",
+      "src/tensor/runtime/__init__.py": "2d118ec0dd792038792f6e7f703ee6dd6c3c0d042249ce66c1d7bcc7c1ad4697",
+      "src/tensor/runtime/abi.py": "d0ca2d608288ce8a4280e9303fdbf568eb0b01e2e94df3bb727f82ee3f988c47",
+      "src/tensor/runtime/dlpack.py": "2d06e69f306bc3f0e6413287f91b4de2879f2e607a071ba4535b1aeb17e4b355",
+      "src/tensor/runtime/manual.py": "5adfea9f30c1099b45446f24fa41e13c0dc6a30133ee6df1efe82e4ffed3435a",
+      "src/tensor/runtime/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+      "src/tensor/runtime/dtypes.py": "e282e8ffd299945bf189417dc4e4e7a5b70e5f44463479d16f1eed6f82a89c57",
+      "src/tensor/providers/cuda.py": "acdc3735e9f1393db69604e93ffe594003dd75e3d4ba28ab20904decd98c698e",
+      "src/tensor/compiler/nvrtc.py": "c128d2bb2676808d5d2f9a141f19c1fc2f24dea403e3b171bec7dabd22e7f961",
+      "src/tensor/artifacts/format.py": "c0ee2c215a6312d4593226d017cc4b68412aa8ec8c067a7232f663816ac0d043",
+      "src/tensor/include/tensor/abi.h": "8893db59b8dd15e421065f83393e7b38c334f2d5a4a6c38de40e60df7fe9edf8",
+      "packages/tensor-torch/src/tensor_torch/executor.cpp": "2be17559df1a96589770da5ddf005df257227a59a4ac1a537986ca0b07639317"
+    }
+  },
+  "tolerances": {
+    "attention_fp16": {
+      "atol": 0.005,
+      "rtol": 0.005
+    },
+    "attention_bf16": {
+      "atol": 0.035,
+      "rtol": 0.035
+    },
+    "gradient_bf16": {
+      "atol": 0.05,
+      "rtol": 0.05
+    },
+    "model_loss_absolute": 0.15,
+    "model_gradient_relative_l2": 0.08,
+    "training_loss_absolute": 0.15,
+    "training_parameter_rms": 0.03,
+    "resume_parameter_absolute": 1e-06
+  }
+}

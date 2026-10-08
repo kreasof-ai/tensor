@@ -1,4 +1,4 @@
-"""FP16 self-attention with online softmax and no global score matrix.
+"""FP16/BF16 self-attention with online softmax and no global score matrix.
 
 Inputs/outputs are contiguous [batch, heads, sequence, head_dim]. This forward
 profile supports causal or non-causal attention, no mask/dropout/GQA. Dimensions
@@ -6,7 +6,7 @@ are compile-time specializations.
 """
 
 
-def make_kernel(shape, is_causal=False):
+def make_kernel(shape, is_causal=False, dtype="float16"):
     import tilelang.language as T
 
     BATCH, HEADS, SEQ_LEN, HEAD_DIM = shape
@@ -16,16 +16,16 @@ def make_kernel(shape, is_causal=False):
 
     @T.prim_func
     def flash_attention(
-        q: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), "float16"),
-        k: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), "float16"),
-        v: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), "float16"),
-        out: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), "float16"),
+        q: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), dtype),
+        k: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), dtype),
+        v: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), dtype),
+        out: T.Tensor((BATCH, HEADS, SEQ_LEN, HEAD_DIM), dtype),
     ):
         with T.Kernel(T.ceildiv(SEQ_LEN, BLOCK_M), HEADS, BATCH, threads=128) as (blk, h, b):
-            query = T.alloc_shared((BLOCK_M, HEAD_DIM), "float16")
-            key = T.alloc_shared((BLOCK_N, HEAD_DIM), "float16")
-            value = T.alloc_shared((BLOCK_N, HEAD_DIM), "float16")
-            probability = T.alloc_shared((BLOCK_M, BLOCK_N), "float16")
+            query = T.alloc_shared((BLOCK_M, HEAD_DIM), dtype)
+            key = T.alloc_shared((BLOCK_N, HEAD_DIM), dtype)
+            value = T.alloc_shared((BLOCK_N, HEAD_DIM), dtype)
+            probability = T.alloc_shared((BLOCK_M, BLOCK_N), dtype)
             scores = T.alloc_fragment((BLOCK_M, BLOCK_N), "float32")
             result = T.alloc_fragment((BLOCK_M, HEAD_DIM), "float32")
             maximum = T.alloc_fragment((BLOCK_M,), "float32")

@@ -80,7 +80,12 @@ protocols used to compare those paths.
 
 `device.from_dlpack(gpu_tensor)` borrows contiguous writable CUDA storage without
 a copy or a framework import in Tensor. The runtime retains the producer's
-managed tensor until release. CPU DLPack imports upload into device-owned storage.
+managed tensor until release. FP16 and BF16 retain their two-byte storage.
+`torch.from_dlpack(buffer)` can also borrow Tensor-owned CUDA storage: exporting
+retains the buffer and blocks its release/session close until all consumers drop
+it. `device.from_numpy(values, dtype="bfloat16")` rounds FP32 to BF16;
+`buffer.to_numpy()` decodes BF16 to FP32 and `to_bytes()` returns raw storage.
+CPU DLPack imports upload into device-owned storage.
 WebGPU does not support borrowing external GPU pointers in its current profile.
 
 For CUDA, import within the producer's stream context so DLPack can arrange the

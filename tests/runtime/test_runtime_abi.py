@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_runtime_version_and_capability_negotiation():
     requirement = {"major": 1, "minor": 0, "required_capabilities": ["contiguous", "scalars"]}
     check_requirement(requirement)
-    for field, value in (("major", 2), ("major", True), ("minor", 3), ("minor", -1)):
+    for field, value in (("major", 2), ("major", True), ("minor", 4), ("minor", -1)):
         incompatible = {**requirement, field: value}
         with pytest.raises(ValueError, match="version"):
             check_requirement(incompatible)

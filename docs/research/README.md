@@ -19,6 +19,7 @@ kernel and throughput plots, source hashes and an archive commit timeline.
 
 | Report | What to read it for |
 |---|---|
+| [LLT dependency qualification on L40S](llt-readiness.md) | BF16 ABI, training/backward, RoPE, caches, compiler-free wheels, and kernel/full-model resource evidence |
 | [CUDA frontend and shared discovery](lfm2-compiler-cleanup.md) | Inspectable TileLang/TIRx algorithms, backend-neutral discovery and target-bound producer profiles; rechecked against the frozen native implementation |
 | [F16, Q4_0 and Q4_K_M CUDA optimization](lfm2-cuda-formats.md) | Tuned prefill tiles and packed loaders, Q4_K decode, F16 FFN fusion and shared long-context K/V; matched frozen-before and llama.cpp controls |
 | [Vulkan inference optimizations transferred to CUDA](lfm2-cuda-vulkan-transfer.md) | Packed FP32 decode, fusion, split-KV attention and guarded suffix prefill on A10G; matched QAD checkpoint and b11310 llama.cpp baseline |

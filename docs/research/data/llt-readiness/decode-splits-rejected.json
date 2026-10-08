@@ -1,0 +1,1396 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "rank": 32,
+      "partitions": 32,
+      "eager_peak_allocated_bytes": 8427008,
+      "gpu_samples_ms": [
+        0.1157120019197464,
+        0.11059200018644333,
+        0.09113600105047226,
+        0.0899839997291565,
+        0.08806400001049042,
+        0.08505599945783615,
+        0.08607999980449677,
+        0.08396799862384796,
+        0.08188799768686295
+      ],
+      "wall_samples_ms": [
+        0.15967400031513534,
+        0.13162299910618458,
+        0.10992200077453163,
+        0.10698199912440032,
+        0.10515299982216675,
+        0.101902000096743,
+        0.10220300100627355,
+        0.10021199886978138,
+        0.09774200043466408
+      ],
+      "gpu_median_ms": 0.08806400001049042,
+      "wall_median_ms": 0.10515299982216675,
+      "graph_peak_allocated_bytes": 8427008,
+      "graph_baseline_allocated_bytes": 8391680,
+      "graph_samples_ms": [
+        0.039926400780677794,
+        0.039526399970054624,
+        0.03941119909286499,
+        0.03951680064201355,
+        0.0392192006111145,
+        0.039315199851989745,
+        0.03951359987258911,
+        0.0392192006111145,
+        0.0394239991903305
+      ],
+      "graph_median_ms": 0.0394239991903305
+    },
+    {
+      "rank": 32,
+      "partitions": 64,
+      "eager_peak_allocated_bytes": 8461824,
+      "gpu_samples_ms": [
+        0.11468800157308578,
+        0.09923200309276581,
+        0.09113600105047226,
+        0.09318400174379349,
+        0.08908800035715103,
+        0.08601599931716919,
+        0.08601599931716919,
+        0.08601599931716919,
+        0.08499199897050858
+      ],
+      "wall_samples_ms": [
+        0.15712300046288874,
+        0.11839199942187406,
+        0.10920199929387309,
+        0.11016200005542487,
+        0.10665199988579843,
+        0.10317200030840468,
+        0.10292200022377074,
+        0.10261200077366084,
+        0.10293199920852203
+      ],
+      "gpu_median_ms": 0.08908800035715103,
+      "wall_median_ms": 0.10665199988579843,
+      "graph_peak_allocated_bytes": 8461824,
+      "graph_baseline_allocated_bytes": 8391680,
+      "graph_samples_ms": [
+        0.03287039995193482,
+        0.03246079981327057,
+        0.03266560137271881,
+        0.03266560137271881,
+        0.03256320059299469,
+        0.03287039995193482,
+        0.03256320059299469,
+        0.03246079981327057,
+        0.0328575998544693
+      ],
+      "graph_median_ms": 0.03266560137271881
+    },
+    {
+      "rank": 32,
+      "partitions": 128,
+      "eager_peak_allocated_bytes": 8531456,
+      "gpu_samples_ms": [
+        0.11264000087976456,
+        0.09318400174379349,
+        0.08892799913883209,
+        0.08601599931716919,
+        0.08902399986982346,
+        0.08601599931716919,
+        0.08396799862384796,
+        0.08396799862384796,
+        0.09206400066614151
+      ],
+      "wall_samples_ms": [
+        0.1512929993623402,
+        0.11150300088047516,
+        0.10538200149312615,
+        0.10313300117559265,
+        0.10485199891263619,
+        0.10286200085829478,
+        0.10008199933508877,
+        0.10017299973696936,
+        0.1095019997592317
+      ],
+      "gpu_median_ms": 0.08892799913883209,
+      "wall_median_ms": 0.10485199891263619,
+      "graph_peak_allocated_bytes": 8531456,
+      "graph_baseline_allocated_bytes": 8391680,
+      "graph_samples_ms": [
+        0.03553279936313629,
+        0.03532800078392029,
+        0.03572799861431122,
+        0.035020801424980166,
+        0.03522560000419617,
+        0.0347135990858078,
+        0.03430399894714355,
+        0.035123199224472046,
+        0.03461120128631592
+      ],
+      "graph_median_ms": 0.035123199224472046
+    },
+    {
+      "rank": 32,
+      "partitions": 256,
+      "eager_peak_allocated_bytes": 8670720,
+      "gpu_samples_ms": [
+        0.11468800157308578,
+        0.0942080020904541,
+        0.09011200070381165,
+        0.08806400001049042,
+        0.08499199897050858,
+        0.08713600039482117,
+        0.08716800063848495,
+        0.08396799862384796,
+        0.08396799862384796
+      ],
+      "wall_samples_ms": [
+        0.15583400090690702,
+        0.1123729998653289,
+        0.108402000478236,
+        0.10425300024508033,
+        0.10265200035064481,
+        0.10369299889134709,
+        0.10429199937789235,
+        0.10058199950435665,
+        0.10102200030814856
+      ],
+      "gpu_median_ms": 0.08716800063848495,
+      "wall_median_ms": 0.10425300024508033,
+      "graph_peak_allocated_bytes": 8670720,
+      "graph_baseline_allocated_bytes": 8391680,
+      "graph_samples_ms": [
+        0.0336896002292633,
+        0.03338240087032318,
+        0.03338240087032318,
+        0.03317759931087494,
+        0.03328000009059906,
+        0.03317759931087494,
+        0.03317759931087494,
+        0.034406399726867674,
+        0.03328000009059906
+      ],
+      "graph_median_ms": 0.03328000009059906
+    },
+    {
+      "rank": 64,
+      "partitions": 32,
+      "eager_peak_allocated_bytes": 16849920,
+      "gpu_samples_ms": [
+        0.11366400122642517,
+        0.09715200215578079,
+        0.09625600278377533,
+        0.09318400174379349,
+        0.10751999914646149,
+        0.10444799810647964,
+        0.09318400174379349,
+        0.09216000139713287,
+        0.09318400174379349
+      ],
+      "wall_samples_ms": [
+        0.15409399929922074,
+        0.11520200132508762,
+        0.11398200149415061,
+        0.1100329991459148,
+        0.12639300075534265,
+        0.12422300096659455,
+        0.109812001028331,
+        0.10921299872279633,
+        0.10974299948429689
+      ],
+      "gpu_median_ms": 0.09625600278377533,
+      "wall_median_ms": 0.11398200149415061,
+      "graph_peak_allocated_bytes": 16849920,
+      "graph_baseline_allocated_bytes": 16781312,
+      "graph_samples_ms": [
+        0.051907199621200564,
+        0.051609599590301515,
+        0.051507198810577394,
+        0.051507198810577394,
+        0.05140479803085327,
+        0.051811200380325315,
+        0.051507198810577394,
+        0.051712000370025636,
+        0.05181440114974976
+      ],
+      "graph_median_ms": 0.051609599590301515
+    },
+    {
+      "rank": 64,
+      "partitions": 64,
+      "eager_peak_allocated_bytes": 16917504,
+      "gpu_samples_ms": [
+        0.11977600306272507,
+        0.14950400590896606,
+        0.10239999741315842,
+        0.10649599879980087,
+        0.10547199845314026,
+        0.10547199845314026,
+        0.10239999741315842,
+        0.10342399775981903,
+        0.09932799637317657
+      ],
+      "wall_samples_ms": [
+        0.16567399870837107,
+        0.1788339995982824,
+        0.12106299982406199,
+        0.12475299990910571,
+        0.12425299973983783,
+        0.12335300016275141,
+        0.11942299897782505,
+        0.11957300011999905,
+        0.1166220008599339
+      ],
+      "gpu_median_ms": 0.10547199845314026,
+      "wall_median_ms": 0.12335300016275141,
+      "graph_peak_allocated_bytes": 16917504,
+      "graph_baseline_allocated_bytes": 16781312,
+      "graph_samples_ms": [
+        0.05724160075187683,
+        0.056524801254272464,
+        0.05570560097694397,
+        0.05560320019721985,
+        0.05560320019721985,
+        0.05642240047454834,
+        0.05569599866867066,
+        0.05642240047454834,
+        0.05529599785804749
+      ],
+      "graph_median_ms": 0.05570560097694397
+    },
+    {
+      "rank": 64,
+      "partitions": 128,
+      "eager_peak_allocated_bytes": 17052672,
+      "gpu_samples_ms": [
+        0.12185599654912949,
+        0.10943999886512756,
+        0.10342399775981903,
+        0.10342399775981903,
+        0.11059200018644333,
+        0.10649599879980087,
+        0.10332799702882767,
+        0.10745599865913391,
+        0.10239999741315842
+      ],
+      "wall_samples_ms": [
+        0.16431400035799015,
+        0.12792300003638957,
+        0.12190300003567245,
+        0.12288299876672681,
+        0.12809299914806616,
+        0.12325300122029148,
+        0.11983300100837369,
+        0.12438300109351985,
+        0.12063199937983882
+      ],
+      "gpu_median_ms": 0.10649599879980087,
+      "wall_median_ms": 0.12325300122029148,
+      "graph_peak_allocated_bytes": 17052672,
+      "graph_baseline_allocated_bytes": 16781312,
+      "graph_samples_ms": [
+        0.057548797130584715,
+        0.05724160075187683,
+        0.05785599946975708,
+        0.056617599725723264,
+        0.056729602813720706,
+        0.05806080102920532,
+        0.0574400007724762,
+        0.057030397653579715,
+        0.05642240047454834
+      ],
+      "graph_median_ms": 0.05724160075187683
+    },
+    {
+      "rank": 64,
+      "partitions": 256,
+      "eager_peak_allocated_bytes": 17323008,
+      "gpu_samples_ms": [
+        0.13516800105571747,
+        0.1085439994931221,
+        0.1013759970664978,
+        0.1669120043516159,
+        0.10444799810647964,
+        0.09932799637317657,
+        0.10035199671983719,
+        0.09932799637317657,
+        0.11052799969911575
+      ],
+      "wall_samples_ms": [
+        0.17685499915387481,
+        0.13025299995206296,
+        0.12237299961270764,
+        0.19395399976929184,
+        0.12406299902067985,
+        0.1173330001620343,
+        0.1171630010503577,
+        0.11706300028890837,
+        0.12762300139002036
+      ],
+      "gpu_median_ms": 0.10444799810647964,
+      "wall_median_ms": 0.12406299902067985,
+      "graph_peak_allocated_bytes": 17323008,
+      "graph_baseline_allocated_bytes": 16781312,
+      "graph_samples_ms": [
+        0.05263360142707825,
+        0.052009600400924685,
+        0.052223998308181765,
+        0.05191680192947388,
+        0.05253120064735413,
+        0.051609599590301515,
+        0.05253120064735413,
+        0.05251839756965637,
+        0.05180799961090088
+      ],
+      "graph_median_ms": 0.052223998308181765
+    },
+    {
+      "rank": 96,
+      "partitions": 32,
+      "eager_peak_allocated_bytes": 25272832,
+      "gpu_samples_ms": [
+        0.130048006772995,
+        0.12083200365304947,
+        0.14246399700641632,
+        0.11776000261306763,
+        0.1157120019197464,
+        0.14847999811172485,
+        0.11366400122642517,
+        0.11456000059843063,
+        0.11059200018644333
+      ],
+      "wall_samples_ms": [
+        0.17088399908971041,
+        0.1409739998052828,
+        0.1616829995327862,
+        0.1380240009893896,
+        0.13410300016403198,
+        0.16756399963924196,
+        0.1319229995715432,
+        0.1319029997830512,
+        0.12905299990961794
+      ],
+      "gpu_median_ms": 0.11776000261306763,
+      "wall_median_ms": 0.1380240009893896,
+      "graph_peak_allocated_bytes": 25272832,
+      "graph_baseline_allocated_bytes": 25170944,
+      "graph_samples_ms": [
+        0.07301120162010193,
+        0.0728991985321045,
+        0.07270399928092956,
+        0.07270399928092956,
+        0.07270399928092956,
+        0.07249919772148132,
+        0.07260159850120544,
+        0.07280640006065368,
+        0.07260159850120544
+      ],
+      "graph_median_ms": 0.07270399928092956
+    },
+    {
+      "rank": 96,
+      "partitions": 64,
+      "eager_peak_allocated_bytes": 25373184,
+      "gpu_samples_ms": [
+        0.13631999492645264,
+        0.12595200538635254,
+        0.15052799880504608,
+        0.12595200538635254,
+        0.1228799968957901,
+        0.12099199742078781,
+        0.12083200365304947,
+        0.12185599654912949,
+        0.11964800208806992
+      ],
+      "wall_samples_ms": [
+        0.1744539986248128,
+        0.15405399972223677,
+        0.1711939985398203,
+        0.14450299931922927,
+        0.14075399849389214,
+        0.13853299969923683,
+        0.13675299851456657,
+        0.1381130005029263,
+        0.13620299978356343
+      ],
+      "gpu_median_ms": 0.1228799968957901,
+      "wall_median_ms": 0.14075399849389214,
+      "graph_peak_allocated_bytes": 25373184,
+      "graph_baseline_allocated_bytes": 25170944,
+      "graph_samples_ms": [
+        0.07976959943771363,
+        0.0794592022895813,
+        0.07966079711914062,
+        0.07965760231018067,
+        0.07925760149955749,
+        0.07956479787826538,
+        0.07976319789886474,
+        0.07976959943771363,
+        0.07987200021743775
+      ],
+      "graph_median_ms": 0.07966079711914062
+    },
+    {
+      "rank": 96,
+      "partitions": 128,
+      "eager_peak_allocated_bytes": 25573888,
+      "gpu_samples_ms": [
+        0.1443839967250824,
+        0.1351040005683899,
+        0.13014400005340576,
+        0.130048006772995,
+        0.12902399897575378,
+        0.12800000607967377,
+        0.14115199446678162,
+        0.12800000607967377,
+        0.12912000715732574
+      ],
+      "wall_samples_ms": [
+        0.18570399879536126,
+        0.1547939991723979,
+        0.14853299944661558,
+        0.1499739992141258,
+        0.14795300012337975,
+        0.1482740008214023,
+        0.16865399993548635,
+        0.14591299986932427,
+        0.14596300025004894
+      ],
+      "gpu_median_ms": 0.130048006772995,
+      "wall_median_ms": 0.14853299944661558,
+      "graph_peak_allocated_bytes": 25573888,
+      "graph_baseline_allocated_bytes": 25170944,
+      "graph_samples_ms": [
+        0.08652799725532531,
+        0.08642560243606567,
+        0.08601599931716919,
+        0.08663039803504943,
+        0.08622080087661743,
+        0.08601599931716919,
+        0.08581119775772095,
+        0.08591359853744507,
+        0.08610560297966004
+      ],
+      "graph_median_ms": 0.08610560297966004
+    },
+    {
+      "rank": 96,
+      "partitions": 256,
+      "eager_peak_allocated_bytes": 25975296,
+      "gpu_samples_ms": [
+        0.14115199446678162,
+        0.12812800705432892,
+        0.12595200538635254,
+        0.12595200538635254,
+        0.12390399724245071,
+        0.12185599654912949,
+        0.1239359974861145,
+        0.1228799968957901,
+        0.12185599654912949
+      ],
+      "wall_samples_ms": [
+        0.18274499961989932,
+        0.14853399989078753,
+        0.14419299986911938,
+        0.14404400099010672,
+        0.14187300075718667,
+        0.1387029988109134,
+        0.1411930006725015,
+        0.14061299953027628,
+        0.1390529996569967
+      ],
+      "gpu_median_ms": 0.1239359974861145,
+      "wall_median_ms": 0.14187300075718667,
+      "graph_peak_allocated_bytes": 25975296,
+      "graph_baseline_allocated_bytes": 25170944,
+      "graph_samples_ms": [
+        0.08120319843292237,
+        0.0809984028339386,
+        0.08079360127449035,
+        0.08089600205421447,
+        0.0812991976737976,
+        0.08110079765319825,
+        0.08120319843292237,
+        0.08110079765319825,
+        0.08119360208511353
+      ],
+      "graph_median_ms": 0.08110079765319825
+    },
+    {
+      "rank": 128,
+      "partitions": 32,
+      "eager_peak_allocated_bytes": 33695744,
+      "gpu_samples_ms": [
+        0.14028799533843994,
+        0.12800000607967377,
+        0.1228799968957901,
+        0.12902399897575378,
+        0.12492799758911133,
+        0.1228799968957901,
+        0.12591999769210815,
+        0.12083200365304947,
+        0.12902399897575378
+      ],
+      "wall_samples_ms": [
+        0.18055399959848728,
+        0.14737399942532647,
+        0.14981300046201795,
+        0.14938399908714928,
+        0.14326299969980028,
+        0.14175300020724535,
+        0.14294300126493908,
+        0.1382830014335923,
+        0.1463129992771428
+      ],
+      "gpu_median_ms": 0.12591999769210815,
+      "wall_median_ms": 0.1463129992771428,
+      "graph_peak_allocated_bytes": 33695744,
+      "graph_baseline_allocated_bytes": 33560576,
+      "graph_samples_ms": [
+        0.0776095986366272,
+        0.07782400250434876,
+        0.07731199860572815,
+        0.07710719704627991,
+        0.07690240144729614,
+        0.07678719758987426,
+        0.0775168001651764,
+        0.07741439938545228,
+        0.07741439938545228
+      ],
+      "graph_median_ms": 0.07741439938545228
+    },
+    {
+      "rank": 128,
+      "partitions": 64,
+      "eager_peak_allocated_bytes": 33828864,
+      "gpu_samples_ms": [
+        0.14028799533843994,
+        0.13308799266815186,
+        0.130048006772995,
+        0.131071999669075,
+        0.131071999669075,
+        0.130048006772995,
+        0.13926400244235992,
+        0.131071999669075,
+        0.13209599256515503
+      ],
+      "wall_samples_ms": [
+        0.18002400065597612,
+        0.1531630005047191,
+        0.14885299970046617,
+        0.15153300046222284,
+        0.1499940008216072,
+        0.1514630002930062,
+        0.16293400040012784,
+        0.14906399883329868,
+        0.1505029995314544
+      ],
+      "gpu_median_ms": 0.131071999669075,
+      "wall_median_ms": 0.1514630002930062,
+      "graph_peak_allocated_bytes": 33828864,
+      "graph_baseline_allocated_bytes": 33560576,
+      "graph_samples_ms": [
+        0.07905279994010925,
+        0.07915520071983337,
+        0.07864320278167725,
+        0.08017920255661011,
+        0.07945280075073242,
+        0.07925760149955749,
+        0.07987200021743775,
+        0.07956479787826538,
+        0.07895039916038513
+      ],
+      "graph_median_ms": 0.07925760149955749
+    },
+    {
+      "rank": 128,
+      "partitions": 128,
+      "eager_peak_allocated_bytes": 34095104,
+      "gpu_samples_ms": [
+        0.15462400019168854,
+        0.1475519984960556,
+        0.14950400590896606,
+        0.14233599603176117,
+        0.15564799308776855,
+        0.14028799533843994,
+        0.1422719955444336,
+        0.14521600306034088,
+        0.14028799533843994
+      ],
+      "wall_samples_ms": [
+        0.19436399998085108,
+        0.16760400103521533,
+        0.16825300008349586,
+        0.16002399934222922,
+        0.17487399964011274,
+        0.15980399984982796,
+        0.15922300008242019,
+        0.16177299949049484,
+        0.1580240004841471
+      ],
+      "gpu_median_ms": 0.14521600306034088,
+      "wall_median_ms": 0.16177299949049484,
+      "graph_peak_allocated_bytes": 34095104,
+      "graph_baseline_allocated_bytes": 33560576,
+      "graph_samples_ms": [
+        0.09994239807128906,
+        0.09982720017433167,
+        0.10004479885101318,
+        0.10127359628677368,
+        0.10035200119018554,
+        0.10035200119018554,
+        0.09983999729156494,
+        0.10035200119018554,
+        0.0997376024723053
+      ],
+      "graph_median_ms": 0.10004479885101318
+    },
+    {
+      "rank": 128,
+      "partitions": 256,
+      "eager_peak_allocated_bytes": 34627584,
+      "gpu_samples_ms": [
+        0.17817600071430206,
+        0.1443839967250824,
+        0.14140799641609192,
+        0.13926400244235992,
+        0.14131200313568115,
+        0.1372160017490387,
+        0.1372160017490387,
+        0.13500800728797913,
+        0.14847999811172485
+      ],
+      "wall_samples_ms": [
+        0.24160499924619216,
+        0.16480399972351734,
+        0.15977399925759528,
+        0.15733399959572125,
+        0.15942299978632946,
+        0.15391399938380346,
+        0.1538340002298355,
+        0.15293300020857714,
+        0.1716839997243369
+      ],
+      "gpu_median_ms": 0.14131200313568115,
+      "wall_median_ms": 0.15942299978632946,
+      "graph_peak_allocated_bytes": 34627584,
+      "graph_baseline_allocated_bytes": 33560576,
+      "graph_samples_ms": [
+        0.09553920030593872,
+        0.09553920030593872,
+        0.09584640264511109,
+        0.09562559723854065,
+        0.09574400186538697,
+        0.09563840031623841,
+        0.09553920030593872,
+        0.09523199796676636,
+        0.09533439874649048
+      ],
+      "graph_median_ms": 0.09553920030593872
+    }
+  ],
+  "coverage": {
+    "artifacts": [
+      {
+        "factory": "cache_advance",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          65537,
+          65537
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/9494ef9339ebfb4849fb9ec3df30596278bb1cb61d81740bfd93f196a0feb81c.tbin",
+        "sha256": "3c64d681a103604efb32a311ae9b887dc9557dc4ff9716cec2acf511e0ed56fd",
+        "cache_hit": true
+      },
+      {
+        "factory": "cache_append",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          1,
+          65537,
+          32,
+          32,
+          65537,
+          "bfloat16",
+          true
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/f093c4453842dcc0bc217ac5221af3fbadf6f176a0e151ad6039fed123884761.tbin",
+        "sha256": "d7c1ce5928ff7cfbb17540298c13b2aae3f8c708615be2314672a9b080f74393",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          32,
+          32,
+          "bfloat16",
+          0.125,
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/a4b850674103133dbb9aac4e26d658ac4afa3932b6b0eaaca42edcb1961588c5.tbin",
+        "sha256": "b6e337e27d46d579783c479d859093ec9ed1a636e753616420a84f6dee5cde3f",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          32,
+          "bfloat16",
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/112aed9703f0ff444b5699b2308d0293f5de562f27d64bd6a271ef76b85bbd6a.tbin",
+        "sha256": "c949c17779940020fc8ec681cdb54fc65bf6b4a340f85105812962f7fdf6e0ee",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          32,
+          32,
+          "bfloat16",
+          0.125,
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/ea146069076f350a0f561fa3aba377a81c98c23d2279ee67c439518624d3b17e.tbin",
+        "sha256": "e3fc7c4ef076bfbb16fd1f36363130ff125bed03d28951fd8d6c9def8af365ab",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          32,
+          "bfloat16",
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/2ede659fd1695f9d1f5355b2632ecc75f3a881689741c9b764821348873728e6.tbin",
+        "sha256": "6e0fdb52b0777c021eb97e8acc76bad46da559a6fb8f62307253929afc754d7d",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          32,
+          32,
+          "bfloat16",
+          0.125,
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/4c44b0d65bb689b8fa30e4ac1b5d236340c253a7ff8fc2ea2bd76440133b9866.tbin",
+        "sha256": "fdae167a39aa51a284b5dde1a6727558fc84a23901cc84b79deb53512f50c80e",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          32,
+          "bfloat16",
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/b9cb1574c655381dae25d69ca42fe298b4db07ed20f577502e7e5035416971e8.tbin",
+        "sha256": "500c86a1ec71c811dc61cecb31aab5757fde682b54c25c695c8f7849335bf9a0",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          32,
+          32,
+          "bfloat16",
+          0.125,
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/3aaeaa7f12a3246a01b48f6609668933c4db800d9c45f8d90e9a3b76bfb4a52e.tbin",
+        "sha256": "8873805b5e4fe55314a8d7be6548a428a5529af626780d8c06b69764c17176e4",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          32,
+          "bfloat16",
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/97cbfcca9d37bd8c0f57c88d9f7779483821d818bf574c22728240129a4b29da.tbin",
+        "sha256": "f2c19e4c3303e00524256b7ee38302ebd007e14e51422dacc100a24a7a9b8831",
+        "cache_hit": false
+      },
+      {
+        "factory": "cache_append",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          1,
+          65537,
+          64,
+          64,
+          65537,
+          "bfloat16",
+          true
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/b3f0c8b5b090fce73f744f87dd7fdecde0d7436eb5ce27a7714fb172a2c740aa.tbin",
+        "sha256": "3e337a3004c3da0f7ec70a8bbcdb0f6378034d016751ea96dcc657ffb74c4e09",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          64,
+          64,
+          "bfloat16",
+          0.125,
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/c670d3b2bff52538a8d88d5ad6573d79d036eac6c29778e31477563a12a802e9.tbin",
+        "sha256": "558810adfd52f34063a6b4f3456598b9af9670539e895ac6b5cbdccf98bc57b3",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          64,
+          "bfloat16",
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/7554a8d903a211c793afd943dd68463e9d48276c369af58d7ce30c616124b66d.tbin",
+        "sha256": "7a2fb2e7e6a621ac562f3b7e6b28e8a21b20fd322c9ed07ed4354413d9b1d509",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          64,
+          64,
+          "bfloat16",
+          0.125,
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/a3c889b4cb48928e359c8578fb5f37d49767889124457aaba39db21080596ce6.tbin",
+        "sha256": "2b099323d378cf0a4637490161fcccbcaead0dcef63274c65c752df0a4b99956",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          64,
+          "bfloat16",
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/a4b2998471f8edc1ac60fd24c40691b47d9ecafda2b6afa5ff007a400fe9686c.tbin",
+        "sha256": "0f798ecfcc6d2aec576e32efa03c406caf2a5841c93f79cff9ea8f17139e3855",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          64,
+          64,
+          "bfloat16",
+          0.125,
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/ff7c4bd8e0c8c59626e8268f3cc31e14cd1a1f59e4b7bc2a847b309cef164d0b.tbin",
+        "sha256": "6277ac612d202196b39ccf7c0f2dcb989842d1a607f58ebd757030dc4ebc1183",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          64,
+          "bfloat16",
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/f38a33e7f400fbdf36615305039cd4aace325e02708b1f9dcaf63cbda680db77.tbin",
+        "sha256": "08df46e81747f34a28355fa047760d27e2555588fc0c9df4b19c86244618b925",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          64,
+          64,
+          "bfloat16",
+          0.125,
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/c48fc9abca0f797d1fd9c8bd0e224dee5c4663bc711604632ff4b3129c5f69eb.tbin",
+        "sha256": "a093ed459b083dcb6357e7ed371068654a3e291ad5582dce8c597edfa4fb4af2",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          64,
+          "bfloat16",
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/9350b3aeec9f5ac28d73ad89a5b72d2b70bb716434bbebbaf08a9ace393336fe.tbin",
+        "sha256": "e5ac530325084bde6f769625fd4016690dfa31d5f7fa3cab9c088a2c083768f9",
+        "cache_hit": false
+      },
+      {
+        "factory": "cache_append",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          1,
+          65537,
+          96,
+          96,
+          65537,
+          "bfloat16",
+          true
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/32bf28a139735521255bd8c2297f30b483ae327d128aaa7856d3952d58ba07c1.tbin",
+        "sha256": "cd89c2f46053639a167e5ac9b554a7868fd9f8d42928dfc13746ef1be6c42fc2",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          96,
+          96,
+          "bfloat16",
+          0.125,
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/d869f0e7b5c2891ebc094005bf03ba37d36db54c2f09cdfc5dbca1c7c49aa513.tbin",
+        "sha256": "e9a8c75947306b8f037d3f9e29b92f74e11d062934ad53c33bab66fbc88a269b",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          96,
+          "bfloat16",
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/798e6a12f4c130bfff3f005a23bdaaac6d106ea6b5f369a8bf8ede9fe3648b7d.tbin",
+        "sha256": "a58d2b9d1fcd2f1d99f607a780d0c012874a86b48c21318ae078e10e8ca6b4f8",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          96,
+          96,
+          "bfloat16",
+          0.125,
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/6440f5fc75bc28d5f87be94f5609ed9fe5dc9426cf6fcc9c6914bac620ad18e9.tbin",
+        "sha256": "7abfa763a546c4aecdb5cd7cc52b8c52d6efb0e5388dc273d972ac46e29c4fcc",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          96,
+          "bfloat16",
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/814be5c83475902581d110dabdc6a1a67da7ebec230e1444440f6b629788d23f.tbin",
+        "sha256": "6e9f43bd22e3b2339dc5f6fd8559294fb0423f48c6134255cb847927173645c7",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          96,
+          96,
+          "bfloat16",
+          0.125,
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/7c25b5604703c5148e1c7794ff5970b5fa06f848635a38e296a838d6ed52de70.tbin",
+        "sha256": "0b5c4f92137e4ae1dce27396e8aed96633dc91c1b4134e920753e55773541866",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          96,
+          "bfloat16",
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/b22723b765da3c31557df273674938a31a23fe86fbfc15e0c8bf79a580364002.tbin",
+        "sha256": "ae4e0284023fe6ab234741187232eb16f0c0248952fff11de680c25631aeeb3e",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          96,
+          96,
+          "bfloat16",
+          0.125,
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/a38f99c595f3733ae4f064fad0cf4f6f4418be1a794e28827c9cb65cf4065b42.tbin",
+        "sha256": "b1327a085a42e361bd4c3d489d4815657d682dcb71563852aea36b6558ef6c4d",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          96,
+          "bfloat16",
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/cf1778357cf64c25a70449c84685331130d5961d3b71abf3eba62a4b69eb8053.tbin",
+        "sha256": "8609965499b071c6a87b16c47a24d7354a00806451fd855c1e7274d266267d82",
+        "cache_hit": false
+      },
+      {
+        "factory": "cache_append",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          1,
+          65537,
+          128,
+          128,
+          65537,
+          "bfloat16",
+          true
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/64b99df13493b54ef7ef1ee9f15dcd490c1b46133f9c4b4928d41bfd0d99b040.tbin",
+        "sha256": "6024668811fdbbd1a125c2892bd4f971d12942ab2cc0f4e8974fcd94be2d37b1",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          128,
+          128,
+          "bfloat16",
+          0.125,
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/f5e42810e462500a5ea20651c05053068a4d4bfc8b686bfeca471b1d829e24a2.tbin",
+        "sha256": "1ef07e1459adc01d76a906fce3e7abdcf7ac82213f241192bb4fd1924a617d59",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          128,
+          "bfloat16",
+          32
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/8262e725f8e3f0415f593037c48d42e0a45716e61ab00484057d60aff9770fb6.tbin",
+        "sha256": "78bd4d405d0cf770d0957d7da01b49815f0f2215672aaee40fb3640406471a56",
+        "cache_hit": true
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          128,
+          128,
+          "bfloat16",
+          0.125,
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/178244c4a0aa034485594f0939dc9ce66a791e53546b55d5ffacb8effd4d5c24.tbin",
+        "sha256": "5cb543d7cd90649488b57bf9beecc2aa1e670684ec55363e44201cb888713150",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          128,
+          "bfloat16",
+          64
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/a75a2728db612d9a5ab90766ad14a41121c9fc6765494a16286829d350cf13e8.tbin",
+        "sha256": "2eec826e647c987928a75011c871289813b4ba3071e221ec67272c9c9643cde9",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          128,
+          128,
+          "bfloat16",
+          0.125,
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/5bf0dd23dbd63b0669b6d5f34f59a6ebf349eec5f2e68c1014036528a2ad22da.tbin",
+        "sha256": "fe47ec1442deabd92322025f0f7aa39c3126c94eb54607828dcb762edda8a1af",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          128,
+          "bfloat16",
+          128
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/600226859eec2dc106d26a0a248f46303db5e3f6d8596c34ecdfbe2eacf822ed.tbin",
+        "sha256": "7b5a02c7b0f1a1cb9403ce9759a9b9149804aaa6eb94dd559f2a37d72a1a0913",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_partial",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          1,
+          65537,
+          128,
+          128,
+          "bfloat16",
+          0.125,
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/50658925e98b8c9b599d3671737b3dbae812cfb81c803ece519f394f6c1caf47.tbin",
+        "sha256": "729a6581549b66bae10c68f156cfa8f3fe6833d95109a270d63bddd59106e0e9",
+        "cache_hit": false
+      },
+      {
+        "factory": "decode_merge",
+        "module": "tensor_torch.templates.llt_decode",
+        "parameters": [
+          1,
+          8,
+          128,
+          "bfloat16",
+          256
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/237979d77c4d0341e80c17e5c09f11ac10eada976dc4c76715df67019c662bd1.tbin",
+        "sha256": "87e3bbf62323f83cf9044f3cca8d0ba977b7e914e1f7516680e0bfe1643ac440",
+        "cache_hit": false
+      }
+    ],
+    "calls": {
+      "cache_advance": 4,
+      "cache_append": 4,
+      "decode_partial": 288,
+      "decode_merge": 288
+    },
+    "fallbacks": [],
+    "layout_copies": 0,
+    "compute_dtype": "torch.bfloat16"
+  },
+  "scaling_source_sha256": "7811d8cb5a900118dcec046d014f3ca60f3d3670260ea2a0afa3ccb59b7b5eeb",
+  "environment": {
+    "torch": "2.14.0+cu130",
+    "cuda": "13.0",
+    "driver": "595.91.07",
+    "tilelang": "0.1.14",
+    "tvm_ffi": "0.1.12",
+    "nvrtc": "12.9",
+    "cuda_timing_policy": "single qualification process; no concurrent GPU experiments",
+    "python": "3.12.14",
+    "gpu": "NVIDIA L40S",
+    "sm": [
+      8,
+      9
+    ],
+    "commit": "da7e487298933b87862ea04f586f6a06752a4423",
+    "sources": {
+      "benchmarks/llt/qualify.py": "0b075dff3301347a0c890ef2c186984ddc86c3e8afb1b2c2c6badd07195f0489",
+      "benchmarks/llt/model.py": "f04ba02a9fc9f493554bd57ba314bb71f9e59ddf7bd9172b07b119d3c980b54e",
+      "packages/tensor-torch/src/tensor_torch/__init__.py": "0ee573ab2ae74d722768aa8e6f5d95aa9f8070f6a6ee75a2e03ce582cc9d13e6",
+      "packages/tensor-torch/src/tensor_torch/backend.py": "8604b6c7fb3d542d5b3668f2d4cce659a2454b075d844c17046f11067d50c7b4",
+      "packages/tensor-torch/src/tensor_torch/bridge.py": "00567da5fb27f5ca575dcfad36bf9712383f477307a1663fd8e0e9d3cf147ddd",
+      "packages/tensor-torch/src/tensor_torch/kernels.py": "1ef8e9c1e5585536b1ca238f2d5c5b1b752a09bf7ace08ba3e96d582f3669a6a",
+      "packages/tensor-torch/src/tensor_torch/lowering.py": "b50b26053ea407b9687b3ce8f5db79e8dbd63fc903a4501d49b267b7d465236c",
+      "packages/tensor-torch/src/tensor_torch/llt.py": "a8b8d0b6668c12a6081fa6e62e9342ed9fbce6b2a74cf6c8fd39eaecffbb55d3",
+      "packages/tensor-torch/src/tensor_torch/templates/llt.py": "36b6b24c49f44ac83a72dfd52a87869957c49986067659b87a4e3ad17623e6b9",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_ops.py": "6bed590c308d3922f18765942b3c419e8214040fffe732c84a5f42f57f9ea8c8",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_decode.py": "77f19f8f5de8a3f9d41636d633ed323617eea2b44faad80bd9545a6d3ffc62ff",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_bmm.py": "3670b9b6d824615045a2bf83506f30c10dbd10c27799e14f13b1c396a291bd32",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_accumulate.py": "147c9891d60fd9412c25b2cc89e68accc713da106aa8efb816ee0598e6e1adca",
+      "src/tensor/runtime/__init__.py": "2d118ec0dd792038792f6e7f703ee6dd6c3c0d042249ce66c1d7bcc7c1ad4697",
+      "src/tensor/runtime/abi.py": "d0ca2d608288ce8a4280e9303fdbf568eb0b01e2e94df3bb727f82ee3f988c47",
+      "src/tensor/runtime/dlpack.py": "2d06e69f306bc3f0e6413287f91b4de2879f2e607a071ba4535b1aeb17e4b355",
+      "src/tensor/runtime/manual.py": "5adfea9f30c1099b45446f24fa41e13c0dc6a30133ee6df1efe82e4ffed3435a",
+      "src/tensor/runtime/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+      "src/tensor/runtime/dtypes.py": "e282e8ffd299945bf189417dc4e4e7a5b70e5f44463479d16f1eed6f82a89c57",
+      "src/tensor/providers/cuda.py": "acdc3735e9f1393db69604e93ffe594003dd75e3d4ba28ab20904decd98c698e",
+      "src/tensor/artifacts/format.py": "c0ee2c215a6312d4593226d017cc4b68412aa8ec8c067a7232f663816ac0d043",
+      "src/tensor/include/tensor/abi.h": "8893db59b8dd15e421065f83393e7b38c334f2d5a4a6c38de40e60df7fe9edf8",
+      "packages/tensor-torch/src/tensor_torch/executor.cpp": "2be17559df1a96589770da5ddf005df257227a59a4ac1a537986ca0b07639317"
+    }
+  },
+  "tolerances": {
+    "attention_fp16": {
+      "atol": 0.005,
+      "rtol": 0.005
+    },
+    "attention_bf16": {
+      "atol": 0.035,
+      "rtol": 0.035
+    },
+    "gradient_bf16": {
+      "atol": 0.05,
+      "rtol": 0.05
+    },
+    "model_loss_absolute": 0.15,
+    "model_gradient_relative_l2": 0.08,
+    "training_loss_absolute": 0.15,
+    "training_parameter_rms": 0.03,
+    "resume_parameter_absolute": 1e-06
+  }
+}

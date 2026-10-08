@@ -1,0 +1,860 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "rows": 129,
+      "width": 512,
+      "vocabulary": 50257,
+      "chunk_size": 0,
+      "eager_peak_allocated_bytes": 270945280,
+      "gpu_samples_ms": [
+        2.2917120456695557,
+        2.287616014480591,
+        2.3408639430999756,
+        2.2824959754943848,
+        2.2865920066833496,
+        2.2917120456695557,
+        2.2896640300750732,
+        2.2814719676971436,
+        2.2814719676971436
+      ],
+      "wall_samples_ms": [
+        2.3317079994740197,
+        2.309108000190463,
+        2.362078999794903,
+        2.305986999999732,
+        2.3142879999795696,
+        2.3209269984363345,
+        2.3127169988583773,
+        2.305067999259336,
+        2.305997999428655
+      ],
+      "gpu_median_ms": 2.287616014480591,
+      "wall_median_ms": 2.3127169988583773
+    },
+    {
+      "rows": 129,
+      "width": 512,
+      "vocabulary": 50257,
+      "chunk_size": 32,
+      "eager_peak_allocated_bytes": 261097472,
+      "gpu_samples_ms": [
+        11.500543594360352,
+        11.380736351013184,
+        11.456512451171875,
+        11.370495796203613,
+        11.379584312438965,
+        11.43609619140625,
+        11.506688117980957,
+        11.52511978149414,
+        11.518879890441895
+      ],
+      "wall_samples_ms": [
+        11.544467999556218,
+        11.41114500023832,
+        11.489284999697702,
+        11.403135000364273,
+        11.417965999498847,
+        11.46764599980088,
+        11.537867001607083,
+        11.556079000001773,
+        11.54938800027594
+      ],
+      "gpu_median_ms": 11.456512451171875,
+      "wall_median_ms": 11.489284999697702
+    },
+    {
+      "rows": 1025,
+      "width": 512,
+      "vocabulary": 50257,
+      "chunk_size": 0,
+      "eager_peak_allocated_bytes": 366381568,
+      "gpu_samples_ms": [
+        6.504447937011719,
+        6.4686079025268555,
+        6.4839677810668945,
+        6.449151992797852,
+        6.462463855743408,
+        6.464352130889893,
+        6.461440086364746,
+        6.4542717933654785,
+        6.452223777770996
+      ],
+      "wall_samples_ms": [
+        6.553613999130903,
+        6.500992001747363,
+        6.516001998534193,
+        6.477781000285177,
+        6.495360999906552,
+        6.499621998955263,
+        6.491181999081164,
+        6.483331999334041,
+        6.482482000137679
+      ],
+      "gpu_median_ms": 6.462463855743408,
+      "wall_median_ms": 6.495360999906552
+    },
+    {
+      "rows": 1025,
+      "width": 512,
+      "vocabulary": 50257,
+      "chunk_size": 32,
+      "eager_peak_allocated_bytes": 264774656,
+      "gpu_samples_ms": [
+        73.4935073852539,
+        73.53446197509766,
+        73.85804748535156,
+        73.68089294433594,
+        73.68704223632812,
+        73.73516845703125,
+        73.67884826660156,
+        73.69932556152344,
+        74.25536346435547
+      ],
+      "wall_samples_ms": [
+        73.54315299926384,
+        73.57281599979615,
+        73.89366200004588,
+        73.71798900021531,
+        73.72869899882062,
+        73.77571100005298,
+        73.71638800032088,
+        73.73802800066187,
+        74.29258299998764
+      ],
+      "gpu_median_ms": 73.68704223632812,
+      "wall_median_ms": 73.72869899882062
+    }
+  ],
+  "coverage": {
+    "artifacts": [
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 66048,
+          "dtype": "float32",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/69e9ed51b6a5d6585a2f5402b22227d3c097572e17d14cc09526c8f78d15ac67.tbin",
+        "sha256": "6447d3fb90448aa369ed321374aa9ea987ae65297ac5cdbbd6df50f1cbdc13db",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 25731584,
+          "dtype": "float32",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/58761e8cf2bfcc26578799fcfbe41d544432a56c4cb6f06567093f9d6c2e807d.tbin",
+        "sha256": "15012148b48a28a170ab42657f890723fdc4ed9719161c0cd8609eeb00a6e5ad",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 129,
+          "k": 512,
+          "c": 50257,
+          "ta": false,
+          "tb": true,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/4d421bf24e47dcb64db7e793a4ec38f4d765f12f9124b1e468b180f828f6e934.tbin",
+        "sha256": "0e77746dc6160ed02787c3bec6a4e52be053c9abfd106138e4ab66e9e88f2bb4",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_parts",
+          "r": 129,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/0acd3e0c450157bc05518b5912935b70dd0022e9b02fd4908f81bf085df1bdf1.tbin",
+        "sha256": "e0e72d8e4eee5877d38c442ee263a5ea7304e3384aadb3080e32f05519f3f4c8",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_finish",
+          "r": 129,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/cb8c8181e10d081d12ef00f82e559f31eb6625b95a8f4c030c3970222f56e2f4.tbin",
+        "sha256": "d7bf33f5454320fe801de471bdc676e7250e03201c0705492ab5c2a3c321f869",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_reduce",
+          "r": 129,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/7f0e3f63fa8abbf9ebcc9bec3296b64b81a9fa1c047be43e6c6cd2dda24cee30.tbin",
+        "sha256": "e132cbb28e2cfb44ebb398e6169a269ed96c5ed51aafad5878162eb6af219b7c",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_seed",
+          "r": 129,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/3fdcd1444bc386b9726ab45796929fc3807e25697fce3346ab00ed59cbc0d357.tbin",
+        "sha256": "effacca020ead54e745b5965b1c788377729b8d369c2a2cb133900f367114b71",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_dx",
+          "r": 129,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/a6c2556628af2018416d7b79aecedf14374b44fa3e55d6ac7e5d77f71ff4122f.tbin",
+        "sha256": "a6d53941371a18502a0f9bc0b09f0b32c2a64c89abc8bc2ea1c30950affc9150",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 129,
+          "k": 50257,
+          "c": 512,
+          "ta": false,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/cdca4584e75fadd390200749d2acc0a8029baef410fdcbfa0b6e8b5261d92b02.tbin",
+        "sha256": "94cb84aeddbaeb1eb485d90da46e1cb57ccfab97c32444fa456f9b69adef71c9",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 50257,
+          "k": 129,
+          "c": 512,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/e4591ff00a4783c5713cd8b1aed7a5cd6301bc1c7e2299ce780d4a74f3c2a03f.tbin",
+        "sha256": "3e74ba156a008825bb9bb95e4ea2ef786c91220d932483e50bd0174fa2f55107",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 66048,
+          "dtype": "bfloat16",
+          "out_dtype": "float32"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/4795f187ac6e04eb98560082d2dbc5280740d8d9d20a40c6ef27038d9f64c5a3.tbin",
+        "sha256": "c003ef4922d2dbc2c009b4bfb5b985473555ec98f6f5e2617498fff3e7af6833",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 25731584,
+          "dtype": "bfloat16",
+          "out_dtype": "float32"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/6b317c0a24a7f2fa207b223167b0b7146686120a9dac3f642bd3fa9105346885.tbin",
+        "sha256": "993f8a978b047bcb48ed44ef003655c0690e6d220a4c3be3dee6aa056c1e4f92",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 16384,
+          "dtype": "float32",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/278c22295659bcc3b3a91215736d800caa3f4ae50487bf57a03e7e764bc8e694.tbin",
+        "sha256": "3e4f86e62684f6e32c0cbd637c11685c56da408d338a6a4648b9d7a21e7237e9",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 32,
+          "k": 512,
+          "c": 50257,
+          "ta": false,
+          "tb": true,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/f1232119f648e79697ca79524bb99f9d39c91b4082b879dc47d4dd18cd1698d6.tbin",
+        "sha256": "ec3c02866d3c6928c8791856217f3b612233a6840b3742aab4fa294fcad0430f",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_parts",
+          "r": 32,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/6f200c8040621961decf296a7b4575d42a954556fb37585e5036ce2278d69f34.tbin",
+        "sha256": "d16b3771ed992ae1da76ff41babefd85cf65dd4e3fa342b8ea007e0d9ae5b07c",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_finish",
+          "r": 32,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/3d406a815385470c9b60aa00d0d700e18ea4e469d6dec4c9c4cb7ea2bf044a6e.tbin",
+        "sha256": "ad0713c21ce849379a25ccd7af08f6a53ea88c38c456d5b25e5a66fa33f9980e",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_reduce",
+          "r": 32,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/5804c202dcd3e37c936cf027e4afe180a4e2c139dae1dfb4b72ee6f99bc45444.tbin",
+        "sha256": "c523aae9ff1193582c00f13118b303fc82d236e0b8da20c1b0cba4702309a50e",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 512,
+          "dtype": "float32",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/8e0d09d6971ea0f948b445e9b4585f92e7fdf979a041c3d03406eea64f6b6c99.tbin",
+        "sha256": "1d5b557b6cb005b0c60cd7f049c232f2b2e51bbdebbb50333e8b69d13fd43239",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 1,
+          "k": 512,
+          "c": 50257,
+          "ta": false,
+          "tb": true,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/704b0dd4f98641306b9bb9a5e2a793a9e08cd63247968e2a5086b1905ea8bf8a.tbin",
+        "sha256": "e8bc1d15a5ab397a9b22992aff0393994f79bbed9f307dae14c36a54d17f9c2e",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_parts",
+          "r": 1,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/bf1f383ee368f0e25ba9ebd126d2f167220a6e0fe1335324e6bd3a9f6bbf91d6.tbin",
+        "sha256": "22ada97661a9ea0fb13dbb1371a706e85d33c76be81cdd51672c958c4cec604f",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_finish",
+          "r": 1,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/3a9a85f84a6b3fdd9956c38372422257ab5f37c33328f1299461228c495a178d.tbin",
+        "sha256": "cf228d99104ae02f69c3ef7315c489e5100c3f8654cdd82ec9aaf35a57305333",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_reduce",
+          "r": 1,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/7a22c14aac29a3c80fce613ecfa4f4c3391653ac817956c21c130154f919211a.tbin",
+        "sha256": "2e13b0067f02fef0fca59583c7b6b491d651c094d05ae9ba314fa9490643d7f0",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "zero",
+          "n": 25731584,
+          "dtype": "float32"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/815538bc7aa9a4436f449e4b294274ed9317b842b028db2a4a75b8ece9f96c5d.tbin",
+        "sha256": "cf554109a5e9d2092399ef726ce45a47fd0664971be5afe396d1d07cef278960",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_dx",
+          "r": 32,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/420077548efab51341b89198415caefc0937231024f7298a584a74f407f81d9d.tbin",
+        "sha256": "5352ccb25a72d5f700eff0b7a60291294230421c456f4212f43e04dfd6d81069",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 32,
+          "k": 50257,
+          "c": 512,
+          "ta": false,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/ce3e77fd800be86e5a4f23bd81910c67146ba77eb35a6aea103888637ec81f5e.tbin",
+        "sha256": "ec948dba75d058c33f7ceaa5c09a6dbb2cf3a2c7fbb03beae5302707f6cc3f83",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 16384,
+          "dtype": "bfloat16",
+          "out_dtype": "float32"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/8100611fffd6f70ff8cf632f3deb44ad0d26a12879750585d59bed6dcbbc596f.tbin",
+        "sha256": "9c7ecd274f0b0bf39c2960cd30e1fde2548328b86da200a3b941ed77613c4078",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 50257,
+          "k": 32,
+          "c": 512,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/4dbaefcffb7d0b4096b988e5d0714cbc111d723938b461d1f954590c41df8205.tbin",
+        "sha256": "b2ef310092ee085a6e55ebafa71893ee8b1823e717fe985fae5f9f2d01276093",
+        "cache_hit": true
+      },
+      {
+        "factory": "accumulate",
+        "module": "tensor_torch.templates.llt_accumulate",
+        "parameters": [
+          25731584,
+          "bfloat16"
+        ],
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/389c943d2e7b916822449eee6efad5109ec5e78b8e8a93b876f51bec3a85532b.tbin",
+        "sha256": "ac7840bcbc15ffeb3adb799d3dd797e306ffc0dec306599c030c986ba1c83ea2",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_dx",
+          "r": 1,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/13d38278299729070a44e2e6372186ac474680368be5237c832c6c4ae4219786.tbin",
+        "sha256": "a4e7bd0cf8ee066506c14936f2ae101f610cafa0515d4d6b011d35a29b028414",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 1,
+          "k": 50257,
+          "c": 512,
+          "ta": false,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/371e4944af853a4eec6e73a4486fc19e464518ca0021d14edd4baed2a8148462.tbin",
+        "sha256": "f6a6994bbe69990270188e1d3cc4b7f21061280f2fb9c1ff61a4db8836c2ba3e",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 512,
+          "dtype": "bfloat16",
+          "out_dtype": "float32"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/6352ac2b84cddc50654ac0dea86df0213423428037093cc5217229bc22e6c306.tbin",
+        "sha256": "13e4e3a5b9268074646cc4925927e366ef1c76e0c02a57c8d03530adbcb7325b",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 50257,
+          "k": 1,
+          "c": 512,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/9c07d6436d7658e42379573620f0b2a20bc6def8f80f55b9f1d00a1dcf898bc6.tbin",
+        "sha256": "17958931c62b44b98d8f8e82140f33a33eb0d2775b2ed83f28e1d75040d1ed02",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 524800,
+          "dtype": "float32",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/390728c82f2ddf875042bc65529bb47bbd5e66249219b0a2fdbadf370730e365.tbin",
+        "sha256": "92dfba0601215310c8702e2b23ebd890fab7a3896bf1972e1f4139a767309398",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 1025,
+          "k": 512,
+          "c": 50257,
+          "ta": false,
+          "tb": true,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/917f4d0bfb8a51e8e1ae45f0c3dcb7f014fd87a113dd5de402d7136df9495123.tbin",
+        "sha256": "98d53daa66edd5ca29fcd7db1d58138b03a1e085bc2734c2b35695cabf89ecc5",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_parts",
+          "r": 1025,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/e9562128d3bb76e90d37f2ba1e60fc289effaa18aea13fe9faebb546a2262ff9.tbin",
+        "sha256": "8273d8a726ab23f9a02a092b19dd58f9f5657859d0ff35ecd2586b879bba100c",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_finish",
+          "r": 1025,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/566c81fe29d63c088cc9bdb4ae59602b0db81013e5f46fb919c10cb318dc1a8b.tbin",
+        "sha256": "e45b409bbd44d98d23146eb5c10c9309eb851dd0ad66bed29e0560396aef009d",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_reduce",
+          "r": 1025,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/ed21a840361b29bf7835e945325109303f6e51be8d4b12be0ebbca36e43296c8.tbin",
+        "sha256": "9bd5cbca5be1fae74bed0034455d6ca1f33490353bb9e1872763e196f0ed7b32",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_seed",
+          "r": 1025,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/04506d93ea14d1b93e3f359f2faa5db8581b6819b8ee03d00cf5221e32bfa181.tbin",
+        "sha256": "5f1077f7c8a10b001836dcc98514bcef945bdf3d27661f1af096140bbb49e8dc",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "ce_dx",
+          "r": 1025,
+          "v": 50257,
+          "dtype": "bfloat16",
+          "ignore_index": -100
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/05e5c513666e475a307b03f2c9addfa6a0ad9a01869988560a95c38259e0f006.tbin",
+        "sha256": "b08665eb6627ab3c97a73e02fbefebbd527e9cbf005fb6e781bc73089be7c56c",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 1025,
+          "k": 50257,
+          "c": 512,
+          "ta": false,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/fe435e9c14ba20e8dab23e6648e01a35b6d59fba87d3ae785e44c3d6205a73e1.tbin",
+        "sha256": "02376ddbe50eaca178dfae61e948f18b7b22b66bc1ce2acf16b2c8ccdd4c24ba",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "gemm",
+          "m": 50257,
+          "k": 1025,
+          "c": 512,
+          "ta": true,
+          "tb": false,
+          "dtype": "bfloat16",
+          "out_dtype": "bfloat16"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/f3020d2f4be58dc578f80af3f4f68babeda8e2f0ac2f5537a2d0783288174b39.tbin",
+        "sha256": "184b9d8741365c5a01e805c779e2a46cd6438523e2a23445a6c34c0ec9dc3dae",
+        "cache_hit": true
+      },
+      {
+        "factory": "make_kernel",
+        "module": "tensor_torch.templates.llt_ops",
+        "parameters": {
+          "kind": "cast",
+          "n": 524800,
+          "dtype": "bfloat16",
+          "out_dtype": "float32"
+        },
+        "target": "sm_89",
+        "path": "/home/sagemaker-user/tensor/build/llt-qualification/artifacts/0a5d436426cae637fe35afc75de40fd362af869a1c5771a2279292746ea5b08f.tbin",
+        "sha256": "8cbfffc65aa6df541842230109c43b27dfb8001726c92cccac31469fd67894b6",
+        "cache_hit": true
+      }
+    ],
+    "calls": {
+      "make_kernel:cast": 3614,
+      "make_kernel:gemm": 2054,
+      "make_kernel:ce_parts": 1014,
+      "make_kernel:ce_finish": 1014,
+      "make_kernel:ce_reduce": 520,
+      "make_kernel:ce_seed": 26,
+      "make_kernel:ce_dx": 520,
+      "make_kernel:zero": 26,
+      "accumulate": 494
+    },
+    "fallbacks": [],
+    "layout_copies": 0,
+    "compute_dtype": "torch.bfloat16"
+  },
+  "scaling_source_sha256": "7811d8cb5a900118dcec046d014f3ca60f3d3670260ea2a0afa3ccb59b7b5eeb",
+  "environment": {
+    "torch": "2.14.0+cu130",
+    "cuda": "13.0",
+    "driver": "595.91.07",
+    "tilelang": "0.1.14",
+    "tvm_ffi": "0.1.12",
+    "nvrtc": "12.9",
+    "cuda_timing_policy": "single qualification process; no concurrent GPU experiments",
+    "python": "3.12.14",
+    "gpu": "NVIDIA L40S",
+    "sm": [
+      8,
+      9
+    ],
+    "commit": "da7e487298933b87862ea04f586f6a06752a4423",
+    "sources": {
+      "benchmarks/llt/qualify.py": "0b349d1bea8f7dab50e1fb900809d28f8db39d21e85cf6044648a260785acdd1",
+      "benchmarks/llt/model.py": "f04ba02a9fc9f493554bd57ba314bb71f9e59ddf7bd9172b07b119d3c980b54e",
+      "packages/tensor-torch/src/tensor_torch/__init__.py": "0ee573ab2ae74d722768aa8e6f5d95aa9f8070f6a6ee75a2e03ce582cc9d13e6",
+      "packages/tensor-torch/src/tensor_torch/backend.py": "8604b6c7fb3d542d5b3668f2d4cce659a2454b075d844c17046f11067d50c7b4",
+      "packages/tensor-torch/src/tensor_torch/bridge.py": "00567da5fb27f5ca575dcfad36bf9712383f477307a1663fd8e0e9d3cf147ddd",
+      "packages/tensor-torch/src/tensor_torch/kernels.py": "1ef8e9c1e5585536b1ca238f2d5c5b1b752a09bf7ace08ba3e96d582f3669a6a",
+      "packages/tensor-torch/src/tensor_torch/lowering.py": "b50b26053ea407b9687b3ce8f5db79e8dbd63fc903a4501d49b267b7d465236c",
+      "packages/tensor-torch/src/tensor_torch/llt.py": "9d8d5046cfd9e1c3b91dd998fd023281c4f58e7761aea5aff15928c0ab207a74",
+      "packages/tensor-torch/src/tensor_torch/templates/llt.py": "36b6b24c49f44ac83a72dfd52a87869957c49986067659b87a4e3ad17623e6b9",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_ops.py": "6bed590c308d3922f18765942b3c419e8214040fffe732c84a5f42f57f9ea8c8",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_decode.py": "1d1f93332eb47929238a07f666154dc2c40eb7eecc207760caa2d91e82032c7e",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_bmm.py": "3670b9b6d824615045a2bf83506f30c10dbd10c27799e14f13b1c396a291bd32",
+      "packages/tensor-torch/src/tensor_torch/templates/llt_accumulate.py": "147c9891d60fd9412c25b2cc89e68accc713da106aa8efb816ee0598e6e1adca",
+      "src/tensor/runtime/__init__.py": "2d118ec0dd792038792f6e7f703ee6dd6c3c0d042249ce66c1d7bcc7c1ad4697",
+      "src/tensor/runtime/abi.py": "d0ca2d608288ce8a4280e9303fdbf568eb0b01e2e94df3bb727f82ee3f988c47",
+      "src/tensor/runtime/dlpack.py": "2d06e69f306bc3f0e6413287f91b4de2879f2e607a071ba4535b1aeb17e4b355",
+      "src/tensor/runtime/manual.py": "5adfea9f30c1099b45446f24fa41e13c0dc6a30133ee6df1efe82e4ffed3435a",
+      "src/tensor/runtime/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+      "src/tensor/runtime/dtypes.py": "e282e8ffd299945bf189417dc4e4e7a5b70e5f44463479d16f1eed6f82a89c57",
+      "src/tensor/providers/cuda.py": "acdc3735e9f1393db69604e93ffe594003dd75e3d4ba28ab20904decd98c698e",
+      "src/tensor/compiler/nvrtc.py": "c128d2bb2676808d5d2f9a141f19c1fc2f24dea403e3b171bec7dabd22e7f961",
+      "src/tensor/artifacts/format.py": "c0ee2c215a6312d4593226d017cc4b68412aa8ec8c067a7232f663816ac0d043",
+      "src/tensor/include/tensor/abi.h": "8893db59b8dd15e421065f83393e7b38c334f2d5a4a6c38de40e60df7fe9edf8",
+      "packages/tensor-torch/src/tensor_torch/executor.cpp": "2be17559df1a96589770da5ddf005df257227a59a4ac1a537986ca0b07639317"
+    }
+  },
+  "tolerances": {
+    "attention_fp16": {
+      "atol": 0.005,
+      "rtol": 0.005
+    },
+    "attention_bf16": {
+      "atol": 0.035,
+      "rtol": 0.035
+    },
+    "gradient_bf16": {
+      "atol": 0.05,
+      "rtol": 0.05
+    },
+    "model_loss_absolute": 0.15,
+    "model_gradient_relative_l2": 0.08,
+    "training_loss_absolute": 0.15,
+    "training_parameter_rms": 0.03,
+    "resume_parameter_absolute": 1e-06
+  }
+}

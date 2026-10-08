@@ -31,7 +31,7 @@ def make_kernel(kind, p, schedule=None):
     from tensor.compiler.entry import primitive
 
     n, c, r = p.get("n"), p.get("c"), p.get("r")
-    f16, f32 = "float16", "float32"
+    f16, f32 = p.get("dtype", "float16"), "float32"
     a = lambda name, count, dtype=f16: (name, count, dtype)
     scalar = lambda name: (name, None, f32)
 
@@ -167,7 +167,7 @@ def make_kernel(kind, p, schedule=None):
             def kernel(
                 x: T.Tensor((b * m * k,), f16),
                 w: T.Tensor((b * k * cols,), f16),
-                out: T.Tensor((b * m * cols,), f16),
+                out: T.Tensor((b * m * cols,), p.get("out_dtype", f16)),
             ):
                 matmul(x, w, out)
         else:

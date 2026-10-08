@@ -16,7 +16,7 @@ future commitments are not yet implemented or current support claims.
 | Path | Environment and evidence | Boundary |
 |---|---|---|
 | CUDA producer | Linux and Windows pinned Python 3.12 / TileLang 0.1.14 / TVM FFI 0.1.12, NVRTC 12.9 | Exact target required on GPU-free hosts |
-| CUDA runtime | NVIDIA A10G execution and compiler-free transfer | Other GPUs/drivers need validation; exact SM must match |
+| CUDA runtime | NVIDIA A10G execution and compiler-free transfer; [L40S LLT](../research/llt-readiness.md) profile | Other GPUs/drivers need validation; exact SM must match |
 | WebGPU runtime | Windows RX 6700 XT through Vulkan and Linux software Vulkan CI | Software tests do not establish physical GPU performance; features/limits vary |
 | CPU provider | Linux x86-64 host compilation/runtime contracts | Validation provider; no general CPU performance claim |
 | macOS WebGPU | Native wgpu can use Metal | No retained physical Apple acceptance result; treat as unvalidated |

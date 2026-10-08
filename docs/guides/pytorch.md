@@ -176,3 +176,10 @@ Training remains experimental. Tensor does not claim a FlashAttention backward.
 The inference-first Phase 4 scope is accepted; see the [exit report](../research/phase4-exit.md)
 for the 20-case benchmark, exact performance gates, cross-platform wheels and
 compiler-free GPU transfer evidence.
+
+## Explicit LLT operators
+
+See [LLT training and cached attention](llt.md) for BF16/FP16 attention with
+first-order backward, shared KV, offset prefill, persistent decode, model operators,
+loss and AdamW. This explicit API is separate from generic FX lowering. The
+generic bounded pointwise, GEMM, and self-attention profiles also accept BF16.

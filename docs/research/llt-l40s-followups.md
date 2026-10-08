@@ -1,5 +1,12 @@
 # Tensor follow-ups from the L40S study
 
+These entries retain the initial study findings. The [Tensor LLT qualification](llt-readiness.md)
+records the subsequent BF16, backward, cache, and adapter implementation.
+The NVRTC integration also supplies the integral trait missing from the pinned
+TileLang standard shim; real CUDA warp-reduction regression coverage passes. The
+TileLang reduced-fragment limitation remains pinned and uses the tested
+shared-memory extraction workaround.
+
 For the complete dependency order and acceptance gates, see the
 [Tensor readiness plan](../plan/llt-readiness.md).
 

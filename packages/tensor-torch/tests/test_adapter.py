@@ -51,7 +51,7 @@ def test_inference_backend_preserves_eager_autograd(tmp_path):
 
 
 @GPU
-@pytest.mark.parametrize('dtype', [torch.float16,torch.float32])
+@pytest.mark.parametrize('dtype', [torch.float16,torch.bfloat16,torch.float32])
 def test_fused_pointwise_shapes_nan_broadcast_and_cache(tmp_path, dtype):
     backend = tt.Backend(cache_dir=tmp_path)
     function = torch.compile(lambda a,b:torch.relu(a*2+b),backend=backend,fullgraph=True,dynamic=True)
@@ -86,31 +86,33 @@ assert not {'tilelang','tvm','tvm_ffi'} & sys.modules.keys()
 
 @GPU
 @pytest.mark.parametrize('linear', [False,True])
-def test_gemm_tail_bias_relu_and_mlp(tmp_path, linear):
+@pytest.mark.parametrize('dtype', [torch.float16,torch.bfloat16])
+def test_gemm_tail_bias_relu_and_mlp(tmp_path, linear, dtype):
     backend=tt.Backend(cache_dir=tmp_path)
-    a=torch.randn(33,64,device='cuda',dtype=torch.float16)
-    w=torch.randn((65,64) if linear else (64,65),device='cuda',dtype=torch.float16)
-    bias=torch.randn(65,device='cuda',dtype=torch.float16)
+    a=torch.randn(33,64,device='cuda',dtype=dtype)
+    w=torch.randn((65,64) if linear else (64,65),device='cuda',dtype=dtype)
+    bias=torch.randn(65,device='cuda',dtype=dtype)
     function=lambda a,w,b:torch.relu(torch.nn.functional.linear(a,w,b) if linear else a@w+b)
     with torch.inference_mode():
         compiled=torch.compile(function,backend=backend,fullgraph=True)
         torch.testing.assert_close(compiled(a,w,bias),function(a,w,bias),atol=.005,rtol=.02)
         mlp=lambda a,w1,w2:torch.relu(torch.nn.functional.linear(torch.relu(torch.nn.functional.linear(a,w1)),w2))
-        w2=torch.randn(32,65,device='cuda',dtype=torch.float16)
+        w2=torch.randn(32,65,device='cuda',dtype=dtype)
         wt=w if linear else w.t().contiguous()
-        torch.testing.assert_close(torch.compile(mlp,backend=backend,fullgraph=True)(a,wt,w2),mlp(a,wt,w2),atol=.05,rtol=.02)
+        torch.testing.assert_close(torch.compile(mlp,backend=backend,fullgraph=True)(a,wt,w2),mlp(a,wt,w2),atol=.25 if dtype==torch.bfloat16 else .05,rtol=.03)
     assert len([s for r in backend.report['regions'] for s in r['specializations']]) == 3
 
 
 @GPU
 @pytest.mark.parametrize('shape,causal', [((1,2,129,64),True),((2,2,257,64),False),((1,2,128,128),True)])
-def test_fx_attention_online_softmax(tmp_path, shape, causal):
+@pytest.mark.parametrize('dtype', [torch.float16,torch.bfloat16])
+def test_fx_attention_online_softmax(tmp_path, shape, causal, dtype):
     backend=tt.Backend(cache_dir=tmp_path)
-    args=tuple(torch.randn(shape,device='cuda',dtype=torch.float16) for _ in range(3))
+    args=tuple(torch.randn(shape,device='cuda',dtype=dtype) for _ in range(3))
     function=lambda q,k,v:torch.nn.functional.scaled_dot_product_attention(q,k,v,is_causal=causal)
     with torch.inference_mode():
         output=torch.compile(function,backend=backend,fullgraph=True)(*args)
-        torch.testing.assert_close(output,function(*args),atol=.002,rtol=.02)
+        torch.testing.assert_close(output,function(*args),atol=.02 if dtype==torch.bfloat16 else .002,rtol=.02)
     assert backend.report['regions'][0]['specializations'][0]['kind']=='attention'
 
 
@@ -254,7 +256,7 @@ def test_corrupt_fx_cache_is_rebuilt(tmp_path):
     assert not fresh.report['regions'][0]['specializations'][0]['cache_hit']
 
 @GPU
-@pytest.mark.parametrize('dtype',[torch.float16,torch.float32])
+@pytest.mark.parametrize('dtype',[torch.float16,torch.bfloat16,torch.float32])
 def test_pointwise_activation_precision_and_arithmetic(tmp_path,dtype):
     a=torch.tensor([-30,-12,-1,-0.01,0,.01,1,12,30]+[.1]*120,device='cuda',dtype=dtype)
     b=torch.full_like(a,2)

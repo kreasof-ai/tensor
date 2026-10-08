@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "suites": [
+    {
+      "suite": "llt-regression",
+      "summary": "311 passed, 386 skipped, 462 warnings in 38.66s",
+      "log_sha256": "3b78162992afbc19876d5ac7b9aa05dc0e566bb800fc35a05f6872bd7ec32efa"
+    },
+    {
+      "suite": "llt-final-operators",
+      "summary": "65 passed in 133.68s (0:02:13)",
+      "log_sha256": "05a0b59da08a208c7928cf326f9ebe794efe3d19a184cf3398d3a1303d0cdfec"
+    },
+    {
+      "suite": "llt-streaming-and-warp",
+      "summary": "3 passed, 26 deselected in 63.91s (0:01:03)",
+      "log_sha256": "6b439226a0470d9cfd77643bbdfe785d02bf79edd2fd11cc945ac8eb5978ed89"
+    },
+    {
+      "suite": "llt-infinite-norm",
+      "summary": "1 passed, 27 deselected in 9.36s",
+      "log_sha256": "20c08f9859329ce504217a458cf40ec3f0095ce5a736ca0b0d809a1bdaae80de"
+    }
+  ],
+  "layout_negative": "Pinned fragment extraction limitation reproduced; working decode uses shared-memory extraction.",
+  "nvrtc_trait_regression": "Real CUDA warp reduction and poisoned cache tail pass with the compatibility fix."
+}

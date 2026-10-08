@@ -1,0 +1,20 @@
+{
+  "diagnostics": [
+    {
+      "name": "llt-training-before-gradient-rounding",
+      "diagnostic_log_sha256": "63c268b9678ec0ef750d82c3ea4687b46e19dbc7314926f6dac6cc6a2ac5433d",
+      "failure": "AssertionError: (43, 5.705779552459717, 4.988531112670898)",
+      "disposition": "Matrix gradient accumulation/rounding did not match Torch autocast; changed to compute-dtype gradient rounding.",
+      "final_qualification": false
+    },
+    {
+      "name": "llt-training-lr003",
+      "diagnostic_log_sha256": "a667f27a3d1fc524c8c811b16c2810d25fc18ec2bce9aa1a54ae31128abd3e97",
+      "failure": "AssertionError: (38, 5.804255485534668, 5.98862361907959)",
+      "disposition": "After gradient rounding fix, LR 0.003 exceeded the unchanged loss tolerance in the naive fixture. Qualified both models at LR 0.001.",
+      "final_qualification": false
+    }
+  ],
+  "discarded_performance_runs": "Concurrent preliminary GPU timings were discarded and replaced by the final isolated sweep.",
+  "final_tolerances_relaxed": false
+}

@@ -6,6 +6,14 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Add ABI 1.3 CUDA BF16 storage, DLPack import/export, capability checks, and
+  dtype-specialized Torch kernels while preserving existing numeric dtype IDs.
+- Add explicit LLT attention forward/backward, decoupled RoPE, BF16 training
+  operators, full-vocabulary loss, FP32 AdamW, and persistent batched KV caches.
+- Fix the pinned NVRTC shim's missing integral trait for warp-reduction helpers.
+- Fix prepared/native alignment validation to honor frontend arguments and allow
+  explicitly mutable manual plans with no outputs. Add L40S qualification tools.
+
 - Plan live progress bars and retained BEAM/agent refinement trajectories from
   shared event logs, including budgets, lineage and independent winner verification.
 - Propose shared human/agent profiling reports, visual tuning tools, bounded

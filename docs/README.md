@@ -18,6 +18,7 @@ upgrading artifacts. Commands run from the repository root unless stated otherwi
 | Work with device buffers, loaded kernels, timing, and CUDA streams | [Python runtime](guides/runtime.md) |
 | Package exports, pin dependencies, and publish through PyPI | [Tensor modules](guides/modules.md) |
 | Use Tensor kernels with `torch.compile` or custom operators | [PyTorch integration](guides/pytorch.md) |
+| Train LLT and use persistent shared-KV attention | [LLT operators](guides/llt.md) |
 | Build and run portable WGSL artifacts | [WebGPU provider](guides/webgpu.md) |
 | Write explicit forward and backward callbacks | [Manual backward](guides/manual-backward.md) |
 | Run the standalone nanoGPT training template | [Tensor NN](../packages/tensor-nn/README.md) |

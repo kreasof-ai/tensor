@@ -1,4 +1,4 @@
-# Tensor runtime contract — ABI 1.2
+# Tensor runtime contract — ABI 1.3
 
 [Documentation](../README.md) · [Python runtime guide](../guides/runtime.md)
 
@@ -15,6 +15,7 @@ single-device profile on 64-bit little-endian hosts. The
 | Artifact envelope `tensor.module` v3 | Container, image selection and metadata schema |
 | Runtime ABI 1.1 | Existing call layouts plus executable, event and workspace descriptors |
 | Runtime ABI 1.2 | Same layouts; explicit session-qualified opaque buffer arguments |
+| Runtime ABI 1.3 | Same layouts; CUDA BF16 buffer storage and explicit capability |
 | TileLang / TVM FFI versions | Producer/frontend IR provenance; not consumer dependencies |
 
 V3 declares `runtime_abi.major`, `minor`, and `required_capabilities`. Unknown
@@ -28,7 +29,12 @@ are adapted to the current call layout at launch. They do not gain CPU or
 cross-SM execution support. Older consumers reject v3 through format checks.
 ABI 1.1 producers declare executable descriptors and zero external workspace.
 Existing ABI 1.0 v3 artifacts remain accepted with implicit zero workspace.
-CUDA/CPU producers still require minor 1. WebGPU requires minor 2 and the
+Non-BF16 CUDA and CPU producers still require minor 1. CUDA BF16 producers require
+minor 3 and `bfloat16_storage`. BF16 has permanent dtype ID 13, two-byte storage,
+and DLPack code 4 / bits 16 / lanes 1. It is a buffer type, not a scalar type.
+Owned BF16 NumPy downloads decode to FP32; `to_bytes()` preserves raw BF16 storage.
+CUDA DLPack exports preserve dtype and retain the buffer until consumer release;
+live exports block buffer release and session close. WebGPU requires minor 2 and the
 `opaque_buffer_handles` capability; old consumers and pointer-only providers
 reject those artifacts before loading them.
 
