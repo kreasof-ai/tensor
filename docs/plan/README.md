@@ -5,6 +5,9 @@
 The [path to 1.0](v1.md) proposes the next development milestones, stability
 boundary, and release acceptance criteria. Start there for future work.
 
+The [LLT readiness plan](llt-readiness.md) lists the CUDA kernel, BF16,
+interoperability, and training gates required before the LLT study resumes.
+
 The [1.0 benchmark and demonstration program](v1-benchmarks.md) specifies the
 requested models, operators, GPUs, baselines, implementation prerequisites and
 measurement rules. It is planned work, separate from retained experimental results.

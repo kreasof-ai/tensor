@@ -6,6 +6,10 @@ Reports retain the measured environment, workload, correctness checks, timing
 protocol, and reproduction commands. Raw JSON, CSV, and figures live in
 [data/](data/). Results apply to the recorded profiles and revisions.
 
+The [LLT L40S follow-ups](llt-l40s-followups.md) record Tensor development gaps
+and defect reproducers identified by the LLT kernel and memory study. The
+[readiness plan](../plan/llt-readiness.md) defines their acceptance gates.
+
 For the RX 6700 XT Vulkan campaign, start with the
 [kernel and inference improvement history](rx6700xt-vulkan-history.md):
 the first hardware attempt through 1K 2.6B prefill, with 23 inference milestones,
