@@ -1,8 +1,10 @@
 # Prepared inference weight casts
 
 Full-vocabulary inference keeps FP32 master weights and FP32 embeddings. Torch
-autocast reuses BF16 parameter copies within the serving context. The explicit
-Tensor path previously converted every projection weight at every invocation.
+autocast can reuse BF16 parameter copies under no-grad, but disables that cache
+under inference mode. The explicit Tensor path previously converted every
+projection weight at every invocation. The exclusion is explicit in the
+[PyTorch autocast implementation](https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/autocast_mode.cpp).
 
 `Operators(cache_inference_weights=True)` now caches parameter casts only under
 `torch.inference_mode()`. It is opt-in. Ordinary training, including the
@@ -35,7 +37,8 @@ TENSOR_NVRTC_HOME=build/nvrtc-12.9 TENSOR_LLT_CUDA=1 \
 The full-size LLT/naive and actual nanoGPT output and all-parameter gradient
 checks completed against the optimized GEMM implementation before this serving
 cache was enabled. The subsequent inference profiles explicitly enable the
-Tensor cache to match warmed Torch autocast weight preparation. Those model
+Tensor cache alongside an explicit prepared-weight Torch control. This avoids
+giving just one backend a retained weight-copy advantage. Those model
 results live in the
 [LLT repository](https://github.com/kreasof-ai/loop-latent-transformer), rather
 than this Tensor development record.
