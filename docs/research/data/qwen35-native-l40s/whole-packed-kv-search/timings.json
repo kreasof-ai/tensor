@@ -1,0 +1,74 @@
+[
+  {
+    "bundle": "build/qwen35-native/c8-fp8kv-fast",
+    "repetition": 0,
+    "status": "measured",
+    "context_start": 32321,
+    "steps": 64,
+    "output_tokens": 512,
+    "seconds": 1.5809066399997391,
+    "output_tokens_per_second": 323.86479191464747,
+    "kind": "same-state-full-context-decode-diagnostic",
+    "full_stress_target_reached": false
+  },
+  {
+    "bundle": "build/qwen35-native/c8-fp8kv-packed-attention",
+    "repetition": 0,
+    "status": "measured",
+    "context_start": 32321,
+    "steps": 64,
+    "output_tokens": 512,
+    "seconds": 1.3088073100007023,
+    "output_tokens_per_second": 391.1958590754855,
+    "kind": "same-state-full-context-decode-diagnostic",
+    "full_stress_target_reached": false
+  },
+  {
+    "bundle": "build/qwen35-native/c8-fp8kv-packed-attention",
+    "repetition": 1,
+    "status": "measured",
+    "context_start": 32321,
+    "steps": 64,
+    "output_tokens": 512,
+    "seconds": 1.3082379670013324,
+    "output_tokens_per_second": 391.36610686630416,
+    "kind": "same-state-full-context-decode-diagnostic",
+    "full_stress_target_reached": false
+  },
+  {
+    "bundle": "build/qwen35-native/c8-fp8kv-fast",
+    "repetition": 1,
+    "status": "measured",
+    "context_start": 32321,
+    "steps": 64,
+    "output_tokens": 512,
+    "seconds": 1.5803393990026962,
+    "output_tokens_per_second": 323.98103870795575,
+    "kind": "same-state-full-context-decode-diagnostic",
+    "full_stress_target_reached": false
+  },
+  {
+    "bundle": "build/qwen35-native/c8-fp8kv-fast",
+    "repetition": 2,
+    "status": "measured",
+    "context_start": 32321,
+    "steps": 64,
+    "output_tokens": 512,
+    "seconds": 1.5820516109997698,
+    "output_tokens_per_second": 323.6304027252588,
+    "kind": "same-state-full-context-decode-diagnostic",
+    "full_stress_target_reached": false
+  },
+  {
+    "bundle": "build/qwen35-native/c8-fp8kv-packed-attention",
+    "repetition": 2,
+    "status": "measured",
+    "context_start": 32321,
+    "steps": 64,
+    "output_tokens": 512,
+    "seconds": 1.3084781619982095,
+    "output_tokens_per_second": 391.2942644897581,
+    "kind": "same-state-full-context-decode-diagnostic",
+    "full_stress_target_reached": false
+  }
+]

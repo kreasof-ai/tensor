@@ -1,0 +1,14 @@
+{
+  "source": "model.json config.text_config",
+  "full_attention_layers": 10,
+  "recurrent_layers": 30,
+  "sequence_tokens": 48000,
+  "kv_dtype": "bfloat16",
+  "state_dtype": "float32",
+  "logical_kv_bytes_per_sequence": 983040000,
+  "logical_kv_gib_per_sequence": 0.91552734375,
+  "recurrent_ssm_bytes_per_sequence": 62914560,
+  "recurrent_ssm_mib_per_sequence": 60.0,
+  "logical_kv_and_ssm_gib_at_four_sequences": 3.896484375,
+  "excluded": "conv state, padding/allocator overhead, temporary workspace and CUDA graphs; weights accounted separately"
+}

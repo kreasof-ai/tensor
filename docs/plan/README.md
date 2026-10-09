@@ -12,6 +12,10 @@ The [1.0 benchmark and demonstration program](v1-benchmarks.md) specifies the
 requested models, operators, GPUs, baselines, implementation prerequisites and
 measurement rules. It is planned work, separate from retained experimental results.
 
+The [unified Tensor LLM engine plan](unified-llm-engine.md) stages an extension
+of `tensor-llm` for both batch-1 latency and batch throughput, sharing model
+resources and request execution across local generation and serving.
+
 The proposed [tuning workbench](tuning-workbench.md) covers shared profiling
 reports, visual/text interfaces, AI kernel refinement and recipe-only reconstruction.
 

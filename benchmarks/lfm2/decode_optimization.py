@@ -14,7 +14,7 @@ import tensor
 from tensor.artifacts.format import read_artifact
 from tensor.runtime.abi import BoundCall
 from tensor_llm import LFM2
-from tensor_llm.kernels import source
+from tensor_llm.lfm2.kernels.baseline import source
 from benchmarks.lfm2.text_helpers import emit, reference_attention_source
 from benchmarks.lfm2.fp16_decode import linear_source, HALF2
 
@@ -57,7 +57,7 @@ def pipelined_source(p,*,async_load=True):
     k,o,q=p['k'],p['o'],p['type']
     if p['r']!=1:raise ValueError('one-row decode required')
     if q not in (2,12,14) or k%512:return linear_source(p,'fp16_half2')
-    from tensor_llm.gguf import TYPES
+    from tensor_llm.common.gguf import TYPES
     _,block,size=TYPES[q];packed=512//block*size;row_bytes=k//block*size
     vector=4 if q==14 else 16
     copy_expression=(f'__pipeline_memcpy_async(stage[slot]+i*{vector}, w+row*{row_bytes}+tile*{packed}+offset, {vector});'
@@ -112,7 +112,7 @@ __device__ __forceinline__ void packed_pipeline(const float* x,const unsigned ch
 def prefetch_source(p,ahead=8):
     text=linear_source(p,'fp16_half2')
     if p['type'] not in (2,12,14):return text
-    from tensor_llm.gguf import TYPES
+    from tensor_llm.common.gguf import TYPES
     _,block,size=TYPES[p['type']]
     # Hint only bytes belonging to the upcoming block(s), including scale metadata.
     span=2*size if block==32 else size

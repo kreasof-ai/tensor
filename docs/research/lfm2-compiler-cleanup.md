@@ -13,7 +13,7 @@ IR in each `.tbin`.
 
 | Layer | Responsibility |
 |---|---|
-| `packages/tensor-llm/src/tensor_llm/cuda_kernels.py` | LFM2 frontend algorithms and explicit schedule parameters |
+| `packages/tensor-llm/src/tensor_llm/lfm2/kernels/cuda.py` | LFM2 frontend algorithms and explicit schedule parameters |
 | `src/tensor/compiler/cuda_lowering.py` | Two-byte load and FP16 pair conversion helpers |
 | `src/tensor/compiler/build.py` | TileLang lowering, hardware helper lowering, NVRTC, cache and artifact production |
 | `src/tensor/compiler/search.py` | Generic beam exploration, family retention, deterministic restarts, legality filtering and producer profile selection |

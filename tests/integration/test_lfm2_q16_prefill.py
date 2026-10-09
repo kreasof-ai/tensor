@@ -27,8 +27,8 @@ def test_integer_matmul_legality(change):
 @pytest.mark.parametrize('prepacked',[False,True])
 def test_two_component_projection_fields_and_precision(tmp_path,kind,subgroup,tile_k,fixed_residual,prepacked):
     import tensor
-    from tensor_llm.gguf import dequantize,prepack_q4_0
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.common.gguf import dequantize,prepack_q4_0
+    from tensor_llm.lfm2.kernels.webgpu import source
     r,k,o=35,256,34;rng=np.random.default_rng(1462);raw=[];weights=[]
     for _ in range(2 if kind=='ffn_q16' else 1):
         blocks=rng.integers(0,256,(o*k//32,18),dtype=np.uint8)

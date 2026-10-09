@@ -39,7 +39,7 @@ def test_two_width_three_convolutions_preserve_final_output_and_histories():
 
 def test_tail_specialization_requires_the_measured_shape_and_suffix():
     from types import SimpleNamespace
-    from tensor_llm.model import prefill_tail_rows
+    from tensor_llm.lfm2.model import prefill_tail_rows
     cfg=SimpleNamespace(width=2048,ff=10752,layers=('conv','attention','conv','conv'))
     tensors={}
     for i in (1,2,3):
@@ -68,9 +68,9 @@ def test_tail_extraction_partial_chunks_and_position_controls(tmp_path, provider
     if os.environ.get('TENSOR_LFM2_CUDA' if provider=='cuda' else 'TENSOR_WEBGPU')!='1':
         pytest.skip('requires the selected GPU provider')
     if provider=='cuda':
-        from tensor_llm.cuda_kernels import source
+        from tensor_llm.lfm2.kernels.cuda import source
     else:
-        from tensor_llm.webgpu_kernels import source
+        from tensor_llm.lfm2.kernels.webgpu import source
     r,c,t=128,17,8;rng=np.random.default_rng(1805)
     path=tmp_path/'tail.py';path.write_text(source('prefill_tail',dict(r=r,c=c,t=t)))
     artifact=path.with_suffix('.tbin');tensor.build(path,artifact,provider=provider,**({'compiler':'nvrtc','target':'sm_86'} if provider=='cuda' else {}))
@@ -98,9 +98,9 @@ def test_attention_tail_uses_absolute_positions_and_all_stored_keys(tmp_path, pr
     if os.environ.get('TENSOR_LFM2_CUDA' if provider=='cuda' else 'TENSOR_WEBGPU')!='1':
         pytest.skip('requires the selected GPU provider')
     if provider=='cuda':
-        from tensor_llm.cuda_kernels import source
+        from tensor_llm.lfm2.kernels.cuda import source
     else:
-        from tensor_llm.webgpu_kernels import source
+        from tensor_llm.lfm2.kernels.webgpu import source
     r,t,h,kh,d,cap=128,8,4,2,64,192;position=23;rng=np.random.default_rng(1817)
     q=(rng.normal(size=(r,h,d))*.1).astype(np.float32)
     keys=(rng.normal(size=(cap,kh,d))*.1).astype(np.float16)

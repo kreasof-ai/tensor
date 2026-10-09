@@ -13,14 +13,14 @@ def run(root,out):
     if search['status']!='finished' or recheck['status']!='passed' or attention['status']!='finished' or model['status']!='passed':
         raise ValueError('requires completed and validated measurements')
     profiles={name:load('profile-'+name+'.json') for name in ('before','after')}
-    source_paths=['packages/tensor-llm/src/tensor_llm/model.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py',
+    source_paths=['packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py',
                   'src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/search.py','src/tensor/compiler/webgpu_schedules.py','benchmarks/lfm2/producer.py',
                   'benchmarks/lfm2/webgpu_profile.py','benchmarks/lfm2/decode_kernel_search.py',
                   'benchmarks/lfm2/decode_attention_search.py','benchmarks/lfm2/decode_search_recheck.py',
                   'benchmarks/lfm2/decode_search_compare.py','benchmarks/lfm2/decode_search_summary.py',
                   'tests/compiler/test_webgpu_decode_schedule.py','tests/providers/test_webgpu_lowering.py']
     sources={p:{'sha256':hashlib.sha256(Path(p).read_bytes()).hexdigest(),'text':Path(p).read_text()} for p in source_paths}
-    for key,path in (('tensor_llm.model',source_paths[0]),('tensor_llm.webgpu_kernels',source_paths[1])):
+    for key,path in (('tensor_llm.lfm2.model',source_paths[0]),('tensor_llm.lfm2.kernels.webgpu',source_paths[1])):
         if model['bundles']['searched']['implementation'][key]!=sources[path]['sha256']:raise ValueError('model source changed since measurement')
     shaders={}
     for name,directory in (('before','baseline'),('searched','searched')):

@@ -27,7 +27,7 @@ def consume(model, bundle, reference, out):
     import numpy as np
     import tensor
     from tensor_llm import LFM2
-    from tensor_llm.provenance import implementation_hashes
+    from tensor_llm.lfm2.provenance import implementation_hashes
     fixture = json.loads((reference / 'validation.json').read_text())
     assert fixture['status'] == 'passed' and digest(model) == fixture['model_sha256']
     assert digest(bundle / 'inference.json') == fixture['bundle_sha256']

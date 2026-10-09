@@ -1,6 +1,7 @@
 # Tensor LLM
 
-Standalone, single-sequence CUDA and WebGPU inference for LiquidAI LFM2.5 GGUF files.
+Standalone CUDA and WebGPU inference for LiquidAI LFM2.5 GGUF files, with
+independent single-sequence requests sharing model resources.
 The optional `tensor-llm` wheel adds GGUF parsing, byte-level BPE tokenization,
 packed-weight projections, the hybrid convolution/attention forward plan, and
 text generation. The installed consumer needs Tensor, NumPy, regex and the GPU
@@ -14,6 +15,189 @@ The reader additionally implements F32 and Q8_0; other quantizations and model
 architectures are rejected. The kernels currently require 64-dimensional heads
 and a three-tap short convolution. This is a bounded demonstration, rather than
 a general GGUF inference engine.
+
+The [unified engine roadmap](../../docs/plan/unified-llm-engine.md) proposes
+extending this package with true batching, continuous scheduling and Qwen
+FP8/MoE adapters. Shared model resources and independent request handles are
+implemented for LFM2; its request handles execute one sequence per call. The
+experimental Qwen adapter below implements native batched execution within the
+same package.
+
+## Source layout
+
+The public classes stay available through `from tensor_llm import ...`. Internal
+modules are grouped by model and responsibility:
+
+```text
+tensor_llm/
+├── __init__.py, __main__.py, cli.py
+├── common/
+│   ├── artifacts.py              # Shared logical kernel identities
+│   ├── gguf.py                   # GGUF parsing and packed weight utilities
+│   └── tokenizer.py              # GGUF byte-level BPE
+├── speculative/
+│   ├── acceptance.py             # Model-independent greedy prefix acceptance
+│   └── lookup.py                 # Bounded output-history proposals
+├── lfm2/
+│   ├── config.py, model.py, provenance.py
+│   └── kernels/
+│       └── baseline.py, cuda.py, webgpu.py
+└── qwen35/
+    ├── checkpoint.py             # Safetensors metadata and weight loading
+    ├── artifacts.py              # Shared logical kernel requirements
+    ├── decode.py, prefill.py, pipeline.py
+    ├── kernels/                  # Producer factories shared by execution phases
+    │   ├── decode.py, prefill.py, fp8_kv.py, matmul.py, mtp.py
+    │   └── speculative.py, speculative_attention.py, speculative_linear.py
+    ├── mtp/
+    │   └── decode.py, prefill.py
+    └── speculative/
+        └── verifier.py, engine.py, attention.py, linear.py
+```
+
+Kernel factories import the compiler only when invoked by a producer. Executors,
+checkpoint utilities and speculative helpers remain usable in the consumer
+environment. `qwen35/speculative/attention.py` and `linear.py` install selected
+kernel graphs; their producer algorithms live under `qwen35/kernels/`.
+
+Internal module paths changed with this organization. Producers and source-hash
+tracking use the new paths; regenerate inference bundles because their source
+identities changed. Retained benchmark reports and frozen executed sources keep
+their original provenance.
+
+## Experimental native Qwen CUDA execution
+
+`Qwen35Batch` and `Qwen35Prefill` execute the pinned
+Qwen3.5-35B-A3B-FP8 text checkpoint using Tensor CUDA artifacts. One resident
+weight allocation serves eight slots with independent FP32 GDN state and
+BF16 or explicitly selected FP8 KV. The checkpoint loader streams safetensors
+shards directly to the device. The forward path uses native FP8 tensor-core
+projections, chunked recurrent scans, causal attention, greedy GPU argmax and
+captured decode graphs. Runtime imports require neither Torch nor a producer
+compiler. The local HTTP benchmark adapter additionally uses `aiohttp` and the
+checkpoint's Rust `tokenizers` tokenizer.
+
+This implementation is experimental. Whole-model numerical qualification
+remains open; the FP8 KV calibration failed the retained 3% logit-error gate.
+Kernel tests and short decode timings do not establish the 600 tok/s C8 target.
+The serving adapter reports these qualification flags explicitly.
+
+Produce the measured L40S profile from the repository root with the producer
+environment on `PYTHONPATH=.:src:packages/tensor-llm/src`:
+
+```bash
+python -m benchmarks.qwen35.profile_producer --checkpoint build/models/qwen3.5-35b-a3b-fp8 --out build/qwen35-profile --kv-dtype fp8
+python -m benchmarks.qwen35.prefill_producer --checkpoint build/models/qwen3.5-35b-a3b-fp8 --out build/qwen35-prefill --chunk 512 --block-m 64 --kv-dtype fp8 --packed-kv
+python -m benchmarks.qwen35.server --checkpoint build/models/qwen3.5-35b-a3b-fp8 --bundle build/qwen35-profile/decoder --prefill-bundle build/qwen35-prefill --port 8013
+```
+
+Use `bfloat16` and omit `--packed-kv` for the separate BF16 cache reference.
+The supplied producers target `sm_89` and the pinned local NVRTC bootstrap.
+The fixed slot scheduler accepts greedy token-ID requests and performs chunked
+prefill and batched decode. Paged cache allocation, batch-1 optimization and
+general continuous scheduling remain roadmap work.
+
+`Qwen35Checkpoint(path, branch='mtp')` also validates the official embedded
+MTP weights. The experimental `Qwen35MTP(target, bundle)` drafter borrows the
+target's embedding and output head, loads its own original FP8/BF16 weights,
+and retains private KV. Produce its bundle with:
+
+```bash
+python -m benchmarks.qwen35.mtp_producer --checkpoint build/models/qwen3.5-35b-a3b-fp8 --decoder build/qwen35-profile/decoder --out build/qwen35-mtp
+```
+
+`draft(next_token_ids, target_final_normalized_hidden)` advances consecutive
+draft positions from zero. Initialize the shifted prompt prefix before using
+long-context drafts. `benchmarks.qwen35.mtp_calibrate.calibrate` resets the
+target/drafter and measures short teacher-forced and autoregressive one-token
+agreement against serial target evaluation. This is a drafting diagnostic.
+MTP measurements retain separate labels from pure AR.
+
+`Qwen35MTPPrefill` in `tensor_llm.qwen35.mtp.prefill` supports native chunked
+initialization using `forward(shifted_token_ids, flat_target_hidden, lengths)`.
+Build its artifacts with `benchmarks.qwen35.mtp_prefill_producer --checkpoint
+... --prefill ... --out ...`. The `benchmarks.qwen35.mtp_benchmark` command
+reproduces the long-prefix and three-proposal chain agreement diagnostics with
+explicit target/draft/prefill bundles and a frozen workload. See the retained
+[native Qwen report](../../docs/research/qwen35-native-l40s.md) for measured
+agreement, cost and quality scope.
+
+`Qwen35Verifier` now verifies several tokens together and retains FP32 GDN and
+convolution snapshots for every possible accepted boundary. `commit(counts)`
+restores each request independently; future KV rows are masked by the committed
+position and overwritten on the next pass. `Qwen35Speculative` shares this target
+with its MTP drafter, repairs draft KV from verified target hidden states and
+returns the accepted tokens plus a corrected/bonus token. Optional bounded
+output-history lookup proposes repeating continuations; target verification
+still checks every output. Its results are labeled separately from pure MTP.
+
+The measured L40S candidate verifies eight input tokens per request. Produce
+its small-chunk verification/repair artifacts after the target and MTP bundles:
+
+```bash
+python -m benchmarks.qwen35.prefill_producer --checkpoint build/models/qwen3.5-35b-a3b-fp8 --out build/qwen35-prefill8 --chunk 8 --block-m 64 --kv-dtype fp8 --packed-kv
+python -m benchmarks.qwen35.spec_producer --prefill build/qwen35-prefill8 --out build/qwen35-verify8
+python -m benchmarks.qwen35.spec_attention_producer --prefill build/qwen35-verify8 --out build/qwen35-verify8-attention --key-rows 32
+python -m benchmarks.qwen35.spec_linear_producer --prefill build/qwen35-verify8-attention --out build/qwen35-verify8-selected --expert-block-m 32
+python -m benchmarks.qwen35.mtp_prefill_producer --checkpoint build/models/qwen3.5-35b-a3b-fp8 --prefill build/qwen35-prefill8 --out build/qwen35-repair8
+python -m benchmarks.qwen35.spec_attention_producer --prefill build/qwen35-repair8 --out build/qwen35-repair8-selected --key-rows 32
+python -m benchmarks.qwen35.mtp_prefill_producer --checkpoint build/models/qwen3.5-35b-a3b-fp8 --prefill build/qwen35-prefill --out build/qwen35-mtp-prefill
+```
+
+Run `benchmarks.qwen35.spec_run` with explicit `--decoder`, `--draft`, `--prefill`,
+`--draft-prefill`, `--verify`, `--repair`, `--workload`, `--checkpoint` and `--out`
+paths. `--output-lookup` enables the measured hybrid profile; omitting it selects
+pure MTP. The native cohort includes prefix processing, executor setup and all
+draft/verification/rollback/repair work, and records NVML telemetry and exact
+token IDs. It excludes HTTP serialization.
+
+For the common streaming client harness, `benchmarks.qwen35.server` accepts
+`--draft-bundle`, `--draft-prefill-bundle`, `--verify-bundle`, `--repair-bundle`
+and `--output-lookup` alongside its ordinary arguments. This mode admits requests
+during prefill, then retains the cohort until completion. It closes large prefix
+graphs before allocating verification snapshots, keeping the measured C8 profile
+resident on the L40S. Accepted token chunks stream with exact cumulative counts.
+General continuous admission during speculative decode remains roadmap work.
+
+## Independent requests with shared weights
+
+`LFM2` owns one weight/kernel allocation, shared executor scratch buffers and a
+default request. Opt into additional handles with an explicit capacity:
+
+```python
+with LFM2(model_path, bundle_path, device, context=512, max_requests=8) as model:
+    with model.new_request() as other:
+        logits_a = model.forward(prompt_a)
+        logits_b = other.forward(prompt_b)
+        next_a = model.forward([token_a])
+        next_b = other.forward([token_b])
+```
+
+Each handle has its own position, convolution history, KV cache, logits and
+bound plans/graphs. Interleave calls on the model's creating thread and device
+stream. Scratch buffers are shared and calls execute serially; this API does
+not perform batched launches or continuous scheduling. Concurrent use from
+another thread is rejected before request state changes. Avoid manipulating
+the exposed execution plans directly while other requests are in use.
+
+The capacity includes the default request and defaults to one. `new_request`
+can select a smaller `context` or choose `graphs=False`; its cache allocation
+still uses the bundle's compiled capacity. Resetting or closing a sibling does
+not reset the others. Closing a sibling frees its buffers and graphs and makes
+that capacity available to a fresh handle; stale handles remain invalid.
+Closing the owner closes all handles. Close the owner before its device session.
+
+`model.weight_bytes` counts packed weights; `shared_bytes` includes weights and
+executor buffers once; `allocated_bytes` includes all live request buffers.
+`request.private_bytes` counts only that handle's buffers. These counters exclude
+driver-owned graph storage: use device telemetry for the complete GPU footprint.
+Additional handles retain additional graph captures, so the request count is an
+explicit allocation limit, not a guarantee that every capacity fits a device.
+
+**Rebuild existing inference bundles after this refactor.** Implementation
+fingerprints continue to reject bundles produced for the previous runner.
+Re-run the matching producer command; unchanged kernel artifacts can be reused
+while the producer binds the manifest to the installed implementation.
 
 ## Smaller local iteration workload
 

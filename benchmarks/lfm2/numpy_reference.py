@@ -5,8 +5,8 @@ projections and attention use FP32 products, with FP16 persistent K/V caches.
 No Tensor kernels or runtime are imported.
 """
 import numpy as np
-from tensor_llm.gguf import GGUF
-from tensor_llm.config import Config
+from tensor_llm.common.gguf import GGUF
+from tensor_llm.lfm2.config import Config
 
 
 class _HalfWeights:

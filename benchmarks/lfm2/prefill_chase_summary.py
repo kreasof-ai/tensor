@@ -5,7 +5,7 @@ _sys.path.insert(0,str(_Path(__file__).resolve().parents[2]))
 import argparse,hashlib,json,subprocess
 from pathlib import Path
 from tensor.artifacts.format import read_artifact
-from tensor_llm.provenance import implementation_hashes
+from tensor_llm.lfm2.provenance import implementation_hashes
 
 
 def run(root,out):

@@ -8,8 +8,8 @@ import numpy as np
 import tensor
 from tensor.providers.webgpu import Device
 from tensor_llm import GGUF
-from tensor_llm.model import webgpu_parameters,projection_tile
-from tensor_llm.webgpu_kernels import source
+from tensor_llm.lfm2.model import webgpu_parameters,projection_tile
+from tensor_llm.lfm2.kernels.webgpu import source
 from tensor.compiler.webgpu_lowering import outer_product_matmul_schedule
 from benchmarks.lfm2.tensor_projection_search import TimestampAdapter,bind,oracle,check
 from benchmarks.lfm2.decode_fusion_search import PlanTimer
@@ -155,7 +155,7 @@ def run(model,out,encoding=1,rows=(32,64,128),replay=None,wide=False,shapes=None
     order=sorted(groups,key=lambda g:(g[0]!='ffn',g[1]!=2560,-g[2]))
     prior=json.loads(Path(replay).read_text()) if replay is not None else None
     sources={p:dict(sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest(),text=Path(p).read_text()) for p in
-        (__file__,'src/tensor/compiler/webgpu_lowering.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py','packages/tensor-llm/src/tensor_llm/model.py')}
+        (__file__,'src/tensor/compiler/webgpu_lowering.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py','packages/tensor-llm/src/tensor_llm/lfm2/model.py')}
     report=dict(status='searching',model_sha256=hashlib.sha256(Path(model).read_bytes()).hexdigest(),sources=sources,groups=[],encoding=encoding,wide=wide,cached=cached,dots=dots,packed_pairs=packed_pairs,half_accum=half_accum,half_layouts=half_layouts,
         protocol='Native GGUF weights (F16 or packed), F32 activation ABI and decoded weights rounded nearest-even to F16 operands, F32 accumulation/output, fused gate/up/SwiGLU. All matrices in the shape group streamed per sample with distinct outputs. 100ms warmup, 7 timestamp batches of two complete group plans, normalized per matrix. Every candidate checked against float64, winners checked on all weights and three held-out input scales. Vulkan timestamp period 10ns.')
     if half_accum:report['protocol']+=' Half candidates explicitly use short F16 FMA chains (outer.unroll operations per even/odd K chain), then F32 totals. Float64 kernel bounds include half rounding/underflow. Full-model acceptance keeps the original independent NumPy logits gate.'

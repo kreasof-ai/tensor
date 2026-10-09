@@ -2,7 +2,7 @@
 import struct
 import numpy as np
 import pytest
-from tensor_llm.gguf import GGUF,GGUFError,dequantize
+from tensor_llm.common.gguf import GGUF,GGUFError,dequantize
 
 
 def string(value):

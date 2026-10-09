@@ -14,7 +14,7 @@ from tensor.compiler.search import ScheduleSearch
 from tensor.compiler.webgpu_schedules import SPACES, coupled_moves
 from tensor_llm import GGUF
 from benchmarks.lfm2.text_helpers import emit, round_half
-from tensor_llm.webgpu_kernels import source
+from tensor_llm.lfm2.kernels.webgpu import source
 from wgpu.backends.wgpu_native.extras import write_timestamp
 
 class TimestampAdapter:

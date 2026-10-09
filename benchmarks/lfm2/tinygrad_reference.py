@@ -6,8 +6,8 @@ position and valid-row count; short convolution state is reset inside the graph.
 import numpy as np
 from tinygrad import Tensor,TinyJit,UOp,Device,dtypes
 from tinygrad.llm.gguf import ggml_data_to_tensor
-from tensor_llm.gguf import GGUF
-from tensor_llm.config import Config
+from tensor_llm.common.gguf import GGUF
+from tensor_llm.lfm2.config import Config
 
 
 def rounded_half(value):

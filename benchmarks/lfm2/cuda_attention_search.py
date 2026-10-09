@@ -12,7 +12,7 @@ from tensor.compiler.search import ScheduleSearch
 from tensor.compiler.cuda_schedules import ATTENTION_SPACES
 from tensor.providers.cuda_graph import CudaGraph
 from tensor.compiler.tuning import measure_cuda
-from tensor_llm.cuda_kernels import warp_partial_source, merge_source, grouped_source
+from tensor_llm.lfm2.kernels.cuda import warp_partial_source, merge_source, grouped_source
 from benchmarks.lfm2.cuda_format_search import compile_source
 
 
@@ -21,7 +21,7 @@ def search(out, max_candidates=7):
         raise ValueError('positive candidate budget required')
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     repo=Path(__file__).resolve().parents[2]
-    sources={name:dict(sha256=hashlib.sha256((repo/name).read_bytes()).hexdigest(),text=(repo/name).read_text()) for name in ('benchmarks/lfm2/cuda_attention_search.py', 'src/tensor/compiler/search.py', 'src/tensor/compiler/cuda_schedules.py', 'src/tensor/compiler/cuda_lowering.py', 'packages/tensor-llm/src/tensor_llm/cuda_kernels.py')}
+    sources={name:dict(sha256=hashlib.sha256((repo/name).read_bytes()).hexdigest(),text=(repo/name).read_text()) for name in ('benchmarks/lfm2/cuda_attention_search.py', 'src/tensor/compiler/search.py', 'src/tensor/compiler/cuda_schedules.py', 'src/tensor/compiler/cuda_lowering.py', 'packages/tensor-llm/src/tensor_llm/lfm2/kernels/cuda.py')}
     p=dict(h=32,kh=8,d=64,cap=8576,splits=16)
     rng=np.random.default_rng(2243);q=rng.normal(size=(32,64)).astype(np.float32)
     k=rng.normal(size=(8576,8,64)).astype(np.float16);v=rng.normal(size=k.shape).astype(np.float16)

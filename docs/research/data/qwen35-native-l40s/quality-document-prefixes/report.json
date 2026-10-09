@@ -1,0 +1,113 @@
+{
+  "schema": "tensor.qwen35-kv-quality.v1",
+  "status": "failed",
+  "protocol": "frozen externally supplied teacher-forced calibration tokens",
+  "artifact_manifests": {
+    "bfloat16": "fbdcdcffaa71d15ac06cd01dcdea071c90e6f4c3d034d9ad83a9582e5592efd4",
+    "fp8": "6d976a200c59d62bf79fb304c3151716b3f744556c7d73d8e42ad6c6d93fdbb0"
+  },
+  "losses": {
+    "bfloat16": {
+      "tokens": 4088,
+      "mean_negative_log_likelihood": 3.1163351522910205
+    },
+    "fp8": {
+      "tokens": 4088,
+      "mean_negative_log_likelihood": 3.1173169349850562
+    }
+  },
+  "token_sha256": "812653bed4b88c913fefbf643bd5888825c6d2787d4031d01ddbcedb806d7b40",
+  "steps": 512,
+  "gates": {
+    "relative_logit_rms_maximum": 0.03
+  },
+  "samples": [
+    {
+      "context": 1,
+      "relative_logit_rms": 0.026086287572979927,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.0009406832396052778,
+      "maximum_kl": 0.0009406832396052778,
+      "finite": true
+    },
+    {
+      "context": 2,
+      "relative_logit_rms": 0.042636629194021225,
+      "greedy_matches": 5,
+      "slots": 8,
+      "mean_kl": 0.005590028129518032,
+      "maximum_kl": 0.008845721371471882,
+      "finite": true
+    },
+    {
+      "context": 8,
+      "relative_logit_rms": 0.05068682134151459,
+      "greedy_matches": 6,
+      "slots": 8,
+      "mean_kl": 0.011802544817328453,
+      "maximum_kl": 0.05027708783745766,
+      "finite": true
+    },
+    {
+      "context": 16,
+      "relative_logit_rms": 0.06251592189073563,
+      "greedy_matches": 7,
+      "slots": 8,
+      "mean_kl": 0.008672189898788929,
+      "maximum_kl": 0.026281507685780525,
+      "finite": true
+    },
+    {
+      "context": 32,
+      "relative_logit_rms": 0.05960799753665924,
+      "greedy_matches": 6,
+      "slots": 8,
+      "mean_kl": 0.011100309900939465,
+      "maximum_kl": 0.02929246611893177,
+      "finite": true
+    },
+    {
+      "context": 64,
+      "relative_logit_rms": 0.07248666882514954,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.006142447702586651,
+      "maximum_kl": 0.011829144321382046,
+      "finite": true
+    },
+    {
+      "context": 128,
+      "relative_logit_rms": 0.055539581924676895,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.005498811602592468,
+      "maximum_kl": 0.011839359067380428,
+      "finite": true
+    },
+    {
+      "context": 256,
+      "relative_logit_rms": 0.053033579140901566,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.003464607521891594,
+      "maximum_kl": 0.008682968094944954,
+      "finite": true
+    },
+    {
+      "context": 512,
+      "relative_logit_rms": 0.07654547691345215,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.005531615111976862,
+      "maximum_kl": 0.01509238500148058,
+      "finite": true
+    }
+  ],
+  "diagnostic_wall_seconds": {
+    "bfloat16": 11.006772427001124,
+    "fp8": 10.932870045999152
+  },
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false
+}

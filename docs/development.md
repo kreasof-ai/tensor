@@ -71,9 +71,9 @@ Benchmarks supply workloads, independent correctness gates and timing. The old
 
 Package kernels are ordinary Python TileLang DSL factories, with lazy compiler
 imports. Read the algorithms in
-[`tensor_llm/kernels.py`](../packages/tensor-llm/src/tensor_llm/kernels.py),
-[`cuda_kernels.py`](../packages/tensor-llm/src/tensor_llm/cuda_kernels.py),
-[`webgpu_kernels.py`](../packages/tensor-llm/src/tensor_llm/webgpu_kernels.py),
+[`tensor_llm/lfm2/kernels/baseline.py`](../packages/tensor-llm/src/tensor_llm/lfm2/kernels/baseline.py),
+[`cuda.py`](../packages/tensor-llm/src/tensor_llm/lfm2/kernels/cuda.py),
+[`webgpu.py`](../packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py),
 [`tensor_nn/kernels.py`](../packages/tensor-nn/src/tensor_nn/kernels.py) and
 [`tensor_torch/kernels.py`](../packages/tensor-torch/src/tensor_torch/kernels.py).
 `@T.prim_func` defines kernels; `@T.macro` composes decoders, fused epilogues and

@@ -1,0 +1,32 @@
+{
+  "records": [
+    {
+      "step": 0,
+      "relative_logit_rms": 0.019367247819900513,
+      "finite": true,
+      "greedy_matches": 7,
+      "active_slots": 7,
+      "passes_3_percent_gate": true
+    },
+    {
+      "step": 1,
+      "relative_logit_rms": 0.025522630661725998,
+      "finite": true,
+      "greedy_matches": 7,
+      "active_slots": 7,
+      "passes_3_percent_gate": true
+    },
+    {
+      "step": 2,
+      "relative_logit_rms": 0.01906694658100605,
+      "finite": true,
+      "greedy_matches": 8,
+      "active_slots": 8,
+      "passes_3_percent_gate": true
+    }
+  ],
+  "status": "passed",
+  "scope": "one MTP layer on identical supplied hidden states; target model quality is separate",
+  "speculative_verification": false,
+  "full_stress_target_reached": false
+}

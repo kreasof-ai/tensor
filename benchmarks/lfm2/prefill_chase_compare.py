@@ -21,7 +21,7 @@ def run(model,root,reference,fixtures,out,repeats=7,bundles=None,max_buffer_size
     report=dict(status='validating',model_sha256=oracle['model_sha256'],independent_reference=oracle,
         native_commit=COMMIT,validation=[],benchmarks=[],sources={p:dict(sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest(),text=Path(p).read_text()) for p in
         (__file__,'benchmarks/lfm2/vulkan_reference.py','src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/webgpu.py',
-         'packages/tensor-llm/src/tensor_llm/model.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py','benchmarks/lfm2/producer.py')},
+         'packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py','benchmarks/lfm2/producer.py')},
         protocol=dict(context=512,warmups=3,repeats=repeats,decode_tokens=64,
             max_buffer_size=max_buffer_size,
             allow_decode_changes=allow_decode_changes,

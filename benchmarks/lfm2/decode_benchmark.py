@@ -15,7 +15,7 @@ from tensor.providers.cuda_graph import CudaGraph
 from tensor.compiler.tuning import measure_cuda
 from benchmarks.lfm2.decode_optimization import compile_source,pipelined_source,prefetch_source,partial_source,warp_partial_source,merge_source,OptimizedLFM2
 from benchmarks.lfm2.fp16_decode import linear_source,metrics
-from tensor_llm.kernels import source
+from tensor_llm.lfm2.kernels.baseline import source
 
 
 def micro_attention(out,*,implementation='warp'):

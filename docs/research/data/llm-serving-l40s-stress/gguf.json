@@ -1,0 +1,24 @@
+{
+  "context_total": 192000,
+  "context_per_slot": 48000,
+  "parallel": 4,
+  "ctx_checkpoints": 0,
+  "cache_ram_mib": 0,
+  "fit": false,
+  "input_embedding_placement": "CUDA0 tensor buffer override",
+  "source_checkpoint_sha": "9d1823d2dee688a6b25e77009dc727688c44936e",
+  "conversion_precision_qualified": false,
+  "gguf_sha256": "93dbaf526bb7c25017169be907666d8079801b5f2802d9d77c773baef11ae94f",
+  "gguf_bytes": 38767248992,
+  "conversion_source_commit": "a518119d30cade6260f7494120863428a3fe8ee5",
+  "conversion_command": [
+    "python",
+    "build/llama.cpp/convert_hf_to_gguf.py",
+    "build/models/qwen3.5-35b-a3b-fp8",
+    "--outtype",
+    "bf16",
+    "--fp8-as-q8",
+    "--outfile",
+    "build/models/qwen3.5-35b-a3b-fp8-source-q8.gguf"
+  ]
+}

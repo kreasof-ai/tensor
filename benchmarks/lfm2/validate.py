@@ -7,9 +7,9 @@ from pathlib import Path
 import numpy as np
 import tensor
 from tensor_llm import GGUF
-from tensor_llm.model import LFM2
-from tensor_llm.tokenizer import Tokenizer
-from tensor_llm.gguf import dequantize
+from tensor_llm.lfm2.model import LFM2
+from tensor_llm.common.tokenizer import Tokenizer
+from tensor_llm.common.gguf import dequantize
 
 
 def block_check(gguf,library):

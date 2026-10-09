@@ -1,0 +1,99 @@
+{
+  "schema": "tensor.qwen35-kv-quality.v1",
+  "status": "failed",
+  "protocol": "512 matched teacher-forced tokens per slot; eight short natural-language texts cyclically repeated (calibration stress, not a held-out quality corpus)",
+  "token_sha256": "3a81f79cfa69d18ce74ac2b49ab8271b902b9d9612fae72b94902da0ab25cd4a",
+  "steps": 512,
+  "gates": {
+    "relative_logit_rms_maximum": 0.03
+  },
+  "samples": [
+    {
+      "context": 1,
+      "relative_logit_rms": 0.05982039123773575,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.003271064255386591,
+      "maximum_kl": 0.01435579638928175,
+      "finite": true
+    },
+    {
+      "context": 2,
+      "relative_logit_rms": 0.052790381014347076,
+      "greedy_matches": 7,
+      "slots": 8,
+      "mean_kl": 0.006254157517105341,
+      "maximum_kl": 0.03159768134355545,
+      "finite": true
+    },
+    {
+      "context": 8,
+      "relative_logit_rms": 0.040390804409980774,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.005033624358475208,
+      "maximum_kl": 0.008139054290950298,
+      "finite": true
+    },
+    {
+      "context": 16,
+      "relative_logit_rms": 0.053505007177591324,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.003417268628254533,
+      "maximum_kl": 0.010727927088737488,
+      "finite": true
+    },
+    {
+      "context": 32,
+      "relative_logit_rms": 0.11474224179983139,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.004256327636539936,
+      "maximum_kl": 0.023150604218244553,
+      "finite": true
+    },
+    {
+      "context": 64,
+      "relative_logit_rms": 0.14807039499282837,
+      "greedy_matches": 7,
+      "slots": 8,
+      "mean_kl": 0.07709256559610367,
+      "maximum_kl": 0.476942777633667,
+      "finite": true
+    },
+    {
+      "context": 128,
+      "relative_logit_rms": 0.19036780297756195,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.00038452143780887127,
+      "maximum_kl": 0.0009136646403931081,
+      "finite": true
+    },
+    {
+      "context": 256,
+      "relative_logit_rms": 0.3512178361415863,
+      "greedy_matches": 8,
+      "slots": 8,
+      "mean_kl": 0.27946174144744873,
+      "maximum_kl": 2.080108404159546,
+      "finite": true
+    },
+    {
+      "context": 512,
+      "relative_logit_rms": 0.29222235083580017,
+      "greedy_matches": 7,
+      "slots": 8,
+      "mean_kl": 1.4120430946350098,
+      "maximum_kl": 11.284643173217773,
+      "finite": true
+    }
+  ],
+  "diagnostic_wall_seconds": {
+    "bfloat16": 8.775624668000091,
+    "fp8": 8.823452431999613
+  },
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false
+}

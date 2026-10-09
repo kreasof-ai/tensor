@@ -8,8 +8,8 @@ import numpy as np
 import tensor
 from tensor.providers.webgpu import Device
 from tensor_llm import GGUF
-from tensor_llm.model import webgpu_parameters
-from tensor_llm.webgpu_kernels import source
+from tensor_llm.lfm2.model import webgpu_parameters
+from tensor_llm.lfm2.kernels.webgpu import source
 from benchmarks.lfm2.tensor_projection_search import TimestampAdapter,Timer,bind,oracle,check
 
 

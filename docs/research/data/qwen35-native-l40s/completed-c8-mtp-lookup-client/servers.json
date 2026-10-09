@@ -1,0 +1,65 @@
+{
+  "schema": "tensor.llm-serving-servers.v1",
+  "comparison_group": "qwen3.5-35b-l40s-32k16k-c8-native-fp8kv-experimental",
+  "servers": [
+    {
+      "base_url": "http://127.0.0.1:8013",
+      "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "weight_format": "FP8-block128",
+      "kv_dtype": "fp8",
+      "state_dtype": "float32",
+      "hardware": "NVIDIA L40S x1",
+      "cpu_offload": "none",
+      "prefix_cache": false,
+      "speculative": true,
+      "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "gpu_indices": [
+        "0"
+      ],
+      "name": "tensor-fp8kv-mtp-lookup-c8",
+      "engine": "tensor",
+      "engine_version": "0.1.0-native-qwen35-dev",
+      "settings": {
+        "max_model_len": 48000,
+        "max_num_seqs": 8,
+        "prefill_chunk": 512,
+        "scheduler": "fixed cohort; verified MTP with output lookup; streaming accepted token chunks",
+        "decoder_bundle": "build/qwen35-native/c8-fp8kv-selected-mtp-host",
+        "prefill_bundle": "build/qwen35-native/prefill512-fp8kv-m64-packed-q128",
+        "resource_state": "resident official FP8 weights; fresh independent request state",
+        "draft_bundle": "build/qwen35-native/mtp-c8-fp8kv",
+        "draft_prefill_bundle": "build/qwen35-native/mtp-prefill512-fp8kv",
+        "verify_bundle": "build/qwen35-native/verify8-fp8kv-m32-p4",
+        "repair_bundle": "build/qwen35-native/mtp-repair8-fp8kv-split16-k32",
+        "max_proposals": 7,
+        "fallback_proposals": 3,
+        "output_lookup": true
+      },
+      "model_throughput_qualified": false,
+      "full_stress_target_reached": false,
+      "sources": {
+        "qwen35.py": "b3d9cae8c8d6fc208ab8363e8483f1c20c9223e5571982b552cf35eecdc37444",
+        "qwen_kernels.py": "8bf67829f3269dd83c5988b814db57f3a948ea0a9cd2953b3fe7bbeb9a5df7f2",
+        "qwen_model.py": "d0c09680a4f8ddb8f15d6b6011bfba2ca576855c321023dfcb71c898003d1f6b",
+        "qwen_mma.py": "cfd888a770140d96f9e8ca68c6680b0991d933caa6c0de605bcfb7c66f05fcce",
+        "qwen_prefill.py": "ca6da5cdde270265aae969b644cb4d9d23d21e6d06b29e0f042429e7c222b534",
+        "qwen_prefill_model.py": "4aee865b153d5fcbf3d7c5aac0b2228fe819be3250ce153b2dac7f690ab2c9da",
+        "qwen_pipeline.py": "d3631e232a3665c952daad1280b0853f1c31eedbc9eca7ae8dc1f1f5aeb9584d",
+        "qwen_fp8_kv.py": "ab914ae1d05bf54a43ab54cdb3e152c5692af816d49c5cb9b71b62b90d253153",
+        "qwen_mtp_kernels.py": "64d2f0db7abf166f7ff4683631536572e3e6becbbd858fa2149f7565b7a67aea",
+        "qwen_mtp.py": "e099e50f57fb0f307f1f0787a512f43b2348f05bf937dc3e91deb97a1a421f2e",
+        "qwen_mtp_prefill.py": "20a6596eddda8bc7669d6b0aee2d8fcce717d05618e1e619f77860f7e4e0b3d9",
+        "qwen_spec_kernels.py": "e3b4abcf099e6e46a86746311fcf510b40176ea69d1ec57f6e7682fe7a1841a7",
+        "qwen_spec.py": "88a24948f5252dd7f090347ac47a8bfe0607d5d7724150c28fc9b9d8e5aff271",
+        "qwen_spec_attention.py": "ef8ed01898b839d73cbb86d6e4cb85e0e22c5ceea09dd34ea9ea44322adaf863",
+        "qwen_spec_attention_model.py": "9b66c9351d4bc44f4ae4594f2e455a24b1efc33aee4c9438e022bad809178e92",
+        "qwen_spec_linear.py": "61916865139878da53389e9fc652f7bafc420e0e0f08e77659064648390418b0",
+        "qwen_spec_linear_model.py": "114e76c47a83f958625f340a3174fe0f495456d010fae0aa959683b962fb2aed",
+        "qwen_spec_engine.py": "09b694a2c63c67d089a8cca59e30aa564613518252992d8d7145844ac892e1ba",
+        "server.py": "a01e5a4799065e1a8c88b6227fe9aa3143e926a5e08e75dcdcbbb87c2c20cf27"
+      }
+    }
+  ]
+}

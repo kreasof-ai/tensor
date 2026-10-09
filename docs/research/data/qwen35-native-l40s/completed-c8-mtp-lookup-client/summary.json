@@ -1,0 +1,96 @@
+{
+  "client": {
+    "requests": 8,
+    "completed": 8,
+    "failed": 0,
+    "elapsed_seconds": 174.07779942000343,
+    "prompt_tokens": 256000,
+    "output_tokens": 128000,
+    "observed_output_tokens_including_failures": 128000,
+    "output_tokens_per_second": 735.3034127641403,
+    "input_tokens_per_second": 1470.6068255282805,
+    "total_tokens_per_second": 2205.9102382924207,
+    "requests_per_second": 0.045956463297758765,
+    "goodput_output_tokens_per_second": 735.3034127641403,
+    "goodput_requests_per_second": 0.045956463297758765,
+    "ttft_seconds": {
+      "count": 8,
+      "mean": 38.736408447750364,
+      "p50": 38.736474963001456,
+      "p95": 38.742167601648546,
+      "p99": 38.74270433952828
+    },
+    "service_ttft_seconds": {
+      "count": 8,
+      "mean": 38.736406137751146,
+      "p50": 38.736472978001984,
+      "p95": 38.74216373914915,
+      "p99": 38.74269984702918
+    },
+    "tpot_seconds": {
+      "count": 8,
+      "mean": 0.0071312629345818435,
+      "p50": 0.006769562319582482,
+      "p95": 0.008298399256347186,
+      "p99": 0.008426600099084892
+    },
+    "latency_seconds": {
+      "count": 8,
+      "mean": 152.82955007324972,
+      "p50": 147.0463674074981,
+      "p95": 171.50114058865182,
+      "p99": 173.55117132973194
+    },
+    "client_queue_seconds": {
+      "count": 8,
+      "mean": 2.309999217686709e-06,
+      "p50": 2.0299976313253865e-06,
+      "p95": 3.862499397655482e-06,
+      "p99": 4.492499101615976e-06
+    },
+    "stream_chunk_gap_seconds": {
+      "count": 17434,
+      "mean": 0.05235428504778016,
+      "p50": 0.05324843000016699,
+      "p95": 0.0555760529001418,
+      "p99": 0.057030302098282845
+    },
+    "single_token_gap_seconds": {
+      "count": 124,
+      "mean": 0.10374076270959302,
+      "p50": 0.05437687149787962,
+      "p95": 0.05762427469817339,
+      "p99": 1.084010395699188
+    }
+  },
+  "peak_gpu_memory_mib": 43935.0,
+  "peak_gpu_memory_gib": 42.9052734375,
+  "numerical_speed_gate": true,
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false,
+  "scope": "one exact finite HTTP cohort, no warmup or repeated acceptance sweep; synthetic random-token prompts",
+  "precision": "official FP8/BF16 weights and FP8 KV; FP32 recurrent state; no weight/KV offload",
+  "draft": "embedded MTP plus bounded verified output-history lookup",
+  "target_serial_quality": {
+    "scope": "two teacher-forced rows at the real 32K prefix; batch verification vs same native serial target",
+    "relative_logit_rms": 0.087837815284729,
+    "greedy_matches": 12,
+    "greedy_total": 16,
+    "finite": true,
+    "threshold": 0.03,
+    "canonical_model_qualified": false,
+    "passed": false
+  },
+  "all_requests_active_decode_window": {
+    "scope": "client token arrivals after all first tokens until the first completed request",
+    "start_seconds": 38.7434618360021,
+    "end_seconds": 146.78951343800145,
+    "seconds": 108.04605160199935,
+    "output_tokens": 117746,
+    "output_tokens_per_second": 1089.776056174006
+  },
+  "target_weight_bytes": 35707988096,
+  "draft_weight_bytes": 853668480,
+  "total_resident_weight_bytes": 36561656576,
+  "resident_weight_accounting_note": "Frozen server_info.resident_weight_bytes counts the target allocation; this summary also accounts for the resident MTP weights."
+}

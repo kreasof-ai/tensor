@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import tensor
 from tensor_llm import GGUF, LFM2, Tokenizer
-from tensor_llm.provenance import implementation_hashes
+from tensor_llm.lfm2.provenance import implementation_hashes
 
 
 def digest(path):

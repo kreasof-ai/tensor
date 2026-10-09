@@ -17,7 +17,7 @@ import shutil
 import numpy as np
 import tensor
 from tensor_llm import GGUF
-from tensor_llm.kernels import source
+from tensor_llm.lfm2.kernels.baseline import source
 from benchmarks.lfm2.text_helpers import emit, weight
 from tensor.providers.cuda_graph import CudaGraph
 from tensor.compiler.tuning import measure_cuda
@@ -40,7 +40,7 @@ def linear_source(parameters,mode):
     if parameters['r']!=1:raise ValueError('decode candidates require one row')
     k,o,q=parameters['k'],parameters['o'],parameters['type']
     if mode=='fp16_half2' and k%64:raise ValueError('half2 requires K divisible by 64')
-    from tensor_llm.gguf import TYPES
+    from tensor_llm.common.gguf import TYPES
     _,block,size=TYPES[q]
     dtype='float16' if q==1 else 'float32' if q==0 else 'uint8'
     args=[('x',k,'float32'),('w',k*o if q in (0,1) else k*o//block*size,dtype),('out',o,'float32')]

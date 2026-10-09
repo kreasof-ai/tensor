@@ -9,7 +9,7 @@ import tensor
 from tensor.providers.webgpu import Device
 from tensor.artifacts.format import read_artifact
 from tensor_llm import GGUF
-from tensor_llm.model import DECODE_GEMV,DECODE_GEMV_COMMON
+from tensor_llm.lfm2.model import DECODE_GEMV,DECODE_GEMV_COMMON
 from benchmarks.lfm2.tensor_projection_search import TimestampAdapter,bind,check
 from benchmarks.lfm2.decode_kernel_search import TrafficTimer
 

@@ -1,0 +1,39 @@
+{
+  "general.architecture": "qwen35moe",
+  "qwen35moe.block_count": 41,
+  "qwen35moe.context_length": 262144,
+  "qwen35moe.embedding_length": 2048,
+  "qwen35moe.attention.head_count": 16,
+  "qwen35moe.attention.head_count_kv": 2,
+  "qwen35moe.rope.dimension_sections": [
+    11,
+    11,
+    10,
+    0
+  ],
+  "qwen35moe.rope.freq_base": 10000000.0,
+  "general.file_type": 32,
+  "qwen35moe.nextn_predict_layers": 1,
+  "qwen35moe.ssm.conv_kernel": 4,
+  "qwen35moe.ssm.state_size": 128,
+  "qwen35moe.ssm.group_count": 16,
+  "qwen35moe.ssm.time_step_rank": 32,
+  "qwen35moe.ssm.inner_size": 4096,
+  "qwen35moe.rope.dimension_count": 64,
+  "tensor_types": {
+    "BF16": 63,
+    "Q8_0": 380,
+    "F32": 310
+  },
+  "tensor_count": 753,
+  "input_embedding": [
+    {
+      "name": "token_embd.weight",
+      "type": "BF16",
+      "shape": [
+        2048,
+        248320
+      ]
+    }
+  ]
+}

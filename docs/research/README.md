@@ -19,6 +19,9 @@ kernel and throughput plots, source hashes and an archive commit timeline.
 
 | Report | What to read it for |
 |---|---|
+| [Shared LFM2 requests on L40S](llm-shared-requests-l40s.md) | Eight isolated handles sharing weights and scratch, real 230M logits, frozen singleton comparison, copy-ordering regression and installed compiler-free replay |
+| [Bounded 35B long-context stress test on L40S](llm-serving-l40s-stress.md) | Real 32K-input/16K-output vLLM/SGLang/llama.cpp runs at concurrency 1, 2 and 4; GPU residency, raw telemetry, finite-run plots and explicit FP8/GGUF differences |
+| [Matched serving harness on L40S](llm-serving-l40s-pilot.md) | Real vLLM/SGLang/llama.cpp protocol qualification on Qwen3-0.6B, shared-load latency/throughput plots, raw requests, telemetry and pinned configurations |
 | [LLT dependency qualification on L40S](llt-readiness.md) | BF16 ABI, training/backward, RoPE, caches, compiler-free wheels, and kernel/full-model resource evidence |
 | [CUDA frontend and shared discovery](lfm2-compiler-cleanup.md) | Inspectable TileLang/TIRx algorithms, backend-neutral discovery and target-bound producer profiles; rechecked against the frozen native implementation |
 | [F16, Q4_0 and Q4_K_M CUDA optimization](lfm2-cuda-formats.md) | Tuned prefill tiles and packed loaders, Q4_K decode, F16 FFN fusion and shared long-context K/V; matched frozen-before and llama.cpp controls |
@@ -99,3 +102,5 @@ revision when reproducing them.
 - [Symbolic shapes](e4b-symbolic-shapes.md): runtime dimensions versus rebuilds.
 - [Opaque artifact prototype](e13-opaque-artifact-prototype.md): the executable boundary.
 - [CUDA execution](e14-cuda-execution.md): first compiler-free GPU consumer and startup measurements.
+
+- [Experimental native Qwen3.5 C8 on L40S](qwen35-native-l40s.md) — complete 32K/16K C8 client replay at 735.3 output tok/s with official FP8 weights, FP8 KV, MTP and verified output lookup; numerical qualification fails and remains open.

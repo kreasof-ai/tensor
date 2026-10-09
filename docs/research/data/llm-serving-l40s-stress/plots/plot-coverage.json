@@ -1,0 +1,692 @@
+{
+  "schema": "tensor.llm-serving-plot.v1",
+  "reports": [
+    "build/llm-serving/qwen35-stress/combined/report.json"
+  ],
+  "unmatched": true,
+  "synthetic": false,
+  "latency_statistic": "mean",
+  "servers": [
+    {
+      "name": "vllm-fp8",
+      "disposition": "measured",
+      "reason": null,
+      "points": [
+        {
+          "concurrency": 1,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c1-r0-requests.jsonl",
+          "telemetry_file": "c1-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 811.6685764679996,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 78.84991714043919,
+            "input_tokens_per_second": 157.69983428087838,
+            "total_tokens_per_second": 236.54975142131755,
+            "requests_per_second": 0.00492811982127745,
+            "goodput_output_tokens_per_second": 78.84991714043919,
+            "goodput_requests_per_second": 0.00492811982127745,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 16.486793763999913,
+              "p50": 1.896579821999694,
+              "p95": 51.50545826240002,
+              "p99": 58.50886767728011
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 16.48678915399978,
+              "p50": 1.8965751769997041,
+              "p95": 51.50545405139981,
+              "p99": 58.50886355507983
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.011651032085583506,
+              "p50": 0.011647240046159154,
+              "p95": 0.011661478670570062,
+              "p99": 0.011663431059971903
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 202.8918631705003,
+              "p50": 188.23912561600036,
+              "p95": 238.07725790720008,
+              "p99": 245.1122406406401
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 4.610000132743153e-06,
+              "p50": 4.644999989977805e-06,
+              "p95": 5.018500178266549e-06,
+              "p99": 5.043700239184545e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 63991,
+              "mean": 0.011651942450485257,
+              "p50": 0.01164999299999181,
+              "p95": 0.011955862500144576,
+              "p99": 0.01278142889968876
+            },
+            "single_token_gap_seconds": {
+              "count": 63983,
+              "mean": 0.011653081726802465,
+              "p50": 0.011650043000372534,
+              "p95": 0.011955866100288403,
+              "p99": 0.012781583219693858
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 2,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c2-r0-requests.jsonl",
+          "telemetry_file": "c2-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 455.8387519979997,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 140.40052478969767,
+            "input_tokens_per_second": 280.80104957939534,
+            "total_tokens_per_second": 421.201574369093,
+            "requests_per_second": 0.008775032799356104,
+            "goodput_output_tokens_per_second": 140.40052478969767,
+            "goodput_requests_per_second": 0.008775032799356104,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 3.09515028550004,
+              "p50": 3.050105664500279,
+              "p95": 4.204046597249817,
+              "p99": 4.239240058649793
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 3.0951462827499654,
+              "p50": 3.050102469000194,
+              "p95": 4.204041593599549,
+              "p99": 4.239234609919485
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.014048966409634992,
+              "p50": 0.014021495462653945,
+              "p95": 0.014154054641796364,
+              "p99": 0.014168997964099003
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 227.86479880575007,
+              "p50": 227.8870537089997,
+              "p95": 228.78354973215045,
+              "p99": 228.8728837584306
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 4.002750074505457e-06,
+              "p50": 4.300000000512227e-06,
+              "p95": 5.4070002988737535e-06,
+              "p99": 5.529400314117083e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 63990,
+              "mean": 0.014050283706063463,
+              "p50": 0.013967135999791935,
+              "p95": 0.014508302000194817,
+              "p99": 0.01514646770012405
+            },
+            "single_token_gap_seconds": {
+              "count": 63978,
+              "mean": 0.014050913472709377,
+              "p50": 0.01396728300005634,
+              "p95": 0.014508284200383059,
+              "p99": 0.015145033399703606
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 4,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c4-r0-requests.jsonl",
+          "telemetry_file": "c4-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 297.14724018000015,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 215.38143837792776,
+            "input_tokens_per_second": 430.76287675585553,
+            "total_tokens_per_second": 646.1443151337833,
+            "requests_per_second": 0.013461339898620485,
+            "goodput_output_tokens_per_second": 215.38143837792776,
+            "goodput_requests_per_second": 0.013461339898620485,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 4.9027259590000085,
+              "p50": 4.942066883500047,
+              "p95": 7.413080824999951,
+              "p99": 7.624468022599967
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 4.902723351249733,
+              "p50": 4.942064813499655,
+              "p95": 7.413079041499804,
+              "p99": 7.624466297899852
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.018254091134774025,
+              "p50": 0.018252380365772824,
+              "p95": 0.018404142667829276,
+              "p99": 0.018417478631947044
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 296.9501307007499,
+              "p50": 296.96210631450003,
+              "p95": 297.09809571060003,
+              "p99": 297.10925289971993
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 2.6077502752741566e-06,
+              "p50": 2.070000391540816e-06,
+              "p95": 4.223850237394799e-06,
+              "p99": 4.509570217123836e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 63996,
+              "mean": 0.018254091134774025,
+              "p50": 0.018108579499312327,
+              "p95": 0.01906178699891825,
+              "p99": 0.019430763999753256
+            },
+            "single_token_gap_seconds": {
+              "count": 63996,
+              "mean": 0.018254091134774025,
+              "p50": 0.018108579499312327,
+              "p95": 0.01906178699891825,
+              "p99": 0.019430763999753256
+            }
+          },
+          "warnings": [
+            "fewer than two waves of requests; fill/drain effects can dominate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sglang-fp8",
+      "disposition": "measured",
+      "reason": null,
+      "points": [
+        {
+          "concurrency": 1,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c1-r0-requests.jsonl",
+          "telemetry_file": "c1-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 704.4607980389992,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 90.84962595243935,
+            "input_tokens_per_second": 181.6992519048787,
+            "total_tokens_per_second": 272.5488778573181,
+            "requests_per_second": 0.0056781016220274596,
+            "goodput_output_tokens_per_second": 90.84962595243935,
+            "goodput_requests_per_second": 0.0056781016220274596,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 2.121789328500199,
+              "p50": 2.0865160394996565,
+              "p95": 2.224472478699954,
+              "p99": 2.2436459037399437
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 2.121784615999786,
+              "p50": 2.0865109994992963,
+              "p95": 2.224468075700224,
+              "p99": 2.243641551140336
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.010873610958138009,
+              "p50": 0.010873828897493595,
+              "p95": 0.01087453946366963,
+              "p99": 0.010874552858194296
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 176.08977326275,
+              "p50": 176.05878703350027,
+              "p95": 176.20592659494952,
+              "p99": 176.2248782773894
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 4.712500413006637e-06,
+              "p50": 4.595000973495189e-06,
+              "p95": 5.236000197328394e-06,
+              "p99": 5.303200141497655e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 63996,
+              "mean": 0.01087361095813801,
+              "p50": 0.010865524499422463,
+              "p95": 0.011188197250703524,
+              "p99": 0.011654525000358263
+            },
+            "single_token_gap_seconds": {
+              "count": 63996,
+              "mean": 0.01087361095813801,
+              "p50": 0.010865524499422463,
+              "p95": 0.011188197250703524,
+              "p99": 0.011654525000358263
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 2,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c2-r0-requests.jsonl",
+          "telemetry_file": "c2-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 446.27535944900046,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 143.40921730256048,
+            "input_tokens_per_second": 286.81843460512096,
+            "total_tokens_per_second": 430.2276519076815,
+            "requests_per_second": 0.00896307608141003,
+            "goodput_output_tokens_per_second": 143.40921730256048,
+            "goodput_requests_per_second": 0.00896307608141003,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 3.201350027999524,
+              "p50": 3.1683607839995602,
+              "p95": 4.22993637484924,
+              "p99": 4.246769866969298
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 3.201346355499936,
+              "p50": 3.1683565490002366,
+              "p95": 4.2299343868498,
+              "p99": 4.246767989369782
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.013743660378258034,
+              "p50": 0.013745580884867846,
+              "p95": 0.013869177701821988,
+              "p99": 0.01388350771807549
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 223.1028612885002,
+              "p50": 223.0968245664999,
+              "p95": 224.42872606760028,
+              "p99": 224.43552360632043
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 3.6724995879922062e-06,
+              "p50": 3.569999535102397e-06,
+              "p95": 5.500499810295878e-06,
+              "p99": 5.660099759552395e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 63996,
+              "mean": 0.013743660378258034,
+              "p50": 0.013666301000739622,
+              "p95": 0.014285913750882173,
+              "p99": 0.015197568499570482
+            },
+            "single_token_gap_seconds": {
+              "count": 63996,
+              "mean": 0.013743660378258034,
+              "p50": 0.013666301000739622,
+              "p95": 0.014285913750882173,
+              "p99": 0.015197568499570482
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 4,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c4-r0-requests.jsonl",
+          "telemetry_file": "c4-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 295.08582877200024,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 216.88605063257702,
+            "input_tokens_per_second": 433.77210126515405,
+            "total_tokens_per_second": 650.658151897731,
+            "requests_per_second": 0.013555378164536065,
+            "goodput_output_tokens_per_second": 216.88605063257702,
+            "goodput_requests_per_second": 0.013555378164536065,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 5.447765816999436,
+              "p50": 5.484589133498957,
+              "p95": 8.166962387450802,
+              "p99": 8.398896270291043
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 5.447763504249451,
+              "p50": 5.484587448499042,
+              "p95": 8.166960713600837,
+              "p99": 8.398894598720998
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.018091538991436975,
+              "p50": 0.018088364200950106,
+              "p95": 0.01826195632271707,
+              "p99": 0.018277549328372424
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 294.9401455977495,
+              "p50": 294.9396662279996,
+              "p95": 295.0196284903498,
+              "p99": 295.0268885300697
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 2.3127499844122212e-06,
+              "p50": 1.6849999155965634e-06,
+              "p95": 3.831999947578878e-06,
+              "p99": 4.134400023758644e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 63996,
+              "mean": 0.018091538991436975,
+              "p50": 0.017855038499874354,
+              "p95": 0.019035905250802898,
+              "p99": 0.02071634550047748
+            },
+            "single_token_gap_seconds": {
+              "count": 63996,
+              "mean": 0.018091538991436975,
+              "p50": 0.017855038499874354,
+              "p95": 0.019035905250802898,
+              "p99": 0.02071634550047748
+            }
+          },
+          "warnings": [
+            "fewer than two waves of requests; fill/drain effects can dominate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "llama-fp8-identical",
+      "disposition": "unsupported",
+      "reason": "This llama.cpp server consumes GGUF, not the identical block-FP8 safetensors checkpoint; a converted GGUF arm is reported separately.",
+      "points": []
+    },
+    {
+      "name": "llama-gguf-q8-fp8-source",
+      "disposition": "measured",
+      "reason": null,
+      "points": [
+        {
+          "concurrency": 1,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c1-r0-requests.jsonl",
+          "telemetry_file": "c1-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 741.629777989001,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 86.29642700370262,
+            "input_tokens_per_second": 172.59285400740524,
+            "total_tokens_per_second": 258.8892810111078,
+            "requests_per_second": 0.0053935266877314135,
+            "goodput_output_tokens_per_second": 86.29642700370262,
+            "goodput_requests_per_second": 0.0053935266877314135,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 5.937902334499995,
+              "p50": 5.865101692500502,
+              "p95": 6.130937994850319,
+              "p99": 6.168149094970358
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 5.937897854249968,
+              "p50": 5.865096847000132,
+              "p95": 6.130934165350209,
+              "p99": 6.168145377070268
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.011216485437480418,
+              "p50": 0.011213981729983048,
+              "p95": 0.011230475544433963,
+              "p99": 0.01123215591288699
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 185.39313799799993,
+              "p50": 185.4339939495003,
+              "p95": 185.57412439999945,
+              "p99": 185.5820745871994
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 4.480250026972499e-06,
+              "p50": 4.579999767884146e-06,
+              "p95": 5.003350452170707e-06,
+              "p99": 5.057470480096526e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 42667,
+              "mean": 0.016823545176764168,
+              "p50": 0.016756181999880937,
+              "p95": 0.023534440598996297,
+              "p99": 0.023791105319432973
+            },
+            "single_token_gap_seconds": {
+              "count": 16004,
+              "mean": 0.011234325031117025,
+              "p50": 0.011212446500394435,
+              "p95": 0.011874498499582841,
+              "p99": 0.012204370100243975
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 2,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c2-r0-requests.jsonl",
+          "telemetry_file": "c2-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 602.9514826200011,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 106.14452712165367,
+            "input_tokens_per_second": 212.28905424330733,
+            "total_tokens_per_second": 318.433581364961,
+            "requests_per_second": 0.006634032945103355,
+            "goodput_output_tokens_per_second": 106.14452712165367,
+            "goodput_requests_per_second": 0.006634032945103355,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 9.164413900000909,
+              "p50": 9.168445105500723,
+              "p95": 12.00513751310118,
+              "p99": 12.007702770621217
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 9.164409690000412,
+              "p50": 9.168439290499919,
+              "p95": 12.00513422260101,
+              "p99": 12.007699704521183
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.018267885785439687,
+              "p50": 0.018265699124945307,
+              "p95": 0.018384855768407378,
+              "p99": 0.018389986948868654
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 301.4382922505006,
+              "p50": 301.4563985500008,
+              "p95": 305.0905318414011,
+              "p99": 305.4764280458811
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 4.210000497550936e-06,
+              "p50": 3.9450005715480074e-06,
+              "p95": 6.469500567618524e-06,
+              "p99": 6.693900486425264e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 47998,
+              "mean": 0.02435667358483683,
+              "p50": 0.018831836499884957,
+              "p95": 0.038310973000079684,
+              "p99": 0.03906873869929768
+            },
+            "single_token_gap_seconds": {
+              "count": 31999,
+              "mean": 0.018261484541110616,
+              "p50": 0.018077811000694055,
+              "p95": 0.019468694999704893,
+              "p99": 0.02004378582019854
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 4,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c4-r0-requests.jsonl",
+          "telemetry_file": "c4-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 4,
+            "completed": 4,
+            "failed": 0,
+            "elapsed_seconds": 490.5347160950005,
+            "prompt_tokens": 128000,
+            "output_tokens": 64000,
+            "observed_output_tokens_including_failures": 64000,
+            "output_tokens_per_second": 130.46986869652116,
+            "input_tokens_per_second": 260.9397373930423,
+            "total_tokens_per_second": 391.4096060895635,
+            "requests_per_second": 0.008154366793532573,
+            "goodput_output_tokens_per_second": 130.46986869652116,
+            "goodput_requests_per_second": 0.008154366793532573,
+            "ttft_seconds": {
+              "count": 4,
+              "mean": 15.400515417500173,
+              "p50": 15.409873382000114,
+              "p95": 23.83812683879969,
+              "p99": 24.596969099759626
+            },
+            "service_ttft_seconds": {
+              "count": 4,
+              "mean": 15.400512827250168,
+              "p50": 15.409871311499955,
+              "p95": 23.838123067300963,
+              "p99": 24.596965137461062
+            },
+            "tpot_seconds": {
+              "count": 4,
+              "mean": 0.02966893998329581,
+              "p50": 0.029672070884711556,
+              "p95": 0.030167214741943213,
+              "p99": 0.0302116228506325
+            },
+            "latency_seconds": {
+              "count": 4,
+              "mean": 490.08012659475025,
+              "p50": 490.1385158510002,
+              "p95": 490.4749811515495,
+              "p99": 490.49976251510947
+            },
+            "client_queue_seconds": {
+              "count": 4,
+              "mean": 2.5902500055963174e-06,
+              "p50": 2.3150005290517583e-06,
+              "p95": 3.77149872292648e-06,
+              "p99": 3.962298560509225e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 47998,
+              "mean": 0.03955776247283217,
+              "p50": 0.030742597999960708,
+              "p95": 0.06255203330010772,
+              "p99": 0.06411750007089721
+            },
+            "single_token_gap_seconds": {
+              "count": 31999,
+              "mean": 0.02949105398896837,
+              "p50": 0.029080784999678144,
+              "p95": 0.03186624359914276,
+              "p99": 0.03259616876028304
+            }
+          },
+          "warnings": [
+            "fewer than two waves of requests; fill/drain effects can dominate"
+          ]
+        }
+      ]
+    }
+  ]
+}

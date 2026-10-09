@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 import numpy as np
 from tensor.artifacts.format import read_artifact
-from tensor_llm.provenance import implementation_hashes
+from tensor_llm.lfm2.provenance import implementation_hashes
 
 
 def digest(path):

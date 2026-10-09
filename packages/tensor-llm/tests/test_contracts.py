@@ -2,9 +2,9 @@
 from types import SimpleNamespace
 import numpy as np
 import pytest
-from tensor_llm.config import Config
-from tensor_llm.gguf import GGUFError
-from tensor_llm.tokenizer import Tokenizer
+from tensor_llm.lfm2.config import Config
+from tensor_llm.common.gguf import GGUFError
+from tensor_llm.common.tokenizer import Tokenizer
 
 
 def tokenizer(template=None):

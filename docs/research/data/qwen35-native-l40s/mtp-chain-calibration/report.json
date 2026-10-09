@@ -1,0 +1,39 @@
+{
+  "scope": "native MTP chain agreement; serial target verification and cache correction",
+  "slots": 8,
+  "proposals": 3,
+  "rounds": 64,
+  "context_start": [
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256
+  ],
+  "context_end": [
+    32512,
+    32512,
+    32512,
+    32512,
+    32512,
+    32512,
+    32512,
+    32512
+  ],
+  "accepted_prefix_histogram": [
+    32,
+    59,
+    50,
+    371
+  ],
+  "mean_accepted_prefix": 2.484375,
+  "mean_tokens_per_verification": 3.484375,
+  "all_proposals_agree": 0.724609375,
+  "mean_additional_draft_seconds": 0.0047321037811798305,
+  "speculative_verification": false,
+  "full_stress_target_reached": false,
+  "model_throughput_qualified": false
+}

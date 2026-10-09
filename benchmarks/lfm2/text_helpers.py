@@ -4,7 +4,7 @@ Production packages define kernels in TileLang DSL. These helpers retain the
 independent text controls used by FP16 and packed-load research experiments.
 """
 
-from tensor_llm.gguf import TYPES
+from tensor_llm.common.gguf import TYPES
 
 
 def emit(args, body):

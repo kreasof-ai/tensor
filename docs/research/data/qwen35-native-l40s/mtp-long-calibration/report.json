@@ -1,0 +1,40 @@
+{
+  "scope": "full-length prefix; short serial one-token MTP agreement diagnostic",
+  "prompt_steps": 32000,
+  "slots": 8,
+  "decode_steps": 256,
+  "verified_proposals": 2048,
+  "matches": 1880,
+  "agreement": 0.91796875,
+  "mean_draft_seconds": 0.0023539482733383466,
+  "mean_target_seconds": 0.0199204260586896,
+  "target_prefill_seconds": 36.81582554000124,
+  "draft_prefill_seconds": 1.573575370999606,
+  "token_ids_sha256": "3783f9f1a6847166b173ae9a9462dc244b6fc8e4da9e1a93ae032b895f47d998",
+  "target_end_positions": [
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256
+  ],
+  "draft_end_positions": [
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256,
+    32256
+  ],
+  "kv_dtype": "fp8",
+  "draft_weight_bytes": 853668480,
+  "draft_allocated_bytes": 1277962368,
+  "speculative_verification": false,
+  "full_stress_target_reached": false,
+  "model_throughput_qualified": false
+}

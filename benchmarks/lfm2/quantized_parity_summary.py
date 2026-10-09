@@ -6,8 +6,8 @@ import argparse,hashlib,json,subprocess
 from pathlib import Path
 import numpy as np
 from tensor.artifacts.format import read_artifact
-from tensor_llm.provenance import implementation_hashes
-from tensor_llm.model import QUANT_DECODE,QUANT_PREFILL,QUANT_ATTENTION
+from tensor_llm.lfm2.provenance import implementation_hashes
+from tensor_llm.lfm2.model import QUANT_DECODE,QUANT_PREFILL,QUANT_ATTENTION
 
 
 def digest(path):
@@ -63,7 +63,7 @@ def run(root,reference,out):
         kernel_only_comparison=load('kernel-only-comparison/report.json'),
         discovery_control_note='Initial prefill discovery omitted the wide production tile for columns >=5120. Corrected prefill-replay includes projection_tile and independently replays the control and discovery finalists. Retained improvements use corrected replay and full-model rates.',
         sources={p:dict(sha256=digest(p),text=Path(p).read_text()) for p in
-            (__file__,'packages/tensor-llm/src/tensor_llm/model.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py',
+            (__file__,'packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py',
              'src/tensor/compiler/webgpu_lowering.py','benchmarks/lfm2/prefill_chase_search.py',
              'src/tensor/providers/webgpu.py','src/tensor/native/webgpu_plan.c',
              'benchmarks/lfm2/runtime_compare.py','benchmarks/lfm2/prefill_chase_compare.py',

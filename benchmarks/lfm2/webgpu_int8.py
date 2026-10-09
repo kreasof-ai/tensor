@@ -8,7 +8,7 @@ import numpy as np
 import tensor
 from tensor.runtime.abi import BoundCall
 from tensor_llm import LFM2
-from tensor_llm.webgpu_kernels import source
+from tensor_llm.lfm2.kernels.webgpu import source
 from benchmarks.lfm2.webgpu_run import metrics
 
 

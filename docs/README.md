@@ -19,6 +19,7 @@ upgrading artifacts. Commands run from the repository root unless stated otherwi
 | Package exports, pin dependencies, and publish through PyPI | [Tensor modules](guides/modules.md) |
 | Use Tensor kernels with `torch.compile` or custom operators | [PyTorch integration](guides/pytorch.md) |
 | Train LLT and use persistent shared-KV attention | [LLT operators](guides/llt.md) |
+| Measure vLLM, SGLang and llama.cpp with the same request load | [LLM serving benchmarks](guides/llm-serving-benchmarks.md) |
 | Build and run portable WGSL artifacts | [WebGPU provider](guides/webgpu.md) |
 | Write explicit forward and backward callbacks | [Manual backward](guides/manual-backward.md) |
 | Run the standalone nanoGPT training template | [Tensor NN](../packages/tensor-nn/README.md) |
@@ -30,6 +31,7 @@ upgrading artifacts. Commands run from the repository root unless stated otherwi
 - [Release preparation](releases.md) and [changelog](../CHANGELOG.md).
 - [Path to 1.0](plan/v1.md): proposed stability boundary, remaining work, and acceptance criteria.
 - [1.0 benchmarks and demonstrations](plan/v1-benchmarks.md): requested comparison matrix and reproducible evaluation plan.
+- [Unified Tensor LLM engine](plan/unified-llm-engine.md): staged batch-1 and batch throughput development in the existing optional package.
 - [Tuning workbench proposal](plan/tuning-workbench.md): human/agent profiling, refinement and verified kernel reconstruction.
 - [Runtime ABI](reference/runtime-abi.md): descriptor layouts, capabilities,
   scalar and buffer rules, executable/event lifetimes, and native hosts.

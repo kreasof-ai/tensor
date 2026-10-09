@@ -4,8 +4,8 @@ from collections import Counter
 from dataclasses import asdict
 import json
 from pathlib import Path
-from .gguf import GGUF
-from .config import Config
+from .common.gguf import GGUF
+from .lfm2.config import Config
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
         gguf=GGUF(args.model);print(json.dumps({'architecture':asdict(Config.from_gguf(gguf)),
             'tensors':len(gguf.tensors),'encodings':dict(Counter(t.encoding for t in gguf.tensors.values()))},indent=2));return
     import tensor
-    from .model import LFM2
+    from .lfm2.model import LFM2
     context=args.context if args.context is not None else (512 if args.provider=='webgpu' else 8448)
     with tensor.Device(args.device,provider=args.provider) as device,LFM2(args.model,args.bundle,device,context=context) as model:
         result=model.generate(args.prompt,max_tokens=args.max_tokens,chat=not args.raw)

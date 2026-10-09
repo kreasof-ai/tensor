@@ -8,9 +8,9 @@ import numpy as np
 import tensor
 from tensor.providers.webgpu import Device
 from tensor_llm import GGUF
-from tensor_llm.gguf import prepack_q4_0
-from tensor_llm.model import webgpu_parameters,projection_tile
-from tensor_llm.webgpu_kernels import source
+from tensor_llm.common.gguf import prepack_q4_0
+from tensor_llm.lfm2.model import webgpu_parameters,projection_tile
+from tensor_llm.lfm2.kernels.webgpu import source
 from benchmarks.lfm2.tensor_projection_search import TimestampAdapter,bind,check
 from benchmarks.lfm2.decode_fusion_search import PlanTimer
 
@@ -57,7 +57,7 @@ def run(model,out,rows=(128,),quantize_subgroup=False,wide_k=False,shapes=None,s
         if not groups or set(groups)!=selected:raise ValueError('missing requested shape')
     report=dict(status='searching',model_sha256=hashlib.sha256(Path(model).read_bytes()).hexdigest(),groups=[],quantize_subgroup=quantize_subgroup,wide_k=wide_k,split_ffn=split_ffn,fixed_residual=fixed_residual,prepacked=prepacked,
         sources={p:dict(sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest(),text=Path(p).read_text()) for p in
-            (__file__,'src/tensor/compiler/webgpu_lowering.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py','packages/tensor-llm/src/tensor_llm/gguf.py')},
+            (__file__,'src/tensor/compiler/webgpu_lowering.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py','packages/tensor-llm/src/tensor_llm/common/gguf.py')},
         protocol='Native packed Q4_0 weights. Current control uses nearest-even F16 operands/F32 accumulation. Integer candidates use two Q8 activation planes after nearest-even half rounding and exact decoded F32 weights, F32 output accumulation. Both checked against their independent float64 arithmetic oracle; activation reconstruction separately bounded. All matrices streamed with distinct outputs, quantizer dispatched before EVERY integer projection, included in timing. 100ms warmup, 7 two-plan samples; control/best3 fresh rotating replay after 3 warmups; every selected weight checked at 3 held-out scales. Timestamp 10ns.')
     if prepacked:report['protocol']+=' Integer candidates use an aligned signed-byte derived cache (36 bytes per Q4_0 block), doubling matrix storage while preserving values; control retains native 18-byte blocks.'
     if fixed_residual:report['protocol']+=' Low-component scale is high scale /254, allowing an integer combination before conversion to F32.'

@@ -1,0 +1,194 @@
+[
+  {
+    "name": "vllm-fp8",
+    "concurrency": 1,
+    "samples": 402,
+    "gpu_peak_gib": 42.5556640625,
+    "metric_ranges": {
+      "vllm:num_requests_running": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "vllm:num_requests_waiting": {
+        "min": 0.0,
+        "max": 0.0
+      },
+      "vllm:kv_cache_usage_perc": {
+        "min": 0.0,
+        "max": 0.13687150837988826
+      },
+      "vllm:num_preemptions_total": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "vllm-fp8",
+    "concurrency": 2,
+    "samples": 226,
+    "gpu_peak_gib": 42.5556640625,
+    "metric_ranges": {
+      "vllm:num_requests_running": {
+        "min": 0.0,
+        "max": 2.0
+      },
+      "vllm:num_requests_waiting": {
+        "min": 0.0,
+        "max": 0.0
+      },
+      "vllm:kv_cache_usage_perc": {
+        "min": 0.0,
+        "max": 0.2737430167597765
+      },
+      "vllm:num_preemptions_total": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "vllm-fp8",
+    "concurrency": 4,
+    "samples": 148,
+    "gpu_peak_gib": 42.5556640625,
+    "metric_ranges": {
+      "vllm:num_requests_running": {
+        "min": 0.0,
+        "max": 4.0
+      },
+      "vllm:num_requests_waiting": {
+        "min": 0.0,
+        "max": 2.0
+      },
+      "vllm:kv_cache_usage_perc": {
+        "min": 0.0,
+        "max": 0.547486033519553
+      },
+      "vllm:num_preemptions_total": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "sglang-fp8",
+    "concurrency": 1,
+    "samples": 349,
+    "gpu_peak_gib": 43.5380859375,
+    "metric_ranges": {
+      "sglang:num_running_reqs": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "sglang:token_usage": {
+        "min": 0.0,
+        "max": 0.13577044180842426
+      },
+      "sglang:num_queue_reqs": {
+        "min": 0.0,
+        "max": 0.0
+      },
+      "sglang:num_retractions_sum": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "sglang-fp8",
+    "concurrency": 2,
+    "samples": 221,
+    "gpu_peak_gib": 43.5400390625,
+    "metric_ranges": {
+      "sglang:num_running_reqs": {
+        "min": 0.0,
+        "max": 2.0
+      },
+      "sglang:token_usage": {
+        "min": 0.06952605388156015,
+        "max": 0.2715408836168485
+      },
+      "sglang:num_queue_reqs": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "sglang:num_retractions_sum": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "sglang-fp8",
+    "concurrency": 4,
+    "samples": 146,
+    "gpu_peak_gib": 43.5400390625,
+    "metric_ranges": {
+      "sglang:num_running_reqs": {
+        "min": 0.0,
+        "max": 4.0
+      },
+      "sglang:token_usage": {
+        "min": 0.08111372952848685,
+        "max": 0.543081767233697
+      },
+      "sglang:num_queue_reqs": {
+        "min": 0.0,
+        "max": 3.0
+      },
+      "sglang:num_retractions_sum": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "llama-gguf-q8-fp8-source",
+    "concurrency": 1,
+    "samples": 367,
+    "gpu_peak_gib": 40.1474609375,
+    "metric_ranges": {
+      "llamacpp:requests_processing": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "llamacpp:requests_deferred": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "llama-gguf-q8-fp8-source",
+    "concurrency": 2,
+    "samples": 299,
+    "gpu_peak_gib": 40.1474609375,
+    "metric_ranges": {
+      "llamacpp:requests_processing": {
+        "min": 0.0,
+        "max": 2.0
+      },
+      "llamacpp:requests_deferred": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  {
+    "name": "llama-gguf-q8-fp8-source",
+    "concurrency": 4,
+    "samples": 243,
+    "gpu_peak_gib": 40.1474609375,
+    "metric_ranges": {
+      "llamacpp:requests_processing": {
+        "min": 0.0,
+        "max": 4.0
+      },
+      "llamacpp:requests_deferred": {
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  }
+]

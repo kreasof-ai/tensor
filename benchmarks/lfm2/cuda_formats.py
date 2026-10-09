@@ -15,7 +15,7 @@ BEFORE_COMMIT='4c6872674756454982af8c87c6a1d77b3fc5ef02'
 def compile_templates(out):
     """Compile every selected 2.6B prefill schedule without a GPU or checkpoint."""
     from benchmarks.lfm2.cuda_format_search import compile_source
-    from tensor_llm.cuda_kernels import source
+    from tensor_llm.lfm2.kernels.cuda import source
     profile=json.loads(Path(__file__).with_name('profiles').joinpath('cuda-sm86-lfm2.5-2.6b.json').read_text())
     specs=[]
     for entry in profile['entries']:

@@ -1,0 +1,24 @@
+Deterministic regression: current shared executor using the frozen original copy routine.
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+  File "/home/sagemaker-user/tensor/packages/tensor-llm/tests/test_requests.py", line 211, in test_metadata_copy_completed_before_nonblocking_execution
+    np.testing.assert_array_equal(model.forward([256, 65, 66]), expected[0])
+  File "/opt/conda/lib/python3.12/site-packages/numpy/testing/_private/utils.py", line 920, in assert_array_equal
+    assert_array_compare(operator.__eq__, x, y, err_msg=err_msg,
+  File "/opt/conda/lib/python3.12/contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/numpy/testing/_private/utils.py", line 797, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 288 / 288 (100%)
+Max absolute difference: 0.9860977
+Max relative difference: 71.86724
+ x: array([-0.005998,  0.119667, -0.184331,  0.053999,  0.403531,  0.027954,
+       -0.152276,  0.241804,  0.3268  , -0.069181, -0.03573 ,  0.311183,
+        0.079755, -0.260883, -0.104381, -0.090344, -0.136079,  0.293442,...
+ y: array([-0.007702,  0.204595,  0.081866, -0.143277,  0.358057,  0.253188,
+       -0.218601, -0.105145,  0.060565, -0.003709, -0.062772, -0.377784,
+        0.159275, -0.487209, -0.277354, -0.124523, -0.160578,  0.225879,...

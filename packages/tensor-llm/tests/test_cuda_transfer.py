@@ -10,7 +10,7 @@ GPU = pytest.mark.skipif(os.environ.get('TENSOR_LFM2_CUDA') != '1',
 
 
 def test_cuda_profile_rows_are_explicit():
-    from tensor_llm.model import valid_rows, requirements
+    from tensor_llm.lfm2.model import valid_rows, requirements
     from test_contracts import fixture
     assert valid_rows('cuda', (1, 128), 'default')
     assert valid_rows('cuda', (1, 32, 128), 'optimized')
@@ -22,7 +22,7 @@ def test_cuda_profile_rows_are_explicit():
 
 def build(kind, parameters, directory, generator=None):
     import tensor
-    from tensor_llm.cuda_kernels import source
+    from tensor_llm.lfm2.kernels.cuda import source
     path = directory / (kind + '.py')
     path.write_text((generator or source)(kind, parameters))
     artifact = path.with_suffix('.tbin')
@@ -102,7 +102,7 @@ def test_staged_prefill_pairs_and_padding(tmp_path, encoding, rows, kind):
     import torch
     import tensor
     from tensor_llm import GGUF
-    from tensor_llm.cuda_kernels import prefill_source
+    from tensor_llm.lfm2.kernels.cuda import prefill_source
     g=GGUF(ROOT/'build/lfm2-diagnostic.gguf');k,o=256,63
     name=next(n for n,t in g.tensors.items() if t.type==encoding and len(t.shape)==2 and t.shape[1]==k)
     info=g.tensors[name];raw=np.array(g.packed(name)[:o*info.nbytes//info.shape[0]],copy=True)

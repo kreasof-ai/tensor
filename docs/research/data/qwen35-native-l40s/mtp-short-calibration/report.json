@@ -1,0 +1,30 @@
+{
+  "scope": "serial one-token draft agreement/cost diagnostic; no batched verification",
+  "slots": 8,
+  "prompt_steps": 512,
+  "kv_dtype": "fp8",
+  "token_ids_sha256": "812653bed4b88c913fefbf643bd5888825c6d2787d4031d01ddbcedb806d7b40",
+  "draft_weight_bytes": 853668480,
+  "draft_allocated_bytes": 1277962368,
+  "summaries": {
+    "teacher_forced": {
+      "steps": 511,
+      "proposed_tokens": 4088,
+      "matches": 2728,
+      "agreement": 0.6673189823874756,
+      "mean_draft_seconds": 0.0020411383816503637,
+      "mean_target_seconds": 0.0169377957278906
+    },
+    "autoregressive": {
+      "steps": 256,
+      "proposed_tokens": 2048,
+      "matches": 1710,
+      "agreement": 0.8349609375,
+      "mean_draft_seconds": 0.0020320108593239183,
+      "mean_target_seconds": 0.017852909453054622
+    }
+  },
+  "speculative_verification": false,
+  "full_stress_target_reached": false,
+  "model_throughput_qualified": false
+}

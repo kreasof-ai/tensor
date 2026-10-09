@@ -3,11 +3,27 @@
 [Path to 1.0](v1.md) · [Plans](README.md) · [Existing measurements](../research/README.md)
 
 Planning baseline: **2026-10-05**. This records the requested 1.0 comparison
-program. All work below is planned; it contains no new benchmark results or
-claim that the requested models already run in Tensor. CPU/GPU composition and
+program. The comparison targets below remain planned for Tensor; baseline GPU
+measurements are linked separately and do not establish Tensor model support. CPU/GPU composition and
 SSD offloading remain proposed extras/addons after 1.0. The **2026-10-07** addition
 below scopes a minimalist Strata-inspired hybrid MoE demonstration in that
 follow-on track; it does not add a core 1.0 release gate.
+
+The **2026-10-09** [unified Tensor LLM engine plan](unified-llm-engine.md)
+specifies one extension of `packages/tensor-llm` for both llama.cpp-like batch-1
+latency and vLLM-like batch throughput. BENCH-03/04/09 share model loading,
+request state, cache ownership and execution infrastructure, with specialized
+kernel schedules and scheduling policies rather than separate engines.
+
+The independent [LLM serving harness](../guides/llm-serving-benchmarks.md) now
+implements shared token-ID workloads, vLLM/SGLang/llama.cpp protocol adapters,
+concurrency sweeps, telemetry and plots. Synthetic HTTP checks and a
+[real Qwen3-0.6B L40S pilot](../research/llm-serving-l40s-pilot.md) qualify the
+measurement machinery on all three engines. A [bounded 35B L40S stress run](../research/llm-serving-l40s-stress.md)
+also completes 32K/16K requests at concurrency 1, 2 and 4 with native FP8
+vLLM/SGLang and separately labeled converted GGUF llama.cpp. Broader model/hardware
+coverage, numerical quality and Tensor request/resource contracts remain required;
+this is partial BENCH-01/LLM-01 implementation.
 
 The program has three outputs: comparable kernel measurements, complete model
 inference comparisons, and reproducible demonstrations of sustained training,
@@ -20,8 +36,8 @@ release criterion. Unsupported reference cells must remain visible.
 
 | Track | Workload | Implementations | Hardware |
 |---|---|---|---|
-| LLM inference | [Qwen3.5-35B-A3B-FP8](https://huggingface.co/Qwen/Qwen3.5-35B-A3B-FP8) | Tensor, vLLM, SGLang | L40S, H100 |
-| LLM inference | [Qwen3.5-27B-FP8](https://huggingface.co/Qwen/Qwen3.5-27B-FP8) | Tensor, vLLM, SGLang | L40S, H100 |
+| LLM inference | [Qwen3.5-35B-A3B-FP8](https://huggingface.co/Qwen/Qwen3.5-35B-A3B-FP8) | Tensor, vLLM, SGLang, llama.cpp (format audit required) | L40S, H100 |
+| LLM inference | [Qwen3.5-27B-FP8](https://huggingface.co/Qwen/Qwen3.5-27B-FP8) | Tensor, vLLM, SGLang, llama.cpp (format audit required) | L40S, H100 |
 | Flash Attention | Forward and backward | Tensor with search, TileLang, Triton, upstream FlashAttention | A10G, L4, L40S, H100, B200 |
 | Flash MLA | Forward and backward, with exact operator contracts established first | Tensor with search, TileLang, Triton, upstream FlashMLA | A10G, L4, L40S, H100, B200 |
 | Gated DeltaNet (GDN) | Forward and backward | Tensor with search, TileLang, Triton, upstream FLA | A10G, L4, L40S, H100, B200 |
@@ -29,6 +45,14 @@ release criterion. Unsupported reference cells must remain visible.
 Add Tensor's fixed/default schedule to every kernel track as an ablation. It
 shows how much search contributes separately from runtime and kernel changes.
 The matrix lists evaluation targets, not blanket backend support guarantees.
+
+All LLM case matrices retain **vLLM, SGLang and llama.cpp** across batch-1,
+offline batch sweeps and serving, with a result or explicit disposition for each
+baseline. The llama.cpp rows require an actual checkpoint/format capability audit;
+this table does not assert native support for these FP8 safetensors. A converted
+GGUF comparison is a separately labeled, numerically qualified case using
+identical GGUF files in Tensor and llama.cpp. It cannot replace an unsupported
+identical-FP8 cell or be silently pooled into its speedup summary.
 
 | Demonstration | Comparison | Required outcome |
 |---|---|---|
@@ -52,12 +76,19 @@ MoE, image generation, or a complete audio pipeline. The existing nanoGPT
 its [benchmark](../../benchmarks/nanogpt/benchmark.py) resets state between timed
 windows. Neither is evidence of a continuous 1B-token training run.
 
+The engine implementation stages are [LLM-01–07](unified-llm-engine.md#staged-implementation-and-acceptance):
+qualify the existing batch-1 path, separate shared model resources from request
+state, add true LFM2 batching, then cache pooling/continuous scheduling and Qwen
+adapters. Search and dispatch qualification run throughout. Local generation and
+serving use the same engine; batch loops over independent model instances are
+not the intended throughput implementation.
+
 | Item | Development needed before measurement | Acceptance evidence |
 |---|---|---|
 | BENCH-01 — Harness and contracts | Versioned case/result manifests, baseline adapters, numerical gates, device profiling, retained search/replay reports | One complete small case per track; failures and unsupported cells reported explicitly |
 | BENCH-02 — Attention families | Qualified forward/backward implementations and legal search spaces for FA, MLA, GDN; target-specific lowering/build validation | Outputs and required gradients pass references on each advertised hardware/precision profile |
 | BENCH-03 — Qwen FP8 models | Exact checkpoint loading/scales, required precision representation, dense and MoE execution, hybrid attention/GDN state, tokenization and generation | Small-layer numerical checks, full-model logits/quality checks, reset/state isolation and memory preflight |
-| BENCH-04 — LLM engine comparison | Matched offline inference harness; request scheduling/cache management and serving adapter for serving measurements | Same request trace and policies; prefill/decode and client latency measured separately |
+| BENCH-04 — LLM engine comparison | Extend `tensor-llm` with shared model/request execution, batch-1 and batched kernel dispatch, cache management, continuous scheduling and a serving adapter; matched offline/serving harness | Batch-1 regression gate and batch throughput evidence from the same engine; same request trace and policies; prefill/decode and client latency measured separately |
 | BENCH-05 — Sustained nanoGPT | Dataset/tokenizer pipeline, persistent optimizer state, learning-rate schedule, checkpoint/resume, long-run monitoring | Resume verification and intermediate checks followed by both matched 1B-token runs |
 | BENCH-06 — Image pipeline | Text conditioning, denoising model and scheduler, VAE decode, required precision and supported resolution profiles | Intermediate numerical checks and complete saved images under matched settings |
 | BENCH-07 — Audio pipeline | Audio preprocessing/encoder, projectors, interleaved generation, audio token decoding/vocoder, complete checkpoint closure | Complete audio-to-audio outputs and streaming/reset checks where streaming is claimed |
@@ -163,6 +194,12 @@ actual weight, workspace, KV and recurrent-state memory; record OOM at the
 declared case instead of changing precision, context or offloading one competitor.
 Any later multi-GPU comparison is a separately specified configuration.
 
+BENCH-04's baseline adapters must cover vLLM, SGLang and llama.cpp. Retain all
+three across the same batch-1, batch-throughput and serving case matrix, with
+pinned versions/settings and explicit capability/format dispositions. Measure
+each supported path rather than assigning each baseline only one performance
+regime. BENCH-09's GGUF quantization comparisons complement these engine sweeps.
+
 Publish two measurements with their own boundaries:
 
 1. **Offline execution:** matched prompt/output length and batch sweeps; completed
@@ -179,6 +216,25 @@ Tensor needs a serving implementation before the second comparison is valid.
 A single-sequence kernel loop cannot be presented as an equivalent serving
 benchmark against vLLM/SGLang. Token/logit checks and an agreed quality task
 accompany throughput; fast but incorrect or degraded outputs do not qualify.
+
+Use the [unified engine's latency and throughput gates](unified-llm-engine.md#performance-and-comparison-gates)
+to report batch-1 and peak-batch behavior independently, including equal and
+heterogeneous lengths. Add 32K-input/16K-output as a long-context stress case
+alongside short/mixed workloads, subject to checkpoint limits and memory preflight;
+retain unsupported/OOM dispositions on the requested L40S/H100 profiles. H200
+replication would be an explicitly additional case. Record client concurrency
+and actual resident batch separately. Begin with matched autoregressive controls
+and label speculative configurations separately; one mode's throughput cannot
+hide another mode's latency regression.
+
+The [first L40S throughput target](unified-llm-engine.md#first-l40s-throughput-target)
+prioritizes beating the measured native-FP8 concurrency-4 stress baselines,
+qualifying eight resident 48K contexts, and comparing all three baselines again
+at concurrency 8. **600 aggregate output tok/s at concurrency 8** is a stretch
+target over complete 32K-input/16K-output replays, subject to numerical,
+batch-1 and memory gates. Explicit kernel beam search and separate request
+scheduler tuning retain fixed/searched ablations; concurrency-8 performance
+has not yet been measured.
 
 ## Demonstration protocols
 
@@ -366,7 +422,8 @@ from the required 1.0 program and BENCH-09's resident-placement comparisons.
    pipelines. Qualify small pilots and memory before long or broad runs. GDN and
    FP8 work feed Qwen; image/audio closure and sustained training have separate
    dependencies. BENCH-09 adds the full quantization inventory and packed kernels;
-   BENCH-04 follows a correct Qwen runner.
+   BENCH-04's shared engine and LFM2 batching can develop before Qwen is complete;
+   its Qwen comparisons follow a correct Qwen runner in that same engine.
 3. **Qualify:** validate the physical A10G/L4/L40S/H100/B200 kernel profiles and
    L40S/H100 model profiles using exact candidate artifacts. Reuse M4 packaging,
    installed-path and compiler-free consumer checks where applicable. Benchmark

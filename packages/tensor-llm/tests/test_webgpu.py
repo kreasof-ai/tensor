@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import tensor
 from tensor_llm import LFM2
-from tensor_llm.kernels import identity
+from tensor_llm.lfm2.kernels.baseline import identity
 
 pytestmark=pytest.mark.skipif(os.environ.get('TENSOR_LFM2_WEBGPU')!='1',reason='set TENSOR_LFM2_WEBGPU=1 and build the 230M WebGPU bundles')
 ROOT=Path(__file__).resolve().parents[3]
@@ -20,7 +20,7 @@ def test_explicit_half_rounding_ties_subnormals_and_random_values(tmp_path):
     n=len(x);source=tmp_path/'round.py';artifact=tmp_path/'round.tbin'
     source.write_text(export_source(
         'benchmarks.lfm2.dsl_probes', 'half_conversion_kernel', n,
-        dependencies=('tensor_llm.webgpu_kernels',)))
+        dependencies=('tensor_llm.lfm2.kernels.webgpu',)))
     tensor.build(source,artifact,provider='webgpu')
     with tensor.Device(provider='webgpu') as device:
         kernel=device.load(artifact);input=device.from_numpy(x);out=device.zeros(n)
@@ -68,8 +68,8 @@ def test_q6_embedding_gather_matches_cpu_blocks_exactly():
 
 
 def test_q4_embedding_word_boundaries_and_half_subnormal_scales(tmp_path):
-    from tensor_llm.gguf import dequantize
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.common.gguf import dequantize
+    from tensor_llm.lfm2.kernels.webgpu import source
     # Eighteen-byte blocks alternate between aligned and unaligned u32 loads.
     rng=np.random.default_rng(411);blocks=rng.integers(0,256,(8,18),dtype=np.uint8)
     scales=np.array([0.,1.,-1.,2**-24,-2**-24,2**-14,.001,3.],np.float16)
@@ -87,7 +87,7 @@ def test_q4_embedding_word_boundaries_and_half_subnormal_scales(tmp_path):
 
 
 def test_gpu_argmax_ties_tail_and_control(tmp_path):
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.lfm2.kernels.webgpu import source
     n=1025;path=tmp_path/'argmax.py';artifact=tmp_path/'argmax.tbin'
     path.write_text(source('argmax',dict(n=n)));tensor.build(path,artifact,provider='webgpu')
     rng=np.random.default_rng(852)
@@ -105,8 +105,8 @@ def test_gpu_argmax_ties_tail_and_control(tmp_path):
 @pytest.mark.parametrize('kind,unroll,dot',[(2,1,False),(2,2,False),(14,1,False),(14,2,False),(14,1,True),(14,2,True)])
 @pytest.mark.parametrize('subgroup',[False,True,'fallback'])
 def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup,unroll,dot):
-    from tensor_llm.gguf import dequantize,TYPES
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.common.gguf import dequantize,TYPES
+    from tensor_llm.lfm2.kernels.webgpu import source
     k,o=512,8;_,block,size=TYPES[kind]
     rng=np.random.default_rng(524+kind);blocks=rng.integers(0,256,(o*k//block,size),dtype=np.uint8)
     offset=0 if kind==2 else 208
@@ -139,8 +139,8 @@ def test_packed_decode_projection_block_fields(tmp_path,kind,subgroup,unroll,dot
 @pytest.mark.parametrize('subgroup',[False,True,'fallback'])
 @pytest.mark.parametrize('kind',['linear','ffn'])
 def test_q4_decode_schedules_tail_and_paired_accumulators(tmp_path,schedule,subgroup,kind):
-    from tensor_llm.gguf import dequantize
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.common.gguf import dequantize
+    from tensor_llm.lfm2.kernels.webgpu import source
     k,o=512,11;rng=np.random.default_rng(547)
     x=(rng.normal(size=k)*.05).astype(np.float32)
     weights=[];references=[];bounds=[]
@@ -173,8 +173,8 @@ def test_q4_decode_schedules_tail_and_paired_accumulators(tmp_path,schedule,subg
 @pytest.mark.parametrize('encoding',[0,1,2,14])
 @pytest.mark.parametrize('subgroup',[False,True])
 def test_decode_residual_projection_matches_separate_add(tmp_path,encoding,subgroup):
-    from tensor_llm.gguf import TYPES
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.common.gguf import TYPES
+    from tensor_llm.lfm2.kernels.webgpu import source
     k,o=512,11;rng=np.random.default_rng(829)
     x=rng.normal(size=k).astype(np.float32);residual=rng.normal(size=o).astype(np.float32)
     if encoding in (0,1):
@@ -201,7 +201,7 @@ def test_native_half_unpack_all_bit_patterns(tmp_path):
     n=65536;path=tmp_path/'half.py';artifact=path.with_suffix('.tbin')
     path.write_text(export_source(
         'benchmarks.lfm2.dsl_probes', 'half_conversion_kernel', n, True,
-        dependencies=('tensor_llm.webgpu_kernels',)))
+        dependencies=('tensor_llm.lfm2.kernels.webgpu',)))
     tensor.build(path,artifact,provider='webgpu')
     bits=np.arange(n,dtype=np.uint16);expected=bits.view(np.float16).astype(np.float32)
     with tensor.Device(provider='webgpu') as device:
@@ -212,8 +212,8 @@ def test_native_half_unpack_all_bit_patterns(tmp_path):
 
 
 def test_q8_activation_packing_and_integer_dot_reference(tmp_path):
-    from tensor_llm.gguf import dequantize
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.common.gguf import dequantize
+    from tensor_llm.lfm2.kernels.webgpu import source
     k,o=256,8;rng=np.random.default_rng(802)
     raw=rng.integers(0,256,(o*k//32,18),dtype=np.uint8)
     raw[:,:2]=np.full(len(raw),.25,np.float16).view(np.uint8).reshape(-1,2)

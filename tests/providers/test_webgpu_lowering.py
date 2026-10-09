@@ -208,7 +208,7 @@ def test_register_schedule_shared_layout_vector_dots_and_tails(tmp_path,schedule
 @pytest.mark.parametrize('shared_input',[False,True])
 @pytest.mark.parametrize('depth,unroll,accumulators',[(256,2,2),(1024,8,8),(2560,20,4)])
 def test_streamed_gemv_fused_tail_and_f32_activation_contract(tmp_path,force_fallback,shared_input,depth,unroll,accumulators):
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.lfm2.kernels.webgpu import source
     p=dict(r=1,k=depth,o=7,type=1,sg=True,decode_schedule='streamed',lanes=32,threads=64,
            micro_rows=2,dot_width=4,unroll=unroll,accumulators=accumulators,k_layout='striped',shared_input=shared_input)
     text=source('ffn',p)
@@ -300,7 +300,7 @@ def tensor_export():return {"kernel":kernel}
 @NATIVE
 @pytest.mark.parametrize('force_fallback',[False,True])
 def test_fused_attention_active_tail_and_qk_fallback(tmp_path,force_fallback):
-    from tensor_llm.webgpu_kernels import source
+    from tensor_llm.lfm2.kernels.webgpu import source
     h,kh,d,cap=4,2,64,96
     text=source('attention',dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,
                 attention_schedule='partitioned_values',channels=32,value_parts=16,fused_scores=True))

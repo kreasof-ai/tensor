@@ -7,11 +7,11 @@ from dataclasses import asdict
 import argparse,hashlib,json,time
 import tensor
 from tensor_llm import GGUF
-from tensor_llm.config import Config
-from tensor_llm.model import requirements,valid_rows,WEBGPU_PROFILES
-from tensor_llm.cuda_kernels import CUDA_PROFILES
-from tensor_llm.kernels import source
-from tensor_llm.provenance import implementation_hashes
+from tensor_llm.lfm2.config import Config
+from tensor_llm.lfm2.model import requirements,valid_rows,WEBGPU_PROFILES
+from tensor_llm.lfm2.kernels.cuda import CUDA_PROFILES
+from tensor_llm.lfm2.kernels.baseline import source
+from tensor_llm.lfm2.provenance import implementation_hashes
 from tensor.artifacts.format import read_artifact
 from tensor.compiler.search import ScheduleProfile
 
@@ -35,9 +35,9 @@ def produce(model,out,*,context=8448,rows=None,target=None,provider='cuda',webgp
         path=Path(__file__).with_name('profiles')/'cuda-sm86-lfm2.5-2.6b.json'
         selected_profile=ScheduleProfile(json.loads(path.read_text()))
     if provider=='cuda' and cuda_profile=='optimized':
-        from tensor_llm.cuda_kernels import source as kernel_source
+        from tensor_llm.lfm2.kernels.cuda import source as kernel_source
     if provider=='webgpu':
-        from tensor_llm.webgpu_kernels import source as kernel_source
+        from tensor_llm.lfm2.kernels.webgpu import source as kernel_source
         from tensor.compiler.webgpu import build_webgpu
         compiler_path=Path(build_webgpu.__code__.co_filename)
         lowering_hash=hashlib.sha256(compiler_path.with_name('webgpu_lowering.py').read_bytes()).hexdigest()

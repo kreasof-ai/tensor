@@ -1,0 +1,9 @@
+...............ssss....ssssssssssssssssssss............................ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 77%]
+ssssssssssssssss...........................                                                                                                       [100%]
+=================================================================== warnings summary ====================================================================
+packages/tensor-llm/tests/test_cuda_frontend.py: 12 warnings
+packages/tensor-llm/tests/test_dsl.py: 450 warnings
+  /home/sagemaker-user/tensor/build/tensor-dev/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+    deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html

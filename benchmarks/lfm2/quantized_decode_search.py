@@ -8,8 +8,8 @@ import numpy as np
 import tensor
 from tensor.providers.webgpu import Device
 from tensor_llm import GGUF
-from tensor_llm.gguf import dequantize
-from tensor_llm.webgpu_kernels import source
+from tensor_llm.common.gguf import dequantize
+from tensor_llm.lfm2.kernels.webgpu import source
 from benchmarks.lfm2.tensor_projection_search import TimestampAdapter,bind,check
 from benchmarks.lfm2.decode_fusion_search import PlanTimer
 
@@ -63,7 +63,7 @@ def run(model,out,encoding=None):
         groups.setdefault((kind,k,o,info.type),[]).append(pair)
     report=dict(status='searching',model_sha256=hashlib.sha256(Path(model).read_bytes()).hexdigest(),groups=[],
         sources={p:dict(sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest(),text=Path(p).read_text()) for p in
-            (__file__,'packages/tensor-llm/src/tensor_llm/webgpu_kernels.py')},
+            (__file__,'packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py')},
         protocol='Native packed weights and F32 activations/output, floating dots, no activation quantization. Every matrix in each group streamed with distinct output; 150ms continuous warmup and 7 two-plan GPU timestamp samples. Control and best three independently replayed in rotating order after three warmups; winners checked on every affected weight with three held-out scales. Timestamp period 10ns.')
     started=time.perf_counter()
     def save():

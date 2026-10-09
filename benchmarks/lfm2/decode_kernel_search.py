@@ -9,8 +9,8 @@ import tensor,wgpu
 from tensor.providers.webgpu import Device
 from tensor.compiler.search import ScheduleSearch
 from tensor_llm import GGUF
-from tensor_llm.webgpu_kernels import source
-from tensor_llm.model import DECODE_GEMV,DECODE_GEMV_COMMON
+from tensor_llm.lfm2.kernels.webgpu import source
+from tensor_llm.lfm2.model import DECODE_GEMV,DECODE_GEMV_COMMON
 from benchmarks.lfm2.tensor_projection_search import TimestampAdapter,bind,check
 from wgpu.backends.wgpu_native.extras import write_timestamp
 
@@ -62,7 +62,7 @@ def run(model,out,minutes,extended=False):
             'protocol':'all model matrices streamed once per sample; target timestamps within the full traffic plan; 250 ms continuous warmup, 7 GPU samples; independent float64 F32-input/F16-weight oracle',
             'records':[],'budget_seconds':minutes*60,'sources':{}}
     for path in (Path(__file__),Path('src/tensor/compiler/webgpu_lowering.py'),Path('src/tensor/compiler/search.py'),
-                 Path('packages/tensor-llm/src/tensor_llm/webgpu_kernels.py')):
+                 Path('packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py')):
         report['sources'][path.name]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'text':path.read_text()}
     started=time.perf_counter();deadline=started+minutes*60
     space={**SPACE,'unroll':(1,2,4,5,8,10,16,20),'accumulators':(1,2,4,8)} if extended else SPACE

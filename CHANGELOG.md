@@ -6,6 +6,33 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Add experimental native Qwen3.5 FP8 execution with chunked prefill, embedded MTP,
+  batched speculative verification and output-history proposals. Retain the
+  completed L40S C8 32K/16K client replay at 735.3 output tok/s, together with its
+  failed numerical qualification; this is not a qualified throughput claim.
+- Organize `tensor-llm` into shared utilities, model-independent speculative
+  helpers, LFM2 and Qwen3.5 subpackages. Preserve top-level class imports and
+  update benchmark producers; internal paths and source identities changed,
+  requiring inference bundles to be regenerated.
+- Add bounded independent LFM2 request handles sharing weights, kernels and
+  executor scratch, with isolated sequence state and reset/close, failed-allocation
+  cleanup and buffer accounting. Calls remain serial; existing inference bundles
+  require an explicit producer rebuild because implementation fingerprints changed.
+- Order LFM2 pageable metadata/state copies before nonblocking CUDA execution;
+  host return from a transfer alone does not guarantee its device DMA completed.
+- Add an independent vLLM, SGLang and llama.cpp serving harness with immutable
+  token-ID workloads, concurrency sweeps, streamed latency/throughput metrics,
+  retained failures and telemetry, and labeled comparison plots.
+- Qualify all three serving adapters on L40S with pinned Qwen3-0.6B, shared
+  requests, real GPU plots and a retained raw run.
+- Run the bounded Qwen3.5-35B-A3B 32K/16K stress profile on L40S across all three
+  baselines, retaining plots, raw requests, GPU residency and explicit FP8/GGUF
+  differences; broader sweeps and numerical model gates remain open.
+- Plan one shared `tensor-llm` engine with staged batch-1, batching, cache and
+  serving development, retaining all three inference baselines.
+- Set a planned L40S stress goal: beat matched FP8 baselines, qualify eight
+  resident requests, and pursue 600 output tok/s at concurrency 8 with bounded
+  kernel/scheduler search and full-replay acceptance evidence.
 - Add ABI 1.3 CUDA BF16 storage, DLPack import/export, capability checks, and
   dtype-specialized Torch kernels while preserving existing numeric dtype IDs.
 - Add explicit LLT attention forward/backward, decoupled RoPE, BF16 training

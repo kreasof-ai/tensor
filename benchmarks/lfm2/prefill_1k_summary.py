@@ -5,8 +5,8 @@ _sys.path.insert(0,str(_Path(__file__).resolve().parents[2]))
 import argparse,hashlib,json,subprocess
 from pathlib import Path
 from tensor.artifacts.format import read_artifact
-from tensor_llm.provenance import implementation_hashes
-from tensor_llm.model import Q16_PREFILL,HALF_PREFILL
+from tensor_llm.lfm2.provenance import implementation_hashes
+from tensor_llm.lfm2.model import Q16_PREFILL,HALF_PREFILL
 
 
 def digest(path):
@@ -43,8 +43,8 @@ def run(root,reference,out):
     source_paths=[__file__,'benchmarks/lfm2/q16_prefill_search.py','benchmarks/lfm2/prefill_chase_search.py',
         'benchmarks/lfm2/prefill_chase_compare.py','benchmarks/lfm2/producer.py',
         'benchmarks/lfm2/webgpu_profile.py',
-        'packages/tensor-llm/src/tensor_llm/model.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py',
-        'packages/tensor-llm/src/tensor_llm/gguf.py','src/tensor/compiler/webgpu_lowering.py',
+        'packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py',
+        'packages/tensor-llm/src/tensor_llm/common/gguf.py','src/tensor/compiler/webgpu_lowering.py',
         'src/tensor/providers/webgpu.py','src/tensor/native/webgpu_plan.c',
         'tests/integration/test_lfm2_q16_prefill.py','tests/integration/test_lfm2_prefill_chase.py',
         'tests/integration/test_lfm2_prefill_tail.py',

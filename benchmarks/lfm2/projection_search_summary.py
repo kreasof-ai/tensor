@@ -52,7 +52,7 @@ def run(search_root,recheck_root,native_root,json_out,native_default_root=None):
                            'llama_gpu_seconds':native_variant['median_gpu_seconds'],
                            'llama_completed_seconds':native_variant['median_completed_seconds']})
     source_paths=['src/tensor/compiler/webgpu_lowering.py','src/tensor/compiler/search.py','src/tensor/compiler/webgpu_schedules.py',
-                  'packages/tensor-llm/src/tensor_llm/webgpu_kernels.py',
+                  'packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py',
                   'benchmarks/lfm2/tensor_projection_search.py','benchmarks/lfm2/projection_search_recheck.py',
                   'benchmarks/lfm2/llama_projection_compare.py','benchmarks/lfm2/projection_search_summary.py',
                   'tests/compiler/test_webgpu_search.py','tests/providers/test_webgpu_lowering.py']

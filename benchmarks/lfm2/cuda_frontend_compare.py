@@ -17,7 +17,7 @@ def audit(bundle):
     """Verify compiled provenance, profile application and inspectable IR."""
     from tensor.artifacts.format import read_artifact
     from tensor.compiler.search import ScheduleProfile
-    from tensor_llm.cuda_kernels import source
+    from tensor_llm.lfm2.kernels.cuda import source
     bundle=Path(bundle);data=json.loads((bundle/'inference.json').read_text())
     profile=ScheduleProfile({k:v for k,v in data['schedule_profile'].items() if k!='sha256'})
     assert profile.sha256==data['schedule_profile']['sha256']

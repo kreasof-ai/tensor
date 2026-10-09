@@ -12,7 +12,7 @@ def test_algorithms_have_ir_loops_and_only_typed_hardware_externs(tmp_path,kind,
     pytest.importorskip('tilelang')
     import tvm
     from tensor.artifacts.portable import export_spec
-    from tensor_llm.cuda_kernels import source
+    from tensor_llm.lfm2.kernels.cuda import source
     path=tmp_path/'kernel.py';path.write_text(source(kind,parameters))
     spec=export_spec(path)
     externs=[];loops=[]

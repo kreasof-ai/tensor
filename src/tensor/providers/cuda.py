@@ -45,6 +45,7 @@ class _Driver:
             "cuPointerGetAttribute": [ptr, integer, address],
             "cuMemAlloc_v2": [c.POINTER(address), size], "cuMemFree_v2": [address],
             "cuMemcpyHtoD_v2": [address, ptr, size], "cuMemcpyDtoH_v2": [ptr, address, size],
+            "cuMemcpyDtoD_v2": [address, address, size],
             "cuModuleLoadData": [c.POINTER(ptr), ptr], "cuModuleUnload": [ptr],
             "cuModuleGetFunction": [c.POINTER(ptr), ptr, c.c_char_p],
             "cuFuncSetAttribute": [ptr, integer, integer],

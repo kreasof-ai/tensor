@@ -1,0 +1,7 @@
+........                                                                                                                                          [100%]
+=================================================================== warnings summary ====================================================================
+tests/integration/test_lfm2_fp16.py: 28 warnings
+  /home/sagemaker-user/tensor/build/tensor-dev/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+    deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html

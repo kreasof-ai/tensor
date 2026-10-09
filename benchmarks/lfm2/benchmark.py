@@ -8,8 +8,8 @@ from importlib.metadata import version
 import numpy as np
 import tensor
 from tensor_llm import GGUF
-from tensor_llm.model import LFM2
-from tensor_llm.tokenizer import Tokenizer
+from tensor_llm.lfm2.model import LFM2
+from tensor_llm.common.tokenizer import Tokenizer
 
 
 def benchmark(model,bundle,reference_executable,out,*,depths=(128,512,2048,8192),generated=256,repeats=5,engine_cls=None):

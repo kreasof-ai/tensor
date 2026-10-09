@@ -1,0 +1,222 @@
+{
+  "schema": "tensor.llm-serving-report.v1",
+  "status": "completed",
+  "created_utc": "2026-10-09T20:30:43.587192+00:00",
+  "comparison_group": "qwen3.5-35b-l40s-32k16k-c8-native-fp8kv-unqualified",
+  "workload_sha256": "6e012fe014f8fc86d58d0065862c62e77e1374fccba612a7ab5d54c1679db44a",
+  "workload_kind": "synthetic-random-token-stress",
+  "arrival": {
+    "mode": "closed-loop",
+    "requests_per_second": null
+  },
+  "synthetic": false,
+  "protocol": {
+    "boundary": "client HTTP dispatch/arrival to completed stream",
+    "connections": "fresh TCP connection per call; no transparent retries",
+    "arrival_latency": "includes client admission delay in poisson mode",
+    "throughput_denominator": "entire measured point including fill/drain and failed calls",
+    "input_throughput": "prompt tokens / whole point; not isolated prefill speed",
+    "tpot": "(last token event - first token event) / (output tokens - 1)",
+    "chunking": "client-observed; coalesced tokens have a shared arrival timestamp",
+    "warmup": "separate requests excluded from measurement; run before every point",
+    "retries": 0
+  },
+  "settings": {
+    "concurrencies": [
+      8
+    ],
+    "repeats": 1,
+    "request_timeout_seconds": 1800.0,
+    "telemetry_interval_seconds": 2,
+    "ttft_slo_seconds": null,
+    "tpot_slo_seconds": null
+  },
+  "provenance": {
+    "platform": "Linux-6.12.103-129.197.amzn2023.x86_64-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "git_commit": "a41ab7d0bdb03d808f8f58d15ceee517601f588a",
+    "aiohttp": "3.14.3",
+    "harness_sources": {
+      "__init__.py": "a8b67a3a239a8025454073866f7a66d6bb47178fc865c40ade8a7517dd052dea",
+      "workload.py": "9896d7e5ead7ee733662a6c36e223c9303495df6b6a50399f72129091bc1ca0c",
+      "adapters.py": "9950b7034173b8be4829aa1a55409b0c2dcd216d64e3e4ad3249e4636e8b6bfa",
+      "metrics.py": "a1dc2a53976f1036c7aeb2789b52cc3ceafb549769cd330a051caec214af65a3",
+      "runner.py": "5e9029e65d670550f5caf0b0a61630ccff1d317646a3ea03ac7738a37042698c",
+      "plot.py": "184c220711cd84088ece5be2939660a838d87cb5049ad2d9927cf65d0cc4a7e0",
+      "__main__.py": "b1c2f1577d6c093868e810489d780949156b07c7b88706aa8ce1db3bcc72a83d",
+      "smoke.py": "be3d4e086d23d979aeaec6fb612566dc4885235003a976eb4445ca3eb40667d7"
+    }
+  },
+  "servers": [
+    {
+      "configuration": {
+        "base_url": "http://127.0.0.1:8013",
+        "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+        "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+        "weight_format": "FP8-block128",
+        "kv_dtype": "fp8",
+        "state_dtype": "float32",
+        "hardware": "NVIDIA L40S x1",
+        "cpu_offload": "none",
+        "prefix_cache": false,
+        "speculative": false,
+        "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+        "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+        "gpu_indices": [
+          "0"
+        ],
+        "name": "tensor-fp8-fp8kv-experimental",
+        "engine": "tensor",
+        "engine_version": "0.1.0-native-qwen35-dev",
+        "settings": {
+          "max_model_len": 48000,
+          "max_num_seqs": 8,
+          "prefill_chunk": 512,
+          "scheduler": "fixed resident slots; chunked prefill, greedy batch decode",
+          "decoder_bundle": "build/qwen35-native/c8-fp8kv-selected-v1",
+          "prefill_bundle": "build/qwen35-native/prefill512-fp8kv-m64-packed-q128",
+          "resource_state": "resident native checkpoint; tuned process; fresh independent request state",
+          "cache_quantization": "E4M3, per-token/head block128, FP32 scales",
+          "quality_status": "FP8 KV teacher-forced logit quality gate failed; throughput diagnostic only"
+        },
+        "model_throughput_qualified": false,
+        "full_stress_target_reached": false,
+        "sources": {
+          "qwen35.py": "15732ba03e01d4fffb1301f8893e82925eaf2eea741809a0ac993b36da1fc7b6",
+          "qwen_kernels.py": "8bf67829f3269dd83c5988b814db57f3a948ea0a9cd2953b3fe7bbeb9a5df7f2",
+          "qwen_model.py": "d0c09680a4f8ddb8f15d6b6011bfba2ca576855c321023dfcb71c898003d1f6b",
+          "qwen_mma.py": "cfd888a770140d96f9e8ca68c6680b0991d933caa6c0de605bcfb7c66f05fcce",
+          "qwen_prefill.py": "ca6da5cdde270265aae969b644cb4d9d23d21e6d06b29e0f042429e7c222b534",
+          "qwen_prefill_model.py": "4aee865b153d5fcbf3d7c5aac0b2228fe819be3250ce153b2dac7f690ab2c9da",
+          "qwen_pipeline.py": "d3631e232a3665c952daad1280b0853f1c31eedbc9eca7ae8dc1f1f5aeb9584d",
+          "qwen_fp8_kv.py": "93db99950b709e1f5e104a054069dbb79db23ecbd2e0ad4abac4a0cda5a6a891"
+        }
+      },
+      "points": [
+        {
+          "concurrency": 8,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c8-r0-requests.jsonl",
+          "telemetry_file": "c8-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 8,
+            "completed": 8,
+            "failed": 0,
+            "elapsed_seconds": 380.0504031160017,
+            "prompt_tokens": 256000,
+            "output_tokens": 128000,
+            "observed_output_tokens_including_failures": 128000,
+            "output_tokens_per_second": 336.7974325261561,
+            "input_tokens_per_second": 673.5948650523122,
+            "total_tokens_per_second": 1010.3922975784683,
+            "requests_per_second": 0.021049839532884754,
+            "goodput_output_tokens_per_second": 336.7974325261561,
+            "goodput_requests_per_second": 0.021049839532884754,
+            "ttft_seconds": {
+              "count": 8,
+              "mean": 36.9647571087512,
+              "p50": 36.96473525550209,
+              "p95": 36.97071942145158,
+              "p99": 36.971403946691495
+            },
+            "service_ttft_seconds": {
+              "count": 8,
+              "mean": 36.964755005875304,
+              "p50": 36.964733380502366,
+              "p95": 36.970715903599924,
+              "p99": 36.97139988311886
+            },
+            "tpot_seconds": {
+              "count": 8,
+              "mean": 0.021435232841943177,
+              "p50": 0.021435298028907916,
+              "p95": 0.021441177547781114,
+              "p99": 0.021441694633401502
+            },
+            "latency_seconds": {
+              "count": 8,
+              "mean": 379.90710542200077,
+              "p50": 379.9081168060002,
+              "p95": 379.9963921753013,
+              "p99": 380.0041439198614
+            },
+            "client_queue_seconds": {
+              "count": 8,
+              "mean": 2.102875896525802e-06,
+              "p50": 1.7455004126532003e-06,
+              "p95": 3.5178516554879014e-06,
+              "p99": 4.063572632730938e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 127992,
+              "mean": 0.02143523284194318,
+              "p50": 0.021368904499468044,
+              "p95": 0.02230537794985139,
+              "p99": 0.022572587612448843
+            },
+            "single_token_gap_seconds": {
+              "count": 127992,
+              "mean": 0.02143523284194318,
+              "p50": 0.021368904499468044,
+              "p95": 0.02230537794985139,
+              "p99": 0.022572587612448843
+            }
+          },
+          "warnings": [
+            "fewer than two waves of requests; fill/drain effects can dominate"
+          ]
+        }
+      ],
+      "lifecycle": {
+        "managed": false,
+        "startup_seconds": null
+      },
+      "hardware_snapshot": {
+        "status": "sampled",
+        "location": "client-host",
+        "devices": [
+          {
+            "uuid": "GPU-babd214f-1493-0f1c-357a-8e85bb83fb0d",
+            "name": "NVIDIA L40S",
+            "used_mib": 40385.0,
+            "total_mib": 46068.0,
+            "utilization_percent": 0.0,
+            "driver": "595.91.07"
+          }
+        ]
+      },
+      "tokenizer_probe": {
+        "status": "matched",
+        "probe_sha256": "6e1be5df2d3df7734eb0e0dacc54666679abfc603e3697f069b574f89de71862"
+      },
+      "server_info": [
+        {
+          "http_status": 200,
+          "path": "/server_info",
+          "data": {
+            "engine": "tensor",
+            "implementation": "native-qwen35-experimental",
+            "slots": 8,
+            "context_capacity": 48000,
+            "resident_weight_bytes": 35707988096,
+            "checkpoint_weight_bytes": 35707988096,
+            "state_dtype": "float32",
+            "kv_dtype": "fp8",
+            "weight_format": "native-F8_E4M3-block128",
+            "speculative": false,
+            "prefix_cache": false,
+            "cpu_offload": "none",
+            "model_throughput_qualified": false,
+            "full_stress_target_reached": false
+          }
+        }
+      ],
+      "disposition": "measured"
+    }
+  ],
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false,
+  "quality_status": "FP8 KV teacher-forced calibration failed the 3% logit error gate; whole-model qualification remains open.",
+  "qualification_report": "../quality-repeated-text/report.json"
+}

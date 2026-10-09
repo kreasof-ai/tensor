@@ -21,7 +21,7 @@ def run(root,out):
         if left['kernel.wgsl']!=right['kernel.wgsl']:raise AssertionError('decode shader changed')
         decode.append({'key':key,'shader_sha256':hashlib.sha256(left['kernel.wgsl']).hexdigest()})
     sources={}
-    for filename in ('packages/tensor-llm/src/tensor_llm/model.py','packages/tensor-llm/src/tensor_llm/webgpu_kernels.py',
+    for filename in ('packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py',
                      'src/tensor/compiler/webgpu_lowering.py','benchmarks/lfm2/producer.py',
                      'benchmarks/lfm2/tinygrad_compare.py','benchmarks/lfm2/tinygrad_reference.py',
                      'benchmarks/lfm2/tinygrad_schedule_replay.py','benchmarks/lfm2/prefill_schedule_check.py',

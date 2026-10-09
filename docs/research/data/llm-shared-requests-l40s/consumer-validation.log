@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "memory": {
+    "weight_bytes": 459496448,
+    "shared_bytes": 469902852,
+    "private_bytes": [
+      11337736,
+      11337736,
+      11337736,
+      11337736,
+      11337736,
+      11337736,
+      11337736,
+      11337736
+    ],
+    "singleton_buffer_bytes": 481240588,
+    "eight_request_buffer_bytes": 560604740
+  },
+  "gates": {
+    "shared_weights": true,
+    "shared_scratch": true,
+    "independent_states": true,
+    "interleaved_bitwise_equal": true,
+    "reset_close_reuse_isolated": true,
+    "stale_handle_rejected": true
+  }
+}

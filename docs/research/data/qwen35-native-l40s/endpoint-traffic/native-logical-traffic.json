@@ -1,0 +1,171 @@
+{
+  "context": 48000,
+  "route_records": [
+    {
+      "layer": 0,
+      "unique_experts": 44
+    },
+    {
+      "layer": 1,
+      "unique_experts": 43
+    },
+    {
+      "layer": 2,
+      "unique_experts": 49
+    },
+    {
+      "layer": 3,
+      "unique_experts": 45
+    },
+    {
+      "layer": 4,
+      "unique_experts": 46
+    },
+    {
+      "layer": 5,
+      "unique_experts": 46
+    },
+    {
+      "layer": 6,
+      "unique_experts": 47
+    },
+    {
+      "layer": 7,
+      "unique_experts": 38
+    },
+    {
+      "layer": 8,
+      "unique_experts": 42
+    },
+    {
+      "layer": 9,
+      "unique_experts": 36
+    },
+    {
+      "layer": 10,
+      "unique_experts": 39
+    },
+    {
+      "layer": 11,
+      "unique_experts": 38
+    },
+    {
+      "layer": 12,
+      "unique_experts": 44
+    },
+    {
+      "layer": 13,
+      "unique_experts": 43
+    },
+    {
+      "layer": 14,
+      "unique_experts": 44
+    },
+    {
+      "layer": 15,
+      "unique_experts": 38
+    },
+    {
+      "layer": 16,
+      "unique_experts": 41
+    },
+    {
+      "layer": 17,
+      "unique_experts": 40
+    },
+    {
+      "layer": 18,
+      "unique_experts": 40
+    },
+    {
+      "layer": 19,
+      "unique_experts": 43
+    },
+    {
+      "layer": 20,
+      "unique_experts": 44
+    },
+    {
+      "layer": 21,
+      "unique_experts": 45
+    },
+    {
+      "layer": 22,
+      "unique_experts": 40
+    },
+    {
+      "layer": 23,
+      "unique_experts": 39
+    },
+    {
+      "layer": 24,
+      "unique_experts": 42
+    },
+    {
+      "layer": 25,
+      "unique_experts": 41
+    },
+    {
+      "layer": 26,
+      "unique_experts": 45
+    },
+    {
+      "layer": 27,
+      "unique_experts": 45
+    },
+    {
+      "layer": 28,
+      "unique_experts": 38
+    },
+    {
+      "layer": 29,
+      "unique_experts": 40
+    },
+    {
+      "layer": 30,
+      "unique_experts": 36
+    },
+    {
+      "layer": 31,
+      "unique_experts": 38
+    },
+    {
+      "layer": 32,
+      "unique_experts": 35
+    },
+    {
+      "layer": 33,
+      "unique_experts": 33
+    },
+    {
+      "layer": 34,
+      "unique_experts": 40
+    },
+    {
+      "layer": 35,
+      "unique_experts": 46
+    },
+    {
+      "layer": 36,
+      "unique_experts": 40
+    },
+    {
+      "layer": 37,
+      "unique_experts": 41
+    },
+    {
+      "layer": 38,
+      "unique_experts": 37
+    },
+    {
+      "layer": 39,
+      "unique_experts": 35
+    }
+  ],
+  "selected_expert_bytes": 5178500352,
+  "common_weights_bytes": 2474682496,
+  "recurrent_read_write_bytes": 1006632960,
+  "kv_read_bytes": 4055040000,
+  "logical_bytes_per_step": 12714855808,
+  "protocol": "logical minimum traffic assuming weights shared across routes and each GQA KV vector read once; excludes activation/conv/scratch traffic; cache and actual bandwidth require measurement"
+}
