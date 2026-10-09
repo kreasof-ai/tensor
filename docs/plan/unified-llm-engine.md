@@ -4,7 +4,9 @@
 
 Planning baseline: **2026-10-09**. Status: staged package extension. Shared
 model resources and independent LFM2 request handles are implemented as the
-first LLM-02 increment; batching, serving and Qwen support remain planned.
+first LLM-02 increment. Native Qwen3.5 batching, chunked prefill and a fixed
+cohort HTTP server are experimental implementations; numerical qualification,
+paged caches, continuous scheduling and the broader model matrix remain open.
 Extend `packages/tensor-llm` into one inference engine that pursues both
 llama.cpp-like batch-1 latency and vLLM-like batch throughput. These are measured
 goals, not promises of parity or wrappers around those runtimes.
@@ -16,6 +18,16 @@ specifies the engine portion of BENCH-03/04 and reuses BENCH-09's quantization
 work; it does not create a second inference package or change core 1.0 gates.
 
 ## Starting point
+
+The retained [L40S C8 replay](../research/qwen35-native-l40s.md) measures
+735.3 output tok/s with MTP plus output lookup. The
+[first physical H200 port](../research/qwen35-native-h200.md) measures
+588.2 tok/s AR and 911.5 tok/s MTP plus output lookup at the same 32K/16K load.
+Both speculative profiles fail numerical qualification. These measurements
+do not close LLM-05/06/07 or establish an H200 peak or Netra comparison.
+Resolve verification/serial and canonical-model quality before selecting
+faster Hopper profiles; profile prefill separately because its first-token
+latency dominates the initial H200 finite replay.
 
 `tensor_llm.lfm2.model.LFM2` now owns shared checkpoint metadata, device weights,
 kernels and executor workspaces, plus a backward-compatible default request.

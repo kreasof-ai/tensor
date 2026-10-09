@@ -1,0 +1,157 @@
+{
+  "schema": "tensor.h200-native-comparison.v1",
+  "profiles": [
+    {
+      "name": "tensor-h200-ar-c8",
+      "summary": {
+        "requests": 8,
+        "completed": 8,
+        "failed": 0,
+        "elapsed_seconds": 217.60484302299997,
+        "prompt_tokens": 256000,
+        "output_tokens": 128000,
+        "observed_output_tokens_including_failures": 128000,
+        "output_tokens_per_second": 588.2222023269533,
+        "input_tokens_per_second": 1176.4444046539065,
+        "total_tokens_per_second": 1764.6666069808598,
+        "requests_per_second": 0.03676388764543458,
+        "goodput_output_tokens_per_second": 588.2222023269533,
+        "goodput_requests_per_second": 0.03676388764543458,
+        "ttft_seconds": {
+          "count": 8,
+          "mean": 69.01625505275,
+          "p50": 69.01620831899997,
+          "p95": 69.02347344165001,
+          "p99": 69.02407220513
+        },
+        "service_ttft_seconds": {
+          "count": 8,
+          "mean": 69.01625025425,
+          "p50": 69.01620410549998,
+          "p95": 69.0234669256,
+          "p99": 69.02406546032
+        },
+        "tpot_seconds": {
+          "count": 8,
+          "mean": 0.009275248854404963,
+          "p50": 0.009275276119663731,
+          "p95": 0.009283270468182388,
+          "p99": 0.0092840003851297
+        },
+        "latency_seconds": {
+          "count": 8,
+          "mean": 217.411083188125,
+          "p50": 217.41145845299997,
+          "p95": 217.53221778009998,
+          "p99": 217.54325923121996
+        },
+        "client_queue_seconds": {
+          "count": 8,
+          "mean": 4.798499997349381e-06,
+          "p50": 4.475999986652823e-06,
+          "p95": 6.516050001437179e-06,
+          "p99": 6.744810001464429e-06
+        },
+        "stream_chunk_gap_seconds": {
+          "count": 127992,
+          "mean": 0.009275248854404963,
+          "p50": 0.00924340649999067,
+          "p95": 0.009768454049995512,
+          "p99": 0.009994764040027347
+        },
+        "single_token_gap_seconds": {
+          "count": 127992,
+          "mean": 0.009275248854404963,
+          "p50": 0.00924340649999067,
+          "p95": 0.009768454049995512,
+          "p99": 0.009994764040027347
+        }
+      },
+      "client_eight_active_window": {
+        "start_seconds": 69.02735863299998,
+        "end_seconds": 217.276554528,
+        "output_tokens": 127979,
+        "output_tokens_per_second": 863.2694378365686
+      },
+      "peak_sampled_memory_mib": 40459.0,
+      "model_throughput_qualified": false
+    },
+    {
+      "name": "tensor-h200-mtp-lookup-c8",
+      "summary": {
+        "requests": 8,
+        "completed": 8,
+        "failed": 0,
+        "elapsed_seconds": 140.42116464100002,
+        "prompt_tokens": 256000,
+        "output_tokens": 128000,
+        "observed_output_tokens_including_failures": 128000,
+        "output_tokens_per_second": 911.5435007767105,
+        "input_tokens_per_second": 1823.087001553421,
+        "total_tokens_per_second": 2734.6305023301315,
+        "requests_per_second": 0.05697146879854441,
+        "goodput_output_tokens_per_second": 911.5435007767105,
+        "goodput_requests_per_second": 0.05697146879854441,
+        "ttft_seconds": {
+          "count": 8,
+          "mean": 71.910037515,
+          "p50": 71.91002379600002,
+          "p95": 71.91732269259998,
+          "p99": 71.91798960891997
+        },
+        "service_ttft_seconds": {
+          "count": 8,
+          "mean": 71.91003120975,
+          "p50": 71.91001891350001,
+          "p95": 71.91731412134996,
+          "p99": 71.91798039226995
+        },
+        "tpot_seconds": {
+          "count": 8,
+          "mean": 0.004184257705637851,
+          "p50": 0.0041700964869991865,
+          "p95": 0.004247794096846675,
+          "p99": 0.004274542851121317
+        },
+        "latency_seconds": {
+          "count": 8,
+          "mean": 138.85421213249998,
+          "p50": 138.6278698355,
+          "p95": 139.86696686449997,
+          "p99": 140.29693869769997
+        },
+        "client_queue_seconds": {
+          "count": 8,
+          "mean": 6.3052500038907056e-06,
+          "p50": 6.608000006735892e-06,
+          "p95": 8.571250012323615e-06,
+          "p99": 9.2166500149915e-06
+        },
+        "stream_chunk_gap_seconds": {
+          "count": 16129,
+          "mean": 0.03320426016864033,
+          "p50": 0.031664865000038844,
+          "p95": 0.03276781419995132,
+          "p99": 0.033353427320016636
+        },
+        "single_token_gap_seconds": {
+          "count": 22,
+          "mean": 0.9017283603636357,
+          "p50": 0.03232011199997942,
+          "p95": 3.2272944536000523,
+          "p99": 3.2273346025199974
+        }
+      },
+      "client_eight_active_window": {
+        "start_seconds": 71.92100059400002,
+        "end_seconds": 138.50131228299995,
+        "output_tokens": 127043,
+        "output_tokens_per_second": 1908.116630535231
+      },
+      "peak_sampled_memory_mib": 43985.0,
+      "model_throughput_qualified": false
+    }
+  ],
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false
+}

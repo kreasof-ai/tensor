@@ -1,0 +1,59 @@
+{
+  "schema": "tensor.llm-serving-servers.v1",
+  "comparison_group": "qwen35-h200-32k16k-c8-native-fp8kv-experimental",
+  "servers": [
+    {
+      "name": "tensor-h200-mtp-lookup-c8",
+      "engine": "tensor",
+      "base_url": "http://127.0.0.1:8013",
+      "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "engine_version": "0.1.0-native-qwen35-dev",
+      "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "weight_format": "FP8-block128",
+      "kv_dtype": "fp8",
+      "state_dtype": "float32",
+      "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "hardware": "NVIDIA H200 x1",
+      "cpu_offload": "none",
+      "prefix_cache": false,
+      "speculative": true,
+      "gpu_indices": [
+        "0"
+      ],
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "benchmarks.qwen35.server",
+        "--checkpoint",
+        "/cache/models/9d1823d2dee688a6b25e77009dc727688c44936e",
+        "--bundle",
+        "/cache/bundles/f81e6af6f57e6331/decode-profile/decoder",
+        "--prefill-bundle",
+        "/cache/bundles/f81e6af6f57e6331/prefill512",
+        "--port",
+        "8013",
+        "--draft-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/mtp",
+        "--draft-prefill-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/mtp-prefill512",
+        "--verify-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/verify8-selected",
+        "--repair-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/repair8-attention",
+        "--output-lookup",
+        "--fallback-proposals",
+        "3"
+      ],
+      "model_throughput_qualified": false,
+      "full_stress_target_reached": false,
+      "settings": {
+        "max_model_len": 48000,
+        "max_num_seqs": 8,
+        "prefill_chunk": 512,
+        "output_lookup": true,
+        "scheduler": "fixed native cohort"
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+✓ Initialized. View run at https://modal.com/apps/kreasof-ai/main/ap-0nHbADMzev9BNM7k3k3gPx
+✓ Created objects.
+├── ✓ Uploaded /tmp/tensor-h200-extra-checks.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/build/llm-serving/qwen35-c8-capacity/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+└── ✓ Created Function check.
+2026-10-09 22:42:36+00:00 
+2026-10-09 22:42:36+00:00 ==========
+2026-10-09 22:42:36+00:00 == CUDA ==
+2026-10-09 22:42:36+00:00 ==========
+2026-10-09 22:42:36+00:00 
+2026-10-09 22:42:36+00:00 CUDA Version 12.9.1
+2026-10-09 22:42:36+00:00 
+2026-10-09 22:42:36+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 22:42:36+00:00 
+2026-10-09 22:42:36+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 22:42:36+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 22:42:36+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 22:42:36+00:00 
+2026-10-09 22:42:36+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 22:42:36+00:00 
+2026-10-09 22:46:46+00:00 {
+2026-10-09 22:46:46+00:00   "device": {
+2026-10-09 22:46:46+00:00     "ordinal": 0,
+2026-10-09 22:46:46+00:00     "name": "NVIDIA H200",
+2026-10-09 22:46:46+00:00     "arch": "sm_90",
+2026-10-09 22:46:46+00:00     "provider": "cuda"
+2026-10-09 22:46:46+00:00   },
+2026-10-09 22:46:46+00:00   "exit_code": 0,
+2026-10-09 22:46:46+00:00   "stdout": ".........................                                                [100%]\n=============================== warnings summary ===============================\npackages/tensor-llm/tests/test_qwen_kernels.py: 14 warnings\n  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead\n    deprecated_warning(\"T.reinterpret(dtype, value)\", \"reinterpret(value, dtype)\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n25 passed, 14 warnings in 246.62s (0:04:06)\n",
+2026-10-09 22:46:46+00:00   "stderr": ""
+2026-10-09 22:46:46+00:00 }
+2026-10-09 22:46:47+00:00 Stopping app - local entrypoint completed.
+✓ App completed. View run at https://modal.com/apps/kreasof-ai/main/ap-0nHbADMzev9BNM7k3k3gPx

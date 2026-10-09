@@ -1,0 +1,54 @@
+✓ Initialized. View run at https://modal.com/apps/kreasof-ai/main/ap-K6CoTMuhS5Qwvvat4VCIIl
+✓ Created objects.
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks/qwen35/modal_h200.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/build/llm-serving/qwen35-c8-capacity/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+├── ✓ Created Function prepare.
+└── ✓ Created Function measure.
+2026-10-09 22:50:17+00:00 
+2026-10-09 22:50:17+00:00 ==========
+2026-10-09 22:50:17+00:00 == CUDA ==
+2026-10-09 22:50:17+00:00 ==========
+2026-10-09 22:50:17+00:00 
+2026-10-09 22:50:17+00:00 CUDA Version 12.9.1
+2026-10-09 22:50:17+00:00 
+2026-10-09 22:50:17+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 22:50:17+00:00 
+2026-10-09 22:50:17+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 22:50:17+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 22:50:17+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 22:50:17+00:00 
+2026-10-09 22:50:17+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 22:50:17+00:00 
+2026-10-09 22:50:18+00:00 H200 numerical kernel checks
+2026-10-09 22:51:55+00:00 ...............                                                          [100%]
+2026-10-09 22:51:55+00:00 =============================== warnings summary ===============================
+2026-10-09 22:51:55+00:00 packages/tensor-llm/tests/test_qwen_spec.py::test_split_experts_preserve_hot_routes_and_scales[16-False]
+2026-10-09 22:51:55+00:00 packages/tensor-llm/tests/test_qwen_spec.py::test_split_experts_preserve_hot_routes_and_scales[16-True]
+2026-10-09 22:51:55+00:00 packages/tensor-llm/tests/test_qwen_spec.py::test_split_experts_preserve_hot_routes_and_scales[32-False]
+2026-10-09 22:51:55+00:00 packages/tensor-llm/tests/test_qwen_spec.py::test_split_experts_preserve_hot_routes_and_scales[32-True]
+2026-10-09 22:51:55+00:00   /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+2026-10-09 22:51:55+00:00     deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+2026-10-09 22:51:55+00:00 
+2026-10-09 22:51:55+00:00 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-10-09 22:51:55+00:00 15 passed, 4 warnings in 96.23s (0:01:36)
+2026-10-09 22:51:55+00:00  
+2026-10-09 22:52:06+00:00 uploading native checkpoint weights
+2026-10-09 22:52:27+00:00 uploaded 35707988096 bytes
+2026-10-09 22:53:02+00:00 Target/MTP stress prefix 8192
+2026-10-09 22:53:20+00:00 Target/MTP stress prefix 16384
+2026-10-09 22:53:38+00:00 Target/MTP stress prefix 24576
+2026-10-09 22:54:14+00:00 Verification serial quality {'scope': 'teacher-forced verification vs same native serial target at initialized prefix', 'device': {'ordinal': 0, 'name': 'NVIDIA H200', 'arch': 'sm_90', 'provider': 'cuda'}, 'prefix_positions': [32000, 32000, 32000, 32000, 32000, 32000, 32000, 32000], 'steps': 2, 'kv_dtype': 'fp8', 'threshold': 0.03, 'relative_logit_rms': 0.08146069943904877, 'greedy_matches': 14, 'greedy_total': 16, 'finite': True, 'canonical_model_qualified': False, 'model_throughput_qualified': False, 'passed': False}
+2026-10-09 22:54:17+00:00 Full H200 client replay tensor-h200-ar-c8
+2026-10-09 22:58:10+00:00 tensor-h200-ar-c8 c8-r0: 8/8 finished calls
+2026-10-09 22:58:13+00:00 H200 client replay completed tensor-h200-ar-c8 completed
+2026-10-09 22:58:13+00:00 Full H200 client replay tensor-h200-mtp-lookup-c8
+2026-10-09 23:00:50+00:00 tensor-h200-mtp-lookup-c8 c8-r0: 8/8 finished calls
+2026-10-09 23:00:52+00:00 H200 client replay completed tensor-h200-mtp-lookup-c8 completed
+Retained H200 results: tensor-qwen35-h200 /runs/20261009T225014Z-f81e6af6f57e6331
+2026-10-09 23:00:53+00:00 Stopping app - local entrypoint completed.
+✓ App completed. View run at https://modal.com/apps/kreasof-ai/main/ap-K6CoTMuhS5Qwvvat4VCIIl

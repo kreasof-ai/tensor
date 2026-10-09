@@ -19,6 +19,7 @@ kernel and throughput plots, source hashes and an archive commit timeline.
 
 | Report | What to read it for |
 |---|---|
+| [First native Qwen3.5 C8 run on H200](qwen35-native-h200.md) | Physical Modal H200 replay: 588.2 tok/s AR and 911.5 tok/s MTP plus output lookup, target-aware artifacts, raw traces and failed numerical qualification |
 | [Shared LFM2 requests on L40S](llm-shared-requests-l40s.md) | Eight isolated handles sharing weights and scratch, real 230M logits, frozen singleton comparison, copy-ordering regression and installed compiler-free replay |
 | [Bounded 35B long-context stress test on L40S](llm-serving-l40s-stress.md) | Real 32K-input/16K-output vLLM/SGLang/llama.cpp runs at concurrency 1, 2 and 4; GPU residency, raw telemetry, finite-run plots and explicit FP8/GGUF differences |
 | [Matched serving harness on L40S](llm-serving-l40s-pilot.md) | Real vLLM/SGLang/llama.cpp protocol qualification on Qwen3-0.6B, shared-load latency/throughput plots, raw requests, telemetry and pinned configurations |

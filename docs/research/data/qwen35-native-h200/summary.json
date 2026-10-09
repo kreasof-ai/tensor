@@ -1,0 +1,630 @@
+{
+  "status": "measured-experimental",
+  "run_id": "20261009T225014Z-f81e6af6f57e6331",
+  "prepared": {
+    "checkpoint": "/cache/models/9d1823d2dee688a6b25e77009dc727688c44936e",
+    "paths": {
+      "decoder": "/cache/bundles/f81e6af6f57e6331/decode-profile/decoder",
+      "draft": "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/mtp",
+      "prefill": "/cache/bundles/f81e6af6f57e6331/prefill512",
+      "draft_prefill": "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/mtp-prefill512",
+      "verify": "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/verify8-selected",
+      "repair": "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/repair8-attention"
+    },
+    "source_identity": "f81e6af6f57e6331",
+    "source_hashes": {
+      "src/tensor/__init__.py": "9565dbf1c6d824317eebab921b69b89c236e5b74062ebb6f2c1967f2c86bb0f7",
+      "src/tensor/__main__.py": "2d09a692db904ea8e4b37405e9dfe8321ff80987c6c5000cdfee7be263f21dcb",
+      "src/tensor/artifacts/__init__.py": "8c145e5df6c4806bdbee5ef83caeeda6a2a207fe280b93eddf6f50fd36f7d1f6",
+      "src/tensor/artifacts/format.py": "c0ee2c215a6312d4593226d017cc4b68412aa8ec8c067a7232f663816ac0d043",
+      "src/tensor/artifacts/modules.py": "2de2e636595ad5ac9d5dbf3d6a2132cc0709f1bf654c7fefdf64dbe6e5868eab",
+      "src/tensor/artifacts/portable.py": "6877a14e254ad0d327a77ce3272775cf8a32222ee8a8ec55d205eafe5ef9a592",
+      "src/tensor/artifacts/registry.py": "3b9315479262c204356a2e7e3853a85559cecc2942dfcba75230a0edf8509562",
+      "src/tensor/cli/__init__.py": "eb12bbc00d5e6955e160e5e70cc534bdedce939bd7ad035ce40326ae6b2fcf4f",
+      "src/tensor/cli/commands.py": "9c6a4b7300f2b014ceea25fb9d9df4f35a025fe98bae39d52e755a5ebb00d9f8",
+      "src/tensor/cli/doctor.py": "f090e173a6d4c75ad01565f7266eb5cc4ffc0336d8fdb5f64a8cc766e1700ba7",
+      "src/tensor/cli/inspect.py": "3ae6252921f6e39aa814a3bf22e99b2390cc36c63e222c137d52d12356039258",
+      "src/tensor/compiler/__init__.py": "38d9eabfbbffe226249ecced9d9e93b8fd0ed81ad183ff3f22ad0bb62b70f97b",
+      "src/tensor/compiler/build.py": "648e53ee49eef654ccce9f1d343aa451e5f588c5eb6d296e0b48b055407eb047",
+      "src/tensor/compiler/cpu.py": "ab00331be59406dbdb833a842e4dc32aa47c8cbcc785cac400cd98dd43f250a9",
+      "src/tensor/compiler/cuda_lowering.py": "cda9e8a088b6f672f4f2d1e38f65438e7198e65ef5b8df830c643642667469cb",
+      "src/tensor/compiler/cuda_schedules.py": "ecf7f4617fe9594cb0069a50684a6b7b5747c70eaec4c8a84f93d98c36ee0c9b",
+      "src/tensor/compiler/entry.py": "63906f070e82e8053df055cd4cf2489754f3a3e0e4c2ba832537d647ce88e223",
+      "src/tensor/compiler/lowering.py": "2da6ab7376cde707be7c52e4f4e60da0f1b69edec0f4fac829d0b4012857bd82",
+      "src/tensor/compiler/nvrtc.py": "c128d2bb2676808d5d2f9a141f19c1fc2f24dea403e3b171bec7dabd22e7f961",
+      "src/tensor/compiler/search.py": "826ccbd9e003e4d67fa40b031d26866d7f38ea7ae28f4bd8f2a63cda9a207865",
+      "src/tensor/compiler/tuning.py": "3c18f82f8ce914302c3b4d8f40e80bba336142154c497596c0dfc851c8e23b0f",
+      "src/tensor/compiler/webgpu.py": "24ff59cb74ad28e255e97fe35e01dc1fe4e96040c44dc5d47bd054778b456020",
+      "src/tensor/compiler/webgpu_lowering.py": "86219cea460a94147d55d652d0c3fd844ef28bbe01a893e03fb9ae9b730023f9",
+      "src/tensor/compiler/webgpu_schedules.py": "c1a5483f4474d5d009b42ce0b076116ac9ff16fd6abc7cd64493271ae15968ed",
+      "src/tensor/compiler/webgpu_templates.py": "1f008cfb483ecfc7c3e430ce80155200ae9626f6bede52046aca9e50f1d18791",
+      "src/tensor/providers/__init__.py": "645a818689ca5a8658932204c7f2f37e8c5cf453e403730244bb1220857afc93",
+      "src/tensor/providers/cpu.py": "ff0137a9d7704890a53eed9d47a7c7f6753d247771bd3fd178c1c68d31ce6067",
+      "src/tensor/providers/cuda.py": "ac69539f6310b82aec02fc342c18039aec49d3d336686f0397d124d44b192f16",
+      "src/tensor/providers/cuda_graph.py": "2eae437c6fdf09120754ddfdd88c306f7e722ec6a4448001ca310e44676291b8",
+      "src/tensor/providers/webgpu.py": "a27f6a7915d7db4d6d209d7c6f9eaef29ca63d055e0fab8522c44e8e9da65b3a",
+      "src/tensor/providers/webgpu_contract.py": "934a282baed8b5cd097b3ddb7d0c068d266a7b00d5f7972aae3b2da3b2e9c5e0",
+      "src/tensor/runtime/__init__.py": "2d118ec0dd792038792f6e7f703ee6dd6c3c0d042249ce66c1d7bcc7c1ad4697",
+      "src/tensor/runtime/abi.py": "d0ca2d608288ce8a4280e9303fdbf568eb0b01e2e94df3bb727f82ee3f988c47",
+      "src/tensor/runtime/dlpack.py": "2d06e69f306bc3f0e6413287f91b4de2879f2e607a071ba4535b1aeb17e4b355",
+      "src/tensor/runtime/dtypes.py": "e282e8ffd299945bf189417dc4e4e7a5b70e5f44463479d16f1eed6f82a89c57",
+      "src/tensor/runtime/manual.py": "5adfea9f30c1099b45446f24fa41e13c0dc6a30133ee6df1efe82e4ffed3435a",
+      "src/tensor/runtime/signature.py": "2a617ae86b30d9e730b80df2596c262e9f6df87f342bf6a688cb982370574559",
+      "packages/tensor-llm/src/tensor_llm/__init__.py": "5bc54c675ba2a3601b29b4ab016114eee3bcd6523760363a23c5e04ab59cf453",
+      "packages/tensor-llm/src/tensor_llm/__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+      "packages/tensor-llm/src/tensor_llm/cli.py": "9460c5be52f77c52c1a8007657338f850817509053be1d4bbeb45d320758f5ae",
+      "packages/tensor-llm/src/tensor_llm/common/__init__.py": "bb01ac8fb313566867d43f18558ad2a4aadff68f46fc76ac1bee46477b5a48e4",
+      "packages/tensor-llm/src/tensor_llm/common/artifacts.py": "4ee07f3419490e01cdc27a55d83f2c8fccc1a5dbafb22738678c5b6df3322b43",
+      "packages/tensor-llm/src/tensor_llm/common/gguf.py": "46a5a30903c5a39df522bd5348b608a0521bd62adb669db3d4d3a370ca291f67",
+      "packages/tensor-llm/src/tensor_llm/common/tokenizer.py": "3b01ebecfb140216b5ec69ffd5c46fe7cb901f1686a0780d217a406f63e6a726",
+      "packages/tensor-llm/src/tensor_llm/lfm2/__init__.py": "ba9e975a680a2561a8aac586bb59b697c4bb5cefac6c6002fa9a88c81e488453",
+      "packages/tensor-llm/src/tensor_llm/lfm2/config.py": "eecfff2ac3986d6921fde13c0f2629d4e14f1351633d47869317591f016a312d",
+      "packages/tensor-llm/src/tensor_llm/lfm2/kernels/__init__.py": "f89da752ead17905292ed158b42c30eb3de29b8525bf7eca1892629a4e9e5373",
+      "packages/tensor-llm/src/tensor_llm/lfm2/kernels/baseline.py": "602d00e5a908bc2838f8c27f13841792702a501e6ae7998fca48e2ce2f342e2d",
+      "packages/tensor-llm/src/tensor_llm/lfm2/kernels/cuda.py": "1f10e47ba38bda5b5404e8dd1d03ce6558be87b07bf26b0a34f4ec5b96966fa2",
+      "packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py": "07d937054fe6a78876cbd59726bb47bd1911264936e5f31001da7f9862ba76cc",
+      "packages/tensor-llm/src/tensor_llm/lfm2/model.py": "d73210cc14aae79224ce8c7dcbd9133f10a2c8852c73f4dffd18d443ceb7559b",
+      "packages/tensor-llm/src/tensor_llm/lfm2/provenance.py": "4579793383c6cfa4edd15537a36e677a7578c29107ecb89f296e3b36c3580dfb",
+      "packages/tensor-llm/src/tensor_llm/qwen35/__init__.py": "7b1ab1735253d923da875d5290d0c7a28ffcd97960c12b2ce34f8b082c610223",
+      "packages/tensor-llm/src/tensor_llm/qwen35/artifacts.py": "628226594ab0690d7677ee7ecedb9eca338950babb8284a1e12743746bfca1f0",
+      "packages/tensor-llm/src/tensor_llm/qwen35/checkpoint.py": "b3d9cae8c8d6fc208ab8363e8483f1c20c9223e5571982b552cf35eecdc37444",
+      "packages/tensor-llm/src/tensor_llm/qwen35/decode.py": "32ad9072ac266e3b8b382a441ea56767610f503c959d5197beae72e265c37ba3",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/__init__.py": "646f85250a4006fa312175831a2debfcf30b56b0a318e415498ae46b915ecf56",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/decode.py": "8f042d3d11d4241c6dd7f5e5534845eef6321fd9298bfebb95e1557f1a5d3087",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/fp8_kv.py": "ab914ae1d05bf54a43ab54cdb3e152c5692af816d49c5cb9b71b62b90d253153",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/matmul.py": "cfd888a770140d96f9e8ca68c6680b0991d933caa6c0de605bcfb7c66f05fcce",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/mtp.py": "64d2f0db7abf166f7ff4683631536572e3e6becbbd858fa2149f7565b7a67aea",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/prefill.py": "7f854a0a6796241b3a0c540c4c85d55055e07465a09e85b1b87fdee9f42707b8",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/speculative.py": "e3b4abcf099e6e46a86746311fcf510b40176ea69d1ec57f6e7682fe7a1841a7",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/speculative_attention.py": "ef8ed01898b839d73cbb86d6e4cb85e0e22c5ceea09dd34ea9ea44322adaf863",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/speculative_linear.py": "61916865139878da53389e9fc652f7bafc420e0e0f08e77659064648390418b0",
+      "packages/tensor-llm/src/tensor_llm/qwen35/mtp/__init__.py": "4b33ea111b27c6d797845f9b93f03438368d7667263a20b9c4c6f11ae2b5f743",
+      "packages/tensor-llm/src/tensor_llm/qwen35/mtp/decode.py": "3792cd748c4a7b280ea34ab27ec9ce28024460989dd118e970ba29af09a1eda4",
+      "packages/tensor-llm/src/tensor_llm/qwen35/mtp/prefill.py": "27c38d0db38fc6f5944735b46d5ff533307e4651551f468e1333ff18f53aef57",
+      "packages/tensor-llm/src/tensor_llm/qwen35/pipeline.py": "d3631e232a3665c952daad1280b0853f1c31eedbc9eca7ae8dc1f1f5aeb9584d",
+      "packages/tensor-llm/src/tensor_llm/qwen35/prefill.py": "386aa3b6851ad4ca2f224bb42d84d355ecdf6494c2357a056ab929ba709f21aa",
+      "packages/tensor-llm/src/tensor_llm/qwen35/speculative/__init__.py": "51beb58d6271d165c97828c4f289ac042e68171337da637d91549b188e8794b1",
+      "packages/tensor-llm/src/tensor_llm/qwen35/speculative/attention.py": "3d9f8a0537c56b36a825d9471303c79fa0ce6530c05ee3ce95c38b3b3151a506",
+      "packages/tensor-llm/src/tensor_llm/qwen35/speculative/engine.py": "0c26d69f1c66d8b02d7e2e1197125c0017dbc9cff16f3ef9fa214d5b8fcb9a7b",
+      "packages/tensor-llm/src/tensor_llm/qwen35/speculative/linear.py": "faeb7e63eff80bc629f3525038edc020dd89624cb30c4c8c8f520a1d258875b7",
+      "packages/tensor-llm/src/tensor_llm/qwen35/speculative/verifier.py": "82963dd53a87b9ac2be69cfb71c83e966c8b8b9b26763014f0916ee717d1db75",
+      "packages/tensor-llm/src/tensor_llm/speculative/__init__.py": "279799e7bb5e65a41a266071353486ba2e93c494789ace5c59d19e1affb610fb",
+      "packages/tensor-llm/src/tensor_llm/speculative/acceptance.py": "8043b4fcb7be5374e9626d9f681727add02afb89ed6e72f55d27deb1eea5f542",
+      "packages/tensor-llm/src/tensor_llm/speculative/lookup.py": "f1b062a19110d08aed889d370e6cfd22159b26e7f53fee6e018b4d708c925149",
+      "benchmarks/qwen35/__init__.py": "a188b49b0b35cf47a4d7cab646580293b039a4784aed0c525063bcbc0b83581b",
+      "benchmarks/qwen35/build.py": "b317b2fadf9375cca7e84814c1686d6300396e0ddc727dbd46adf2d9f8f3142e",
+      "benchmarks/qwen35/cache_quality.py": "9ed5129929922acf140f48462adb34e14eefc1900beee173393370c857cbeb3f",
+      "benchmarks/qwen35/modal_h200.py": "02ef21d3fe4b306ecdef6589cd0d9e4703ec6684f5810aced624cd8c6c3f6123",
+      "benchmarks/qwen35/mtp_benchmark.py": "5764b6eda80dfda626fbb9f4466fe5d19228c958a57f6e3a0473d8630908af2d",
+      "benchmarks/qwen35/mtp_calibrate.py": "a46ed2ff84559ef23645defba56584c5e44df1b7fa8f568bd671998946f6a7ff",
+      "benchmarks/qwen35/mtp_chain.py": "51a4d477e6d2bf25a67fe18025b09177868dfcb77e7f98b260b2f3a1c77e541e",
+      "benchmarks/qwen35/mtp_prefill_producer.py": "a46fe985443ccce04a86ded865a9c06c5624b9d52f53bf1912692ddb5ce7c9d3",
+      "benchmarks/qwen35/mtp_producer.py": "57b99286bb5ae8ab1261276d1a77c183fa484bdb730cce07a71040e94731ab46",
+      "benchmarks/qwen35/mtp_reference.py": "163a6d057d301ee552806f875fda718b2d5f9d34a91ce886d8c1c2e85e07f28e",
+      "benchmarks/qwen35/prefill_producer.py": "06be79bfc84a95879943085d9bac02fa8f860cbfcdca0ce61038ef5de21d1f93",
+      "benchmarks/qwen35/producer.py": "566536c2dc12b58c014d926bc67ee427ed17f360ab6442ca7270afdbf480cc8c",
+      "benchmarks/qwen35/profile_producer.py": "b52667eed98bc03070089fceb8b414787d6eda034308c5e8dfe422f289b3f7a9",
+      "benchmarks/qwen35/qualify.py": "f73b7d6a70d280a53006c48f09ea2862fff927323ae25a1da44b5728fcaee6f9",
+      "benchmarks/qwen35/reference.py": "d5adf59f16b781d8eab0103e584d5ae81d7e1618e31fff8f3039ecab490a90cb",
+      "benchmarks/qwen35/search.py": "570695622e76db51c64a254c74d683e5f23f8b37b63b40c42f85a83fb48f1909",
+      "benchmarks/qwen35/server.py": "984e0e214febdc5f46d1de8c07ed9a7ca268dd5f6c122b7823beb6ec028405da",
+      "benchmarks/qwen35/spec_attention_producer.py": "576cbee73905e6063975365d68f0c75d29072e2d860f70c3808062519e5bcf26",
+      "benchmarks/qwen35/spec_benchmark.py": "eb70692388a4757568251ce129ccbe5ccc29998d33302e49b14691e0d394b41f",
+      "benchmarks/qwen35/spec_linear_producer.py": "fb8a3d09422bb9a28d2446ad6008ab107f32a087f7fa7a566a37804319018793",
+      "benchmarks/qwen35/spec_plot.py": "26cf819638a84aa4cb0d4a3d45ea7348cf4ae20a28b1b1802d0df63da5a482ac",
+      "benchmarks/qwen35/spec_producer.py": "8a6518f33adcc0c9adb897a9894392a56950fab5965dc30ad5ba5dbc4c4e249f",
+      "benchmarks/qwen35/spec_profile.py": "4420a9cd920ca2a7739ae383ba293f111c139e2a503e447f4af8121af29b8ad2",
+      "benchmarks/qwen35/spec_quality.py": "20d4cf4ff196645255ef1e9ec93822f8e97e07aa4b8ead6797b24b794c4a076f",
+      "benchmarks/qwen35/spec_run.py": "48e334baaa02613b3ad50495d8a9bb629ab127c2203b4337ec582a2e1ae0c2e6",
+      "benchmarks/qwen35/spec_telemetry.py": "13e456afff6b639107854021b83935f3f40f050c0e81a53b6bdb8e00aa7cf585",
+      "benchmarks/qwen35/tune.py": "bd7abcd99f3fdd5efec26dd88c74a9ac89a5a054db2b640b5531c2161e2c6d21",
+      "benchmarks/qwen35/whole_tune.py": "892fae2d271c9f461959f97f6048bd9149b6ccfa81188c154072238b7991b69f"
+    },
+    "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+    "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+    "target": "sm_90",
+    "volume": "tensor-qwen35-h200",
+    "preparation_seconds": 641.488845832
+  },
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false,
+  "nvidia_smi": "Fri Oct  9 22:50:18 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:96:00.0 Off |                    0 |\n| N/A   29C    P0             75W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "versions": {
+    "numpy": "1.26.4",
+    "torch": "2.8.0+cpu",
+    "tilelang": "0.1.14",
+    "apache-tvm-ffi": "0.1.12",
+    "huggingface_hub": "0.36.0",
+    "aiohttp": "3.14.3",
+    "modal": "1.6.1"
+  },
+  "kernel_tests_exit_code": 0,
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  },
+  "verification_quality": {
+    "scope": "teacher-forced verification vs same native serial target at initialized prefix",
+    "device": {
+      "ordinal": 0,
+      "name": "NVIDIA H200",
+      "arch": "sm_90",
+      "provider": "cuda"
+    },
+    "prefix_positions": [
+      32000,
+      32000,
+      32000,
+      32000,
+      32000,
+      32000,
+      32000,
+      32000
+    ],
+    "steps": 2,
+    "kv_dtype": "fp8",
+    "threshold": 0.03,
+    "relative_logit_rms": 0.08146069943904877,
+    "greedy_matches": 14,
+    "greedy_total": 16,
+    "finite": true,
+    "canonical_model_qualified": false,
+    "model_throughput_qualified": false,
+    "passed": false
+  },
+  "client_runs": {
+    "tensor-h200-ar-c8": {
+      "schema": "tensor.llm-serving-report.v1",
+      "status": "completed",
+      "created_utc": "2026-10-09T22:54:18.035935+00:00",
+      "comparison_group": "qwen35-h200-32k16k-c8-native-fp8kv-experimental",
+      "workload_sha256": "6e012fe014f8fc86d58d0065862c62e77e1374fccba612a7ab5d54c1679db44a",
+      "workload_kind": "synthetic-random-token-stress",
+      "arrival": {
+        "mode": "closed-loop",
+        "requests_per_second": null
+      },
+      "synthetic": false,
+      "protocol": {
+        "boundary": "client HTTP dispatch/arrival to completed stream",
+        "connections": "fresh TCP connection per call; no transparent retries",
+        "arrival_latency": "includes client admission delay in poisson mode",
+        "throughput_denominator": "entire measured point including fill/drain and failed calls",
+        "input_throughput": "prompt tokens / whole point; not isolated prefill speed",
+        "tpot": "(last token event - first token event) / (output tokens - 1)",
+        "chunking": "client-observed; coalesced tokens have a shared arrival timestamp",
+        "warmup": "separate requests excluded from measurement; run before every point",
+        "retries": 0
+      },
+      "settings": {
+        "concurrencies": [
+          8
+        ],
+        "repeats": 1,
+        "request_timeout_seconds": 900,
+        "telemetry_interval_seconds": 1.0,
+        "ttft_slo_seconds": null,
+        "tpot_slo_seconds": null
+      },
+      "provenance": {
+        "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.39",
+        "python": "3.12.1",
+        "git_commit": null,
+        "aiohttp": "3.14.3",
+        "harness_sources": {
+          "runner.py": "5e9029e65d670550f5caf0b0a61630ccff1d317646a3ea03ac7738a37042698c",
+          "__main__.py": "b1c2f1577d6c093868e810489d780949156b07c7b88706aa8ce1db3bcc72a83d",
+          "smoke.py": "be3d4e086d23d979aeaec6fb612566dc4885235003a976eb4445ca3eb40667d7",
+          "__init__.py": "a8b67a3a239a8025454073866f7a66d6bb47178fc865c40ade8a7517dd052dea",
+          "workload.py": "9896d7e5ead7ee733662a6c36e223c9303495df6b6a50399f72129091bc1ca0c",
+          "adapters.py": "9950b7034173b8be4829aa1a55409b0c2dcd216d64e3e4ad3249e4636e8b6bfa",
+          "plot.py": "184c220711cd84088ece5be2939660a838d87cb5049ad2d9927cf65d0cc4a7e0",
+          "metrics.py": "a1dc2a53976f1036c7aeb2789b52cc3ceafb549769cd330a051caec214af65a3"
+        }
+      },
+      "servers": [
+        {
+          "configuration": {
+            "name": "tensor-h200-ar-c8",
+            "engine": "tensor",
+            "base_url": "http://127.0.0.1:8013",
+            "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+            "engine_version": "0.1.0-native-qwen35-dev",
+            "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+            "weight_format": "FP8-block128",
+            "kv_dtype": "fp8",
+            "state_dtype": "float32",
+            "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+            "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+            "hardware": "NVIDIA H200 x1",
+            "cpu_offload": "none",
+            "prefix_cache": false,
+            "speculative": false,
+            "gpu_indices": [
+              "0"
+            ],
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "benchmarks.qwen35.server",
+              "--checkpoint",
+              "/cache/models/9d1823d2dee688a6b25e77009dc727688c44936e",
+              "--bundle",
+              "/cache/bundles/f81e6af6f57e6331/decode-profile/decoder",
+              "--prefill-bundle",
+              "/cache/bundles/f81e6af6f57e6331/prefill512",
+              "--port",
+              "8013"
+            ],
+            "model_throughput_qualified": false,
+            "full_stress_target_reached": false,
+            "settings": {
+              "max_model_len": 48000,
+              "max_num_seqs": 8,
+              "prefill_chunk": 512,
+              "output_lookup": false,
+              "scheduler": "fixed native cohort"
+            }
+          },
+          "points": [
+            {
+              "concurrency": 8,
+              "repeat": 0,
+              "disposition": "measured",
+              "requests_file": "c8-r0-requests.jsonl",
+              "telemetry_file": "c8-r0-telemetry.jsonl",
+              "summary": {
+                "requests": 8,
+                "completed": 8,
+                "failed": 0,
+                "elapsed_seconds": 217.60484302299997,
+                "prompt_tokens": 256000,
+                "output_tokens": 128000,
+                "observed_output_tokens_including_failures": 128000,
+                "output_tokens_per_second": 588.2222023269533,
+                "input_tokens_per_second": 1176.4444046539065,
+                "total_tokens_per_second": 1764.6666069808598,
+                "requests_per_second": 0.03676388764543458,
+                "goodput_output_tokens_per_second": 588.2222023269533,
+                "goodput_requests_per_second": 0.03676388764543458,
+                "ttft_seconds": {
+                  "count": 8,
+                  "mean": 69.01625505275,
+                  "p50": 69.01620831899997,
+                  "p95": 69.02347344165001,
+                  "p99": 69.02407220513
+                },
+                "service_ttft_seconds": {
+                  "count": 8,
+                  "mean": 69.01625025425,
+                  "p50": 69.01620410549998,
+                  "p95": 69.0234669256,
+                  "p99": 69.02406546032
+                },
+                "tpot_seconds": {
+                  "count": 8,
+                  "mean": 0.009275248854404963,
+                  "p50": 0.009275276119663731,
+                  "p95": 0.009283270468182388,
+                  "p99": 0.0092840003851297
+                },
+                "latency_seconds": {
+                  "count": 8,
+                  "mean": 217.411083188125,
+                  "p50": 217.41145845299997,
+                  "p95": 217.53221778009998,
+                  "p99": 217.54325923121996
+                },
+                "client_queue_seconds": {
+                  "count": 8,
+                  "mean": 4.798499997349381e-06,
+                  "p50": 4.475999986652823e-06,
+                  "p95": 6.516050001437179e-06,
+                  "p99": 6.744810001464429e-06
+                },
+                "stream_chunk_gap_seconds": {
+                  "count": 127992,
+                  "mean": 0.009275248854404963,
+                  "p50": 0.00924340649999067,
+                  "p95": 0.009768454049995512,
+                  "p99": 0.009994764040027347
+                },
+                "single_token_gap_seconds": {
+                  "count": 127992,
+                  "mean": 0.009275248854404963,
+                  "p50": 0.00924340649999067,
+                  "p95": 0.009768454049995512,
+                  "p99": 0.009994764040027347
+                }
+              },
+              "warnings": [
+                "fewer than two waves of requests; fill/drain effects can dominate"
+              ]
+            }
+          ],
+          "lifecycle": {
+            "managed": true,
+            "startup_seconds": 14.560415712999998
+          },
+          "hardware_snapshot": {
+            "status": "sampled",
+            "location": "client-host",
+            "devices": [
+              {
+                "uuid": "GPU-7290ddb6-64a9-ea8c-785a-e7490010b127",
+                "name": "NVIDIA H200",
+                "used_mib": 40459.0,
+                "total_mib": 143771.0,
+                "utilization_percent": 0.0,
+                "driver": "580.95.05"
+              }
+            ]
+          },
+          "tokenizer_probe": {
+            "status": "matched",
+            "probe_sha256": "6e1be5df2d3df7734eb0e0dacc54666679abfc603e3697f069b574f89de71862"
+          },
+          "server_info": [
+            {
+              "http_status": 200,
+              "path": "/server_info",
+              "data": {
+                "engine": "tensor",
+                "implementation": "native-qwen35-experimental",
+                "slots": 8,
+                "context_capacity": 48000,
+                "resident_weight_bytes": 35707988096,
+                "target_weight_bytes": 35707988096,
+                "draft_weight_bytes": 0,
+                "checkpoint_weight_bytes": 35707988096,
+                "state_dtype": "float32",
+                "kv_dtype": "fp8",
+                "weight_format": "native-F8_E4M3-block128",
+                "speculative": false,
+                "prefix_cache": false,
+                "cpu_offload": "none",
+                "output_lookup": false,
+                "model_throughput_qualified": false,
+                "full_stress_target_reached": false
+              }
+            }
+          ],
+          "disposition": "measured"
+        }
+      ]
+    },
+    "tensor-h200-mtp-lookup-c8": {
+      "schema": "tensor.llm-serving-report.v1",
+      "status": "completed",
+      "created_utc": "2026-10-09T22:58:13.761684+00:00",
+      "comparison_group": "qwen35-h200-32k16k-c8-native-fp8kv-experimental",
+      "workload_sha256": "6e012fe014f8fc86d58d0065862c62e77e1374fccba612a7ab5d54c1679db44a",
+      "workload_kind": "synthetic-random-token-stress",
+      "arrival": {
+        "mode": "closed-loop",
+        "requests_per_second": null
+      },
+      "synthetic": false,
+      "protocol": {
+        "boundary": "client HTTP dispatch/arrival to completed stream",
+        "connections": "fresh TCP connection per call; no transparent retries",
+        "arrival_latency": "includes client admission delay in poisson mode",
+        "throughput_denominator": "entire measured point including fill/drain and failed calls",
+        "input_throughput": "prompt tokens / whole point; not isolated prefill speed",
+        "tpot": "(last token event - first token event) / (output tokens - 1)",
+        "chunking": "client-observed; coalesced tokens have a shared arrival timestamp",
+        "warmup": "separate requests excluded from measurement; run before every point",
+        "retries": 0
+      },
+      "settings": {
+        "concurrencies": [
+          8
+        ],
+        "repeats": 1,
+        "request_timeout_seconds": 900,
+        "telemetry_interval_seconds": 1.0,
+        "ttft_slo_seconds": null,
+        "tpot_slo_seconds": null
+      },
+      "provenance": {
+        "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.39",
+        "python": "3.12.1",
+        "git_commit": null,
+        "aiohttp": "3.14.3",
+        "harness_sources": {
+          "runner.py": "5e9029e65d670550f5caf0b0a61630ccff1d317646a3ea03ac7738a37042698c",
+          "__main__.py": "b1c2f1577d6c093868e810489d780949156b07c7b88706aa8ce1db3bcc72a83d",
+          "smoke.py": "be3d4e086d23d979aeaec6fb612566dc4885235003a976eb4445ca3eb40667d7",
+          "__init__.py": "a8b67a3a239a8025454073866f7a66d6bb47178fc865c40ade8a7517dd052dea",
+          "workload.py": "9896d7e5ead7ee733662a6c36e223c9303495df6b6a50399f72129091bc1ca0c",
+          "adapters.py": "9950b7034173b8be4829aa1a55409b0c2dcd216d64e3e4ad3249e4636e8b6bfa",
+          "plot.py": "184c220711cd84088ece5be2939660a838d87cb5049ad2d9927cf65d0cc4a7e0",
+          "metrics.py": "a1dc2a53976f1036c7aeb2789b52cc3ceafb549769cd330a051caec214af65a3"
+        }
+      },
+      "servers": [
+        {
+          "configuration": {
+            "name": "tensor-h200-mtp-lookup-c8",
+            "engine": "tensor",
+            "base_url": "http://127.0.0.1:8013",
+            "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+            "engine_version": "0.1.0-native-qwen35-dev",
+            "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+            "weight_format": "FP8-block128",
+            "kv_dtype": "fp8",
+            "state_dtype": "float32",
+            "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+            "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+            "hardware": "NVIDIA H200 x1",
+            "cpu_offload": "none",
+            "prefix_cache": false,
+            "speculative": true,
+            "gpu_indices": [
+              "0"
+            ],
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "benchmarks.qwen35.server",
+              "--checkpoint",
+              "/cache/models/9d1823d2dee688a6b25e77009dc727688c44936e",
+              "--bundle",
+              "/cache/bundles/f81e6af6f57e6331/decode-profile/decoder",
+              "--prefill-bundle",
+              "/cache/bundles/f81e6af6f57e6331/prefill512",
+              "--port",
+              "8013",
+              "--draft-bundle",
+              "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/mtp",
+              "--draft-prefill-bundle",
+              "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/mtp-prefill512",
+              "--verify-bundle",
+              "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/verify8-selected",
+              "--repair-bundle",
+              "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/f81e6af6f57e6331/repair8-attention",
+              "--output-lookup",
+              "--fallback-proposals",
+              "3"
+            ],
+            "model_throughput_qualified": false,
+            "full_stress_target_reached": false,
+            "settings": {
+              "max_model_len": 48000,
+              "max_num_seqs": 8,
+              "prefill_chunk": 512,
+              "output_lookup": true,
+              "scheduler": "fixed native cohort"
+            }
+          },
+          "points": [
+            {
+              "concurrency": 8,
+              "repeat": 0,
+              "disposition": "measured",
+              "requests_file": "c8-r0-requests.jsonl",
+              "telemetry_file": "c8-r0-telemetry.jsonl",
+              "summary": {
+                "requests": 8,
+                "completed": 8,
+                "failed": 0,
+                "elapsed_seconds": 140.42116464100002,
+                "prompt_tokens": 256000,
+                "output_tokens": 128000,
+                "observed_output_tokens_including_failures": 128000,
+                "output_tokens_per_second": 911.5435007767105,
+                "input_tokens_per_second": 1823.087001553421,
+                "total_tokens_per_second": 2734.6305023301315,
+                "requests_per_second": 0.05697146879854441,
+                "goodput_output_tokens_per_second": 911.5435007767105,
+                "goodput_requests_per_second": 0.05697146879854441,
+                "ttft_seconds": {
+                  "count": 8,
+                  "mean": 71.910037515,
+                  "p50": 71.91002379600002,
+                  "p95": 71.91732269259998,
+                  "p99": 71.91798960891997
+                },
+                "service_ttft_seconds": {
+                  "count": 8,
+                  "mean": 71.91003120975,
+                  "p50": 71.91001891350001,
+                  "p95": 71.91731412134996,
+                  "p99": 71.91798039226995
+                },
+                "tpot_seconds": {
+                  "count": 8,
+                  "mean": 0.004184257705637851,
+                  "p50": 0.0041700964869991865,
+                  "p95": 0.004247794096846675,
+                  "p99": 0.004274542851121317
+                },
+                "latency_seconds": {
+                  "count": 8,
+                  "mean": 138.85421213249998,
+                  "p50": 138.6278698355,
+                  "p95": 139.86696686449997,
+                  "p99": 140.29693869769997
+                },
+                "client_queue_seconds": {
+                  "count": 8,
+                  "mean": 6.3052500038907056e-06,
+                  "p50": 6.608000006735892e-06,
+                  "p95": 8.571250012323615e-06,
+                  "p99": 9.2166500149915e-06
+                },
+                "stream_chunk_gap_seconds": {
+                  "count": 16129,
+                  "mean": 0.03320426016864033,
+                  "p50": 0.031664865000038844,
+                  "p95": 0.03276781419995132,
+                  "p99": 0.033353427320016636
+                },
+                "single_token_gap_seconds": {
+                  "count": 22,
+                  "mean": 0.9017283603636357,
+                  "p50": 0.03232011199997942,
+                  "p95": 3.2272944536000523,
+                  "p99": 3.2273346025199974
+                }
+              },
+              "warnings": [
+                "fewer than two waves of requests; fill/drain effects can dominate"
+              ]
+            }
+          ],
+          "lifecycle": {
+            "managed": true,
+            "startup_seconds": 16.07519205799997
+          },
+          "hardware_snapshot": {
+            "status": "sampled",
+            "location": "client-host",
+            "devices": [
+              {
+                "uuid": "GPU-7290ddb6-64a9-ea8c-785a-e7490010b127",
+                "name": "NVIDIA H200",
+                "used_mib": 41687.0,
+                "total_mib": 143771.0,
+                "utilization_percent": 0.0,
+                "driver": "580.95.05"
+              }
+            ]
+          },
+          "tokenizer_probe": {
+            "status": "matched",
+            "probe_sha256": "6e1be5df2d3df7734eb0e0dacc54666679abfc603e3697f069b574f89de71862"
+          },
+          "server_info": [
+            {
+              "http_status": 200,
+              "path": "/server_info",
+              "data": {
+                "engine": "tensor",
+                "implementation": "native-qwen35-experimental",
+                "slots": 8,
+                "context_capacity": 48000,
+                "resident_weight_bytes": 36561656576,
+                "target_weight_bytes": 35707988096,
+                "draft_weight_bytes": 853668480,
+                "checkpoint_weight_bytes": 35707988096,
+                "state_dtype": "float32",
+                "kv_dtype": "fp8",
+                "weight_format": "native-F8_E4M3-block128",
+                "speculative": true,
+                "prefix_cache": false,
+                "cpu_offload": "none",
+                "output_lookup": true,
+                "model_throughput_qualified": false,
+                "full_stress_target_reached": false
+              }
+            }
+          ],
+          "disposition": "measured"
+        }
+      ]
+    }
+  }
+}

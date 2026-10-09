@@ -92,10 +92,40 @@ python -m benchmarks.qwen35.server --checkpoint build/models/qwen3.5-35b-a3b-fp8
 ```
 
 Use `bfloat16` and omit `--packed-kv` for the separate BF16 cache reference.
-The supplied producers target `sm_89` and the pinned local NVRTC bootstrap.
+The supplied producers default to `sm_89` and the pinned local NVRTC bootstrap.
+The decoder/profile and prefill producers accept `--target sm_90` for Hopper;
+MTP and verification producers inherit the parent bundle's target. Set
+`TENSOR_NVRTC_HOME` to use the same pinned NVRTC bundle at another location.
 The fixed slot scheduler accepts greedy token-ID requests and performs chunked
 prefill and batched decode. Paged cache allocation, batch-1 optimization and
 general continuous scheduling remain roadmap work.
+
+The bounded Modal H200 runner prepares the official checkpoint and CUDA
+artifacts on CPU, then requests one H200 for primitive checks, a two-row
+verification-versus-serial check at 32K context, and the common streaming-client
+replay at C8. It measures pure AR and MTP plus output lookup separately. Use the
+retained workload from the L40S replay at
+`docs/research/data/qwen35-native-h200/workload.json`, then run:
+
+```bash
+modal run benchmarks/qwen35/modal_h200.py --out build/qwen35-h200
+```
+
+Set `TENSOR_H200_WORKLOAD` to choose another local workload JSON. To repeat a
+measurement with already prepared artifacts, pass `--prepared-file` pointing
+to the prior local `prepared.json`; consumer implementation checks still apply.
+
+Weights and artifacts persist in the `tensor-qwen35-h200` Modal volume. The
+local output records the remote run directory for downloading raw reports with
+`modal volume get`. CPU preparation has a one-hour timeout; GPU qualification
+and both finite replays share a 30-minute timeout. The initial Hopper profile
+uses ordinary pointer arguments and warp MMA: automatic TMA, WGMMA and warp
+specialization are disabled for exact `sm_90` builds to fit the current runtime
+ABI. These compatibility settings are retained in each artifact's compiler
+identity. Whole-model qualification remains a separate gate.
+The [first H200 report](../../docs/research/qwen35-native-h200.md) records
+588.2 tok/s AR and 911.5 tok/s MTP plus output lookup over complete C8 32K/16K
+client replays. Numerical qualification failed; these are experimental rates.
 
 `Qwen35Checkpoint(path, branch='mtp')` also validates the official embedded
 MTP weights. The experimental `Qwen35MTP(target, bundle)` drafter borrows the

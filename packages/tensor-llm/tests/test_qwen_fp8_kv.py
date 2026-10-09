@@ -12,7 +12,7 @@ def build(tmp_path,kind,p):
     entry.write_text(export_source('tensor_llm.qwen35.kernels.decode','make_kernel',kind,p,
         dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering','tensor_llm.qwen35.kernels.fp8_kv')))
     artifact=entry.with_suffix('.tbin')
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     return artifact
 
 

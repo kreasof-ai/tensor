@@ -13,8 +13,8 @@ def build(tmp_path,kind,p):
     from tensor_llm.qwen35.kernels.decode import source
     entry=tmp_path/(kind+'.py');entry.write_text(source(kind,p))
     artifact=tmp_path/(kind+'.tbin')
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',
-        nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',
+        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     return artifact
 
 
@@ -25,7 +25,7 @@ def build_mma(tmp_path,factory,*args):
     entry.write_text(export_source('tensor_llm.qwen35.kernels.matmul',factory,*args,
         dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering')))
     artifact=entry.with_suffix('.tbin')
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     return artifact
 
 

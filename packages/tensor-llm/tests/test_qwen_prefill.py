@@ -11,7 +11,7 @@ def build(tmp_path,kind,p):
     entry=tmp_path/(kind+'.py');artifact=entry.with_suffix('.tbin')
     entry.write_text(export_source('tensor_llm.qwen35.kernels.prefill','make_kernel',kind,p,
         dependencies=('tensor.compiler.entry',)))
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     return artifact
 
 
@@ -132,7 +132,7 @@ def test_decode_attention_merge_rounds_before_gate(tmp_path):
     expected=(value*gate.sigmoid()).bfloat16().float().reshape(slots,4096).numpy()
     entry=tmp_path/'merge.py';artifact=entry.with_suffix('.tbin')
     entry.write_text(source('attention_merge',dict(r=slots,splits=splits)))
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:
         inputs=[dev.from_numpy(a) for a in (partial,stats,projection,active)]
         out=dev.empty(expected.shape,'bfloat16');dev.load(artifact).launch(*inputs,out)
@@ -165,7 +165,7 @@ def test_large_expert_tiles_preserve_hot_experts_and_tail_rows(tmp_path,routed):
     entry=tmp_path/'expert-m64.py';artifact=entry.with_suffix('.tbin')
     entry.write_text(export_source('tensor_llm.qwen35.kernels.prefill','expert_kernel',
         dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256),dependencies=('tensor.compiler.entry',)))
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:
         inputs=[dev.from_numpy(v,dtype=dt) for v,dt in ((x.view(torch.uint8).numpy(),'uint8'),(a.numpy(),'float32'),
             (w.view(torch.uint8).numpy(),'uint8'),(scales.float().numpy(),'bfloat16'),(counts,'int32'),(routes,'int32'))]

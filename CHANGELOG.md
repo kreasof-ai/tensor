@@ -6,6 +6,12 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Add target-aware Qwen producers and a bounded Modal H200 replay runner with
+  persistent weights/artifacts, native AR/speculative client measurements and
+  retained numerical checks. Exact `sm_90` CUDA builds use pointer-compatible
+  copies and warp MMA; compiler identities record the Hopper pass configuration.
+  Retain physical H200 C8 32K/16K rates of 588.2 tok/s AR and 911.5 tok/s
+  MTP plus output lookup; numerical qualification still fails.
 - Add experimental native Qwen3.5 FP8 execution with chunked prefill, embedded MTP,
   batched speculative verification and output-history proposals. Retain the
   completed L40S C8 32K/16K client replay at 735.3 output tok/s, together with its

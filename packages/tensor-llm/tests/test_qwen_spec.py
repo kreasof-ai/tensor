@@ -52,7 +52,7 @@ def test_recurrent_snapshots_restore_every_rejection_depth(tmp_path,chunk):
     def artifact(kind,p):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
         entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
-        build_artifact(entry,out,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9');return out
+        build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));return out
     scan=artifact('gdn_scan',dict(slots=slots,chunk=chunk))
     restore=artifact('restore',dict(slots=slots,chunk=chunk,shape=[heads,d,d]))
     with tensor.Device() as dev:
@@ -83,7 +83,7 @@ def test_convolution_history_restore_keeps_only_accepted_inputs(tmp_path):
     def artifact(kind,p):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
         entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
-        build_artifact(entry,out,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9');return out
+        build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));return out
     conv=artifact('gdn_conv',dict(slots=slots,chunk=chunk))
     restore=artifact('restore',dict(slots=slots,chunk=chunk,shape=[channels,3]))
     with tensor.Device() as dev:
@@ -124,7 +124,7 @@ def test_split_attention_preserves_causality_at_partition_boundaries(tmp_path,ch
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
         entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative_attention',kind,
             dict(slots=s,chunk=c,capacity=cap,splits=splits,packed_loads=True,key_rows=32),dependencies=('tensor.compiler.entry',)))
-        build_artifact(entry,out,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9');artifacts.append(out)
+        build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));artifacts.append(out)
     with tensor.Device() as dev:
         qq=dev.from_numpy(q.float().numpy(),dtype='bfloat16')
         caches=[dev.from_numpy(x.numpy()) for x in (kb,vb,ks,vs)]
@@ -165,7 +165,7 @@ def test_split_experts_preserve_hot_routes_and_scales(tmp_path,routed,block_m):
     entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative_linear','expert_kernel',
         dict(rows=rows,k=k,o=o,routed_input=routed,columns=128,block_m=block_m,
              threads=256 if block_m>=32 else 128,partitions=parts,stages=2),dependencies=('tensor.compiler.entry',)))
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:
         inputs=[dev.from_numpy(v,dtype=dt) for v,dt in ((x.view(torch.uint8).numpy(),'uint8'),(a.numpy(),'float32'),
             (w.view(torch.uint8).numpy(),'uint8'),(scales.float().numpy(),'bfloat16'),(counts,'int32'),(routes,'int32'))]
@@ -191,7 +191,7 @@ def test_all_row_head_matches_independent_bf16_projection(tmp_path,rows):
     entry=tmp_path/'head.py';artifact=entry.with_suffix('.tbin')
     entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','head_kernel',
         dict(r=rows,k=2048,o=256,block_m=rows,columns=128,depth=128),dependencies=('tensor.compiler.entry',)))
-    build_artifact(entry,artifact,target='sm_89',compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
+    build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:
         out=dev.empty(want.shape)
         dev.load(artifact).launch(dev.from_numpy(x.float().numpy(),dtype='bfloat16'),
