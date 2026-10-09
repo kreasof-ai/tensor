@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "requests": 8,
+    "completed": 8,
+    "failed": 0,
+    "elapsed_seconds": 138.39509806799998,
+    "prompt_tokens": 256000,
+    "output_tokens": 128000,
+    "observed_output_tokens_including_failures": 128000,
+    "output_tokens_per_second": 924.8882495614665,
+    "input_tokens_per_second": 1849.776499122933,
+    "total_tokens_per_second": 2774.6647486843995,
+    "requests_per_second": 0.05780551559759166,
+    "goodput_output_tokens_per_second": 924.8882495614665,
+    "goodput_requests_per_second": 0.05780551559759166,
+    "ttft_seconds": {
+      "count": 8,
+      "mean": 67.44092632337501,
+      "p50": 67.4410262665,
+      "p95": 67.44916200230001,
+      "p99": 67.44993479726001
+    },
+    "service_ttft_seconds": {
+      "count": 8,
+      "mean": 67.440921053375,
+      "p50": 67.4410212675,
+      "p95": 67.44915654485001,
+      "p99": 67.44992942577001
+    },
+    "tpot_seconds": {
+      "count": 8,
+      "mean": 0.0043366084539033685,
+      "p50": 0.004322426541315082,
+      "p95": 0.004400324079342458,
+      "p99": 0.00442713728529783
+    },
+    "latency_seconds": {
+      "count": 8,
+      "mean": 136.82252985899999,
+      "p50": 136.59562412699998,
+      "p95": 137.83790336975,
+      "p99": 138.26914532914998
+    },
+    "client_queue_seconds": {
+      "count": 8,
+      "mean": 5.269999999057973e-06,
+      "p50": 5.053999998949621e-06,
+      "p95": 6.299199991133264e-06,
+      "p99": 6.575839986169285e-06
+    },
+    "stream_chunk_gap_seconds": {
+      "count": 16129,
+      "mean": 0.034413242558869114,
+      "p50": 0.03186277399998971,
+      "p95": 0.033002852800007074,
+      "p99": 0.03371974260000797
+    },
+    "single_token_gap_seconds": {
+      "count": 22,
+      "mean": 1.4713401468181824,
+      "p50": 0.03249522549999995,
+      "p95": 5.315179658799991,
+      "p99": 5.315363030510009
+    }
+  },
+  "eight_active_window": {
+    "start_seconds": 67.452940157,
+    "end_seconds": 136.469343326,
+    "tokens": 127043,
+    "output_tokens_per_second": 1840.7652987784754
+  },
+  "peak_memory_mib": 43987.0,
+  "model_throughput_qualified": false,
+  "full_stress_target_reached": false
+}

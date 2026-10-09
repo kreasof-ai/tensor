@@ -6,6 +6,11 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Add opt-in GPU compaction of Qwen prefill expert tiles and bounded H200
+  profiling/qualification. Preserve projection rounding and retain exact
+  prefill-control comparisons; the completed C8 replay measures 924.9 tok/s,
+  with canonical-model and verification qualification still open.
+
 - Add target-aware Qwen producers and a bounded Modal H200 replay runner with
   persistent weights/artifacts, native AR/speculative client measurements and
   retained numerical checks. Exact `sm_90` CUDA builds use pointer-compatible

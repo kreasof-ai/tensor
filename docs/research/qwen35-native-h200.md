@@ -7,6 +7,10 @@ aggregate output tok/s over the complete replay**, with all eight requests
 completed and no failures. Pure AR measured 588.22 tok/s. **Numerical
 qualification failed**, so these remain experimental speed measurements.
 
+The [phase diagnosis and compact expert follow-up](qwen35-h200-expert-scheduling.md)
+profiles the poor hardware scaling and records an opt-in compact schedule at
+924.9 tok/s, with unchanged qualification limits.
+
 ## Completed C8 results
 
 | Measurement | Pure AR | MTP + output lookup |

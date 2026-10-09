@@ -1,0 +1,45 @@
+✓ Initialized. View run at https://modal.com/apps/kreasof-ai/main/ap-FZw7MQLG76XoSNXDiNkHbb
+✓ Created objects.
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks/qwen35/modal_profile.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/docs/research/data/qwen35-native-h200/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+└── ✓ Created Function diagnose.
+2026-10-09 23:06:32+00:00 
+2026-10-09 23:06:32+00:00 ==========
+2026-10-09 23:06:32+00:00 == CUDA ==
+2026-10-09 23:06:32+00:00 ==========
+2026-10-09 23:06:32+00:00 
+2026-10-09 23:06:32+00:00 CUDA Version 12.9.1
+2026-10-09 23:06:32+00:00 
+2026-10-09 23:06:32+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 23:06:32+00:00 
+2026-10-09 23:06:32+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 23:06:32+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 23:06:32+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 23:06:32+00:00 
+2026-10-09 23:06:32+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 23:06:32+00:00 
+2026-10-09 23:06:39+00:00 uploading native checkpoint weights
+2026-10-09 23:06:56+00:00 uploaded 35707988096 bytes
+2026-10-09 23:07:01+00:00 prefill-context0-r0.json [('fp8_experts', 777.0922250747681), ('fp8_linear', 116.31209580600262), ('gdn_scan', 44.89087986946106), ('quantize', 10.990975971333683), ('gdn_conv', 8.764319986104965), ('attention', 3.928512006998062), ('bf16_linear', 3.737151989713311), ('moe_combine', 3.559232011437416)]
+2026-10-09 23:07:04+00:00 prefill-context0-r1.json [('fp8_experts', 777.0233912467957), ('fp8_linear', 116.19219213724136), ('gdn_scan', 45.01132810115814), ('quantize', 11.002655996009707), ('gdn_conv', 8.760544031858444), ('attention', 3.9179199934005737), ('bf16_linear', 3.7213760083541274), ('moe_combine', 3.5565759763121605)]
+2026-10-09 23:07:06+00:00 prefill-context0-r2.json [('fp8_experts', 776.8987526893616), ('fp8_linear', 116.36688021570444), ('gdn_scan', 44.914080023765564), ('quantize', 10.989503959193826), ('gdn_conv', 8.76547196507454), ('attention', 3.9382719695568085), ('bf16_linear', 3.7312319986522198), ('moe_combine', 3.562592014670372)]
+2026-10-09 23:07:22+00:00 Profiling prefix 8192
+2026-10-09 23:07:39+00:00 Profiling prefix 16384
+2026-10-09 23:07:58+00:00 Profiling prefix 24576
+2026-10-09 23:08:19+00:00 prefill-context32000-r0.json [('fp8_experts', 782.6775054931641), ('attention', 279.4151363372803), ('fp8_linear', 116.25859185308218), ('gdn_scan', 44.98137593269348), ('quantize', 10.9912319900468), ('gdn_conv', 8.755776047706604), ('bf16_linear', 3.72847999073565), ('moe_combine', 3.564543977379799)]
+2026-10-09 23:08:21+00:00 prefill-context32000-r1.json [('fp8_experts', 782.4748792648315), ('attention', 279.3099842071533), ('fp8_linear', 116.41862416267395), ('gdn_scan', 44.99235224723816), ('quantize', 10.993279955349863), ('gdn_conv', 8.755296021699905), ('bf16_linear', 3.7214720053598285), ('moe_combine', 3.5535039976239204)]
+2026-10-09 23:08:24+00:00 prefill-context32000-r2.json [('fp8_experts', 782.630717754364), ('attention', 279.3623676300049), ('fp8_linear', 116.32127995789051), ('gdn_scan', 44.91603219509125), ('quantize', 10.992031990550458), ('gdn_conv', 8.76118403673172), ('bf16_linear', 3.7369919950142503), ('moe_combine', 3.557024009525776)]
+2026-10-09 23:08:25+00:00 ar-context32000-r0.json [('fp8_linear', 4.521887970156968), ('merge', 3.8342080037109554), ('fp8_experts', 3.296224009245634), ('quantize', 2.518207997083664), ('bf16_linear', 2.103423991240561), ('attention_partial', 1.8966079950332642), ('add_rms', 1.0628800028935075), ('gdn_recurrent', 0.747359998524189)]
+2026-10-09 23:08:25+00:00 ar-context32000-r1.json [('fp8_linear', 3.9921599915251136), ('merge', 3.6537920041009784), ('fp8_experts', 3.250271998345852), ('quantize', 2.504991996102035), ('bf16_linear', 2.2133440086618066), ('attention_partial', 1.8915199935436249), ('add_rms', 1.0746560031548142), ('gdn_recurrent', 0.7618560083210468)]
+2026-10-09 23:08:25+00:00 ar-context32000-r2.json [('fp8_linear', 4.10479999659583), ('merge', 3.729600000195205), ('fp8_experts', 3.2923520170152187), ('quantize', 2.5795839922502637), ('bf16_linear', 2.1456320085562766), ('attention_partial', 1.8901119828224182), ('add_rms', 1.1149120009504259), ('gdn_recurrent', 0.7470080032944679)]
+2026-10-09 23:08:29+00:00 verify-context32000-r0.json [('split_experts', 14.464256025850773), ('split_dense', 3.824863990303129), ('split_attention', 3.560640037059784), ('split_linear_merge', 2.398815999738872), ('small_bf16', 1.6041920026764274), ('spec_gdn_scan', 1.5956799909472466), ('quantize', 1.2685440019704401), ('add_rms', 0.4933120016939938)]
+2026-10-09 23:08:29+00:00 verify-context32000-r1.json [('split_experts', 14.479520045220852), ('split_dense', 3.8210880029946566), ('split_attention', 3.5706559121608734), ('split_linear_merge', 2.3510719975456595), ('spec_gdn_scan', 1.5964159928262234), ('small_bf16', 1.5943679930642247), ('quantize', 1.2488000034354627), ('add_rms', 0.4919360005296767)]
+2026-10-09 23:08:29+00:00 verify-context32000-r2.json [('split_experts', 14.467295996844769), ('split_dense', 3.8157439972274005), ('split_attention', 3.55459201335907), ('split_linear_merge', 2.392799999564886), ('small_bf16', 1.6041919998824596), ('spec_gdn_scan', 1.5994879938662052), ('quantize', 1.2778240023180842), ('add_rms', 0.4919999996200204)]
+Retained profile: tensor-qwen35-h200 /profiles/20261009T230630Z-f81e6af6f57e6331
+2026-10-09 23:08:32+00:00 Stopping app - local entrypoint completed.
+✓ App completed. View run at https://modal.com/apps/kreasof-ai/main/ap-FZw7MQLG76XoSNXDiNkHbb

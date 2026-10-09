@@ -234,14 +234,7 @@ def expert_kernel(p):
                 T.copy(weights[expert,bx*n:bx*n+n,tile*128:tile*128+128],rhs)
                 T.gemm(lhs,rhs,block,transpose_B=True,clear_accum=True)
                 for b,j in T.Parallel(m,n):
-                    if compact:
-                        # Preserve the control profile's rounded product and
-                        # fused accumulation when indirection changes lowering.
-                        product=T.call_extern('float32','__fmul_rn',block[b,j],scale[b])
-                        total[b,j]=T.call_extern('float32','__fmaf_rn',product,
-                            T.cast(scales[expert,(bx*n+j)//128,tile],'float32'),total[b,j])
-                    else:
-                        total[b,j]+=block[b,j]*scale[b]*T.cast(scales[expert,(bx*n+j)//128,tile],'float32')
+                    total[b,j]+=block[b,j]*scale[b]*T.cast(scales[expert,(bx*n+j)//128,tile],'float32')
             for b,j in T.Parallel(m,n):
                 if selected[b]>=0:out[selected[b]//top,selected[b]%top,bx*n+j]=total[b,j]
     @T.macro

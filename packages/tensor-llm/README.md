@@ -127,6 +127,25 @@ The [first H200 report](../../docs/research/qwen35-native-h200.md) records
 588.2 tok/s AR and 911.5 tok/s MTP plus output lookup over complete C8 32K/16K
 client replays. Numerical qualification failed; these are experimental rates.
 
+An opt-in compact expert schedule keeps projection arithmetic while packing
+nonempty expert row tiles into a GPU list. Produce it beside a prefill bundle:
+
+```bash
+python -m benchmarks.qwen35.compact_producer --source build/qwen35-prefill --out build/qwen35-prefill-compact
+```
+
+Pass the compact bundle to the native server with `--compact-experts`, or call
+`tensor_llm.qwen35.compact_prefill.install(prefill, bundle)` on an idle prefill
+executor. The installer checks capacity, target, source identity and artifact
+hashes, then captures a graph containing route packing and compact projections.
+Full-model numerical qualification remains separate from agreement with the
+previous prefill schedule. For a bounded H200 comparison and full C8 replay:
+
+```bash
+modal run benchmarks/qwen35/modal_profile.py --prepared-file build/qwen35-h200/prepared.json
+modal run benchmarks/qwen35/modal_compact.py --prepared-file build/qwen35-h200/prepared.json
+```
+
 `Qwen35Checkpoint(path, branch='mtp')` also validates the official embedded
 MTP weights. The experimental `Qwen35MTP(target, bundle)` drafter borrows the
 target's embedding and output head, loads its own original FP8/BF16 weights,

@@ -28,6 +28,11 @@ do not close LLM-05/06/07 or establish an H200 peak or Netra comparison.
 Resolve verification/serial and canonical-model quality before selecting
 faster Hopper profiles; profile prefill separately because its first-token
 latency dominates the initial H200 finite replay.
+The [H200 scheduling follow-up](../research/qwen35-h200-expert-scheduling.md)
+adds kernel-cost diagnostics and an opt-in compact expert tile list. Exact
+prefill-control checks pass, but a single 924.9 tok/s replay gives only a small
+aggregate improvement. Active expert projections and long-prefix attention
+remain the larger optimization targets; the model qualification gates stay open.
 
 `tensor_llm.lfm2.model.LFM2` now owns shared checkpoint metadata, device weights,
 kernels and executor workspaces, plus a backward-compatible default request.

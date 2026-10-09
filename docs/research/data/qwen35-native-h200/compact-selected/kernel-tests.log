@@ -1,0 +1,13 @@
+.....                                                                    [100%]
+=============================== warnings summary ===============================
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False]
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False]
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True]
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True]
+packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows[False]
+packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows[True]
+  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+    deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 6 warnings in 38.97s

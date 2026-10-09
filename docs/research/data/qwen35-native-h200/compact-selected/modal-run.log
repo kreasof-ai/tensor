@@ -1,0 +1,73 @@
+✓ Initialized. View run at https://modal.com/apps/kreasof-ai/main/ap-vmcHuruIJ0aIQQCiJm80A8
+✓ Created objects.
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks/qwen35/modal_compact.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/docs/research/data/qwen35-native-h200/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+├── ✓ Created Function prepare_compact.
+└── ✓ Created Function measure_compact.
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:21:27+00:00 ==========
+2026-10-09 23:21:27+00:00 == CUDA ==
+2026-10-09 23:21:27+00:00 ==========
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:21:27+00:00 CUDA Version 12.9.1
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:21:27+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:21:27+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 23:21:27+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 23:21:27+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:21:27+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:21:27+00:00 WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be available.
+2026-10-09 23:21:27+00:00    Use the NVIDIA Container Toolkit to start this container with GPU support; see
+2026-10-09 23:21:27+00:00    https://docs.nvidia.com/datacenter/cloud-native/ .
+2026-10-09 23:21:27+00:00 
+2026-10-09 23:22:04+00:00 
+2026-10-09 23:22:04+00:00 ==========
+2026-10-09 23:22:04+00:00 == CUDA ==
+2026-10-09 23:22:04+00:00 ==========
+2026-10-09 23:22:04+00:00 
+2026-10-09 23:22:04+00:00 CUDA Version 12.9.1
+2026-10-09 23:22:04+00:00 
+2026-10-09 23:22:04+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 23:22:04+00:00 
+2026-10-09 23:22:04+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 23:22:04+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 23:22:04+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 23:22:04+00:00 
+2026-10-09 23:22:04+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 23:22:04+00:00 
+2026-10-09 23:22:46+00:00 .....                                                                    [100%]
+2026-10-09 23:22:46+00:00 =============================== warnings summary ===============================
+2026-10-09 23:22:46+00:00 packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False]
+2026-10-09 23:22:46+00:00 packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False]
+2026-10-09 23:22:46+00:00 packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True]
+2026-10-09 23:22:46+00:00 packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True]
+2026-10-09 23:22:46+00:00 packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows[False]
+2026-10-09 23:22:46+00:00 packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows[True]
+2026-10-09 23:22:46+00:00   /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+2026-10-09 23:22:46+00:00     deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+2026-10-09 23:22:46+00:00 
+2026-10-09 23:22:46+00:00 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-10-09 23:22:46+00:00 5 passed, 6 warnings in 38.97s
+2026-10-09 23:22:46+00:00  
+2026-10-09 23:22:48+00:00 uploading native checkpoint weights
+2026-10-09 23:23:08+00:00 uploaded 35707988096 bytes
+2026-10-09 23:23:14+00:00 Original prefill repeatability early heterogeneous lengths 0.0 0.0
+2026-10-09 23:23:15+00:00 Compact same-state quality {'label': 'early heterogeneous lengths', 'relative_logit_rms': 0.0, 'original_repeat_relative_logit_rms': 0.0, 'original_repeat_maximum_relative_state_rms': 0.0, 'maximum_relative_state_rms': 0.0, 'greedy_matches': 8, 'greedy_total': 8, 'finite': True, 'positions_match': True, 'threshold': 1e-05, 'passed': True}
+2026-10-09 23:23:30+00:00 Compact prefix 8192
+2026-10-09 23:23:46+00:00 Compact prefix 16384
+2026-10-09 23:24:03+00:00 Compact prefix 24576
+2026-10-09 23:24:22+00:00 Original prefill repeatability 32000 prefix heterogeneous lengths 0.0 0.0
+2026-10-09 23:24:23+00:00 Compact same-state quality {'label': '32000 prefix heterogeneous lengths', 'relative_logit_rms': 0.0, 'original_repeat_relative_logit_rms': 0.0, 'original_repeat_maximum_relative_state_rms': 0.0, 'maximum_relative_state_rms': 0.0, 'greedy_matches': 8, 'greedy_total': 8, 'finite': True, 'positions_match': True, 'threshold': 1e-05, 'passed': True}
+2026-10-09 23:24:25+00:00 Full compact H200 client replay
+2026-10-09 23:27:02+00:00 tensor-h200-compact-mtp-lookup-c8 c8-r0: 8/8 finished calls
+Retained compact replay: tensor-qwen35-h200 /compact-runs/20261009T232201Z-c79b31a10402423d
+2026-10-09 23:27:05+00:00 Stopping app - local entrypoint completed.
+✓ App completed. View run at https://modal.com/apps/kreasof-ai/main/ap-vmcHuruIJ0aIQQCiJm80A8

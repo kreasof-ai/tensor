@@ -1,0 +1,174 @@
+.FF                                                                                                                                               [100%]
+======================================================================= FAILURES ========================================================================
+____________________________________________ test_compact_experts_match_original_with_shuffled_routes[False] ____________________________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sagemaker-user/pytest-67/test_compact_experts_match_ori0'), routed = False
+
+    @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1', reason='native CUDA compact projection qualification')
+    @pytest.mark.parametrize('routed', [False, True])
+    def test_compact_experts_match_original_with_shuffled_routes(tmp_path, routed):
+        import torch
+        import tensor
+        from tensor.compiler.entry import export_source
+        from tensor.compiler.build import build_artifact
+        torch.set_num_threads(1)
+        rng = np.random.default_rng(623)
+        rows, k, o, top = 257, 256, 128, 8
+        ids = np.stack([rng.choice(256,top,replace=False) for _ in range(rows)])
+        ids[:128] = np.arange(top)
+        counts = np.zeros(256,'int32'); routes = np.full((256,rows),-1,'int32')
+        for expert in range(256):
+            values = [row*top+rank for row in range(rows) for rank in range(top) if ids[row,rank]==expert]
+            rng.shuffle(values)
+            counts[expert] = len(values); routes[expert,:len(values)] = values
+        shape = (rows,top,k) if routed else (rows,k)
+        x = torch.from_numpy(rng.normal(size=shape).astype('float32')).to(torch.float8_e4m3fn)
+        w = torch.from_numpy(rng.normal(size=(256,o,k)).astype('float32')).to(torch.float8_e4m3fn)
+        a = rng.uniform(.01,.1,(*shape[:-1],k//128)).astype('float32')
+        scales = rng.uniform(.01,.1,(256,1,k//128)).astype('float32')
+        artifacts = {}
+        for name,module,factory,p in [
+            ('map','compact_experts','tile_map_kernel',dict(rows=rows,block_m=64)),
+            ('control','prefill','expert_kernel',dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256)),
+            ('compact','prefill','expert_kernel',dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256,compact=True))]:
+            source = tmp_path/(name+'.py'); artifact = source.with_suffix('.tbin')
+            source.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,p,
+                                            dependencies=('tensor.compiler.entry',)))
+            build_artifact(source,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),
+                           compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
+            artifacts[name] = artifact
+        with tensor.Device() as device:
+            inputs = [device.from_numpy(v,dtype=dtype) for v,dtype in
+                ((x.view(torch.uint8).numpy(),'uint8'),(a,'float32'),(w.view(torch.uint8).numpy(),'uint8'),
+                 (scales,'bfloat16'),(counts,'int32'),(routes,'int32'))]
+            capacity = (rows*top+63)//64+255
+            experts = device.empty((capacity,),'int32'); offsets = device.empty((capacity,),'int32')
+            device.load(artifacts['map']).launch(inputs[-2],experts,offsets)
+            out = device.from_numpy(np.full((rows,top,o),np.nan,'float32'))
+            device.load(artifacts['control']).launch(*inputs,out)
+            expected = out.to_numpy()
+            device.load(artifacts['compact']).launch(*inputs,out,experts,offsets)
+            actual = out.to_numpy()
+            assert np.isfinite(expected).all() and np.isfinite(actual).all()
+>           np.testing.assert_array_equal(actual, expected)
+
+packages/tensor-llm/tests/test_qwen_compact.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([[[-0.06382392,  0.05624607,  0.087715  , ...,  0.13939306,
+         -0.04228157,  0.05...        [-0.11061155, -0.03379693, -0.08873795, ..., -0.04097216,
+          0.00562557, -0.08434213]]], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           Mismatched elements: 46567 / 263168 (17.7%)
+E           Max absolute difference: 2.9802322e-08
+E           Max relative difference: 0.00093628
+E            x: array([[[-0.063824,  0.056246,  0.087715, ...,  0.139393, -0.042282,
+E                     0.056171],
+E                   [ 0.009142,  0.034026,  0.025105, ..., -0.090454, -0.012576,...
+E            y: array([[[-0.063824,  0.056246,  0.087715, ...,  0.139393, -0.042282,
+E                     0.056171],
+E                   [ 0.009142,  0.034026,  0.025105, ..., -0.090454, -0.012576,...
+
+/opt/conda/lib/python3.12/contextlib.py:81: AssertionError
+____________________________________________ test_compact_experts_match_original_with_shuffled_routes[True] _____________________________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sagemaker-user/pytest-67/test_compact_experts_match_ori1'), routed = True
+
+    @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1', reason='native CUDA compact projection qualification')
+    @pytest.mark.parametrize('routed', [False, True])
+    def test_compact_experts_match_original_with_shuffled_routes(tmp_path, routed):
+        import torch
+        import tensor
+        from tensor.compiler.entry import export_source
+        from tensor.compiler.build import build_artifact
+        torch.set_num_threads(1)
+        rng = np.random.default_rng(623)
+        rows, k, o, top = 257, 256, 128, 8
+        ids = np.stack([rng.choice(256,top,replace=False) for _ in range(rows)])
+        ids[:128] = np.arange(top)
+        counts = np.zeros(256,'int32'); routes = np.full((256,rows),-1,'int32')
+        for expert in range(256):
+            values = [row*top+rank for row in range(rows) for rank in range(top) if ids[row,rank]==expert]
+            rng.shuffle(values)
+            counts[expert] = len(values); routes[expert,:len(values)] = values
+        shape = (rows,top,k) if routed else (rows,k)
+        x = torch.from_numpy(rng.normal(size=shape).astype('float32')).to(torch.float8_e4m3fn)
+        w = torch.from_numpy(rng.normal(size=(256,o,k)).astype('float32')).to(torch.float8_e4m3fn)
+        a = rng.uniform(.01,.1,(*shape[:-1],k//128)).astype('float32')
+        scales = rng.uniform(.01,.1,(256,1,k//128)).astype('float32')
+        artifacts = {}
+        for name,module,factory,p in [
+            ('map','compact_experts','tile_map_kernel',dict(rows=rows,block_m=64)),
+            ('control','prefill','expert_kernel',dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256)),
+            ('compact','prefill','expert_kernel',dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256,compact=True))]:
+            source = tmp_path/(name+'.py'); artifact = source.with_suffix('.tbin')
+            source.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,p,
+                                            dependencies=('tensor.compiler.entry',)))
+            build_artifact(source,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),
+                           compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
+            artifacts[name] = artifact
+        with tensor.Device() as device:
+            inputs = [device.from_numpy(v,dtype=dtype) for v,dtype in
+                ((x.view(torch.uint8).numpy(),'uint8'),(a,'float32'),(w.view(torch.uint8).numpy(),'uint8'),
+                 (scales,'bfloat16'),(counts,'int32'),(routes,'int32'))]
+            capacity = (rows*top+63)//64+255
+            experts = device.empty((capacity,),'int32'); offsets = device.empty((capacity,),'int32')
+            device.load(artifacts['map']).launch(inputs[-2],experts,offsets)
+            out = device.from_numpy(np.full((rows,top,o),np.nan,'float32'))
+            device.load(artifacts['control']).launch(*inputs,out)
+            expected = out.to_numpy()
+            device.load(artifacts['compact']).launch(*inputs,out,experts,offsets)
+            actual = out.to_numpy()
+            assert np.isfinite(expected).all() and np.isfinite(actual).all()
+>           np.testing.assert_array_equal(actual, expected)
+
+packages/tensor-llm/tests/test_qwen_compact.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([[[ 2.39715669e-02,  4.46711015e-03, -1.06756352e-01, ...,
+         -5.90326600e-02, -2...1343468e-02, -4.27191928e-02, ...,
+          5.78653738e-02, -1.91841461e-02,  1.09847859e-02]]],
+      dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           Mismatched elements: 42884 / 263168 (16.3%)
+E           Max absolute difference: 2.9802322e-08
+E           Max relative difference: 0.00033081
+E            x: array([[[ 2.397157e-02,  4.467110e-03, -1.067564e-01, ...,
+E                    -5.903266e-02, -2.977129e-02,  1.249094e-01],
+E                   [-6.469820e-02,  7.555943e-02,  7.129726e-03, ...,...
+E            y: array([[[ 2.397157e-02,  4.467110e-03, -1.067564e-01, ...,
+E                    -5.903266e-02, -2.977129e-02,  1.249094e-01],
+E                   [-6.469820e-02,  7.555943e-02,  7.129726e-03, ...,...
+
+/opt/conda/lib/python3.12/contextlib.py:81: AssertionError
+=================================================================== warnings summary ====================================================================
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False]
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False]
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True]
+packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True]
+  /home/sagemaker-user/tensor/build/tensor-dev/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+    deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================================================ short test summary info ================================================================
+FAILED packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[False] - AssertionError: 
+FAILED packages/tensor-llm/tests/test_qwen_compact.py::test_compact_experts_match_original_with_shuffled_routes[True] - AssertionError: 
+2 failed, 1 passed, 4 warnings in 20.27s

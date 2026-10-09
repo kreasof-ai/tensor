@@ -1,0 +1,124 @@
+✓ Initialized. View run at https://modal.com/apps/kreasof-ai/main/ap-FYnwXSgeUqFP1Qzyy8vi0f
+✓ Created objects.
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks/qwen35/modal_compact.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/docs/research/data/qwen35-native-h200/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+├── ✓ Created Function prepare_compact.
+└── ✓ Created Function measure_compact.
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:14+00:00 ==========
+2026-10-09 23:17:14+00:00 == CUDA ==
+2026-10-09 23:17:14+00:00 ==========
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:14+00:00 CUDA Version 12.9.1
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:14+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:14+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 23:17:14+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 23:17:14+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:14+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:14+00:00 WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be available.
+2026-10-09 23:17:14+00:00    Use the NVIDIA Container Toolkit to start this container with GPU support; see
+2026-10-09 23:17:14+00:00    https://docs.nvidia.com/datacenter/cloud-native/ .
+2026-10-09 23:17:14+00:00 
+2026-10-09 23:17:19+00:00 
+2026-10-09 23:17:19+00:00 ==========
+2026-10-09 23:17:19+00:00 == CUDA ==
+2026-10-09 23:17:19+00:00 ==========
+2026-10-09 23:17:19+00:00 
+2026-10-09 23:17:19+00:00 CUDA Version 12.9.1
+2026-10-09 23:17:19+00:00 
+2026-10-09 23:17:19+00:00 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-10-09 23:17:19+00:00 
+2026-10-09 23:17:19+00:00 This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-10-09 23:17:19+00:00 By pulling and using the container, you accept the terms and conditions of this license:
+2026-10-09 23:17:19+00:00 https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-10-09 23:17:19+00:00 
+2026-10-09 23:17:19+00:00 A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-10-09 23:17:19+00:00 
+2026-10-09 23:17:40+00:00 ...                                                                      [100%]
+2026-10-09 23:17:40+00:00 =============================== warnings summary ===============================
+2026-10-09 23:17:40+00:00 packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows[False]
+2026-10-09 23:17:40+00:00 packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows[True]
+2026-10-09 23:17:40+00:00   /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+2026-10-09 23:17:40+00:00     deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+2026-10-09 23:17:40+00:00 
+2026-10-09 23:17:40+00:00 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-10-09 23:17:40+00:00 3 passed, 2 warnings in 17.73s
+2026-10-09 23:17:40+00:00  
+2026-10-09 23:17:46+00:00 uploading native checkpoint weights
+2026-10-09 23:18:14+00:00 uploaded 35707988096 bytes
+2026-10-09 23:18:20+00:00 Original prefill repeatability early heterogeneous lengths 0.0 0.0
+2026-10-09 23:18:21+00:00 Compact same-state quality {'label': 'early heterogeneous lengths', 'relative_logit_rms': 0.04605697840452194, 'original_repeat_relative_logit_rms': 0.0, 'original_repeat_maximum_relative_state_rms': 0.0, 'maximum_relative_state_rms': 0.060331523418426514, 'greedy_matches': 7, 'greedy_total': 8, 'finite': True, 'positions_match': True, 'threshold': 1e-05, 'passed': False}
+2026-10-09 23:18:23+00:00 Traceback (most recent call last):
+2026-10-09 23:18:24+00:00 Stopping app - uncaught exception raised locally: RuntimeError('compact prefill differs from original control').
+2026-10-09 23:18:23+00:00   File "/pkg/modal/_runtime/container_io_manager.py", line 987, in handle_input_exception
+2026-10-09 23:18:23+00:00     yield
+2026-10-09 23:18:23+00:00   File "/pkg/modal/_container_entrypoint.py", line 189, in run_input_sync
+2026-10-09 23:18:23+00:00     values = io_context.call_function_sync()
+2026-10-09 23:18:23+00:00              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-09 23:18:23+00:00   File "/pkg/modal/_runtime/container_io_manager.py", line 266, in call_function_sync
+2026-10-09 23:18:23+00:00     expected_value_or_values = self.finalized_function.callable(*args, **kwargs)
+2026-10-09 23:18:23+00:00                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-09 23:18:23+00:00   File "/root/modal_compact.py", line 112, in measure_compact
+2026-10-09 23:18:23+00:00     compare('early heterogeneous lengths', tokens[:,:compact.chunk],
+2026-10-09 23:18:23+00:00   File "/root/modal_compact.py", line 109, in compare
+2026-10-09 23:18:23+00:00     raise RuntimeError('compact prefill differs from original control')
+2026-10-09 23:18:23+00:00 RuntimeError: compact prefill differs from original control
+╭─────────────────────────────── Traceback (most recent call last) ────────────────────────────────╮
+│ /home/sagemaker-user/tensor/benchmarks/qwen35/modal_compact.py:174 in main                       │
+│                                                                                                  │
+│   173 │   (root/'run.json').write_text(json.dumps(dict(volume=VOLUME_NAME,run_id=run_id),inden   │
+│ ❱ 174 │   result = measure_compact.remote(prepared,run_id)                                       │
+│   175 │   (root/'summary.json').write_text(json.dumps(result,indent=2)+'\n')                     │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_object.py:49 in wrapped                           │
+│                                                                                                  │
+│    48 │   │   await self.hydrate()                                                               │
+│ ❱  49 │   │   return await method(self, *args, **kwargs)                                         │
+│    50                                                                                            │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:2067 in remote                       │
+│                                                                                                  │
+│   2066 │   │                                                                                     │
+│ ❱ 2067 │   │   return await self._call_function(args, kwargs)                                    │
+│   2068                                                                                           │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:2004 in _call_function               │
+│                                                                                                  │
+│   2003 │   │                                                                                     │
+│ ❱ 2004 │   │   return await invocation.run_function()                                            │
+│   2005                                                                                           │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:515 in run_function                  │
+│                                                                                                  │
+│    514 │   │   │   # No more retries left.                                                       │
+│ ❱  515 │   │   │   return await _process_result(                                                 │
+│    516 │   │   │   │   await_response.output.result, await_response.output.data_format, self.cl  │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_utils/function_utils.py:572 in _process_result    │
+│                                                                                                  │
+│   571 │   │   │                                                                                  │
+│ ❱ 572 │   │   │   raise exc_with_hints(exc)                                                      │
+│   573                                                                                            │
+│                                                                                                  │
+│               ...Remote call to Modal Function (ta-01M4HF9STGFG2C02EW6ZWGA8AR)...                │
+│                                                                                                  │
+│ /root/modal_compact.py:112 in measure_compact                                                    │
+│                                                                                                  │
+│ ❱ 112 compare('early heterogeneous lengths', tokens[:,:compact.chunk],                           │
+│                                                                                                  │
+│                                                                                                  │
+│ /root/modal_compact.py:109 in compare                                                            │
+│                                                                                                  │
+│ ❱ 109 raise RuntimeError('compact prefill differs from original control')                        │
+│                                                                                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+RuntimeError: compact prefill differs from original control
