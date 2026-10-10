@@ -1,0 +1,132 @@
+{
+  "prefixes": {
+    "mma-experts": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-hopper-packed-v1/prepared.json",
+    "bf16-pairs": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-hopper-pairs-v1/prepared.json",
+    "bf16-async": "docs/research/data/qwen35-native-h200/serving-beam/controls/prefix-bf16-async.json",
+    "bf16-pairs-attention": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-long64-padded-attention-v6/prepared.json"
+  },
+  "windows": {
+    "8": "docs/research/data/qwen35-native-h200/serving-beam/controls/window8.json",
+    "32": "docs/research/data/qwen35-native-h200/serving-beam/controls/window32.json",
+    "64": "docs/research/data/qwen35-native-h200/serving-beam/controls/window64.json",
+    "128": "docs/research/data/qwen35-native-h200/serving-beam/controls/window128.json"
+  },
+  "observations": [
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "mma-experts",
+        "window": 8,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-hopper-packed-v1/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "mma-experts",
+        "window": 32,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-long32-packed-v1/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 8,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-hopper-pairs-v1/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 32,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-long32-pairs-v1/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-async",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/00-bf16-async-w64-f3/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/01-bf16-pairs-w64-f3/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-async",
+        "window": 32,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/02-bf16-async-w32-f3/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-async",
+        "window": 128,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/03-bf16-async-w128-f3/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 64,
+        "fallback": 1
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/00-bf16-pairs-w64-f1/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "mma-experts",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/01-mma-experts-w64-f3/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 128,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/00-bf16-pairs-w128-f3/summary.json"
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs-attention",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "docs/research/data/qwen35-native-h200/serving-beam/observations/qwen35-h200-long64-padded-attention-v6/summary.json"
+    }
+  ],
+  "seeds": [
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 128,
+      "fallback": 3
+    }
+  ]
+}

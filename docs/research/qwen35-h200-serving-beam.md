@@ -1,6 +1,6 @@
 # H200 serving beam search
 
-An actual beam search and its subsequent candidates have measured **2,053.872 output tok/s** on one H200,
+An actual beam search and its subsequent candidates have measured **2,126.824 output tok/s** on one H200,
 at C8 with eight distinct 32,000-token prompts and 16,000 output tokens per
 request. This is an experimental timing: verification still fails its
 comparison with serial native decoding, and the canonical model is unqualified.
@@ -55,10 +55,13 @@ with `bf16` but do not describe those operands accurately.
 | Persistent 64-tile verification grid | 64 | 1,820.286 | 70.319 |
 | Repaired packed two-stage prefill pipeline | 64 | 1,943.377 | 65.865 |
 | **Paired prefill with padded Hopper attention** | **64** | **2,053.872** | **62.321** |
+| **Padded prefill attention and paired verification dense projections** | **64** | **2,126.824** | **60.184** |
 
 The first beam winner's target-only prompt processing takes 30.067 s and its complete client
 run samples a peak of 73,461 MiB GPU memory. The newer padded-attention candidate
-reduces target-only prompt processing to 27.580 s. Larger verification windows alone
+reduces target-only prompt processing to 27.580 s. The final dense-verification
+candidate retains that prefill and measures 27.546 s for target-only prompt
+processing. Larger verification windows alone
 have not shown another improvement. The GPU has enough memory for the tested
 128-token verification profile; the window is not request concurrency.
 
@@ -74,7 +77,8 @@ Two subsequent beam expansions measure fallback depth one, packed prefill with
 window 64, and paired prefill with window 128. The frontier refreshes after each
 observation so a small budget follows the current winners. The latest trace
 adds the measured padded-attention profile as a fourth prefill choice, expanding
-the space to 32 configurations; unmeasured configurations remain pending.
+the space to 32 configurations. The retained frontier records unmeasured
+configurations; it does not imply that more jobs are running or scheduled.
 
 A candidate can enter the experimental beam only after physical GPU primitive
 checks, initial and 32K same-state prefill gates, exact workload identity, and
@@ -87,13 +91,15 @@ Reproduction starts with prepared, source-bound control and verification
 bundles on the persistent `tensor-qwen35-h200` Modal volume. The retained
 prepared manifests identify those paths and source hashes. The search entrypoint
 accepts a JSON inventory containing `prefixes`, `windows`, `observations` and
-optional `seeds`:
+optional `seeds`. The retained inventory uses repository paths; run from the
+repository root. Zero candidates reproduces the ranking without allocating a
+GPU; a positive candidate count starts fresh measurements:
 
 ```bash
 PYTHONPATH=src:packages/tensor-llm/src:. modal run \
   benchmarks/qwen35/modal_beam.py::beam_main \
-  --inventory-file build/qwen35-h200-beam-inventory.json \
-  --candidates 4 --width 2 --out build/qwen35-h200-beam-v1
+  --inventory-file docs/research/data/qwen35-native-h200/serving-beam/inventory.json \
+  --candidates 0 --width 2 --out build/qwen35-h200-beam-reproduction
 ```
 
 Artifact producers regenerate controls when compiler/runtime identities change;
@@ -182,12 +188,27 @@ Its server phase totals are 26.531 s verification and 1.604 s MTP repair over
 acceptance rate reflects the experimental verifier and is not evidence of
 serial equivalence. Verification remains the largest decode cost.
 
+The last candidate replaces only the selected verifier's dense projections
+with paired FP16 WGMMA. It preserves the existing Split-K partitions and scale
+arithmetic. Both paired and asynchronous factories pass separate eight-part
+bitwise checks with all finite FP8 encodings and tail rows. The paired variant
+completes the unchanged replay at 2,126.824 output tok/s with eight finished
+requests, zero failures, and zero error in both full-prefill gates. Its serial
+comparison still fails at 8.41076% RMS and 13/16 greedy matches. This follow-up
+was measured separately from the 32-configuration serving beam; it does not
+expand that beam's recorded search space or qualify the target model.
+The final server records 25.012 s verification and 1.592 s MTP repair over
+the same 316 rounds, reducing verification from the padded-prefill replay's
+26.531 s. Reaching 3,000 output tok/s on this fixed load would require reducing
+complete client elapsed time from 60.184 s to below 42.667 s; that was not achieved.
+
 ## Retained evidence
 
 - [Beam trace and observations](data/qwen35-native-h200/serving-beam/beam.json)
 - [Latest beam trace](data/qwen35-native-h200/serving-beam/beam-v4.json)
 - [First beam winner: client streams, telemetry and numerical checks](data/qwen35-native-h200/serving-beam/paired64/summary.json)
-- [New experimental best: padded attention replay](data/qwen35-native-h200/serving-beam/padded-attention64/summary.json)
+- [Padded attention replay](data/qwen35-native-h200/serving-beam/padded-attention64/summary.json)
+- [Final experimental best: paired verification dense projections](data/qwen35-native-h200/serving-beam/paired-dense64/summary.json)
 - [Captured GPU phase records](data/qwen35-native-h200/captured-hopper-profile/summary.json)
 - [Packed expert replay](data/qwen35-native-h200/packed-experts-selected/summary.json)
 - [Real projection comparison and original disassembly](data/qwen35-native-h200/hopper-diagnosis/)
@@ -196,3 +217,18 @@ serial equivalence. Verification remains the largest decode cost.
 
 The earlier [phase diagnosis](qwen35-h200-expert-scheduling.md) and
 [initial H200 report](qwen35-native-h200.md) remain unchanged historical records.
+
+## Closing the experiment
+
+The experiment concluded at the user's request after the final dense
+verification candidate. All Modal experiment apps and the retained local L40S
+model process are stopped. No further candidate runs are scheduled. The results
+establish an experimental speed improvement from the initial H200 port; they
+do not establish correct canonical model inference, lossless speculation, or
+an advantage over another engine on a matched protocol.
+
+CPU serving, beam and target checks pass (50 tests), and explicit Hopper
+target/ABI compilation passes with NVRTC (14 tests). The final dense candidate's
+physical H200 checks pass (55 tests, eight unrelated cases skipped). The
+separate serial comparisons fail as recorded above. Throughput and quality
+qualification remain separate outcomes.
