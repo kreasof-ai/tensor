@@ -102,7 +102,7 @@ class NativeServer:
     async def speculative_worker(self):
         from tensor_llm import Qwen35Prefill,Qwen35Verifier,Qwen35Speculative
         from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
-        from .spec_run import install_selected,make_verifier
+        from .spec_run import make_speculative_pair
         model=self.model;config=self.speculative;draft=config['draft']
         verifier=repair=draft_prefill=None
         try:
@@ -165,9 +165,7 @@ class NativeServer:
                 draft.device.driver.call('cuMemcpyHtoD_v2',draft.buffers['normal'].pointer,
                     ct.c_void_p(cached_hidden.ctypes.data),cached_hidden.nbytes)
                 draft.device.driver.call('cuStreamSynchronize',None)
-                verifier=make_verifier(model,config['verify_bundle'])
-                repair=Qwen35MTPPrefill(draft,config['repair_bundle'])
-                install_selected(verifier,config['verify_bundle']);install_selected(repair,config['repair_bundle'])
+                verifier,repair=make_speculative_pair(model,draft,config['verify_bundle'],config['repair_bundle'])
                 engine=Qwen35Speculative(model,draft,verifier,repair,
                     output_lookup=config.get('output_lookup',False),fallback_proposals=config.get('fallback_proposals',3))
                 phase_seconds={name:0. for name in ('draft_seconds','verify_seconds','commit_seconds','repair_seconds')}
@@ -195,6 +193,8 @@ class NativeServer:
                 print('Native speculative cohort '+json.dumps(dict(
                     phase_seconds=phase_seconds,rounds=round_count,proposals=proposal_count,
                     accepted=accepted_count,lookup_requests=lookup_requests,
+                    verification_windows=getattr(verifier,'window_calls',None),
+                    recurrent_snapshot_cache_bytes=getattr(verifier,'snapshot_cache_bytes',None),
                     elapsed_seconds=time.perf_counter()-decode_start)),flush=True)
                 repair.close();repair=None;verifier.close();verifier=None
         finally:

@@ -3,27 +3,29 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from .spec_run import install_selected, make_verifier
+from .spec_run import install_selected, make_verifier,make_verifier_pool
 from .whole_tune import Snapshot
 from .prefill_comparison import cache_prefix_hashes
 
 
-def run(model, control, selected, out):
+def run(model, control, selected, out, *, lengths=None, pooled=False):
     out = Path(out); out.mkdir(parents=True, exist_ok=True)
     prefix = Snapshot(model)
     chunk=json.loads((Path(selected)/'prefill.json').read_text())['chunk']
-    lengths = np.array([chunk,chunk-1,chunk//2+5,0,1,3,chunk,3*chunk//4], 'int32')
+    lengths = np.array([chunk,chunk-1,chunk//2+5,0,1,3,chunk,3*chunk//4]
+                       if lengths is None else lengths, 'int32')
     if model.slots != len(lengths): raise ValueError('recompute qualification requires C8')
     tokens = np.repeat(prefix.tokens[:,None], chunk, axis=1)
     valid = (np.arange(chunk)[None,:] < lengths[:,None]).reshape(-1)
-    depths = (1,2,3,17,chunk//2+5,chunk-1,chunk)
+    maximum=int(lengths.max())
+    depths = tuple(sorted({min(depth,maximum) for depth in (1,2,3,17,maximum//2+1,maximum-1,maximum)}))
     # Hash large outputs so the two executors never occupy GPU memory together.
     def digest(value): return hashlib.sha256(np.ascontiguousarray(value).tobytes()).hexdigest()
     def observe(bundle):
         prefix.restore(model)
-        verifier = make_verifier(model,bundle)
+        verifier = make_verifier_pool(model,bundle) if pooled else make_verifier(model,bundle)
         try:
-            install_selected(verifier,bundle)
+            if not pooled:install_selected(verifier,bundle)
             predictions,logits = verifier.forward(tokens,lengths,read_logits=True)
             # Inactive rows have no defined expert output. Compare every actual
             # verified input, including shortened slots, without hashing tails.
@@ -45,7 +47,8 @@ def run(model, control, selected, out):
                     normal=digest(model.buffers['normal'].to_numpy()),
                     kv_prefix=cache_prefix_hashes(model)))
             return dict(finite=finite,forward=forward,commits=commits,
-                        cache_bytes=getattr(verifier,'recompute_cache_bytes',0))
+                        cache_bytes=getattr(verifier,'recompute_cache_bytes',0),
+                        windows=getattr(verifier,'window_calls',None))
         finally:
             verifier.close(); prefix.restore(model)
     expected=observe(control); actual=observe(selected)
@@ -56,6 +59,7 @@ def run(model, control, selected, out):
                                  for key in expected['forward']},
         commits_bitwise_equal=expected['commits']==actual['commits'],
         finite=expected['finite'] and actual['finite'],recompute_cache_bytes=actual['cache_bytes'],
+        verification_windows=actual['windows'],
         control_bundle=str(control),selected_bundle=str(selected),canonical_model_qualified=False)
     report['passed']=report['finite'] and report['forward_bitwise_equal'] and report['commits_bitwise_equal']
     (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')

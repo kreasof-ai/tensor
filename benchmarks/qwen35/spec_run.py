@@ -56,6 +56,60 @@ def make_verifier(model,bundle):
     return Qwen35Verifier(model,bundle)
 
 
+def adaptive_profiles(bundle):
+    from tensor_llm.qwen35.speculative.graph_pool import implementation_hashes
+    root=Path(bundle).resolve();manifest=json.loads((root/'prefill.json').read_text())
+    profile=manifest.get('adaptive_verification')
+    if not profile:return []
+    if profile.get('implementation')!=implementation_hashes():
+        raise ValueError('adaptive verifier source mismatch')
+    result=[];seen={manifest['chunk']}
+    for row in profile['profiles']:
+        window=row['window']
+        paths={key:(root/row[key]).resolve() for key in ('verify','repair')}
+        if (type(window) is not int or window<2 or window in seen or window>=manifest['chunk']
+                or any(not path.is_relative_to(root) for path in paths.values())):
+            raise ValueError('invalid adaptive verification profile')
+        seen.add(window);result.append(dict(window=window,**paths))
+    if not result:raise ValueError('adaptive pool needs another graph width')
+    return result
+
+
+def make_verifier_pool(model,bundle):
+    from tensor_llm.qwen35.speculative.graph_pool import VerifierPool
+    profiles=adaptive_profiles(bundle);verifiers={}
+    try:
+        verifier=make_verifier(model,bundle);verifiers[verifier.chunk]=verifier
+        install_selected(verifier,bundle)
+        for row in profiles:
+            context=make_verifier(model,row['verify']);verifiers[row['window']]=context
+            if context.chunk!=row['window']:raise ValueError('adaptive verification width mismatch')
+            install_selected(context,row['verify'])
+        return VerifierPool(verifiers) if profiles else verifier
+    except BaseException:
+        for context in verifiers.values():context.close()
+        raise
+
+
+def make_speculative_pair(model,draft,bundle,repair_bundle):
+    """Install graph pairs that share resident target and draft owners."""
+    from tensor_llm.qwen35.speculative.graph_pool import RepairPool
+    verifier=make_verifier_pool(model,bundle);repairs={}
+    try:
+        repair=Qwen35MTPPrefill(draft,repair_bundle);repairs[repair.chunk]=repair
+        install_selected(repair,repair_bundle)
+        profiles=adaptive_profiles(bundle)
+        if not profiles:return verifier,repair
+        for row in profiles:
+            context=Qwen35MTPPrefill(draft,row['repair']);repairs[row['window']]=context
+            if context.chunk!=row['window']:raise ValueError('adaptive repair width mismatch')
+            install_selected(context,row['repair'])
+        return verifier,RepairPool(verifier,repairs)
+    except BaseException:
+        for context in repairs.values():context.close()
+        verifier.close();raise
+
+
 def execute(target,draft,paths,workload,out,*,output_lookup=False,fallback_proposals=3):
     """Callable on a resident owner; no framework/compiler imports or weight reload."""
     paths={name:Path(path) for name,path in paths.items()};workload=Path(workload);out=Path(out)
@@ -76,9 +130,7 @@ def execute(target,draft,paths,workload,out,*,output_lookup=False,fallback_propo
         prefix_seconds=time.perf_counter()-start
         setup_start=time.perf_counter()
         try:
-            verifier=make_verifier(target,paths['verify'])
-            repair=Qwen35MTPPrefill(draft,paths['repair'])
-            install_selected(verifier,paths['verify']);install_selected(repair,paths['repair'])
+            verifier,repair=make_speculative_pair(target,draft,paths['verify'],paths['repair'])
             setup_seconds=time.perf_counter()-setup_start
             report=run(target,draft,verifier,repair,out,output_tokens=requests[0]['output_tokens'],
                 prefill_seconds=prefix_seconds+setup_seconds,output_lookup=output_lookup,

@@ -28,7 +28,7 @@ def prepare_compact(prepared):
     return result
 
 
-@app.function(image=image, gpu='H200', cpu=16, memory=98304, timeout=1200,
+@app.function(image=image, gpu='H200', cpu=16, memory=98304, timeout=3600,
               volumes={'/cache': volume}, scaledown_window=2)
 def measure_compact(prepared, run_id):
     import asyncio
@@ -73,6 +73,9 @@ def measure_compact(prepared, run_id):
                 test_command.extend(['-k','not prefill_attention'])
         if prepared.get('state_recompute'):
             test_command.append('packages/tensor-llm/tests/test_qwen_recompute.py')
+        if prepared.get('adaptive_verification'):
+            test_command.extend(['packages/tensor-llm/tests/test_qwen_graph_pool.py',
+                'packages/tensor-llm/tests/test_qwen_spec.py::test_recurrent_snapshots_restore_every_rejection_depth[8]'])
         if prepared.get('profile_only'):
             from types import SimpleNamespace
             test=SimpleNamespace(returncode=0,stdout='Diagnostic only; primitive checks retained in prior replay.\n',stderr='')
@@ -187,6 +190,10 @@ def measure_compact(prepared, run_id):
                     from benchmarks.qwen35.recompute_quality import run as recompute_quality
                     summary['recompute_quality']=recompute_quality(model,prepared['recompute_control_bundle'],
                         paths['verify'],out/'recompute-quality')
+                if prepared.get('adaptive_verification'):
+                    from benchmarks.qwen35.recompute_quality import run as pool_quality
+                    summary['adaptive_quality']=pool_quality(model,prepared['adaptive_control_bundle'],
+                        paths['verify'],out/'adaptive-quality',lengths=[8,7,5,0,1,3,8,6],pooled=True)
                 if prepared.get('verification_chunk') and prepared.get('profile_phases',False):
                     from benchmarks.qwen35.modal_profile import profile_captured_plan
                     profile_snapshot=Snapshot(model)
@@ -236,6 +243,7 @@ def measure_compact(prepared, run_id):
                           verification_attention_workspace_dtype='bfloat16' if prepared.get('verification_attention_workspace') else None,
                           verification_attention_workspace_bytes=786432000 if prepared.get('verification_attention_workspace') else 0,
                           verification_window=prepared.get('verification_chunk',8),
+                          adaptive_verification_windows=prepared.get('adaptive_windows'),
                           recurrent_state_restore='accepted-prefix-recompute' if prepared.get('state_recompute') else 'snapshots',
                           output_lookup=True,fallback_proposals=prepared.get('fallback_proposals',3),scheduler='fixed native cohort'))
         config = dict(schema='tensor.llm-serving-servers.v1',
