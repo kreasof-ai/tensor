@@ -7,8 +7,8 @@ The compiled control bundles were copied byte for byte from the former
 `kreasof-ai` volume, preserving their artifact checksums and source identities.
 The pinned model was downloaded into the new workspace.
 
-The latest completed replay measures **2,414.471 output tok/s**, with mean
-client TTFT **25.645 s**. The target remains open. These are experimental
+The highest completed replay measures **2,593.992 output tok/s**, with mean
+client TTFT **23.371 s**. The target remains open. These are experimental
 timings: the unchanged serial-verification gate still fails at 8.411% relative
 logit RMS and 13/16 matching greedy tokens. Model throughput qualification is
 false. Synthetic output repetition benefits the history-lookup proposer;
@@ -41,6 +41,8 @@ requires elapsed time below 42.667 s. Input throughput is reported separately.
 | Prefill chunk 2048 plus verification workspace | 2,281.844 | 56.095 | 27.406 | 22.422 |
 | Accepted-prefix recurrent recomputation, window64 | 2,407.521 | 53.167 | 25.747 | 22.411 |
 | Accepted-prefix recurrent recomputation, window128 | 2,414.471 | 53.014 | 25.645 | 22.735 |
+| M128 dense prefill, fixed window128 | 2,351.836 | 54.426 | 24.435 | 20.520 |
+| M128 dense prefill, adaptive windows, resident graphs | 2,593.992 | 49.345 | 23.371 | 20.523 |
 
 The workspace decodes authoritative FP8 KV and its per-block scales once per
 attention call. It reuses two BF16 scratch buffers across attention layers.
@@ -258,8 +260,11 @@ prefill dense projections, preserves the expert and attention schedules, and
 must pass the unchanged model gates and client replay. Three added physical
 cases check M128 against frozen M64 FP8 reductions at an odd row tail, with
 one, two and eight reduction partitions. The fixed-width candidate passes 83 physical GPU checks (eight skipped);
-the adaptive, resident-graph candidate passes 93 (eight skipped). Full model
-checks are running. There is no completed M128 client result yet.
+the adaptive, resident-graph candidate passes 93 (eight skipped). The fixed-width replay completes all eight requests at 2,351.836 output
+tok/s, 54.426 s elapsed and 24.435 s mean TTFT. Its prefill comparisons have
+zero RMS error and identical valid KV prefix bytes; forward and accepted-prefix
+commits match the frozen verifier bit for bit. The serial gate still fails at
+8.411% RMS and 13/16 greedy matches. The adaptive/resident replay completes at 2,593.992 tok/s; details follow below.
 
 Larger expert geometries were also measured at 512 and 4096 rows, using
 balanced and eight-hot-expert routes. All preserve the sampled output bits,
@@ -282,8 +287,8 @@ through subsequent quantization and routing. The frozen 128-position expert
 profile uses BF16 accumulation, whereas the first small graph was built with
 paired FP16 accumulation. The corrected producer inherits the parent's expert
 geometry and accumulation profile. Its strict bitwise gate remains unchanged;
-a rerun matches all 732 traced stage outputs bit for bit. Full rollback
-qualification and client replay are pending.
+a rerun matches all 732 traced stage outputs bit for bit. Full forward and rollback comparisons subsequently pass at the real 32K
+prefix, followed by the completed client replay below.
 
 A separate opt-in serving candidate captures verification and repair graphs
 at server startup and retains them across cohorts. It performs no inference
@@ -317,3 +322,55 @@ These are isolated CUDA-event measurements, not client throughput results.
 - [Matched adaptive stage trace](data/qwen35-native-h200/bandwidth/graph-pool-trace/matched.json)
 - [BF16 expert tile sweep](data/qwen35-native-h200/bandwidth/expert-bf16-small/measured.json)
 - [Recurrent scan tile sweep](data/qwen35-native-h200/bandwidth/scan-geometry/measured.json)
+
+
+The fixed-width M128 replay reduces target prefill from 22.735 s to 20.520 s,
+but does not improve the full client objective in this observation. Verification
+remains 22.863 s over the same 192 rounds, with 128,228 proposals, 127,992
+accepted tokens and 1,000 lookup requests. Graph preparation after prefill and
+other serving overhead remain part of the elapsed time. This candidate is not
+selected as a throughput winner; repeated-run variance remains unmeasured.
+
+- [M128 fixed-width replay and qualification](data/qwen35-native-h200/bandwidth/dense-m128-fixed/summary.json)
+
+
+## Completed adaptive and resident-graph replay
+
+The combined candidate passes 93 checks (eight skipped), the early and later
+same-state prefill comparisons, and the full frozen 512-vs-2048 prefix comparison
+with zero RMS error and identical valid KV bytes. The 128-position recompute path
+and the 8-position adaptive path have bitwise-equal valid forward outputs,
+persistent states and accepted-prefix commits at all tested rejection depths.
+The serial-verification gate remains failed at 8.411% RMS and 13/16 greedy tokens;
+all throughput and target-qualification flags remain false.
+
+All eight HTTP requests complete, generating 128,000 output tokens after
+256,000 prompt tokens in **49.344803 s**, or **2,593.992 output tok/s**. Mean
+client TTFT is **23.370700 s**. This is the highest observation so far, about
+7.4% above the previous 2,414.471 result. It is one observation on the synthetic
+stress workload, not a qualified natural-language result or Netra comparison.
+
+Graph preparation takes **8.195013 s at startup**, with zero inference tokens.
+This is excluded from the HTTP request window, alongside checkpoint loading;
+it must be included when comparing server cold starts. The candidate keeps
+both widths resident and retains 3,688,366,080 bytes of snapshot buffers in
+addition to the wide path's recompute cache.
+
+Target prefill consumes 20.523204 s. The decode cohort consumes 25.652416 s,
+including 22.694137 s verification and 1.613764 s MTP repair. It retains the same
+192 rounds, 128,228 proposals, 127,992 accepted tokens and 1,000 lookup requests
+as the fixed-width run. Only two rounds select width 8; 190 select width 128,
+because the pool selects a single width for the largest proposal in the cohort.
+This explains why the adaptive path has little effect on measured verification
+time. The improvement chiefly reflects faster prefill and preparing graphs
+before HTTP admission.
+
+More than 3,000 tok/s still requires eliminating at least **6.678 s** from this
+client observation, plus resolving the serial gate before model throughput can
+be qualified. Verification and prefill remain the large measured costs. No
+experiment apps remain running after these completed replays; the active
+Modal profile remains `akbar2habibullah`.
+
+- [Combined replay, provenance and gates](data/qwen35-native-h200/bandwidth/dense-m128-pool-resident/summary.json)
+- [Adaptive same-state rollback gate](data/qwen35-native-h200/bandwidth/dense-m128-pool-resident/adaptive-quality/report.json)
+- [Client report](data/qwen35-native-h200/bandwidth/dense-m128-pool-resident/tensor-h200-compact-mtp-lookup-c8/report.json)

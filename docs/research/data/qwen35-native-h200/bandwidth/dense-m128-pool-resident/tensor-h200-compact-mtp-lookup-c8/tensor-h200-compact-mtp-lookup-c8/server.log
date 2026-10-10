@@ -1,0 +1,5 @@
+uploading native checkpoint weights
+uploaded 35707988096 bytes
+Native speculative graph startup {"seconds": 8.195013289999906, "inference_tokens": 0, "windows": [8, 128]}
+Native Tensor server ready on 127.0.0.1:8013
+Native speculative cohort {"phase_seconds": {"draft_seconds": 0.21775632100070652, "verify_seconds": 22.69413678500041, "commit_seconds": 0.029382699000507273, "repair_seconds": 1.6137640869972074}, "rounds": 192, "proposals": 128228, "accepted": 127992, "lookup_requests": 1000, "verification_windows": {"8": 2, "128": 190}, "recurrent_snapshot_cache_bytes": 3688366080, "elapsed_seconds": 25.65241621999985}
