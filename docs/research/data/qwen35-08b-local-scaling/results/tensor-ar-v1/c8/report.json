@@ -1,0 +1,277 @@
+{
+  "schema": "tensor.llm-serving-report.v1",
+  "status": "completed",
+  "created_utc": "2026-10-10T13:32:59.758405+00:00",
+  "comparison_group": "qwen35-08b-local-scaling",
+  "workload_sha256": "a16ff83907bd692cd610b6d02fd824cb24d631dcd481c694442bc8a3b3b7faac",
+  "workload_kind": "varied-text-scaling",
+  "arrival": {
+    "mode": "closed-loop",
+    "requests_per_second": null
+  },
+  "synthetic": false,
+  "protocol": {
+    "boundary": "client HTTP dispatch/arrival to completed stream",
+    "connections": "fresh TCP connection per call; no transparent retries",
+    "arrival_latency": "includes client admission delay in poisson mode",
+    "throughput_denominator": "entire measured point including fill/drain and failed calls",
+    "input_throughput": "prompt tokens / whole point; not isolated prefill speed",
+    "tpot": "(last token event - first token event) / (output tokens - 1)",
+    "chunking": "client-observed; coalesced tokens have a shared arrival timestamp",
+    "warmup": "separate requests excluded from measurement; run before every point",
+    "retries": 0
+  },
+  "settings": {
+    "concurrencies": [
+      8
+    ],
+    "repeats": 2,
+    "request_timeout_seconds": 300,
+    "telemetry_interval_seconds": 2,
+    "ttft_slo_seconds": null,
+    "tpot_slo_seconds": null
+  },
+  "provenance": {
+    "platform": "Linux-6.12.103-129.197.amzn2023.x86_64-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "git_commit": "c093b729dec77042210c7a60eb624c1c48c87052",
+    "aiohttp": "3.14.4",
+    "harness_sources": {
+      "__init__.py": "a8b67a3a239a8025454073866f7a66d6bb47178fc865c40ade8a7517dd052dea",
+      "workload.py": "9896d7e5ead7ee733662a6c36e223c9303495df6b6a50399f72129091bc1ca0c",
+      "adapters.py": "9950b7034173b8be4829aa1a55409b0c2dcd216d64e3e4ad3249e4636e8b6bfa",
+      "metrics.py": "a1dc2a53976f1036c7aeb2789b52cc3ceafb549769cd330a051caec214af65a3",
+      "runner.py": "5e9029e65d670550f5caf0b0a61630ccff1d317646a3ea03ac7738a37042698c",
+      "plot.py": "184c220711cd84088ece5be2939660a838d87cb5049ad2d9927cf65d0cc4a7e0",
+      "__main__.py": "b1c2f1577d6c093868e810489d780949156b07c7b88706aa8ce1db3bcc72a83d",
+      "smoke.py": "be3d4e086d23d979aeaec6fb612566dc4885235003a976eb4445ca3eb40667d7",
+      "cohort_scaling_plot.py": "5319442969d538d2662ac4383a5983e078f565cd6c2f993c1dedc68ea9a33938"
+    }
+  },
+  "servers": [
+    {
+      "configuration": {
+        "name": "tensor",
+        "engine": "tensor",
+        "base_url": "http://127.0.0.1:8103",
+        "model": "qwen08",
+        "engine_version": "0.1.0",
+        "model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+        "weight_format": "BF16",
+        "kv_dtype": "bfloat16",
+        "state_dtype": "float32",
+        "hardware": "NVIDIA L40S x1",
+        "cpu_offload": "none",
+        "prefix_cache": false,
+        "speculative": false,
+        "tokenizer_name": "Qwen/Qwen3.5-0.8B",
+        "tokenizer_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+        "gpu_indices": [
+          "0"
+        ]
+      },
+      "points": [
+        {
+          "concurrency": 8,
+          "repeat": 0,
+          "disposition": "measured",
+          "requests_file": "c8-r0-requests.jsonl",
+          "telemetry_file": "c8-r0-telemetry.jsonl",
+          "summary": {
+            "requests": 32,
+            "completed": 32,
+            "failed": 0,
+            "elapsed_seconds": 3.8117382950003957,
+            "prompt_tokens": 2274,
+            "output_tokens": 8192,
+            "observed_output_tokens_including_failures": 8192,
+            "output_tokens_per_second": 2149.150693463112,
+            "input_tokens_per_second": 596.5782076336811,
+            "total_tokens_per_second": 2745.728901096793,
+            "requests_per_second": 8.395119896340281,
+            "goodput_output_tokens_per_second": 2149.150693463112,
+            "goodput_requests_per_second": 8.395119896340281,
+            "ttft_seconds": {
+              "count": 32,
+              "mean": 0.032245593217339774,
+              "p50": 0.032537638500798494,
+              "p95": 0.037951167940627785,
+              "p99": 0.03802417218263145
+            },
+            "service_ttft_seconds": {
+              "count": 32,
+              "mean": 0.032243563093288685,
+              "p50": 0.03253605849749874,
+              "p95": 0.037949768442922506,
+              "p99": 0.03802274628833402
+            },
+            "tpot_seconds": {
+              "count": 32,
+              "mean": 0.003606751664952468,
+              "p50": 0.0036021534568634727,
+              "p95": 0.003625864698063678,
+              "p99": 0.0036261723599397785
+            },
+            "latency_seconds": {
+              "count": 32,
+              "mean": 0.9520561102508509,
+              "p50": 0.9514344130002428,
+              "p95": 0.9561609252028574,
+              "p99": 0.9564979381462035
+            },
+            "client_queue_seconds": {
+              "count": 32,
+              "mean": 2.030124051088933e-06,
+              "p50": 1.7550046322867274e-06,
+              "p95": 3.7129946576897045e-06,
+              "p99": 4.7186978918034585e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 2048,
+              "mean": 0.01437065116504499,
+              "p50": 0.014364786999067292,
+              "p95": 0.014749614001630107,
+              "p99": 0.015774251851253206
+            },
+            "single_token_gap_seconds": {
+              "count": 0,
+              "mean": null,
+              "p50": null,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "warnings": []
+        },
+        {
+          "concurrency": 8,
+          "repeat": 1,
+          "disposition": "measured",
+          "requests_file": "c8-r1-requests.jsonl",
+          "telemetry_file": "c8-r1-telemetry.jsonl",
+          "summary": {
+            "requests": 32,
+            "completed": 32,
+            "failed": 0,
+            "elapsed_seconds": 3.8466289619973395,
+            "prompt_tokens": 2274,
+            "output_tokens": 8192,
+            "observed_output_tokens_including_failures": 8192,
+            "output_tokens_per_second": 2129.656923226188,
+            "input_tokens_per_second": 591.1669730732851,
+            "total_tokens_per_second": 2720.8238962994733,
+            "requests_per_second": 8.318972356352297,
+            "goodput_output_tokens_per_second": 2129.656923226188,
+            "goodput_requests_per_second": 8.318972356352297,
+            "ttft_seconds": {
+              "count": 32,
+              "mean": 0.035700789812835865,
+              "p50": 0.0372479099969496,
+              "p95": 0.03966636399272829,
+              "p99": 0.040300933780672496
+            },
+            "service_ttft_seconds": {
+              "count": 32,
+              "mean": 0.03569872565503829,
+              "p50": 0.037246259504172485,
+              "p95": 0.03966445793848834,
+              "p99": 0.04029868917452405
+            },
+            "tpot_seconds": {
+              "count": 32,
+              "mean": 0.0036267798636033023,
+              "p50": 0.0036296728097915867,
+              "p95": 0.0036801579897834088,
+              "p99": 0.003686936245487053
+            },
+            "latency_seconds": {
+              "count": 32,
+              "mean": 0.9606415792814005,
+              "p50": 0.9636578159988858,
+              "p95": 0.9656781040474016,
+              "p99": 0.9656880729847762
+            },
+            "client_queue_seconds": {
+              "count": 32,
+              "mean": 2.0641577975766268e-06,
+              "p50": 1.865497324615717e-06,
+              "p95": 3.3699994673952457e-06,
+              "p99": 3.7349002377595755e-06
+            },
+            "stream_chunk_gap_seconds": {
+              "count": 2048,
+              "mean": 0.014450451019044408,
+              "p50": 0.01445116350078024,
+              "p95": 0.014813248345308238,
+              "p99": 0.01585675214344519
+            },
+            "single_token_gap_seconds": {
+              "count": 0,
+              "mean": null,
+              "p50": null,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "warnings": []
+        }
+      ],
+      "lifecycle": {
+        "managed": false,
+        "startup_seconds": null
+      },
+      "hardware_snapshot": {
+        "status": "sampled",
+        "location": "client-host",
+        "devices": [
+          {
+            "uuid": "GPU-babd214f-1493-0f1c-357a-8e85bb83fb0d",
+            "name": "NVIDIA L40S",
+            "used_mib": 20421.0,
+            "total_mib": 46068.0,
+            "utilization_percent": 90.0,
+            "driver": "595.91.07"
+          }
+        ]
+      },
+      "tokenizer_probe": {
+        "status": "matched",
+        "probe_sha256": "6e1be5df2d3df7734eb0e0dacc54666679abfc603e3697f069b574f89de71862"
+      },
+      "server_info": [
+        {
+          "http_status": 200,
+          "path": "/server_info",
+          "data": {
+            "engine": "tensor",
+            "model": "Qwen/Qwen3.5-0.8B",
+            "weights": "BF16",
+            "kv_dtype": "bfloat16",
+            "state_dtype": "float32",
+            "prefix_cache": false,
+            "speculative": false,
+            "capacity": 256,
+            "context": 4096,
+            "stats": {
+              "tokens": 27648,
+              "completed": 108,
+              "cancelled": 0,
+              "decode_rounds": 17364,
+              "prefill_rounds": 228,
+              "decode_rows": 27540,
+              "padded_decode_rows": 8,
+              "max_active": 4,
+              "capacity_counts": {
+                "1": 11260,
+                "2": 4064,
+                "4": 2040
+              }
+            },
+            "quality_qualified": false
+          }
+        }
+      ],
+      "disposition": "measured"
+    }
+  ]
+}

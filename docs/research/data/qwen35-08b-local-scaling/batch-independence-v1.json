@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "results": [
+    {
+      "capacity": 1,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 5
+    },
+    {
+      "capacity": 2,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 10
+    },
+    {
+      "capacity": 4,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 20
+    },
+    {
+      "capacity": 8,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 40
+    },
+    {
+      "capacity": 16,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 40
+    },
+    {
+      "capacity": 32,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 40
+    },
+    {
+      "capacity": 64,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 40
+    },
+    {
+      "capacity": 128,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 40
+    },
+    {
+      "capacity": 256,
+      "bitwise_states": true,
+      "predictions": true,
+      "state_checks": 40
+    }
+  ]
+}

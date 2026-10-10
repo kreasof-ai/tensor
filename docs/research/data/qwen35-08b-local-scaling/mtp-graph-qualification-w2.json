@@ -1,0 +1,59 @@
+[
+  {
+    "concurrency": 1,
+    "tokens": 64,
+    "ar_seconds": 0.7141737130004913,
+    "mtp_seconds": 1.0139606970042223,
+    "greedy_identical": true,
+    "scheduler": {
+      "tokens": 64,
+      "completed": 1,
+      "cancelled": 0,
+      "decode_rounds": 41,
+      "prefill_rounds": 3,
+      "decode_rows": 41,
+      "padded_decode_rows": 0,
+      "max_active": 1,
+      "capacity_counts": {
+        "1": 41
+      }
+    },
+    "speculation": {
+      "rounds": 41,
+      "request_rounds": 41,
+      "proposed": 40,
+      "accepted": 22,
+      "emitted": 63
+    }
+  },
+  {
+    "concurrency": 8,
+    "tokens": 491,
+    "ar_seconds": 1.215759988001082,
+    "mtp_seconds": 2.712036065000575,
+    "greedy_identical": true,
+    "scheduler": {
+      "tokens": 491,
+      "completed": 8,
+      "cancelled": 0,
+      "decode_rounds": 41,
+      "prefill_rounds": 3,
+      "decode_rows": 287,
+      "padded_decode_rows": 8,
+      "max_active": 8,
+      "capacity_counts": {
+        "8": 35,
+        "4": 2,
+        "2": 3,
+        "1": 1
+      }
+    },
+    "speculation": {
+      "rounds": 82,
+      "request_rounds": 328,
+      "proposed": 324,
+      "accepted": 218,
+      "emitted": 546
+    }
+  }
+]

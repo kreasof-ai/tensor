@@ -1,0 +1,101 @@
+[
+  {
+    "concurrency": 64,
+    "tokens": 3907,
+    "ar_seconds": 2.7696087759977672,
+    "mtp_seconds": 5.87864178000018,
+    "greedy_identical": true,
+    "bitwise_terminal_states": true,
+    "scheduler": {
+      "tokens": 3907,
+      "completed": 64,
+      "cancelled": 0,
+      "decode_rounds": 34,
+      "prefill_rounds": 6,
+      "decode_rows": 1696,
+      "padded_decode_rows": 125,
+      "max_active": 64,
+      "capacity_counts": {
+        "32": 4,
+        "64": 26,
+        "16": 1,
+        "8": 1,
+        "4": 1,
+        "1": 1
+      }
+    },
+    "speculation": {
+      "rounds": 34,
+      "request_rounds": 1696,
+      "proposed": 4902,
+      "accepted": 2147,
+      "emitted": 3843
+    }
+  },
+  {
+    "concurrency": 128,
+    "tokens": 7813,
+    "ar_seconds": 3.5918111329956446,
+    "mtp_seconds": 3.8674687320017256,
+    "greedy_identical": true,
+    "bitwise_terminal_states": true,
+    "scheduler": {
+      "tokens": 7813,
+      "completed": 128,
+      "cancelled": 0,
+      "decode_rounds": 36,
+      "prefill_rounds": 12,
+      "decode_rows": 3393,
+      "padded_decode_rows": 300,
+      "max_active": 128,
+      "capacity_counts": {
+        "32": 3,
+        "64": 4,
+        "128": 26,
+        "8": 1,
+        "4": 1,
+        "1": 1
+      }
+    },
+    "speculation": {
+      "rounds": 70,
+      "request_rounds": 5089,
+      "proposed": 14703,
+      "accepted": 6439,
+      "emitted": 11528
+    }
+  },
+  {
+    "concurrency": 256,
+    "tokens": 15622,
+    "ar_seconds": 6.667744976002723,
+    "mtp_seconds": 7.607607256999472,
+    "greedy_identical": true,
+    "bitwise_terminal_states": true,
+    "scheduler": {
+      "tokens": 15622,
+      "completed": 256,
+      "cancelled": 0,
+      "decode_rounds": 40,
+      "prefill_rounds": 24,
+      "decode_rows": 6782,
+      "padded_decode_rows": 820,
+      "max_active": 256,
+      "capacity_counts": {
+        "32": 3,
+        "64": 3,
+        "128": 5,
+        "256": 26,
+        "8": 2,
+        "2": 1
+      }
+    },
+    "speculation": {
+      "rounds": 110,
+      "request_rounds": 11871,
+      "proposed": 34298,
+      "accepted": 15023,
+      "emitted": 26894
+    }
+  }
+]

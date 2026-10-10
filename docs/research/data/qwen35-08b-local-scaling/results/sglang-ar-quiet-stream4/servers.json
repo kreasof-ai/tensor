@@ -1,0 +1,26 @@
+{
+  "schema": "tensor.llm-serving-servers.v1",
+  "comparison_group": "qwen35-08b-local-scaling",
+  "servers": [
+    {
+      "name": "sglang",
+      "engine": "sglang",
+      "base_url": "http://127.0.0.1:8102",
+      "model": "qwen08",
+      "engine_version": "0.5.9",
+      "model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "weight_format": "BF16",
+      "kv_dtype": "bfloat16",
+      "state_dtype": "float32",
+      "hardware": "NVIDIA L40S x1",
+      "cpu_offload": "none",
+      "prefix_cache": false,
+      "speculative": false,
+      "tokenizer_name": "Qwen/Qwen3.5-0.8B",
+      "tokenizer_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "gpu_indices": [
+        "0"
+      ]
+    }
+  ]
+}

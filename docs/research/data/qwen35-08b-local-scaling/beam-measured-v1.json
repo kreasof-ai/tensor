@@ -1,0 +1,4912 @@
+[
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "98d116452bcddf552677254e.tbin",
+    "sha256": "eca9b286991b2bc61e39895fd6f2bddf5ebdc407141550e95e4a3b81597edeb7",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8120319843292236,
+    "samples_milliseconds": [
+      0.8129600286483765,
+      0.8110079765319824,
+      0.8120319843292236,
+      0.8120319843292236,
+      0.8120319843292236,
+      0.8130559921264648,
+      0.8120319843292236
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7598a25b1630c949d943370d.tbin",
+    "sha256": "362702eeb4c485900861e7c110cf2f033a762e08fd873e40c936e8314f9e97cd",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.809984028339386,
+    "samples_milliseconds": [
+      0.809984028339386,
+      0.8130559921264648,
+      0.809984028339386,
+      0.8099520206451416,
+      0.8110079765319824,
+      0.809984028339386,
+      0.8110079765319824
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "83020f6ae0364aae89fc430c.tbin",
+    "sha256": "0c523aebb0ece966e8db368de0030dd269a13c320c15ffdd53db5d74e2f39c02",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8110079765319824,
+    "samples_milliseconds": [
+      0.8120319843292236,
+      0.8110079765319824,
+      0.8130559921264648,
+      0.8120319843292236,
+      0.8110079765319824,
+      0.8110079765319824,
+      0.8110079765319824
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "9aaef3fd2d83f3d61b71fdaf.tbin",
+    "sha256": "640298ccd2244dbe88fe8ea380ecdc69bcf50d2ce2588619db133e065ea94688",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8888000249862671,
+    "samples_milliseconds": [
+      0.8878080248832703,
+      0.8888000249862671,
+      0.8888319730758667,
+      0.8878080248832703,
+      0.8888319730758667,
+      0.886784017086029,
+      0.8898239731788635
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "755ab443a875f2f634fdbe3a.tbin",
+    "sha256": "b087bcf17aaf7b579b72d2fbf7fc22b53ce853688fce69d4ab79adc237c966cb",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.894976019859314,
+    "samples_milliseconds": [
+      0.8949120044708252,
+      0.8970239758491516,
+      0.8960000276565552,
+      0.8939520120620728,
+      0.8908799886703491,
+      0.894976019859314,
+      0.894976019859314
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "77e93574d5a453b4df22c90d.tbin",
+    "sha256": "8d2c8cb4509f53a036cc8fd1ad5816efc9d22fe1404ac6767c5839d77b6d5e93",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8970239758491516,
+    "samples_milliseconds": [
+      0.899071991443634,
+      0.8970239758491516,
+      0.8960000276565552,
+      0.8980799913406372,
+      0.9000959992408752,
+      0.8958399891853333,
+      0.8960000276565552
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "6e450ea58d6ae7518098deff.tbin",
+    "sha256": "a520ca3e4dd87f6b5b389167df93f1d399c5d509cbb6bb051b6741f78d194ec8",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8622080087661743,
+    "samples_milliseconds": [
+      0.8622080087661743,
+      0.8622080087661743,
+      0.8642560243606567,
+      0.8611840009689331,
+      0.8663039803504944,
+      0.8611840009689331,
+      0.8632320165634155
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "519c834255f64825ae963599.tbin",
+    "sha256": "a6c7456b7bd1d3affc093b91daa279bd527a61c50275f0d46709f9129216790b",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8663039803504944,
+    "samples_milliseconds": [
+      0.8662400245666504,
+      0.8652799725532532,
+      0.8642560243606567,
+      0.8663679957389832,
+      0.8683519959449768,
+      0.8673279881477356,
+      0.8663039803504944
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "57435c56d54953186d1448ab.tbin",
+    "sha256": "1b362d51db5e5fa60e53cb829cc1e00e4ce8e6849b40785b51076bf2ae4ca910",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03705599904060364,
+    "samples_milliseconds": [
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03705599904060364,
+      0.03686400130391121,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "fceb133cffd9df9ac3384368.tbin",
+    "sha256": "74734727b71daf52ed75fb06f5d4f5436b85fa289ddd3d7dde2a75bf94a05997",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.038784001022577286,
+      0.035840000957250595,
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "84d0519d7392cdb30a73d937.tbin",
+    "sha256": "f423e86002cd396e4635b73b35a6906a17e5e24a4fa18b2e27059d9b512dfa77",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "5c78c711041f6fc2016b556a.tbin",
+    "sha256": "9764f83e4d991c39c7351525fe8cca9736f7ce155d107332faba1793b6c5b090",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03993599861860275,
+    "samples_milliseconds": [
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03891199827194214,
+      0.03993599861860275,
+      0.04095999896526337
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8fe6e08fc37d651741fe9800.tbin",
+    "sha256": "99f08ee94651d1ca94b083513fbe088495780a4c04f9b3a4fea664c058c071d4",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03993599861860275,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.03993599861860275,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c5895179eb026d793dbd7c47.tbin",
+    "sha256": "9e3a5dbbfba03bfc3fbe9ce3e895f9b6686fe583646a387321686c7cbc0fbc09",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04095999896526337,
+    "samples_milliseconds": [
+      0.043007999658584595,
+      0.04105599969625473,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.04092799872159958,
+      0.04012800008058548,
+      0.04095999896526337
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "e1e39fa4049c18ef10970c1c.tbin",
+    "sha256": "35e15334e2fad5b285bb8f6fdf8203ce5cd86cc2a18027399cf4b43e7f5a67b9",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.038015998899936676,
+    "samples_milliseconds": [
+      0.03993599861860275,
+      0.03788800165057182,
+      0.03891199827194214,
+      0.03788800165057182,
+      0.03788800165057182,
+      0.03891199827194214,
+      0.038015998899936676
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7ac74bc7b2bc7d7f0508c41a.tbin",
+    "sha256": "d0379d73854fb8b6314e315f5b3308187551464145eb841ee4a0102ed734c9d3",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03788800165057182,
+    "samples_milliseconds": [
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03788800165057182,
+      0.037856001406908035,
+      0.03788800165057182,
+      0.03891199827194214,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "6ae733228d67bc1dba972340.tbin",
+    "sha256": "3c31e72b03c307bbe75f4b8ea2eae2813b8288928e096f20627917446f141690",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03359999880194664,
+    "samples_milliseconds": [
+      0.03379200026392937,
+      0.03359999880194664,
+      0.03276799991726875,
+      0.03276799991726875,
+      0.03379200026392937,
+      0.03276799991726875,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "6a2739e8ce620aa1506e9a4d.tbin",
+    "sha256": "7662d5e8259b070257ee7e4e485b25e9026af3e3605097073556a4a1da0187e9",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03379200026392937,
+    "samples_milliseconds": [
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03276799991726875,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8c19bfa373b698c2e1dd66a7.tbin",
+    "sha256": "eff309026253d826c12dbe7f26f709efee014626bac5116954b1e7cce804c0b6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03379200026392937,
+    "samples_milliseconds": [
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "6fc0814fb962b49a4ca97537.tbin",
+    "sha256": "72e70f31bb5b080490b072ee589d94947b8b47eae952699aaae066fedf51a7a6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03481600061058998,
+    "samples_milliseconds": [
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03484800085425377,
+      0.03481600061058998,
+      0.03379200026392937,
+      0.03481600061058998
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8aa219d05ae43790b002c4fb.tbin",
+    "sha256": "2189f6d3125156b416eeeb54bbd3aa2ad85dc90b1c60572c965b5bf6b601f5be",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.035840000957250595,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.035840000957250595,
+      0.03686400130391121,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.03587200120091438,
+      0.035840000957250595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "d71b2039297a4e3356fba133.tbin",
+    "sha256": "766419305db17c70dec39d212727a9f138ddd18fd9bddcfdaca90e73e5f7e7d6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03788800165057182,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "0b6d95cc14ebb84820bc8543.tbin",
+    "sha256": "867cc7ea299194bf1e1ec05bf7a58afa8b06de12efe72d260df4f933f55840c9",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03481600061058998,
+    "samples_milliseconds": [
+      0.035840000957250595,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03468799963593483,
+      0.03481600061058998
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "a7879824fa214e40de3b7243.tbin",
+    "sha256": "28c1cb7ebd5abbedde299dfc952bddcf2513e90ef757ecc778edaead3e4ca48c",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03481600061058998,
+    "samples_milliseconds": [
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03468799963593483,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.033824000507593155,
+      0.03478400036692619
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 3584,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "64b6483320de78f756c3d261.tbin",
+    "sha256": "3db6456ba528888948ff1c17d5c28c28be5a46120a6b4aa550ce54a403ec7b8a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.021503999829292297,
+    "samples_milliseconds": [
+      0.021503999829292297,
+      0.021503999829292297,
+      0.021503999829292297,
+      0.02252800017595291,
+      0.021503999829292297,
+      0.021503999829292297,
+      0.020479999482631683
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 3584,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "f570f993eef9ec554e4ef50a.tbin",
+    "sha256": "420150338b8f82156196ec3fd1413a2b185559c3174aa7de71fa90d542945fee",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02252800017595291,
+    "samples_milliseconds": [
+      0.02252800017595291,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.021503999829292297,
+      0.021503999829292297,
+      0.021568000316619873
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 3584,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "1696b3b3c0f062076e5c2070.tbin",
+    "sha256": "fd19def55e9db5542d9fdd34af93d2609300870983cc5f2f88fa9b56f60e406c",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02252800017595291,
+    "samples_milliseconds": [
+      0.02457600086927414,
+      0.023552000522613525,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.02252800017595291
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 2048,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "ecd4560c0c17c08bb0a2edf9.tbin",
+    "sha256": "10b9e52342427cca852cd2835e428e7868a39f77331046263808f90055794bac",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.011264000087976456,
+    "samples_milliseconds": [
+      0.013311999849975109,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 2048,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "6a781219bd9b562dc38ebe7f.tbin",
+    "sha256": "a6c38c5fb5a22ff4394ea8e2b6762e5f22db09c6d78363f4cc9ecbc5fc8df340",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.011296000331640244,
+    "samples_milliseconds": [
+      0.013311999849975109,
+      0.011296000331640244,
+      0.01228800043463707,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.01228800043463707,
+      0.011264000087976456
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 1,
+      "k": 2048,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "830fb15f4b5252c1e82eaead.tbin",
+    "sha256": "f367bbf4a7bcc62897c5a1266e630fd1ed70486e72b1011ba86102649f57041a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.011327999643981457,
+    "samples_milliseconds": [
+      0.01228800043463707,
+      0.011327999643981457,
+      0.012223999947309494,
+      0.01228800043463707,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 1,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 8
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "2b4f9bd890fbcb0cbf999bca.tbin",
+    "sha256": "eb017c50da7fa09f461da40ff9efd02282250ee8247dfc5b122dd5fd5d05bf81",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.0071680000983178616,
+    "samples_milliseconds": [
+      0.0071680000983178616,
+      0.0071680000983178616,
+      0.0071680000983178616,
+      0.0071680000983178616,
+      0.006144000217318535,
+      0.0071680000983178616,
+      0.0071680000983178616
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 1,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 16
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "6923a3c78352a61997f8412d.tbin",
+    "sha256": "4a0f8f60dbf9b2d46034b9c7f347b8fbead2bf6d0b5352395b94d9a661a6b914",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.0071680000983178616,
+    "samples_milliseconds": [
+      0.008191999979317188,
+      0.0071680000983178616,
+      0.0071680000983178616,
+      0.0071680000983178616,
+      0.008191999979317188,
+      0.0071680000983178616,
+      0.0072639998979866505
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 1,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 32
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "903ae6f546e8a9b2d55d2d57.tbin",
+    "sha256": "52b6aabe6cb9b177df6384a54ceea93028b08f7e60b3f6f0ec61dbc99d3fa40f",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.008191999979317188,
+    "samples_milliseconds": [
+      0.008191999979317188,
+      0.008191999979317188,
+      0.008063999935984612,
+      0.008191999979317188,
+      0.0071680000983178616,
+      0.008191999979317188,
+      0.0071680000983178616
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 1,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 64
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "cdd541a4bac7557ff06ed43d.tbin",
+    "sha256": "5771e15aa63a3dae8ba19fdff297c604495a79fe97e7c2a8c27edad233015a19",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.009312000125646591,
+    "samples_milliseconds": [
+      0.009216000325977802,
+      0.009312000125646591,
+      0.010367999784648418,
+      0.010239999741315842,
+      0.010239999741315842,
+      0.009216000325977802,
+      0.009279999881982803
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8a3c8a7ba4ee7ffe08820405.tbin",
+    "sha256": "f7e4a93e753e861907fca4bd9e761317aa050696366c4b6feda97ae9564d2908",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8294399976730347,
+    "samples_milliseconds": [
+      0.8284159898757935,
+      0.8294399976730347,
+      0.829472005367279,
+      0.8304640054702759,
+      0.8294399976730347,
+      0.8294399976730347,
+      0.8304640054702759
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c2cb5119e1c5a76c41fd7e76.tbin",
+    "sha256": "f680bd4a00f7a9992d254b25e16775b17f46c501bf45041dfa21134b566f0869",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8304640054702759,
+    "samples_milliseconds": [
+      0.8304640054702759,
+      0.8284159898757935,
+      0.8314880132675171,
+      0.8294399976730347,
+      0.8304640054702759,
+      0.8304640054702759,
+      0.8304640054702759
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "3ce7a79663df83e096938dd1.tbin",
+    "sha256": "7a977a13ea06fb5669aadd1ea2bba7cc7f190600cb572b15e283b11374a28e88",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8313599824905396,
+    "samples_milliseconds": [
+      0.8313599824905396,
+      0.8304640054702759,
+      0.8314880132675171,
+      0.8304640054702759,
+      0.8314880132675171,
+      0.8314880132675171,
+      0.8304640054702759
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "ff3781eea37ffbfa2edd3fb1.tbin",
+    "sha256": "caf4c1f29ae3cddb8a1f3215571c66b891f180d787416ecf1d54a8a11c1a8763",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.907263994216919,
+    "samples_milliseconds": [
+      0.9082880020141602,
+      0.9062399864196777,
+      0.907263994216919,
+      0.9052159786224365,
+      0.907263994216919,
+      0.907263994216919,
+      0.9062399864196777
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "855fe536bf3eb2b05359c80d.tbin",
+    "sha256": "684b2f78a5e3ed3ece9430fd08da09a08848bf6705523f13f645ca7d0cd54f5d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9093120098114014,
+    "samples_milliseconds": [
+      0.9093120098114014,
+      0.9103360176086426,
+      0.9123839735984802,
+      0.9103360176086426,
+      0.9093120098114014,
+      0.9082880020141602,
+      0.9093120098114014
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "830eca6a1954a911359593c9.tbin",
+    "sha256": "83c346b51106fd616b7ad772b89913b3b27e7e8cd943acc925f10283e4ee3e4a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9113600254058838,
+    "samples_milliseconds": [
+      0.9144319891929626,
+      0.9113600254058838,
+      0.9113600254058838,
+      0.9114559888839722,
+      0.9113600254058838,
+      0.9103360176086426,
+      0.9113600254058838
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "5143a79526a025953df6a6cc.tbin",
+    "sha256": "23e97131f297726ba2f857bd22cdabe9e571ab5dc6431fd751e81212540010af",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9021440148353577,
+    "samples_milliseconds": [
+      0.9021440148353577,
+      0.9021440148353577,
+      0.899071991443634,
+      0.9021440148353577,
+      0.9011200070381165,
+      0.9011200070381165,
+      0.9021440148353577
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "dd3fc7e4fc785dc9eefe7336.tbin",
+    "sha256": "28904e4d3de2697d2d8ec67d0979a12c3fe0c45413fa6872f01bf3607ac747bb",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.886784017086029,
+    "samples_milliseconds": [
+      0.8888319730758667,
+      0.886784017086029,
+      0.886784017086029,
+      0.8867200016975403,
+      0.886784017086029,
+      0.8898559808731079,
+      0.8867520093917847
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "2cfc81453cb4adc1ca6ecffc.tbin",
+    "sha256": "704c0eb6b488fa7fff3dc40bcc795f5ef63fe6f71977877ccc9f0659ada6b0f2",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03788800165057182,
+    "samples_milliseconds": [
+      0.03788800165057182,
+      0.03788800165057182,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03705599904060364,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "701c79844be02008e85af0f2.tbin",
+    "sha256": "288927c723b66274fa4d775403220180b0c55f43411593d36fc59a991ebfd890",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03891199827194214,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03593600168824196,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "69d7ab1ff7ba5ae344a17093.tbin",
+    "sha256": "5971335c27b51c58b4ee6cbc46ca0e2fc0900bb32622b41c1151ff1418f0c47d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.03686400130391121,
+      0.036031998693943024,
+      0.03788800165057182,
+      0.035840000957250595,
+      0.03686400130391121,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "26a9f5d2ae13b0563377ec2e.tbin",
+    "sha256": "1f1c84c1c65ece2240168b3dc223a935bd7f6599d02c4274c73bfdef5cfcc3cc",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.040800001472234726,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.040832001715898514,
+      0.038943998515605927,
+      0.03993599861860275,
+      0.040800001472234726
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "e106b44b899e56403d4d6e65.tbin",
+    "sha256": "841d57192eb29707ea2e8ab5fc25eb2cba7758e90391d8d2d1d102dcb3840fe0",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04095999896526337,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.039872001856565475,
+      0.03993599861860275,
+      0.040991999208927155,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.04095999896526337
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "78e9f20128a2f09f0ee4901e.tbin",
+    "sha256": "8c96e439947be446ae64177ca39921266120fc610e168970a75f1aaf8d161dd6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03993599861860275,
+    "samples_milliseconds": [
+      0.040863998234272,
+      0.03891199827194214,
+      0.039103999733924866,
+      0.03996799886226654,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03993599861860275
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "437a8f6e3460d95892fe991a.tbin",
+    "sha256": "6d836180511ca7f18ff6e04961a8c548a5a0df6b162599e72bf75f25308950f6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03993599861860275,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.03993599861860275
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "be32da540a7e5fc8aaae6135.tbin",
+    "sha256": "c31cbbf3da1bf809a3e0135a048d0f905adad3fb2cf76c76b77f9fbde372249d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03993599861860275,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.04089599847793579,
+      0.04089599847793579
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "d5c099c05418b03cc8d09a76.tbin",
+    "sha256": "69a5f9028a95b42c452cba7203d1ed0baf1eb0abbc5324c0a6ceac32859db987",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03379200026392937,
+    "samples_milliseconds": [
+      0.03481600061058998,
+      0.03376000002026558,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03388800099492073,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7fab27dbae3987f14d620234.tbin",
+    "sha256": "b8c475e9739ff1699e66f78cf77dd1fe5977f6e619c12fcbe08780a6a7cbeefb",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03379200026392937,
+    "samples_milliseconds": [
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "10b0905586d69393d53c3606.tbin",
+    "sha256": "1049c7874750bd32d9a710aaf6d9aefda472c782171a17515c4669a7aea09c31",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03276799991726875,
+    "samples_milliseconds": [
+      0.03481600061058998,
+      0.03276799991726875,
+      0.03276799991726875,
+      0.03276799991726875,
+      0.03276799991726875,
+      0.03379200026392937,
+      0.03376000002026558
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "ce8dd485409e54b2e95914cb.tbin",
+    "sha256": "d7230ef597ac5d02ad729a93a06f85e9b4e4fccbf55e8c89ee3775f7b8c65460",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03481600061058998,
+    "samples_milliseconds": [
+      0.03673600032925606,
+      0.03481600061058998,
+      0.03686400130391121,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.035840000957250595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "d24c03be13b3e7cdfe936e76.tbin",
+    "sha256": "ad86a483503800650677f472e67a9fb95344e57935466f8978c18b03736995d2",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03788800165057182,
+      0.035840000957250595,
+      0.03686400130391121,
+      0.035840000957250595,
+      0.03705599904060364,
+      0.035840000957250595,
+      0.03686400130391121
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "54163598d8e0bbc0ec99e232.tbin",
+    "sha256": "8fdfa338c6c8366f51438cf7e004f6bad6dc443fad684489ed7acf4dc0bae1be",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03670400008559227,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.03670400008559227,
+      0.03686400130391121,
+      0.035840000957250595,
+      0.03686400130391121,
+      0.035840000957250595,
+      0.035840000957250595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "9811d06372b3453b6b6df378.tbin",
+    "sha256": "f2c2f8a46f4d59b803d5879e0259ccaa874532bfdb28b92166678cdfa9342b2e",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03481600061058998,
+    "samples_milliseconds": [
+      0.035840000957250595,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.035840000957250595,
+      0.03379200026392937,
+      0.03481600061058998
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "2bdb67b6548b07527d6ede2a.tbin",
+    "sha256": "a556d82fe0b275ead63e02bb816390eab2a9b5a5e105070d7270d8d42bae0e0f",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.035840000957250595,
+    "samples_milliseconds": [
+      0.035840000957250595,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.03481600061058998,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.035679999738931656
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 3584,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "272788ecb18dce834ae0e1de.tbin",
+    "sha256": "35d4f2eeb0df586391390e94d3ff02eca299034f734b179e2b8245a9f6f51134",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02252800017595291,
+    "samples_milliseconds": [
+      0.023552000522613525,
+      0.022495999932289124,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.021503999829292297,
+      0.02252800017595291,
+      0.022495999932289124
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 3584,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "b103efb917024449add59c0c.tbin",
+    "sha256": "a97c9d273364fb981c67ebb8b411acdf52f9bffb8645ecfd11ace3b7996aeed0",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02252800017595291,
+    "samples_milliseconds": [
+      0.02457600086927414,
+      0.023552000522613525,
+      0.021663999184966087,
+      0.02252800017595291,
+      0.023423999547958374,
+      0.021503999829292297,
+      0.02252800017595291
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 3584,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "eaae1b3528859460cd91c591.tbin",
+    "sha256": "1fe2f568f67f5efc08bb14d3e95ec246201ec729751eae45925f90e501a9fcf3",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.023552000522613525,
+    "samples_milliseconds": [
+      0.023552000522613525,
+      0.023552000522613525,
+      0.02457600086927414,
+      0.023552000522613525,
+      0.023552000522613525,
+      0.023552000522613525,
+      0.023552000522613525
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 2048,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "1a3e57afc34bf409d46b89ad.tbin",
+    "sha256": "59ae42d69fe66bbce22fa032ec513a3fb93f4aa814ad2d1ea26dd4ad7f43663e",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.011264000087976456,
+    "samples_milliseconds": [
+      0.013311999849975109,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011359999887645245,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 2048,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "b3b0a1b048c03013a707a337.tbin",
+    "sha256": "67d854e88ba43d7ddd48d5e8d77248c13c42adeda0220c0eaa8d0c5abe1c078b",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.011264000087976456,
+    "samples_milliseconds": [
+      0.01228800043463707,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 8,
+      "k": 2048,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "55a7e09a710bfdb4146f87a2.tbin",
+    "sha256": "b4f5819f2729b77c386775787ea1037b99a6fc0855ba9130f45c08441dd4f461",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.011264000087976456,
+    "samples_milliseconds": [
+      0.013311999849975109,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.011264000087976456,
+      0.013311999849975109
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 8,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 8
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "7dca8ddc67b7c3c2bc69c060.tbin",
+    "sha256": "809f4251374f81afee341e7c538f17ea75b9544d79ccaf33648241421269425f",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02457600086927414,
+    "samples_milliseconds": [
+      0.02457600086927414,
+      0.02457600086927414,
+      0.02457600086927414,
+      0.024639999493956566,
+      0.023552000522613525,
+      0.025599999353289604,
+      0.02457600086927414
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 8,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 16
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "aab328b4b2913b5a8690d810.tbin",
+    "sha256": "831dde5dfadfe329c12ea37514cceff190fac916e2feca20b34992c99bbfca35",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.026623999699950218,
+    "samples_milliseconds": [
+      0.026623999699950218,
+      0.026623999699950218,
+      0.027648000046610832,
+      0.027648000046610832,
+      0.026623999699950218,
+      0.027648000046610832,
+      0.026528000831604004
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 8,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 32
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "89d1ffe8109b9e352c0602b4.tbin",
+    "sha256": "34f22aa200186b8add69ebea1db546922f63fe438b9d008ca01bd41a07f03846",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.023552000522613525,
+    "samples_milliseconds": [
+      0.023552000522613525,
+      0.023552000522613525,
+      0.02457600086927414,
+      0.023584000766277313,
+      0.023552000522613525,
+      0.023552000522613525,
+      0.02252800017595291
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 8,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 64
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "2ff0e5c0f154061eb101e27f.tbin",
+    "sha256": "a812895a1966e51689d831ba87f46bf7f90965ef87b31293ca35c2e2779b5655",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.027648000046610832,
+    "samples_milliseconds": [
+      0.027648000046610832,
+      0.026623999699950218,
+      0.026623999699950218,
+      0.02768000029027462,
+      0.027648000046610832,
+      0.027648000046610832,
+      0.027648000046610832
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "95b3dc4eae65d8dfba2660e1.tbin",
+    "sha256": "ee0090423968a83e95049febf6897934ab6c3ab5bbc28695e029b6d7b54177c6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8784639835357666,
+    "samples_milliseconds": [
+      0.8763520121574402,
+      0.8784639835357666,
+      0.8775680065155029,
+      0.8796160221099854,
+      0.881663978099823,
+      0.8806399703025818,
+      0.8744959831237793
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "80908e41e97e248ad12d0cec.tbin",
+    "sha256": "8e9fb69a9bf23a7a4e4c4534367e123ab96ca28720686d0fa2ba318625350de5",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8663039803504944,
+    "samples_milliseconds": [
+      0.8652799725532532,
+      0.8663679957389832,
+      0.8652799725532532,
+      0.8724480271339417,
+      0.8632320165634155,
+      0.8663039803504944,
+      0.8663039803504944
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "870e20784cb1dfe53980dac9.tbin",
+    "sha256": "cb624becc0eea2f96d7a8f4dd80d7d15796ae7a14bb901cf6506385d58821ae4",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8673279881477356,
+    "samples_milliseconds": [
+      0.8683519959449768,
+      0.8673279881477356,
+      0.8683519959449768,
+      0.8673279881477356,
+      0.8663039803504944,
+      0.8642560243606567,
+      0.8683519959449768
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "ec447e50c443bd62aa1cd64b.tbin",
+    "sha256": "ab8643e0ef088c6f4bf6526f86989fa6ef3536aafcd0beea3f5e3625c6b14bc1",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9472000002861023,
+    "samples_milliseconds": [
+      0.9502720236778259,
+      0.9461759924888611,
+      0.9504320025444031,
+      0.9492480158805847,
+      0.9472000002861023,
+      0.9461759924888611,
+      0.9463359713554382
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c0481d572fd94ab23993cbf7.tbin",
+    "sha256": "921435fcc03da22cce1106272cc8bb4df26ee81e47f0981e9fd1b70401a2f1b3",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9482240080833435,
+    "samples_milliseconds": [
+      0.9502720236778259,
+      0.9472000002861023,
+      0.9492480158805847,
+      0.9472000002861023,
+      0.9482240080833435,
+      0.9492480158805847,
+      0.9482240080833435
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "9456d0ba5971f7aa7045aab7.tbin",
+    "sha256": "37fcf70fc2365560cda05f22a5cf44c83ef9f1ab052e89e1f039a33e7fd01ca7",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9431040287017822,
+    "samples_milliseconds": [
+      0.9441279768943787,
+      0.9411200284957886,
+      0.9431040287017822,
+      0.9431040287017822,
+      0.942080020904541,
+      0.9431040287017822,
+      0.9451519846916199
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7a49843037c83801dfe24a4d.tbin",
+    "sha256": "c675531ab86340c92ffbd3c1aa2df1bc741301c8175e6e72d4ed481a2eba7651",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9410560131072998,
+    "samples_milliseconds": [
+      0.9390079975128174,
+      0.9410560131072998,
+      0.942080020904541,
+      0.942080020904541,
+      0.9390079975128174,
+      0.9441279768943787,
+      0.9408959746360779
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "e8f68f6b14ae05c32873eff9.tbin",
+    "sha256": "ed13ca851cc10bf3c37c92b81e5ee94bbc5de10dcdf920ede5b9604dbb1b6a18",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9226239919662476,
+    "samples_milliseconds": [
+      0.9226239919662476,
+      0.92467200756073,
+      0.9215999841690063,
+      0.92467200756073,
+      0.9214079976081848,
+      0.9215999841690063,
+      0.92467200756073
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "961fbb1751b6aaa9c317ba5a.tbin",
+    "sha256": "2d95cee4d9365fea512806f56fe4c95417668ac2925eedae147b7244d7682954",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03888000175356865,
+    "samples_milliseconds": [
+      0.03884800150990486,
+      0.03888000175356865,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03798399865627289,
+      0.03891199827194214,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "2d480163bbab4e946d37fda1.tbin",
+    "sha256": "b2ecd8344a32bae8cb92fae384f45dccd4ffaa4657e09bb6ef5a78c4bb2c59b6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03788800165057182,
+    "samples_milliseconds": [
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03788800165057182,
+      0.03788800165057182,
+      0.03891199827194214,
+      0.03788800165057182,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "ccf3bc188f5a704e77f9d8f1.tbin",
+    "sha256": "b11dcfb8fd649da05ff83d9d5e18be1053ac4c49c2fb5475f3a9fda5c20e7fcf",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03891199827194214,
+    "samples_milliseconds": [
+      0.03891199827194214,
+      0.03788800165057182,
+      0.03888000175356865,
+      0.03788800165057182,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "5846c4e3f4ca04527fcbebfc.tbin",
+    "sha256": "c20cb88561632d99680b319becb9d684b5b8ef4485f06c4bd1ae89eea4205359",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04095999896526337,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.03993599861860275,
+      0.03993599861860275
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "3b9ae79c1e8a167b863b0d44.tbin",
+    "sha256": "bd7d6a0a09413c439baa99e64d37c8fc5b3ef565fd99019a3ead3c7f4831c499",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04089599847793579,
+    "samples_milliseconds": [
+      0.04198399931192398,
+      0.04089599847793579,
+      0.04095999896526337,
+      0.04089599847793579,
+      0.04076800122857094,
+      0.04095999896526337,
+      0.03993599861860275
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "96c8269a4283137de96a3b7a.tbin",
+    "sha256": "e2477aaccf65a08d90322c875881c43266f0877b304d23cd8099732404c77ab4",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04105599969625473,
+    "samples_milliseconds": [
+      0.043007999658584595,
+      0.04188799858093262,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.04105599969625473,
+      0.04095999896526337,
+      0.04182400181889534
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "f0521b7fee7869cca9f598b8.tbin",
+    "sha256": "7f191efa3cf4449fd8bb5557d40bb6c1226ba21274a9c54921c39ee4353f18e0",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03891199827194214,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "b2a2d08d3b7b17e949c9c0b5.tbin",
+    "sha256": "a375bbce382dbff3725466b4e9836c282d49b1da332a28647432b42f359509e0",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.040863998234272,
+    "samples_milliseconds": [
+      0.04198399931192398,
+      0.03993599861860275,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.040863998234272,
+      0.03993599861860275,
+      0.03993599861860275
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "3b8bba2b05719b99e3a6bb6c.tbin",
+    "sha256": "f0c538570149f2009a78f6cdea19141d1174410529687ffa734cad6db23c9fa1",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03379200026392937,
+    "samples_milliseconds": [
+      0.03481600061058998,
+      0.03388800099492073,
+      0.03481600061058998,
+      0.03379200026392937,
+      0.03276799991726875,
+      0.03379200026392937,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "25ad6aafc4d27fcb52284b52.tbin",
+    "sha256": "07c05bd82d9b85d52849e715894c48e1ef4df15f38487cbe6c8b6f38cdd611fc",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03481600061058998,
+    "samples_milliseconds": [
+      0.03481600061058998,
+      0.03379200026392937,
+      0.03481600061058998,
+      0.03379200026392937,
+      0.03481600061058998,
+      0.03481600061058998,
+      0.03276799991726875
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "df3719f055cafbec30d39395.tbin",
+    "sha256": "f68cc4770012cda3358d9fd9bf84e5ff1f0d55292df9a42ce484a43db66cf6b9",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03574400022625923,
+    "samples_milliseconds": [
+      0.03574400022625923,
+      0.03481600061058998,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.03481600061058998,
+      0.03481600061058998
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "9f3a27d1e28b7d21366ff0c1.tbin",
+    "sha256": "81c3fdf76ea10858f6094ad386e2ffed7fb66085d9d8152b42ba0b78b4239a39",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.036896001547575,
+      0.03686400130391121,
+      0.03564799949526787,
+      0.03686400130391121,
+      0.035840000957250595,
+      0.035840000957250595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "b5026f73874fcbd4d46b618a.tbin",
+    "sha256": "58fc4c7a48a924956ed7865a13087e90f5c199092772a8e852289d885335bc04",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03705599904060364,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "4ec8bd365a82bfe5ee1c6c2d.tbin",
+    "sha256": "1af349a620c0c6b28c78215288bdc3635d81f2c227435f90b315d4c30a343010",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03686400130391121,
+    "samples_milliseconds": [
+      0.03891199827194214,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03686400130391121,
+      0.03667199984192848,
+      0.037696000188589096,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "3a2cf4f33ef16990bb1242d3.tbin",
+    "sha256": "58ac3fc106332bf898145d72237b96835440339727ea365ea00ff8df423f0e45",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.035840000957250595,
+    "samples_milliseconds": [
+      0.03596799820661545,
+      0.03481600061058998,
+      0.03590400144457817,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.035840000957250595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "373659158c2f88eeee5dd7bf.tbin",
+    "sha256": "7d000e243d49e97358ca7dbb7a3f6f40d1863b2ac00e6445c3281dc2de94dc6a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.035840000957250595,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.03481600061058998,
+      0.035840000957250595,
+      0.035679999738931656,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 3584,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "18694a79af7665f7481e7a13.tbin",
+    "sha256": "1e841dc0dbe15645fd9a2c5e0f7dc5dbea38ac896c58a9daa520af24dc1cfe92",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02252800017595291,
+    "samples_milliseconds": [
+      0.023552000522613525,
+      0.02252800017595291,
+      0.02457600086927414,
+      0.02364799939095974,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.02252800017595291
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 3584,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "03d157d16e8f5ee0497c8502.tbin",
+    "sha256": "462c066cb6d0245a638d3f1d23ccae8e32e9c2f60e8440796c76e0894f51a2cb",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02457600086927414,
+    "samples_milliseconds": [
+      0.02457600086927414,
+      0.02659199945628643,
+      0.02457600086927414,
+      0.023552000522613525,
+      0.025599999353289604,
+      0.023552000522613525,
+      0.02457600086927414
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 3584,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8fa1312823c7b2f082e26c2e.tbin",
+    "sha256": "f1ded3c3357124d3ecb450d3c18eba1518db5b9453d8c64166f9ca23a319b052",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.025599999353289604,
+    "samples_milliseconds": [
+      0.028672000393271446,
+      0.025599999353289604,
+      0.026623999699950218,
+      0.025599999353289604,
+      0.025599999353289604,
+      0.02457600086927414,
+      0.025599999353289604
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 2048,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "08d754946a21c0e60da0c773.tbin",
+    "sha256": "c4156cc1aa3849276a9d23fcdeaaf485932650d6ee126ad006d753f0adb102cd",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.01228800043463707,
+    "samples_milliseconds": [
+      0.013311999849975109,
+      0.01228800043463707,
+      0.01228800043463707,
+      0.01228800043463707,
+      0.013311999849975109,
+      0.01228800043463707,
+      0.014336000196635723
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 2048,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8603e07ed1148c451d2382b8.tbin",
+    "sha256": "0acbf0e4040b945225517b3f623f952cd5556904d17997ac1e2cc8aaccee4018",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.01228800043463707,
+    "samples_milliseconds": [
+      0.013311999849975109,
+      0.01228800043463707,
+      0.012256000190973282,
+      0.01228800043463707,
+      0.013311999849975109,
+      0.01228800043463707,
+      0.013311999849975109
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 32,
+      "k": 2048,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "a0a443bf919a7da38d5f046f.tbin",
+    "sha256": "31a1962cdf92432f4d93b41b4383a3bad5a91b528cbfe7560cf4f9e6608102f8",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.01228800043463707,
+    "samples_milliseconds": [
+      0.01228800043463707,
+      0.012384000234305859,
+      0.013311999849975109,
+      0.01228800043463707,
+      0.013183999806642532,
+      0.01228800043463707,
+      0.01228800043463707
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 32,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 8
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "e19bdce6b0dfb9d031e5f2cf.tbin",
+    "sha256": "c8519115702cd69c862d10124813908b9c18a1462c7099edfb222701c762a638",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.11055999994277954,
+    "samples_milliseconds": [
+      0.10649599879980087,
+      0.11059200018644333,
+      0.11059200018644333,
+      0.11055999994277954,
+      0.10751999914646149,
+      0.11078400164842606,
+      0.10956799983978271
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 32,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 16
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "b1612824fcf4fd6eaeaa8a4a.tbin",
+    "sha256": "b1359182bfff34f0227ed8dc486a14fa54fa94c3214d73b7ebca9ac8d0745e0d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.11472000181674957,
+    "samples_milliseconds": [
+      0.11878400295972824,
+      0.11161600053310394,
+      0.11472000181674957,
+      0.11683200299739838,
+      0.11468800157308578,
+      0.11776000261306763,
+      0.11468800157308578
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 32,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 32
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "1422be7dab609d1437970375.tbin",
+    "sha256": "51f04cc695abb5d18fc8e9073767021d242a878f68a05bbb2381c30c6b30a4b2",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.1157120019197464,
+    "samples_milliseconds": [
+      0.11776000261306763,
+      0.11264000087976456,
+      0.11878400295972824,
+      0.11468800157308578,
+      0.1157120019197464,
+      0.11673600226640701,
+      0.11379200220108032
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 32,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 64
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "1769fe1a44ee431042df38d8.tbin",
+    "sha256": "ed884efb6c7d823d8b584384761ddb919e8e712352aa640da347d9ff8316255a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.11177600175142288,
+    "samples_milliseconds": [
+      0.11059200018644333,
+      0.11059200018644333,
+      0.11161600053310394,
+      0.11468800157308578,
+      0.11264000087976456,
+      0.11177600175142288,
+      0.11264000087976456
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "2ddca1bf22d0847d5d8aacb1.tbin",
+    "sha256": "63b51b4484c11c150a7f48db31f686dcdbec9aefc3bcf9fb6ba954aba8305cee",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.0895359516143799,
+    "samples_milliseconds": [
+      1.0895359516143799,
+      1.0907200574874878,
+      1.0903680324554443,
+      1.0895359516143799,
+      1.0885119438171387,
+      1.0914560556411743,
+      1.0895359516143799
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "dd6db34e4ad98b417194aa13.tbin",
+    "sha256": "90d113b7e06d675bd004c74a2e63492efa83291abb458d542b46f86c2f203ed1",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9902080297470093,
+    "samples_milliseconds": [
+      0.9861119985580444,
+      0.9891840219497681,
+      0.9922559857368469,
+      0.9902080297470093,
+      0.9903039932250977,
+      0.9902080297470093,
+      0.9922559857368469
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "16609f7eb316341c356f552c.tbin",
+    "sha256": "50ddd717ffef047e286db8b960ff21a32c5ca662722758e56abb48ff98f7069a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9953280091285706,
+    "samples_milliseconds": [
+      0.9922559857368469,
+      0.9913920164108276,
+      0.997376024723053,
+      0.9953280091285706,
+      0.9953280091285706,
+      0.9994239807128906,
+      0.9922559857368469
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "cc811067bbf69e22f5138bc9.tbin",
+    "sha256": "9ffad2cec857eda3dd80970243609e19b346d3008fc4fb21e05bdc9b5cd2660c",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.06496000289917,
+    "samples_milliseconds": [
+      1.06496000289917,
+      1.0629119873046875,
+      1.0680320262908936,
+      1.06496000289917,
+      1.0659840106964111,
+      1.0598399639129639,
+      1.060863971710205
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "77b95595beeca21896b67ac6.tbin",
+    "sha256": "75c5436c1ed0c6ad433ec9ae09719cb492530bff3699c3e01383c1c5efa47d99",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.0680320262908936,
+    "samples_milliseconds": [
+      1.070080041885376,
+      1.0670080184936523,
+      1.0711040496826172,
+      1.0721280574798584,
+      1.0680320262908936,
+      1.0670080184936523,
+      1.0680320262908936
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c2b5cd4570bf44d8555da658.tbin",
+    "sha256": "427a629f3e7f050c16b23c0ed6aeef0a83b727762358ad0e049f0bd6019fbda2",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.1038719415664673,
+    "samples_milliseconds": [
+      1.1059199571609497,
+      1.1038719415664673,
+      1.1038719415664673,
+      1.1048959493637085,
+      1.1048959493637085,
+      1.1008000373840332,
+      1.0987520217895508
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "dd6a0d6259ab36fb28bd180b.tbin",
+    "sha256": "0e59ab5673a741ac6161f67c333d96ca7b5b10984b9c92b05a32a43a2820ed4a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.0516480207443237,
+    "samples_milliseconds": [
+      1.0516480207443237,
+      1.0506240129470825,
+      1.052672028541565,
+      1.0507839918136597,
+      1.0516480207443237,
+      1.0496000051498413,
+      1.052672028541565
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "b47cb721a7c8e7f636e2c6cf.tbin",
+    "sha256": "159ac99d95e54872ee3ca50fe000d80a2b63497a262cd21913122e26717515d3",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.0792959928512573,
+    "samples_milliseconds": [
+      1.07315194606781,
+      1.0792959928512573,
+      1.082368016242981,
+      1.082368016242981,
+      1.0751999616622925,
+      1.0752960443496704,
+      1.0813440084457397
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "1af7c695418f7c33540936f4.tbin",
+    "sha256": "b21d5777b2d8c51fc815074cb956a10d3cb37c3e8995a0bcd4738dbe7ddfef7f",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04710400104522705,
+    "samples_milliseconds": [
+      0.04915200173854828,
+      0.04710400104522705,
+      0.04915200173854828,
+      0.04608000069856644,
+      0.04608000069856644,
+      0.04710400104522705,
+      0.04710400104522705
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "6d66a849d21a47ecfdf48f5e.tbin",
+    "sha256": "639bb6829c806479497bb02f4697b9d8eeaa2b40f1ccb7fcd205b8c4e1bcaf80",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.043007999658584595,
+    "samples_milliseconds": [
+      0.043007999658584595,
+      0.04297599941492081,
+      0.043007999658584595,
+      0.04198399931192398,
+      0.043007999658584595,
+      0.043007999658584595,
+      0.04214400053024292
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "378cbb7a54fc71df2df06863.tbin",
+    "sha256": "814c7c4ae396f0a779451faec3903cde6996ae91a4e3d0beb9f8a4eb73c438d8",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04095999896526337,
+    "samples_milliseconds": [
+      0.04095999896526337,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.04095999896526337,
+      0.04198399931192398,
+      0.04095999896526337,
+      0.041120000183582306
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "3a49825c2df5673f2a0a593c.tbin",
+    "sha256": "007fab612a24f42ea0b376ae600571504208d8d08dce95f33ecfe6594b6b1229",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04915200173854828,
+    "samples_milliseconds": [
+      0.049215998500585556,
+      0.04915200173854828,
+      0.04915200173854828,
+      0.048128001391887665,
+      0.048128001391887665,
+      0.04915200173854828,
+      0.04915200173854828
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "9c5b48c2c5e9a17818bd3e86.tbin",
+    "sha256": "db545bace30e07efcc5e77d2e3abfd9a0b7803f5abf982cb483d92db12b870a9",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04505600035190582,
+    "samples_milliseconds": [
+      0.04505600035190582,
+      0.04608000069856644,
+      0.04403200000524521,
+      0.04505600035190582,
+      0.04403200000524521,
+      0.04499199986457825,
+      0.04608000069856644
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "39dc024dc638ef4a03eec9ab.tbin",
+    "sha256": "054dbd9b1a74faa304d0b3ce6f05d2a5c793e02937ae2e2fad7ec7a8e6ea53e7",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04403200000524521,
+    "samples_milliseconds": [
+      0.04505600035190582,
+      0.04403200000524521,
+      0.04403200000524521,
+      0.04403200000524521,
+      0.043007999658584595,
+      0.04403200000524521,
+      0.04403200000524521
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "4c39b6836b6c1fcfcb2402e7.tbin",
+    "sha256": "c1e50b0b21b621857b8cf897a0c92f13db91963c8584a3e075e8ea34cc6f128e",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.048128001391887665,
+    "samples_milliseconds": [
+      0.050175998359918594,
+      0.048128001391887665,
+      0.04710400104522705,
+      0.04915200173854828,
+      0.048128001391887665,
+      0.04899200052022934,
+      0.048128001391887665
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "5b12b3040ad5c4f954a09122.tbin",
+    "sha256": "1da6b683fea42c1e836cacf46979ae6cbc074c4bd6de1b4e77709cf565bfdb91",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04403200000524521,
+    "samples_milliseconds": [
+      0.04403200000524521,
+      0.04403200000524521,
+      0.04307200014591217,
+      0.04403200000524521,
+      0.04403200000524521,
+      0.043007999658584595,
+      0.043007999658584595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "20f4f94e6b2d37b4b7ca7195.tbin",
+    "sha256": "6e46d5e9ee6dea312049e7790622fd6ff9f75d7e4649931ae53302af09362f61",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04403200000524521,
+    "samples_milliseconds": [
+      0.043007999658584595,
+      0.04403200000524521,
+      0.043007999658584595,
+      0.04403200000524521,
+      0.04505600035190582,
+      0.04403200000524521,
+      0.043007999658584595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "e831a67a5638d643f8481322.tbin",
+    "sha256": "f9097b76b35a637f1deab92c45e5789d251c8309824ec00f0e296bbaada29d7c",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.043007999658584595,
+    "samples_milliseconds": [
+      0.04505600035190582,
+      0.04710400104522705,
+      0.04403200000524521,
+      0.04095999896526337,
+      0.043007999658584595,
+      0.04214400053024292,
+      0.043007999658584595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "afee716bb1210dc23d7ecba8.tbin",
+    "sha256": "b0593b6f589bc0d3bee4cddf3f6707bedea0e33363e285c9fcd41d962587888a",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03891199827194214,
+    "samples_milliseconds": [
+      0.03993599861860275,
+      0.03891199827194214,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03788800165057182,
+      0.03891199827194214,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "9a8aea5c39e297f5ab4c31ac.tbin",
+    "sha256": "d4363f6ab45c2fe14e44d8ea33148caf53133e9f87ef9fdf41cd124011861815",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.043007999658584595,
+    "samples_milliseconds": [
+      0.04403200000524521,
+      0.043007999658584595,
+      0.04505600035190582,
+      0.04198399931192398,
+      0.04198399931192398,
+      0.04198399931192398,
+      0.043007999658584595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "843bd44cdab0f17421bb6736.tbin",
+    "sha256": "8eefe1dc3cf2044bb4b2bcd74e98503fca276f8f7296970e860fab8c144b6176",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03907199949026108,
+    "samples_milliseconds": [
+      0.03891199827194214,
+      0.03993599861860275,
+      0.0398080013692379,
+      0.03907199949026108,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.04095999896526337
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "2190121c32cc9431b33bd626.tbin",
+    "sha256": "912e2e54db4eb91154cc67cf5ad47e1eb5aa2976733b9fcc67c4fe8045623ebd",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03891199827194214,
+    "samples_milliseconds": [
+      0.03993599861860275,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.038943998515605927,
+      0.03891199827194214,
+      0.03788800165057182
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "17b516fee83aeb4f63666dc5.tbin",
+    "sha256": "03e71caa1965e9862ca6ed6a5c37cf4900a11dd67365cb5e9c4cd93e9e119981",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04608000069856644,
+    "samples_milliseconds": [
+      0.04710400104522705,
+      0.04505600035190582,
+      0.04505600035190582,
+      0.04710400104522705,
+      0.04403200000524521,
+      0.04608000069856644,
+      0.04710400104522705
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "786aa0d45066efec2952cc93.tbin",
+    "sha256": "b8b796de6e18b083a0d610fa68284d780f44584f99d3fafa9a60892643ba18e4",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03891199827194214,
+    "samples_milliseconds": [
+      0.03788800165057182,
+      0.03891199827194214,
+      0.03891199827194214,
+      0.03788800165057182,
+      0.03779200091958046,
+      0.03891199827194214,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 3584,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "0e8cfb5d86fdaabdc2470818.tbin",
+    "sha256": "568848d185d5e9edeeed6742861dd360517351ab2af327640a5b4e644718f315",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03993599861860275,
+    "samples_milliseconds": [
+      0.04403200000524521,
+      0.04198399931192398,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03993599861860275,
+      0.03788800165057182,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 3584,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "2a66647e9e94cacb910743db.tbin",
+    "sha256": "4f2ec11022929f9c9561867e15f2a2e3cdc7270ce45d8c5c69da3dd770c1be6c",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03488000109791756,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.035840000957250595,
+      0.03686400130391121,
+      0.03276799991726875,
+      0.03481600061058998,
+      0.03488000109791756,
+      0.03481600061058998
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 3584,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c76511aba1e7f122d4b2834c.tbin",
+    "sha256": "a428099e1fd05fd2cb1fb95fb51c866b91e6260457d4ef1f472cdd931b3130e9",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03379200026392937,
+    "samples_milliseconds": [
+      0.03379200026392937,
+      0.03276799991726875,
+      0.03481600061058998,
+      0.03379200026392937,
+      0.03379200026392937,
+      0.03276799991726875,
+      0.03379200026392937
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 2048,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7e6d60caf81f7fb17f2b9f4e.tbin",
+    "sha256": "6bc4e1afe36048a232579f06f16b3d62dd002a54cab4a6c909d127e41cd590f5",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02348800003528595,
+    "samples_milliseconds": [
+      0.023552000522613525,
+      0.02252800017595291,
+      0.023552000522613525,
+      0.02252800017595291,
+      0.02457600086927414,
+      0.02252800017595291,
+      0.02348800003528595
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 2048,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "b9902607f99ccc67243df2dc.tbin",
+    "sha256": "9ce73edcb1bdd74396eac91a49bac6ba54f6dcd6de5b613351a92e9c12d6540c",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.02160000056028366,
+    "samples_milliseconds": [
+      0.02160000056028366,
+      0.02252800017595291,
+      0.021503999829292297,
+      0.02252800017595291,
+      0.02252800017595291,
+      0.021503999829292297,
+      0.020479999482631683
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 128,
+      "k": 2048,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7f1f1eeefd07435bb54a2774.tbin",
+    "sha256": "c7d25fb91b63baa2ededf1326fa58e87e536e430f106231c51b5d07b96d1f9a2",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.020479999482631683,
+    "samples_milliseconds": [
+      0.020479999482631683,
+      0.020479999482631683,
+      0.021503999829292297,
+      0.021503999829292297,
+      0.020479999482631683,
+      0.021503999829292297,
+      0.020479999482631683
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 128,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 8
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "5377cfabdab73e6cbaf13ed9.tbin",
+    "sha256": "17004130b355f9078a52fc72b111483ca4a16a5af7559bf757b7d8361962913f",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.4628480076789856,
+    "samples_milliseconds": [
+      0.477183997631073,
+      0.4731839895248413,
+      0.46592000126838684,
+      0.4628480076789856,
+      0.4546560049057007,
+      0.450655996799469,
+      0.447488009929657
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 128,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 16
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "67ff842091bcc55a367db977.tbin",
+    "sha256": "be20f87fc196a943f4ec847275105e25d50bf39fd3a3cbe7879c9074e15cdfd7",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.4628480076789856,
+    "samples_milliseconds": [
+      0.4792320132255554,
+      0.4577920138835907,
+      0.4628480076789856,
+      0.45977601408958435,
+      0.4628480076789856,
+      0.46303999423980713,
+      0.45664000511169434
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 128,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 32
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "cadb7f34144c2e38803cfe30.tbin",
+    "sha256": "6ec69446418ec02d7409e13b43abd79e14330091648fef59d5d70f1c81fcc2d0",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.45875200629234314,
+    "samples_milliseconds": [
+      0.47513601183891296,
+      0.4638719856739044,
+      0.44755199551582336,
+      0.4589119851589203,
+      0.4536319971084595,
+      0.4567039906978607,
+      0.45875200629234314
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 128,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 64
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "9abcc11a19527c11e71676e5.tbin",
+    "sha256": "52130ff6fe9da9f867b9180be1ac3a94f398e5e69cb661ace7f308f27fa59e13",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.449535995721817,
+    "samples_milliseconds": [
+      0.449535995721817,
+      0.4485119879245758,
+      0.45260798931121826,
+      0.4505600035190582,
+      0.45260798931121826,
+      0.4485119879245758,
+      0.449535995721817
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "a0da7cc98565f45bb3084da2.tbin",
+    "sha256": "3736f0866bbe984dbc3350525fc93e58a50ca684fa95049780713620cfd1e654",
+    "relative_rms": 0.0,
+    "median_milliseconds": 2.0592639446258545,
+    "samples_milliseconds": [
+      2.0592639446258545,
+      2.0592639446258545,
+      2.061311960220337,
+      2.0602879524230957,
+      2.0582399368286133,
+      2.0582399368286133,
+      2.0592639446258545
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "d0f56320b9b453dfacbedff4.tbin",
+    "sha256": "5aa1049a9936e3b36778c21e7d954a4a2d990eda9959d66cf2a9225ceb0ea061",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.294335961341858,
+    "samples_milliseconds": [
+      1.2963839769363403,
+      1.294335961341858,
+      1.294335961341858,
+      1.2933119535446167,
+      1.2912640571594238,
+      1.3004800081253052,
+      1.294335961341858
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "ce3e417296b337762db350bc.tbin",
+    "sha256": "fdc8576bb9b47d56fe6726f67d705e6ae299282d121661e566779214a0f5a315",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.154047966003418,
+    "samples_milliseconds": [
+      1.159168004989624,
+      1.1530239582061768,
+      1.1550079584121704,
+      1.1499520540237427,
+      1.1499520540237427,
+      1.154047966003418,
+      1.154047966003418
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c2d7bff49356c861ae64a44f.tbin",
+    "sha256": "c3a4b108a5e6c46a6688bd95277f73eee1262063e645a55913769a3685cbee71",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.87391996383667,
+    "samples_milliseconds": [
+      1.8759360313415527,
+      1.8760319948196411,
+      1.8708479404449463,
+      1.8749439716339111,
+      1.87391996383667,
+      1.87391996383667,
+      1.8708479404449463
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "eebbd3d51c32efaf9196303b.tbin",
+    "sha256": "54cc06508ad7d66f24a3ebc0dd8dba04093b9255e1ae71664cb0f3576c9c89c3",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.2380160093307495,
+    "samples_milliseconds": [
+      1.2175359725952148,
+      1.2462079524993896,
+      1.244223952293396,
+      1.2380160093307495,
+      1.2431360483169556,
+      1.235967993736267,
+      1.2379839420318604
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "87ce5c7a9eb7dc2c6b5443f3.tbin",
+    "sha256": "e24be333f13ef17ab91650b1b7b769a29255733371a61c7655cfbf3cd414d0cc",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.3096959590911865,
+    "samples_milliseconds": [
+      1.3107199668884277,
+      1.3066240549087524,
+      1.3056000471115112,
+      1.3087040185928345,
+      1.3096959590911865,
+      1.3148159980773926,
+      1.3137919902801514
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "40c0726c17230dfb7285db65.tbin",
+    "sha256": "cef042e40e27a10cfdce52f6b624a4b7802578cc22699f391e9390b34320f3fb",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.2995519638061523,
+    "samples_milliseconds": [
+      1.300320029258728,
+      1.2995519638061523,
+      1.2984319925308228,
+      1.2984319925308228,
+      1.2984319925308228,
+      1.30457603931427,
+      1.3025280237197876
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "head",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 248320,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "15449e15a63c8d477772e2d0.tbin",
+    "sha256": "d171270003b9c1dc531c902f07889fdff2daea168179459c3a15ea1e4b6db7fd",
+    "relative_rms": 0.0,
+    "median_milliseconds": 1.2493120431900024,
+    "samples_milliseconds": [
+      1.2409600019454956,
+      1.2564480304718018,
+      1.2493120431900024,
+      1.2472000122070312,
+      1.2501120567321777,
+      1.2513279914855957,
+      1.2472319602966309
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "48bf1a0865cc31d833851e86.tbin",
+    "sha256": "a6169a3180cd921e5256f6c2ec35e565502e9dd4b1c44fbcca44e53416121496",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.08489599823951721,
+    "samples_milliseconds": [
+      0.08499199897050858,
+      0.0870399996638298,
+      0.08499199897050858,
+      0.08396799862384796,
+      0.08489599823951721,
+      0.08294399827718735,
+      0.08396799862384796
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "f4e75b9c93d0b9f333c6733b.tbin",
+    "sha256": "a7a13172c38bbdd5795d71b15fccd2c60b02d3b9693f6766de84a2f2abe6df7e",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.060416001826524734,
+    "samples_milliseconds": [
+      0.06451199948787689,
+      0.0655359998345375,
+      0.06143999844789505,
+      0.060416001826524734,
+      0.060416001826524734,
+      0.058368001133203506,
+      0.060416001826524734
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "62b694a09f7f406e4ce302a0.tbin",
+    "sha256": "3e171b31e8f7a377b628803f69bdd61e3c028fd3a97b4a21381fc036f26ace7e",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.06656000018119812,
+    "samples_milliseconds": [
+      0.06656000018119812,
+      0.06451199948787689,
+      0.0655359998345375,
+      0.06656000018119812,
+      0.06758400052785873,
+      0.062463998794555664,
+      0.06656000018119812
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "1787571f303771b485730892.tbin",
+    "sha256": "d8d0126241e0ade33ec45f6cfebcc377986a2c582fa19fb6eaca0bd2e95b7f99",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.08294399827718735,
+    "samples_milliseconds": [
+      0.08396799862384796,
+      0.08294399827718735,
+      0.08089599758386612,
+      0.0798719972372055,
+      0.08191999793052673,
+      0.08396799862384796,
+      0.08294399827718735
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "91282a8ae75c822162aee182.tbin",
+    "sha256": "e9df9b6da1dbc3539dff1f220daeed78ea4307ea6ce18eeae074094817963acf",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.062463998794555664,
+    "samples_milliseconds": [
+      0.0655359998345375,
+      0.06143999844789505,
+      0.0623680017888546,
+      0.0655359998345375,
+      0.062463998794555664,
+      0.062463998794555664,
+      0.06143999844789505
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "88b7bb66d2dc4fa65a651447.tbin",
+    "sha256": "17fe87ab98bc2e99fe9db686de54a7b23d89634d2542026f700a3de29386c989",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.05427199974656105,
+    "samples_milliseconds": [
+      0.05427199974656105,
+      0.053247999399900436,
+      0.05427199974656105,
+      0.05427199974656105,
+      0.0533440001308918,
+      0.053247999399900436,
+      0.05427199974656105
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "20954c785ef89411cd7c1263.tbin",
+    "sha256": "7e536c83a0da1a332d6af1e5dd247e3bd415aa682057c78f690ebb8a880364a0",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.06348799914121628,
+    "samples_milliseconds": [
+      0.0644799992442131,
+      0.06335999816656113,
+      0.062463998794555664,
+      0.0605119988322258,
+      0.06348799914121628,
+      0.06348799914121628,
+      0.06451199948787689
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "input",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 8224,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "01c2b8bb3fe3018ad575bb4f.tbin",
+    "sha256": "033b798cedbc429f304c3fe68492e02643b8790ffe93175279e84b70344e2171",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.053247999399900436,
+    "samples_milliseconds": [
+      0.05315199866890907,
+      0.053247999399900436,
+      0.05427199974656105,
+      0.05305600166320801,
+      0.053247999399900436,
+      0.053247999399900436,
+      0.05427199974656105
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "36a479a730be366b42bc6eb6.tbin",
+    "sha256": "f7bb6b246a4a698e32d373516fb57aa4618f7950de16497cf2825e5066448e84",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.07075200229883194,
+    "samples_milliseconds": [
+      0.07168000191450119,
+      0.07065600156784058,
+      0.07075200229883194,
+      0.06860800087451935,
+      0.07168000191450119,
+      0.07065600156784058,
+      0.07168000191450119
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "c2a70236fab3f16472fb6148.tbin",
+    "sha256": "1e6ea4655782f47b49070fda4f295e32b9e258bd05d4a8d52d0ecb6360d6d335",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.05734400078654289,
+    "samples_milliseconds": [
+      0.060416001826524734,
+      0.05939200147986412,
+      0.05734400078654289,
+      0.05632000043988228,
+      0.05632000043988228,
+      0.05632000043988228,
+      0.058368001133203506
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8446f97af48639f8ffed419b.tbin",
+    "sha256": "712a4ec344deaac082c4f4cea3cc0ce933c216a34d3824b8c3ae3dad296ad08b",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.05222399905323982,
+    "samples_milliseconds": [
+      0.05427199974656105,
+      0.053247999399900436,
+      0.05119999870657921,
+      0.04915200173854828,
+      0.05721599981188774,
+      0.05222399905323982,
+      0.050175998359918594
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 16,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "393ed0a17687cf752deadbe6.tbin",
+    "sha256": "cf201dd4c1b0d23c2fff55f583b4795f381d9589b629f7142e4591e030f3cd65",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.07168000191450119,
+    "samples_milliseconds": [
+      0.07372800260782242,
+      0.0727040022611618,
+      0.07168000191450119,
+      0.07174400240182877,
+      0.06860800087451935,
+      0.07168000191450119,
+      0.07168000191450119
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "085bf697a0c4d74b52d6a73c.tbin",
+    "sha256": "4d278a964f5a1f5a654bb6ba41233123fcea60c441b9ffb7294ea839605a2c78",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.052191998809576035,
+    "samples_milliseconds": [
+      0.05222399905323982,
+      0.05222399905323982,
+      0.052191998809576035,
+      0.05222399905323982,
+      0.05206400156021118,
+      0.05119999870657921,
+      0.05119999870657921
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 128,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "24e61831a8bcb953d642247f.tbin",
+    "sha256": "ba03dc9ab18db5d45084fd5971e26037ecf563a946058f9de923f2086b35af67",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04608000069856644,
+    "samples_milliseconds": [
+      0.04608000069856644,
+      0.04608000069856644,
+      0.04608000069856644,
+      0.04505600035190582,
+      0.04608000069856644,
+      0.048128001391887665,
+      0.04809600114822388
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 32,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "0eff341e3d79c15adbd2bd3a.tbin",
+    "sha256": "cc0c2b3649049c231299bfb6cb843554b48a3f55e12b961601ef6cdc70973ea3",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.05734400078654289,
+    "samples_milliseconds": [
+      0.05939200147986412,
+      0.058368001133203506,
+      0.05632000043988228,
+      0.055296000093221664,
+      0.05939200147986412,
+      0.05734400078654289,
+      0.057312000542879105
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "ffn",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 1024,
+      "o": 7168,
+      "m": 64,
+      "n": 64,
+      "bk": 64,
+      "parts": 1
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "94f1305fe4f19ae7fbee7c68.tbin",
+    "sha256": "1b078eed1e5603bd4102899d03b3884a878907c70225327d23b223a5318a513d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04700800031423569,
+    "samples_milliseconds": [
+      0.048128001391887665,
+      0.048128001391887665,
+      0.04608000069856644,
+      0.04608000069856644,
+      0.04700800031423569,
+      0.04608000069856644,
+      0.048128001391887665
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 3584,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "fb8c6ddeb41c57a389b2b8f3.tbin",
+    "sha256": "35bb6866ff965983811ee040ce441e9253ae90cc797490f2f184336648c98fb6",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.06656000018119812,
+    "samples_milliseconds": [
+      0.06656000018119812,
+      0.06656000018119812,
+      0.06675200164318085,
+      0.06451199948787689,
+      0.06656000018119812,
+      0.06656000018119812,
+      0.06656000018119812
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 3584,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "8f4023c4118949bda43fb390.tbin",
+    "sha256": "d9c93582dc350a50f0e71399d08ce9687fae947991e454bd523d22c75958aa7f",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.055296000093221664,
+    "samples_milliseconds": [
+      0.055296000093221664,
+      0.057151999324560165,
+      0.05632000043988228,
+      0.055296000093221664,
+      0.05427199974656105,
+      0.05632000043988228,
+      0.05427199974656105
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "down",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 3584,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "d6fa34daa8f519aeeab71df8.tbin",
+    "sha256": "ec9672109f638ff7b7e557e74f73a426c1646ed9fb59419e016e2fa0e1b6179d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.04915200173854828,
+    "samples_milliseconds": [
+      0.05119999870657921,
+      0.05119999870657921,
+      0.04915200173854828,
+      0.048128001391887665,
+      0.04620800167322159,
+      0.04915200173854828,
+      0.050175998359918594
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 2048,
+      "o": 1024,
+      "m": 16,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "52bcbfe1bc714c7f85b5e8e0.tbin",
+    "sha256": "11d64723bc40efeb12d0ce0da61e65442f073ee28dc5eccc5e59e7aa9c135ecf",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.043007999658584595,
+    "samples_milliseconds": [
+      0.04608000069856644,
+      0.04608000069856644,
+      0.04198399931192398,
+      0.04403200000524521,
+      0.043007999658584595,
+      0.04198399931192398,
+      0.03993599861860275
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 2048,
+      "o": 1024,
+      "m": 32,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "47595d130f1625f0b192750c.tbin",
+    "sha256": "92b534f3410821399b08657924bc79685ff2010c05f38797eefd62efca1c6bed",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.03779200091958046,
+    "samples_milliseconds": [
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03779200091958046,
+      0.03686400130391121,
+      0.03788800165057182,
+      0.03686400130391121,
+      0.03891199827194214
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "out",
+    "kind": "split_linear",
+    "parameters": {
+      "r": 256,
+      "k": 2048,
+      "o": 1024,
+      "m": 64,
+      "n": 64,
+      "bk": 128,
+      "parts": 8
+    },
+    "module": "tensor_llm.qwen35.dense.projections",
+    "factory": "make_kernel",
+    "path": "7a49978cfb1763829c4e3a8d.tbin",
+    "sha256": "de110b3ad5ef4f101253339c082a9fc674f0adfa4924cda62f4c410c2616facd",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.035840000957250595,
+    "samples_milliseconds": [
+      0.035840000957250595,
+      0.035840000957250595,
+      0.035840000957250595,
+      0.03884800150990486,
+      0.037856001406908035,
+      0.03686400130391121,
+      0.03481600061058998
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 256,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 8
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "c553652eaafef04ff2835436.tbin",
+    "sha256": "bf33c9142a79b799354633da3684a2e8884478336a585dfb967fd8d429f02eb8",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9113600254058838,
+    "samples_milliseconds": [
+      0.9144319891929626,
+      0.9164800047874451,
+      0.9113600254058838,
+      0.9125440120697021,
+      0.907263994216919,
+      0.9103360176086426,
+      0.9113600254058838
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 256,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 16
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "137babed51b9e1d7c092807c.tbin",
+    "sha256": "dde67f081b476074672f87afd414f022aeec3dc0f0e40fe89f0ffb1417d8c078",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9328640103340149,
+    "samples_milliseconds": [
+      0.9359359741210938,
+      0.9379839897155762,
+      0.9318400025367737,
+      0.9308159947395325,
+      0.9307519793510437,
+      0.9328640103340149,
+      0.9338880181312561
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 256,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 32
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "b677874e46129725ca607b71.tbin",
+    "sha256": "44c615703bfa9629934a63f2c7027503e6bf547546607bb3845b5428cc6ba21d",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.9400320053100586,
+    "samples_milliseconds": [
+      0.9391679763793945,
+      0.9431040287017822,
+      0.9410560131072998,
+      0.9400320053100586,
+      0.9349120259284973,
+      0.9297919869422913,
+      0.9400320053100586
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  },
+  {
+    "family": "gdn",
+    "kind": "gdn_scan",
+    "parameters": {
+      "slots": 256,
+      "chunk": 1,
+      "pool": 256,
+      "heads": 16,
+      "d": 128,
+      "tile": 64
+    },
+    "module": "tensor_llm.qwen35.dense.kernels",
+    "factory": "make_kernel",
+    "path": "72b77da0d9fc146d2875f7ec.tbin",
+    "sha256": "8702ae53af2461c4bc937ecb5f2fbc8c3310c5efc954c0cee5610aa09d8f2b25",
+    "relative_rms": 0.0,
+    "median_milliseconds": 0.8970239758491516,
+    "samples_milliseconds": [
+      0.894976019859314,
+      0.8970239758491516,
+      0.9000319838523865,
+      0.9011200070381165,
+      0.894976019859314,
+      0.9000959992408752,
+      0.8970239758491516
+    ],
+    "timing": "captured external events after a 96 MiB cache flush; not model throughput"
+  }
+]
