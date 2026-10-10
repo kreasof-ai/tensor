@@ -17,7 +17,10 @@ def prepare_compact(prepared):
     os.chdir('/workspace')
     volume.reload()
     hashes = implementation_hashes()
-    identity = hashlib.sha256(json.dumps(hashes, sort_keys=True).encode()).hexdigest()[:16]
+    control=Path(prepared['paths']['prefill'])/'prefill.json'
+    identity = hashlib.sha256(json.dumps(dict(implementation=hashes,
+        control_manifest_sha256=hashlib.sha256(control.read_bytes()).hexdigest(),
+        base_source_identity=prepared['source_identity']),sort_keys=True).encode()).hexdigest()[:16]
     bundle = produce(prepared['paths']['prefill'], Path('/cache/compact')/identity)
     result = dict(base=prepared, prefill=str(bundle), source_identity=identity, source_hashes=hashes)
     (bundle/'prepared.json').write_text(json.dumps(result, indent=2)+'\n')
@@ -44,7 +47,7 @@ def measure_compact(prepared, run_id):
     from benchmarks.llm_serving.runner import run as replay
     os.chdir('/workspace')
     volume.reload()
-    out = Path('/cache/compact-runs')/run_id
+    out = Path('/cache/hopper-runs' if prepared.get('hopper') else '/cache/compact-runs')/run_id
     out.mkdir(parents=True, exist_ok=False)
     base = prepared['base']
     paths = {k: Path(v) for k,v in base['paths'].items()}
@@ -58,14 +61,25 @@ def measure_compact(prepared, run_id):
         (out/'summary.json').write_text(json.dumps(summary, indent=2)+'\n')
         volume.commit()
     try:
-        test = subprocess.run([sys.executable, '-m', 'pytest',
+        test_command=[sys.executable, '-m', 'pytest',
                     'packages/tensor-llm/tests/test_qwen_compact.py',
                     'packages/tensor-llm/tests/test_qwen_prefill.py::test_large_expert_tiles_preserve_hot_experts_and_tail_rows',
-                    '-q', '-o', 'addopts='], env=dict(os.environ, TENSOR_QWEN_CUDA='1'),
-                    text=True, capture_output=True)
+                    '-q', '-o', 'addopts=']
+        if prepared.get('verification_chunk'):
+            test_command.extend(['packages/tensor-llm/tests/test_qwen_hopper.py',
+                f"packages/tensor-llm/tests/test_qwen_spec.py::test_recurrent_snapshots_restore_every_rejection_depth[{prepared['verification_chunk']}]"])
+            hopper_manifest=json.loads((Path(prepared['hopper'])/'hopper.json').read_text()) if prepared.get('hopper') else {}
+            if not hopper_manifest.get('hopper_attention'):
+                test_command.extend(['-k','not prefill_attention'])
+        if prepared.get('profile_only'):
+            from types import SimpleNamespace
+            test=SimpleNamespace(returncode=0,stdout='Diagnostic only; primitive checks retained in prior replay.\n',stderr='')
+        else:
+            from benchmarks.qwen35.qualification_cache import qualify
+            test,summary['kernel_qualification']=qualify(test_command)
         (out/'kernel-tests.log').write_text(test.stdout+test.stderr)
         print(test.stdout, test.stderr, flush=True)
-        summary['kernel_tests_exit_code'] = test.returncode
+        summary['kernel_tests_exit_code'] = None if prepared.get('profile_only') else test.returncode
         if test.returncode:
             raise RuntimeError('compact routing/expert primitive check failed')
         with tensor.Device() as device, Qwen35Batch(base['checkpoint'], paths['decoder'], device,
@@ -76,6 +90,9 @@ def measure_compact(prepared, run_id):
             original = Qwen35Prefill(model, paths['prefill'])
             compact = Qwen35Prefill(model, prepared['prefill'])
             install(compact, prepared['prefill'])
+            if prepared.get('hopper'):
+                from tensor_llm.qwen35.hopper import install as install_hopper
+                install_hopper(compact,prepared['hopper'])
             summary['same_state_quality'] = []
             def compare(label, batch, lengths):
                 snapshot = Snapshot(model)
@@ -123,13 +140,38 @@ def measure_compact(prepared, run_id):
                 summary['compact_target_prefix_seconds'] = time.perf_counter()-started
                 compare('32000 prefix heterogeneous lengths', tokens[:,-compact.chunk:],
                         np.array([512,511,257,0,128,3,512,511], 'int32'))
+                if prepared.get('verification_chunk') and prepared.get('profile_phases',False):
+                    from benchmarks.qwen35.modal_profile import profile_captured_plan
+                    profile_snapshot=Snapshot(model)
+                    summary['captured_prefill_profile']=profile_captured_plan(compact,prepared['prefill'],out/'captured-prefill-profile.json')
+                    profile_snapshot.restore(model)
+                if prepared.get('verification_chunk'):
+                    from tensor_llm import Qwen35MTP
+                    from benchmarks.qwen35.spec_quality import run as quality
+                    with Qwen35MTP(model,paths['draft']) as draft:
+                        summary['verification_serial_quality']=quality(model,draft,paths['verify'],out/'serial-quality')
+                if prepared.get('verification_chunk') and prepared.get('profile_phases',False):
+                    from tensor_llm import Qwen35Verifier
+                    from benchmarks.qwen35.spec_run import install_selected
+                    from benchmarks.qwen35.modal_profile import profile_captured_plan
+                    from contextlib import closing
+                    with closing(Qwen35Verifier(model,paths['verify'])) as verifier:
+                        install_selected(verifier,paths['verify'])
+                        proposals=np.repeat(model.buffers['tokens'].to_numpy()[:,None],verifier.chunk,axis=1)
+                        verifier.forward(proposals,np.full(model.slots,verifier.chunk,'int32'))
+                        summary['captured_verification_profile']=profile_captured_plan(
+                            verifier,paths['verify'],out/'captured-verification-profile.json')
             finally:
                 original.close(); compact.close()
         save()
+        if prepared.get('profile_only'):
+            summary['status']='diagnosed';return summary
         name = 'tensor-h200-compact-mtp-lookup-c8'
         command = [sys.executable,'-m','benchmarks.qwen35.server','--checkpoint',base['checkpoint'],
                    '--bundle',str(paths['decoder']),'--prefill-bundle',prepared['prefill'],
-                   '--compact-experts','--port','8013','--output-lookup','--fallback-proposals','3']
+                   '--compact-experts','--port','8013','--output-lookup','--fallback-proposals',str(prepared.get('fallback_proposals',3))]
+        if prepared.get('hopper'):
+            command.extend(['--hopper-bundle',prepared['hopper']])
         for option,key in (('draft-bundle','draft'),('draft-prefill-bundle','draft_prefill'),
                            ('verify-bundle','verify'),('repair-bundle','repair')):
             command.extend(['--'+option,str(paths[key])])
@@ -139,7 +181,9 @@ def measure_compact(prepared, run_id):
             hardware='NVIDIA H200 x1',cpu_offload='none',prefix_cache=False,speculative=True,
             gpu_indices=['0'],command=command,model_throughput_qualified=False,full_stress_target_reached=False,
             settings=dict(max_model_len=48000,max_num_seqs=8,prefill_chunk=512,
-                          compact_expert_tiles=True,output_lookup=True,scheduler='fixed native cohort'))
+                          compact_expert_tiles=True,hopper=bool(prepared.get('hopper')),
+                          verification_window=prepared.get('verification_chunk',8),
+                          output_lookup=True,fallback_proposals=prepared.get('fallback_proposals',3),scheduler='fixed native cohort'))
         config = dict(schema='tensor.llm-serving-servers.v1',
             comparison_group='qwen35-h200-compact-32k16k-c8-native-fp8kv-experimental',servers=[server])
         (out/'servers.json').write_text(json.dumps(config,indent=2)+'\n')

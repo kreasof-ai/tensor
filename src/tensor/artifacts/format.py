@@ -14,7 +14,7 @@ FORMAT = "tensor.module"
 FORMAT_VERSION = 3
 MAX_UNCOMPRESSED = 128 * 1024 * 1024
 MAX_MANIFEST = 2 * 1024 * 1024
-TARGET = re.compile(r"sm_[0-9]{2,3}\Z")
+from tensor.runtime.cuda_target import TARGET
 HASH = re.compile(r"[0-9a-f]{64}\Z")
 NAME = re.compile(r"[A-Za-z_]\w*\Z")
 

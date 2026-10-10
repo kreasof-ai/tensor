@@ -4,7 +4,7 @@ The checkpoint and all request states belong to one owner thread. Chunked
 prefill and decode use the same native resources. This fixed slot scheduler is
 experimental while full-model numerical qualification remains open.
 """
-import argparse,asyncio
+import argparse,asyncio,time
 import ctypes as ct
 from dataclasses import dataclass,field
 import hashlib,json
@@ -46,6 +46,7 @@ class NativeServer:
             speculative=bool(self.speculative),prefix_cache=False,cpu_offload='none',
             output_lookup=bool(self.speculative and self.speculative.get('output_lookup')),
             compact_expert_prefill=bool(getattr(self.prefill,'_compact_experts_installed',False)),
+            hopper_prefill=bool(getattr(self.prefill,'_hopper_installed',False)),
             model_throughput_qualified=False,full_stress_target_reached=False)
 
     async def worker(self):
@@ -110,6 +111,9 @@ class NativeServer:
                     if config.get('compact_experts'):
                         from tensor_llm.qwen35.compact_prefill import install
                         install(self.prefill,config['prefill_bundle'])
+                    if config.get('hopper_bundle'):
+                        from tensor_llm.qwen35.hopper import install as install_hopper
+                        install_hopper(self.prefill,config['hopper_bundle'])
                 draft_prefill=Qwen35MTPPrefill(draft,config['draft_prefill_bundle'])
                 cached_proposal=np.full(model.slots,-1,'int32')
                 cached_hidden=np.zeros((model.slots,2048),'uint16')
@@ -160,6 +164,9 @@ class NativeServer:
                 install_selected(verifier,config['verify_bundle']);install_selected(repair,config['repair_bundle'])
                 engine=Qwen35Speculative(model,draft,verifier,repair,
                     output_lookup=config.get('output_lookup',False),fallback_proposals=config.get('fallback_proposals',3))
+                phase_seconds={name:0. for name in ('draft_seconds','verify_seconds','commit_seconds','repair_seconds')}
+                round_count=proposal_count=accepted_count=lookup_requests=0
+                decode_start=time.perf_counter()
                 seed=np.array([r.next_token if r is not None else -1 for r in self.slots],'int32');engine.seed(seed)
                 while any(r is not None for r in self.slots):
                     ready=[(s,r) for s,r in enumerate(self.slots) if r is not None and not r.cancelled]
@@ -170,10 +177,19 @@ class NativeServer:
                     for slot,r in ready:
                         pending[slot]=r.next_token;lengths[slot]=min(verifier.chunk,r.output-r.generated)
                     result=engine.step(pending,lengths);self.decode_steps+=1
+                    round_count+=1
+                    proposal_count+=int(result['lengths'].sum())
+                    accepted_count+=int(result['counts'].sum())
+                    lookup_requests+=result['lookup_requests']
+                    for name in phase_seconds:phase_seconds[name]+=result[name]
                     for slot,r in ready:
                         values=result['outputs'][slot];r.next_token=int(result['pending'][slot])
                         await self.publish(slot,r,values)
                     await asyncio.sleep(0)
+                print('Native speculative cohort '+json.dumps(dict(
+                    phase_seconds=phase_seconds,rounds=round_count,proposals=proposal_count,
+                    accepted=accepted_count,lookup_requests=lookup_requests,
+                    elapsed_seconds=time.perf_counter()-decode_start)),flush=True)
                 repair.close();repair=None;verifier.close();verifier=None
         finally:
             if repair:repair.close()
@@ -243,6 +259,7 @@ def main():
     p.add_argument('--verify-bundle',type=Path);p.add_argument('--repair-bundle',type=Path)
     p.add_argument('--output-lookup',action='store_true');p.add_argument('--fallback-proposals',type=int,default=3)
     p.add_argument('--compact-experts',action='store_true')
+    p.add_argument('--hopper-bundle',type=Path)
     a=p.parse_args()
     selected=(a.draft_bundle,a.draft_prefill_bundle,a.verify_bundle,a.repair_bundle)
     if any(selected) and not all(selected):p.error('speculative mode needs all four draft/verification/repair bundles')
@@ -253,13 +270,17 @@ def main():
             if a.compact_experts:
                 from tensor_llm.qwen35.compact_prefill import install
                 install(prefill,a.prefill_bundle)
+            if a.hopper_bundle:
+                from tensor_llm.qwen35.hopper import install as install_hopper
+                install_hopper(prefill,a.hopper_bundle)
             config=None
             if all(selected):
                 from tensor_llm import Qwen35MTP
                 draft=Qwen35MTP(model,a.draft_bundle)
                 config=dict(draft=draft,prefill_bundle=a.prefill_bundle,draft_prefill_bundle=a.draft_prefill_bundle,
                     verify_bundle=a.verify_bundle,repair_bundle=a.repair_bundle,output_lookup=a.output_lookup,
-                    fallback_proposals=a.fallback_proposals,compact_experts=a.compact_experts)
+                    fallback_proposals=a.fallback_proposals,compact_experts=a.compact_experts,
+                    hopper_bundle=a.hopper_bundle)
             asyncio.run(NativeServer(model,prefill,a.checkpoint,speculative=config).serve(port=a.port))
         finally:
             prefill.close()

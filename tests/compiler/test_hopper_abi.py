@@ -5,7 +5,8 @@ import pytest
 
 @pytest.mark.skipif(os.environ.get('TENSOR_NVRTC') != '1', reason='pinned NVRTC producer check; GPU-free')
 @pytest.mark.parametrize('rows', [16, 64])
-def test_hopper_gemm_compiles_without_tensor_map_arguments(tmp_path, rows):
+@pytest.mark.parametrize('target', ['sm_90','sm_90a'])
+def test_hopper_gemm_compiles_without_tensor_map_arguments(tmp_path, rows, target):
     pytest.importorskip('tilelang')
     from tensor.compiler.build import build_artifact
     from tensor.artifacts.format import read_artifact
@@ -29,11 +30,11 @@ def tensor_export():
     return {{'kernel': kernel}}
 ''')
     artifact = tmp_path/'gemm.tbin'
-    build_artifact(source, artifact, target='sm_90', compiler='nvrtc',
+    build_artifact(source, artifact, target=target, compiler='nvrtc',
                    nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME', 'build/nvrtc-12.9'))
     manifest, _ = read_artifact(artifact)
-    assert manifest['target'] == 'sm_90'
+    assert manifest['target'] == target
     assert {a['name'] for a in manifest['abi']} == {'a', 'b', 'out'}
     assert all(a['kind'] == 'buffer' for a in manifest['abi'])
     assert manifest['compiler']['pass_config']['tl.disable_tma_lower']
-    assert manifest['compiler']['pass_config']['tl.disable_wgmma']
+    assert manifest['compiler']['pass_config']['tl.disable_wgmma'] is (target=='sm_90')

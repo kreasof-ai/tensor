@@ -1,0 +1,23 @@
+{
+  "note": "Retained workload JSON uses the canonical serialization. Parsed objects were verified identical before whitespace normalization; original serializations remain on the recorded Modal volume.",
+  "canonical_path": "../workload.json",
+  "canonical_sha256": "3cc2c9a9920f18c316794f52de2de3cb1d3b87f60b3c5038e312cd70654380b3",
+  "normalized": [
+    {
+      "path": "packed-experts-selected/tensor-h200-compact-mtp-lookup-c8/workload.json",
+      "original_serialization_sha256": "cce0aac8a187668369679fb28fbe238ceca1611f6b225dfcd08b29a73eb87bf6"
+    },
+    {
+      "path": "serving-beam/paired64/tensor-h200-compact-mtp-lookup-c8/workload.json",
+      "original_serialization_sha256": "cce0aac8a187668369679fb28fbe238ceca1611f6b225dfcd08b29a73eb87bf6"
+    },
+    {
+      "path": "serving-beam/padded-attention64/tensor-h200-compact-mtp-lookup-c8/workload.json",
+      "original_serialization_sha256": "cce0aac8a187668369679fb28fbe238ceca1611f6b225dfcd08b29a73eb87bf6"
+    },
+    {
+      "path": "pipeline-corrected/tensor-h200-compact-mtp-lookup-c8/workload.json",
+      "original_serialization_sha256": "cce0aac8a187668369679fb28fbe238ceca1611f6b225dfcd08b29a73eb87bf6"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ def produce(prefill, out):
     if out == prefill or out.is_relative_to(prefill): raise ValueError('use a separate verification output')
     manifest = json.loads((prefill/'prefill.json').read_text())
     slots, chunk = manifest['slots'], manifest['chunk']
-    if chunk < 2 or chunk > 8: raise ValueError('verification chunk must be between 2 and 8')
+    if chunk < 2 or chunk > 128: raise ValueError('verification chunk must be between 2 and 128')
     out.mkdir(parents=True, exist_ok=True)
     for row in manifest['kernels'].values():
         source = (prefill/row['path']).resolve()
@@ -36,7 +36,9 @@ def produce(prefill, out):
         add('spec_'+kind, p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', kind, p)
     for shape in ((32,128,128),(8192,3)):
         p = dict(slots=slots, chunk=chunk, shape=list(shape))
-        add('restore', p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', 'restore', p)
+        if chunk>8:
+            add('restore',p,'tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',p)
+        else:add('restore', p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', 'restore', p)
     p = dict(r=slots*chunk, k=2048, o=248320)
     add('verify_head', p, 'tensor_llm.qwen35.kernels.speculative', 'head_kernel',
         dict(p, block_m=16 if slots*chunk<=16 else (64 if slots*chunk>=64 else 32), columns=128, depth=128, threads=128))

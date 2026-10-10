@@ -1,0 +1,4 @@
+{
+  "exit_code": 0,
+  "output": ".................                                                        [100%]\n=============================== warnings summary ===============================\npackages/tensor-llm/tests/test_qwen_hopper.py: 18 warnings\n  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead\n    deprecated_warning(\"T.reinterpret(dtype, value)\", \"reinterpret(value, dtype)\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 23 deselected, 18 warnings in 253.28s (0:04:13)\n"
+}

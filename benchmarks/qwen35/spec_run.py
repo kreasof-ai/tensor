@@ -34,6 +34,9 @@ def install_selected(executor,bundle):
     manifest=json.loads((Path(bundle)/'prefill.json').read_text())
     if 'split_attention' in manifest:install_attention(executor,bundle)
     if 'split_linear' in manifest:install_linear(executor,bundle)
+    if 'compact_experts' in manifest:
+        from tensor_llm.qwen35.compact_prefill import install as install_compact
+        install_compact(executor,bundle)
 
 
 def execute(target,draft,paths,workload,out,*,output_lookup=False,fallback_proposals=3):

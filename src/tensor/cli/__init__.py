@@ -235,10 +235,11 @@ def main(argv: list[str] | None = None) -> int:
                     detected = _execution_target(provider, args.device)
                     if detected["status"] != "ok":
                         raise CudaError(detected["detail"])
-                    if args.target and args.target != detected["arch"]:
+                    from tensor.runtime.cuda_target import matches_device
+                    if args.target and not matches_device(args.target, detected["arch"]):
                         raise ValueError("module execution target must match the selected device")
                     resolution = resolve_reference(args.artifact, project=args.project, module_cache=args.module_cache,
-                        provider=provider, target=detected["arch"], compile=args.compile, compiler=args.compiler,
+                        provider=provider, target=args.target or detected["arch"], compile=args.compile, compiler=args.compiler,
                         nvcc=args.nvcc, nvrtc_home=args.nvrtc_home, cache_dir=args.cache_dir)
                     artifact = Path(resolution["path"])
                 elif source.suffix == ".py":

@@ -14,7 +14,7 @@ from pathlib import Path
 
 PINNED_PACKAGES = {"tilelang": "0.1.14", "apache-tvm-ffi": "0.1.12"}
 RUNTIME_PACKAGES = {"numpy": "2.5.3"}
-TARGET = re.compile(r"sm_[0-9]{2,3}\Z")
+from tensor.runtime.cuda_target import TARGET
 
 
 def _check(status: str, detail: str, *, hint: str | None = None, **data: object) -> dict:

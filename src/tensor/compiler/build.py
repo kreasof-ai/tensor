@@ -213,10 +213,11 @@ def build_artifact(source_path: Path, output_path: Path, *, target: str | None =
         resolved = Target({"kind": "cuda", "arch": target})
         # ABI 1.3 passes ordinary pointers/scalars and launches one grid. Hopper
         # auto-TMA introduces CUtensorMap parameters, while WGMMA requires an
-        # architecture-accelerated target. Keep exact sm_90 artifacts on the
-        # supported warp-MMA/copy path until dedicated adapters exist.
-        pass_config = ({"tl.disable_tma_lower": True, "tl.disable_wgmma": True,
-                        "tl.disable_warp_specialized": True} if target == "sm_90" else {})
+        # architecture-specific sm_90a target. Both Hopper paths retain the
+        # pointer/scalar ABI; only sm_90a enables warp-group matrix instructions.
+        pass_config = ({"tl.disable_tma_lower": True, "tl.disable_wgmma": target == "sm_90",
+                        "tl.disable_warp_specialized": True}
+                       if target in ("sm_90", "sm_90a") else {})
         with tilelang.transform.PassContext(opt_level=3, config=pass_config), resolved:
             lowered = tilelang.lower(kernel, target=resolved, enable_device_compile=False)
         from tensor.compiler.cuda_lowering import lower_cuda_intrinsics

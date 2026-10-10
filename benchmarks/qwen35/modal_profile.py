@@ -10,6 +10,64 @@ from benchmarks.qwen35.modal_h200 import image, volume, VOLUME_NAME
 app = modal.App('tensor-qwen35-h200-profile')
 
 
+def profile_captured_plan(executor,bundle,out):
+    """Remove host dispatch gaps by capturing event nodes with the launch plan.
+
+    This diagnostic still includes event-node cost and is not client throughput.
+    Executors must already have valid control buffers and a warmed model state.
+    """
+    import ctypes as ct
+    import json
+    from pathlib import Path
+    from tensor.providers.cuda_graph import CudaGraph
+    device=executor.device;driver=device.driver
+    path=Path(bundle)
+    source=path/('prefill.json' if (path/'prefill.json').is_file() else 'inference.json')
+    manifest=json.loads(source.read_text());rows=manifest['kernels']
+    reverse={id(k):name for name,k in executor.kernels.items()}
+    pairs=[];graph=None
+    # Ordinary captured records are internal dependencies, without timestamps.
+    # Explicit external record nodes are required for elapsed-time queries.
+    recorder=driver.lib.cuEventRecordWithFlags
+    recorder.argtypes=[ct.c_void_p,ct.c_void_p,ct.c_uint];recorder.restype=ct.c_int
+    def record_event(handle):driver.call('cuEventRecordWithFlags',handle,device.stream,1)
+    def event():
+        handle=ct.c_void_p();driver.call('cuEventCreate',ct.byref(handle),0)
+        return handle
+    begin,end=event(),event()
+    for entry in executor.plan:
+        kernel,bound=entry[:2];key=reverse.get(id(kernel),'target-head')
+        logical=key.removeprefix('_hopper_').removeprefix('_compact_')
+        record=rows.get(logical,{})
+        pairs.append((record.get('kind',key),event(),event(),kernel,bound))
+    try:
+        def submit():
+            record_event(begin)
+            for _,a,b,k,v in pairs:
+                record_event(a)
+                device._launch(k,v)
+                record_event(b)
+            record_event(end)
+        graph=CudaGraph(device,submit,resources=executor.graph.resources)
+        graph.launch();device.synchronize()
+        def milliseconds(a,b):
+            value=ct.c_float();driver.call('cuEventElapsedTime',ct.byref(value),a,b)
+            return float(value.value)
+        groups={}
+        for kind,a,b,_,_ in pairs:groups[kind]=groups.get(kind,0.)+milliseconds(a,b)
+        result=dict(groups=groups,captured_plan_milliseconds=milliseconds(begin,end),
+            sum_kernel_intervals_milliseconds=sum(groups.values()),
+            timing='captured CUDA event nodes; includes instrumentation overhead, no host launch gaps',
+            model_throughput_qualified=False)
+        Path(out).write_text(json.dumps(result,indent=2)+'\n')
+        print('Captured profile',sorted(groups.items(),key=lambda x:-x[1])[:8],flush=True)
+        return result
+    finally:
+        if graph:graph.close()
+        for handle in [begin,end,*[h for _,a,b,_,_ in pairs for h in (a,b)]]:
+            driver.call('cuEventDestroy_v2',handle)
+
+
 def profile_plan(executor, bundle, out):
     import ctypes as ct
     import json

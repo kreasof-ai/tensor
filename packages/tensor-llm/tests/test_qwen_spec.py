@@ -27,7 +27,7 @@ def test_output_lookup_uses_only_confirmed_past_transitions_and_is_bounded():
 
 
 @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='native speculative rollback qualification')
-@pytest.mark.parametrize('chunk',[2,4,8])
+@pytest.mark.parametrize('chunk',[2,4,8,32,64,128])
 def test_recurrent_snapshots_restore_every_rejection_depth(tmp_path,chunk):
     import torch,tensor
     from tensor.compiler.entry import export_source
@@ -51,7 +51,9 @@ def test_recurrent_snapshots_restore_every_rejection_depth(tmp_path,chunk):
             expected[slot]=decayed+torch.einsum('hv,hk->hvk',delta*tb[row,:,None],tk[row])
     def artifact(kind,p):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
+        if kind=='restore' and chunk>8:
+            entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',p,dependencies=('tensor.compiler.entry',)))
+        else:entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));return out
     scan=artifact('gdn_scan',dict(slots=slots,chunk=chunk))
     restore=artifact('restore',dict(slots=slots,chunk=chunk,shape=[heads,d,d]))

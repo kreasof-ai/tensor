@@ -338,7 +338,8 @@ class Device(Session):
             raise ArtifactError("artifact requires a different runtime provider")
         if "runtime_abi" in manifest:
             check_requirement(manifest["runtime_abi"], self.capabilities)
-        if manifest["target"] != self.info["arch"]:
+        from tensor.runtime.cuda_target import matches_device
+        if not matches_device(manifest["target"], self.info["arch"]):
             raise ArtifactError(f"artifact target {manifest['target']} does not match device {self.info['arch']}")
         module, function = c.c_void_p(), c.c_void_p()
         image = c.create_string_buffer(files["kernel.cubin"])

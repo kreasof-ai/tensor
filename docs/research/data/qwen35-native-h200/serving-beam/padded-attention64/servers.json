@@ -1,0 +1,66 @@
+{
+  "schema": "tensor.llm-serving-servers.v1",
+  "comparison_group": "qwen35-h200-compact-32k16k-c8-native-fp8kv-experimental",
+  "servers": [
+    {
+      "name": "tensor-h200-compact-mtp-lookup-c8",
+      "engine": "tensor",
+      "base_url": "http://127.0.0.1:8013",
+      "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "engine_version": "0.1.0-native-qwen35-dev",
+      "weight_format": "FP8-block128",
+      "kv_dtype": "fp8",
+      "state_dtype": "float32",
+      "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "hardware": "NVIDIA H200 x1",
+      "cpu_offload": "none",
+      "prefix_cache": false,
+      "speculative": true,
+      "gpu_indices": [
+        "0"
+      ],
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "benchmarks.qwen35.server",
+        "--checkpoint",
+        "/cache/models/9d1823d2dee688a6b25e77009dc727688c44936e",
+        "--bundle",
+        "/cache/bundles/85cbb54120e2258b/decode-profile/decoder",
+        "--prefill-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/compact/c79b31a10402423d",
+        "--compact-experts",
+        "--port",
+        "8013",
+        "--output-lookup",
+        "--fallback-proposals",
+        "3",
+        "--hopper-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/hopper/f4b5e84e73ca8377",
+        "--draft-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/85cbb54120e2258b/mtp",
+        "--draft-prefill-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/bundles/85cbb54120e2258b/mtp-prefill512",
+        "--verify-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/hopper-long/3a0aaa4fe433f715/compact",
+        "--repair-bundle",
+        "/__modal/volumes/vo-2g9rv30dOGbKn8LKEHpsGF/hopper-long/3a0aaa4fe433f715/repair-attention"
+      ],
+      "model_throughput_qualified": false,
+      "full_stress_target_reached": false,
+      "settings": {
+        "max_model_len": 48000,
+        "max_num_seqs": 8,
+        "prefill_chunk": 512,
+        "compact_expert_tiles": true,
+        "hopper": true,
+        "verification_window": 64,
+        "output_lookup": true,
+        "fallback_proposals": 3,
+        "scheduler": "fixed native cohort"
+      }
+    }
+  ]
+}

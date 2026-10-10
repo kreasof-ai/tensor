@@ -26,6 +26,7 @@ image = (modal.Image.from_registry('nvidia/cuda:12.9.1-devel-ubuntu24.04', add_p
          .run_commands('python /tmp/bootstrap_nvrtc.py --out /opt/tensor-nvrtc')
          .env({'PYTHONPATH': '/workspace:/workspace/src:/workspace/packages/tensor-llm/src',
                'TENSOR_WORKSPACE': '/workspace', 'TENSOR_NVRTC_HOME': '/opt/tensor-nvrtc',
+               'TENSOR_CACHE_DIR': '/cache/compiler-cache',
                'TENSOR_QWEN_TARGET': 'sm_90', 'OMP_NUM_THREADS': '4'})
          .add_local_dir(ROOT/'src', '/workspace/src', ignore=['**/__pycache__/**'])
          .add_local_dir(ROOT/'packages/tensor-llm/src', '/workspace/packages/tensor-llm/src',

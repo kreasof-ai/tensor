@@ -1,0 +1,327 @@
+{
+  "schema": "tensor.qwen35-serving-beam.v1",
+  "width": 2,
+  "objective": "whole-client elapsed seconds for C8 32K/16K; minimize",
+  "spaces": {
+    "native": {
+      "prefix": [
+        "mma-experts",
+        "bf16-pairs",
+        "bf16-async"
+      ],
+      "window": [
+        8,
+        32,
+        64,
+        128
+      ],
+      "fallback": [
+        1,
+        3
+      ]
+    }
+  },
+  "evidence": [
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "mma-experts",
+        "window": 8,
+        "fallback": 3
+      },
+      "result": "observations/qwen35-h200-hopper-packed-v1/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 119.723952345,
+      "output_tokens_per_second": 1069.1260812301912
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "mma-experts",
+        "window": 32,
+        "fallback": 3
+      },
+      "result": "observations/qwen35-h200-long32-packed-v1/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 74.46215183299998,
+      "output_tokens_per_second": 1718.9941043749589
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 8,
+        "fallback": 3
+      },
+      "result": "observations/qwen35-h200-hopper-pairs-v1/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 114.73902507200003,
+      "output_tokens_per_second": 1115.575105502932
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 32,
+        "fallback": 3
+      },
+      "result": "observations/qwen35-h200-long32-pairs-v1/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 67.068740399,
+      "output_tokens_per_second": 1908.4896963699125
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-async",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "observations/00-bf16-async-w64-f3/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 66.67579216399997,
+      "output_tokens_per_second": 1919.7372216465483
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "observations/01-bf16-pairs-w64-f3/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 63.90188878599997,
+      "output_tokens_per_second": 2003.0706827564547
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-async",
+        "window": 32,
+        "fallback": 3
+      },
+      "result": "observations/02-bf16-async-w32-f3/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 67.24509346800005,
+      "output_tokens_per_second": 1903.4846023511204
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-async",
+        "window": 128,
+        "fallback": 3
+      },
+      "result": "observations/03-bf16-async-w128-f3/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 67.69601043400002,
+      "output_tokens_per_second": 1890.8056646084506
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 64,
+        "fallback": 1
+      },
+      "result": "observations/00-bf16-pairs-w64-f1/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 65.80872686700008,
+      "output_tokens_per_second": 1945.0307898933975
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "mma-experts",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "observations/01-mma-experts-w64-f3/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 70.85048229999995,
+      "output_tokens_per_second": 1806.6214349538745
+    }
+  ],
+  "experimental_beam": [
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 64,
+        "fallback": 3
+      },
+      "result": "observations/01-bf16-pairs-w64-f3/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 63.90188878599997,
+      "output_tokens_per_second": 2003.0706827564547
+    },
+    {
+      "configuration": {
+        "family": "native",
+        "prefix": "bf16-pairs",
+        "window": 64,
+        "fallback": 1
+      },
+      "result": "observations/00-bf16-pairs-w64-f1/summary.json",
+      "kernel_qualified": true,
+      "serial_qualified": false,
+      "model_qualified": false,
+      "elapsed_seconds": 65.80872686700008,
+      "output_tokens_per_second": 1945.0307898933975
+    }
+  ],
+  "qualified_beam": [],
+  "seen": [
+    {
+      "fallback": 1,
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 64
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "bf16-async",
+      "window": 32
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "bf16-async",
+      "window": 64
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "bf16-async",
+      "window": 128
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 8
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 32
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 64
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "mma-experts",
+      "window": 8
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "mma-experts",
+      "window": 32
+    },
+    {
+      "fallback": 3,
+      "family": "native",
+      "prefix": "mma-experts",
+      "window": 64
+    }
+  ],
+  "pending": [
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 128,
+      "fallback": 3
+    },
+    {
+      "family": "native",
+      "prefix": "mma-experts",
+      "window": 64,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-async",
+      "window": 64,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 32,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 128,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "mma-experts",
+      "window": 64,
+      "fallback": 3
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 128,
+      "fallback": 3
+    },
+    {
+      "family": "native",
+      "prefix": "mma-experts",
+      "window": 64,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-async",
+      "window": 64,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 32,
+      "fallback": 1
+    },
+    {
+      "family": "native",
+      "prefix": "bf16-pairs",
+      "window": 128,
+      "fallback": 1
+    }
+  ]
+}
