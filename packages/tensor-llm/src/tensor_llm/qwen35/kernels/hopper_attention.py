@@ -8,7 +8,11 @@ def partial(p):
     packed=p.get('packed_loads',False)
     decoded=p.get('decoded_kv',False)
     tile_rows=p.get('key_rows',64)
-    query_tokens=min(chunk,p.get('query_tokens',8))
+    # A pooled verifier can retain the parent's MMA geometry even when its
+    # logical window is shorter. Masked query rows preserve the same reduction
+    # order without allocating the parent's output or recurrent snapshots.
+    query_tokens=p.get('query_tokens',8)
+    if not p.get('pad_queries',False):query_tokens=min(chunk,query_tokens)
     query_rows=max(16,query_tokens*8)
     query_tiles=T.ceildiv(chunk,query_tokens)
     threads=p.get('threads',128 if query_rows<=64 else 256)

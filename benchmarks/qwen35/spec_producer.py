@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import shutil
 from .build import build_artifact, needs_build
@@ -36,7 +37,9 @@ def produce(prefill, out):
         add('spec_'+kind, p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', kind, p)
     for shape in ((32,128,128),(8192,3)):
         p = dict(slots=slots, chunk=chunk, shape=list(shape))
-        if chunk>8:
+        # Flat views compare bit counts through an int32 literal. A short
+        # window also exceeds it when sufficiently many states are resident.
+        if chunk>8 or slots*(chunk-1)*math.prod(shape)*32>=2**31:
             add('restore',p,'tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',p)
         else:add('restore', p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', 'restore', p)
     p = dict(r=slots*chunk, k=2048, o=248320)

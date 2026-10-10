@@ -374,3 +374,8 @@ Modal profile remains `akbar2habibullah`.
 - [Combined replay, provenance and gates](data/qwen35-native-h200/bandwidth/dense-m128-pool-resident/summary.json)
 - [Adaptive same-state rollback gate](data/qwen35-native-h200/bandwidth/dense-m128-pool-resident/adaptive-quality/report.json)
 - [Client report](data/qwen35-native-h200/bandwidth/dense-m128-pool-resident/tensor-h200-compact-mtp-lookup-c8/report.json)
+
+The [one-shot C16/C32/C64 follow-up](qwen35-h200-batch-scaling.md) completes all
+32K/16K requests but measures 623.368, 1,085.342 and 949.705 output tok/s.
+The 7,000 tok/s scaling target is not reached. The report retains TTFT, client
+stream plots, exact batch/pool checks and the failing serial-quality gate.

@@ -1,0 +1,41 @@
+[
+  {
+    "concurrency": 16,
+    "client_interval_seconds": 10,
+    "peak_output_tokens_per_second": 6398.2,
+    "peak_interval": [
+      60.0,
+      70.0
+    ],
+    "observed_client_output_tokens": 256000,
+    "metric": "client received tokens in complete nonoverlapping 10-second bins",
+    "full_stress_target_reached": false,
+    "model_throughput_qualified": false
+  },
+  {
+    "concurrency": 32,
+    "client_interval_seconds": 10,
+    "peak_output_tokens_per_second": 5907.0,
+    "peak_interval": [
+      110.0,
+      120.0
+    ],
+    "observed_client_output_tokens": 512000,
+    "metric": "client received tokens in complete nonoverlapping 10-second bins",
+    "full_stress_target_reached": false,
+    "model_throughput_qualified": false
+  },
+  {
+    "concurrency": 64,
+    "client_interval_seconds": 10,
+    "peak_output_tokens_per_second": 6017.0,
+    "peak_interval": [
+      230.0,
+      240.0
+    ],
+    "observed_client_output_tokens": 1024000,
+    "metric": "client received tokens in complete nonoverlapping 10-second bins",
+    "full_stress_target_reached": false,
+    "model_throughput_qualified": false
+  }
+]

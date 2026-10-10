@@ -10,7 +10,7 @@ from tensor_llm.qwen35.artifacts import identity
 from tensor_llm.qwen35.speculative.attention import implementation_hashes
 
 
-def produce(prefill,out,*,splits=16,key_rows=64,query_tokens=None,kernel_target=None):
+def produce(prefill,out,*,splits=16,key_rows=64,query_tokens=None,kernel_target=None,pad_queries=False):
     prefill,out=Path(prefill).resolve(),Path(out).resolve()
     if out==prefill or out.is_relative_to(prefill):raise ValueError('use a separate output')
     manifest=json.loads((prefill/'prefill.json').read_text())
@@ -30,6 +30,7 @@ def produce(prefill,out,*,splits=16,key_rows=64,query_tokens=None,kernel_target=
         if kind=='split_attention' and query_tokens is not None:
             module='tensor_llm.qwen35.kernels.hopper_attention'
             schedule['query_tokens']=query_tokens
+            schedule['pad_queries']=pad_queries
             target=kernel_target or target
         source=export_source(module,factory,schedule,dependencies=('tensor.compiler.entry',))
         if needs_build(entry, artifact, source, target):
@@ -40,7 +41,7 @@ def produce(prefill,out,*,splits=16,key_rows=64,query_tokens=None,kernel_target=
         print(kind,schedule,flush=True)
     manifest.update(split_attention=dict(splits=splits,key_rows=key_rows),
                     split_attention_implementation=implementation_hashes())
-    if query_tokens is not None:manifest['split_attention'].update(query_tokens=query_tokens,kernel_target=kernel_target)
+    if query_tokens is not None:manifest['split_attention'].update(query_tokens=query_tokens,kernel_target=kernel_target,pad_queries=pad_queries)
     (out/'prefill.json').write_text(json.dumps(manifest,indent=2)+'\n');return out
 
 

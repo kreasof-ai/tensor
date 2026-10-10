@@ -15,7 +15,7 @@ def make_kernel(kind,p):
     parts=p.get('partitions',1)
     stages=p.get('stages',1)
     packed_copy=p.get('packed_copy',False)
-    if ((grouped and r>16) or k%(128*parts) or o%n
+    if (k%(128*parts) or o%n
             or m not in (m,32,64,128) or (grouped and m!=16)
             or n not in (32,64,128) or threads not in (128,256)):
         raise ValueError('invalid FP8 tensor-core projection schedule')
@@ -46,9 +46,9 @@ def make_kernel(kind,p):
                     activation_scales[b]=1
                     if rowbase+b<r:
                         if grouped:
-                            if routes[group,b]>=0:
-                                if routed:activation_scales[b]=input_scales[b,routes[group,b],tile]
-                                else:activation_scales[b]=input_scales[b,tile]
+                            if routes[group,rowbase+b]>=0:
+                                if routed:activation_scales[b]=input_scales[rowbase+b,routes[group,rowbase+b],tile]
+                                else:activation_scales[b]=input_scales[rowbase+b,tile]
                         else:activation_scales[b]=input_scales[rowbase+b,tile]
                 T.sync_threads()
                 for b,j in T.Parallel(m,128):
@@ -56,18 +56,18 @@ def make_kernel(kind,p):
                     bits=0
                     if rowbase+b<r:
                         if grouped:
-                            if routes[group,b]>=0:
-                                if routed:bits=x[b,routes[group,b],tile*128+j]
-                                else:bits=x[b,tile*128+j]
+                            if routes[group,rowbase+b]>=0:
+                                if routed:bits=x[rowbase+b,routes[group,rowbase+b],tile*128+j]
+                                else:bits=x[rowbase+b,tile*128+j]
                         else:bits=x[rowbase+b,tile*128+j]
                     lhs[b,j]=T.reinterpret('float8_e4m3fn',bits)
             else:
                 for b,j in T.Parallel(m,128):
                     if rowbase+b<r:
                         if grouped:
-                            if routes[group,b]>=0:
-                                if routed:absolute[b,j]=T.abs(T.cast(x[b,routes[group,b],tile*128+j],'float32'))
-                                else:absolute[b,j]=T.abs(T.cast(x[b,tile*128+j],'float32'))
+                            if routes[group,rowbase+b]>=0:
+                                if routed:absolute[b,j]=T.abs(T.cast(x[rowbase+b,routes[group,rowbase+b],tile*128+j],'float32'))
+                                else:absolute[b,j]=T.abs(T.cast(x[rowbase+b,tile*128+j],'float32'))
                             else:absolute[b,j]=0
                         else:absolute[b,j]=T.abs(T.cast(x[rowbase+b,tile*128+j],'float32'))
                     else:absolute[b,j]=0
@@ -80,9 +80,9 @@ def make_kernel(kind,p):
                     value=0
                     if rowbase+b<r:
                         if grouped:
-                            if routes[group,b]>=0:
-                                if routed:value=T.cast(x[b,routes[group,b],tile*128+j],'float32')
-                                else:value=T.cast(x[b,tile*128+j],'float32')
+                            if routes[group,rowbase+b]>=0:
+                                if routed:value=T.cast(x[rowbase+b,routes[group,rowbase+b],tile*128+j],'float32')
+                                else:value=T.cast(x[rowbase+b,tile*128+j],'float32')
                         else:value=T.cast(x[rowbase+b,tile*128+j],'float32')
                     bits=T.cast(T.call_extern('uint32','tensor_encode_e4m3',value/activation_scales[b]),'uint8')
                     lhs[b,j]=T.reinterpret('float8_e4m3fn',bits)
@@ -103,9 +103,9 @@ def make_kernel(kind,p):
         for b,j in T.Parallel(m,n):
             if rowbase+b<r:
                 if grouped:
-                    if routes[group,b]>=0:
-                        if parts>1:out[b,routes[group,b],part,bx*n+j]=total[b,j]
-                        else:out[b,routes[group,b],bx*n+j]=total[b,j]
+                    if routes[group,rowbase+b]>=0:
+                        if parts>1:out[rowbase+b,routes[group,rowbase+b],part,bx*n+j]=total[b,j]
+                        else:out[rowbase+b,routes[group,rowbase+b],bx*n+j]=total[b,j]
                 else:
                     if parts>1:out[rowbase+b,part,bx*n+j]=total[b,j]
                     else:out[rowbase+b,bx*n+j]=total[b,j]
@@ -122,15 +122,19 @@ def make_kernel(kind,p):
 
     @T.macro
     def experts(x,w,scales,expert_ids,routes,out):
-        with T.Kernel(o//n,r*top,parts,threads=threads) as (bx,group,part):
+        with T.Kernel(o//n,r*top*T.ceildiv(r,m),parts,threads=threads) as (bx,group_tile,part):
+            group=group_tile//T.ceildiv(r,m)
+            rowbase=(group_tile%T.ceildiv(r,m))*m
             expert=expert_ids[group]
-            if expert>=0:body(x,w,scales,None,expert_ids,routes,out,bx,group,expert,0,part)
+            if expert>=0:body(x,w,scales,None,expert_ids,routes,out,bx,group,expert,rowbase,part)
 
     @T.macro
     def experts_quantized(x,w,scales,input_scales,expert_ids,routes,out):
-        with T.Kernel(o//n,r*top,parts,threads=threads) as (bx,group,part):
+        with T.Kernel(o//n,r*top*T.ceildiv(r,m),parts,threads=threads) as (bx,group_tile,part):
+            group=group_tile//T.ceildiv(r,m)
+            rowbase=(group_tile%T.ceildiv(r,m))*m
             expert=expert_ids[group]
-            if expert>=0:body(x,w,scales,input_scales,expert_ids,routes,out,bx,group,expert,0,part)
+            if expert>=0:body(x,w,scales,input_scales,expert_ids,routes,out,bx,group,expert,rowbase,part)
 
     return primitive(arguments,(experts_quantized if grouped else dense_quantized)
                      if prequantized else (experts if grouped else dense))

@@ -54,6 +54,6 @@ def produce_verification(source,out):
     selected=original['split_attention']
     if selected.get('kernel_target')!='sm_90a':raise ValueError('Hopper split attention required')
     schedule=dict(row['parameters'],key_rows=selected['key_rows'],
-        query_tokens=selected['query_tokens'],packed_loads=True,decoded_kv=True)
+        query_tokens=selected['query_tokens'],pad_queries=selected.get('pad_queries',False),packed_loads=True,decoded_kv=True)
     return _compile(out,original,old,'hopper_attention',schedule,scope='verification',
         key_rows=selected['key_rows'],query_tokens=selected['query_tokens'])

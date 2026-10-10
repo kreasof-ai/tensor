@@ -72,3 +72,50 @@ def test_recompute_matches_every_frozen_prefix(tmp_path,chunk):
             np.testing.assert_array_equal(state.to_numpy(),expected)
             np.testing.assert_array_equal(history.to_numpy(),expected_history)
             accepted.release()
+
+
+@pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='physical large-copy qualification')
+def test_c64_input_copy_at_int32_bitcount_boundary(tmp_path):
+    import tensor
+    from tensor.compiler.entry import export_source
+    from tensor.compiler.build import build_artifact
+    from tensor.runtime.dtypes import encode_bfloat16,decode_bfloat16
+    source=tmp_path/'save_conv.py';artifact=source.with_suffix('.tbin')
+    source.write_text(export_source('tensor_llm.qwen35.kernels.recompute','save_conv',
+        dict(slots=64,chunk=128),dependencies=('tensor.compiler.entry',)))
+    build_artifact(source,artifact,target='sm_90',compiler='nvrtc',
+        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
+    rng=np.random.default_rng(50293)
+    x=rng.standard_normal((8192,8192),dtype=np.float32)
+    history=rng.standard_normal((64,8192,3),dtype=np.float32)
+    with tensor.Device() as device:
+        xx=device.from_numpy(x);state=device.from_numpy(history)
+        saved=device.empty(x.shape,'bfloat16');initial=device.empty(history.shape)
+        device.load(artifact).launch(xx,state,saved,initial)
+        np.testing.assert_array_equal(saved.to_numpy(),decode_bfloat16(encode_bfloat16(x)))
+        np.testing.assert_array_equal(initial.to_numpy(),history)
+
+
+@pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='physical large-snapshot qualification')
+def test_c64_short_snapshot_restore_without_flat_bitcount_view(tmp_path):
+    import tensor
+    from tensor.compiler.entry import export_source
+    from tensor.compiler.build import build_artifact
+    source=tmp_path/'restore.py';artifact=source.with_suffix('.tbin')
+    source.write_text(export_source('tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',
+        dict(slots=64,chunk=4,shape=[32,128,128]),dependencies=('tensor.compiler.entry',)))
+    build_artifact(source,artifact,target='sm_90',compiler='nvrtc',
+        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
+    rng=np.random.default_rng(50294)
+    checkpoints=rng.standard_normal((64,3,32,128,128),dtype=np.float32)
+    final=rng.standard_normal((64,32,128,128),dtype=np.float32)
+    lengths=np.resize(np.array([4,3,1,0,4,2,3,1],'int32'),64)
+    counts=np.resize(np.array([1,2,1,0,4,2,2,1],'int32'),64)
+    expected=final.copy()
+    for slot,count in enumerate(counts):
+        if 0<count<lengths[slot]:expected[slot]=checkpoints[slot,count-1]
+    with tensor.Device() as device:
+        cp=device.from_numpy(checkpoints);state=device.from_numpy(final)
+        accepted=device.from_numpy(counts);ll=device.from_numpy(lengths)
+        device.load(artifact).launch(cp,state,accepted,ll)
+        np.testing.assert_array_equal(state.to_numpy(),expected)

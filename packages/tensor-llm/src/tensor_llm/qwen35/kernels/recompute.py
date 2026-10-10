@@ -34,10 +34,11 @@ def save_conv(p):
                saved_x:T.Tensor((r,channels),'bfloat16'),initial:T.Tensor((s,channels,3),'float32')):
         with T.Kernel(T.ceildiv(max(count,state_count),1024),threads=256) as block:
             source=T.view(state,shape=(state_count,));destination=T.view(initial,shape=(state_count,))
-            xx=T.view(x,shape=(count,));sx=T.view(saved_x,shape=(count,))
             for j in T.Parallel(1024):
                 index=block*1024+j
-                if index<count:sx[index]=xx[index]
+                # T.view checks total bits with an int32 literal. C64/window128
+                # reaches 2**31 bits; direct indexing keeps identical BF16 copies.
+                if index<count:saved_x[index//channels,index%channels]=x[index//channels,index%channels]
                 if index<state_count:destination[index]=source[index]
     return kernel
 

@@ -59,7 +59,7 @@ class Qwen35Batch:
         self.slots, self.context, self.splits = value['slots'], value['context'], value['splits']
         self.kv_dtype = value.get('kv_dtype','bfloat16')
         if self.kv_dtype not in ('bfloat16','fp8'):raise ValueError('unsupported KV cache precision')
-        if self.slots not in (1,2,4,8) or not 1 <= self.context <= self.config.context_limit:
+        if self.slots not in (1,2,4,8,16,32,64) or not 1 <= self.context <= self.config.context_limit:
             raise ValueError('unsupported Qwen batch capacity')
         self.position = np.zeros(self.slots,dtype='int32')
         self.active = np.zeros(self.slots,dtype='int32')

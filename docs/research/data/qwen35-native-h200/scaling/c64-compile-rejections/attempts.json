@@ -1,0 +1,18 @@
+[
+  {
+    "log": "qwen35-h200-akbar-scaling-prepare-v6.log.gz",
+    "original_bytes": 60843,
+    "original_sha256": "f429b6afb584e0ca94e7a7a38d98b78ae7c1c62244c060e0e631ac3eb80a65c7",
+    "http_requests_sent": 0,
+    "timed_replay_consumed": false,
+    "reason": "Flattening the 256 MiB recurrent input copy exceeded TileLang int32 bit-count handling; fixed with direct two-dimensional indexing."
+  },
+  {
+    "log": "qwen35-h200-akbar-scaling-short64.log.gz",
+    "original_bytes": 20394,
+    "original_sha256": "38dc46cdfde062a1036e3b524aed94adb282a97258408ad5b2bec3618858cf6a",
+    "http_requests_sent": 0,
+    "timed_replay_consumed": false,
+    "reason": "Flattening the C64 four-position FP32 snapshot exceeded TileLang int32 bit-count handling; fixed with the existing indexed Hopper restore."
+  }
+]

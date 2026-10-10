@@ -1,0 +1,23 @@
+{
+  "proof": {
+    "key": "fa11888ba5b30e215185cd378f0bf032d208a520d84ebb992ade5d422c46d637",
+    "source": "executed",
+    "path": "/cache/kernel-qualification/fa11888ba5b30e215185cd378f0bf032d208a520d84ebb992ade5d422c46d637",
+    "log_sha256": "cdcea003907fefbffeb94632e423060261b426e477172fb2126d5b7e0f6ba7c6"
+  },
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "pytest",
+    "packages/tensor-llm/tests/test_qwen_kernels.py",
+    "packages/tensor-llm/tests/test_qwen_batch_scaling.py",
+    "packages/tensor-llm/tests/test_qwen_recompute.py",
+    "packages/tensor-llm/tests/test_qwen_spec.py",
+    "packages/tensor-llm/tests/test_qwen_graph_pool.py",
+    "-q",
+    "-o",
+    "addopts="
+  ],
+  "exit_code": 0,
+  "log": "......................................................                   [100%]\n=============================== warnings summary ===============================\npackages/tensor-llm/tests/test_qwen_kernels.py: 14 warnings\npackages/tensor-llm/tests/test_qwen_batch_scaling.py: 34 warnings\npackages/tensor-llm/tests/test_qwen_spec.py: 4 warnings\n  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead\n    deprecated_warning(\"T.reinterpret(dtype, value)\", \"reinterpret(value, dtype)\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n54 passed, 52 warnings in 425.41s (0:07:05)\n"
+}

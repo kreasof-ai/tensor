@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from .build import build_artifact, needs_build
+from tensor.compiler.entry import export_source
 from tensor_llm.qwen35.checkpoint import Qwen35Checkpoint
 from tensor_llm.qwen35.decode import implementation_hashes
 from tensor_llm.qwen35.artifacts import requirements
@@ -15,14 +16,21 @@ from tensor_llm.qwen35.kernels.decode import source
 def produce(checkpoint,out,*,slots=8,context=48000,target='sm_89',splits=16,kv_dtype='bfloat16'):
     c=Qwen35Checkpoint(checkpoint)
     c.config.state_bytes(slots=slots,context=context)
-    if slots not in (1,2,4,8):raise ValueError('slots must be 1, 2, 4 or 8')
+    if slots not in (1,2,4,8,16,32,64):raise ValueError('slots must be 1, 2, 4, 8, 16, 32 or 64')
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     manifest=dict(schema='tensor.qwen35-batch.v1',status='building',slots=slots,context=context,
         target=target,splits=splits,kv_dtype=kv_dtype,config=asdict(c.config),implementation=implementation_hashes(),kernels={})
     (out/'inference.json').unlink(missing_ok=True)
     for key,(kind,p) in requirements(c.config,slots,context,splits=splits,kv_dtype=kv_dtype).items():
         entry=out/(key+'.py');artifact=out/(key+'.tbin')
-        text=source(kind,p)
+        # The scalar GEMV schedule owns at most eight rows. Larger logical
+        # projections keep the same ABI and use the existing tensor-core path.
+        if kind=='fp8_linear' and slots>8:
+            text=export_source('tensor_llm.qwen35.kernels.matmul','make_kernel',
+                'fp8_linear_mma',dict(p,block_m=16,columns=64,threads=128),
+                dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering'))
+        else:
+            text=source(kind,p)
         if needs_build(entry, artifact, text, target):
             artifact.unlink(missing_ok=True);entry.write_text(text)
             build_artifact(entry,artifact,target=target)

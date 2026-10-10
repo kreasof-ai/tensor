@@ -1,0 +1,77 @@
+{
+  "schema": "tensor.llm-serving-servers.v1",
+  "comparison_group": "qwen35-h200-batch-scaling-32k16k-native-fp8kv-experimental",
+  "servers": [
+    {
+      "name": "tensor-h200-mtp-lookup-c32",
+      "engine": "tensor",
+      "base_url": "http://127.0.0.1:8013",
+      "model": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "model_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "engine_version": "0.1.0-native-qwen35-dev",
+      "weight_format": "FP8-block128",
+      "kv_dtype": "fp8",
+      "state_dtype": "float32",
+      "tokenizer_name": "Qwen/Qwen3.5-35B-A3B-FP8",
+      "tokenizer_revision": "9d1823d2dee688a6b25e77009dc727688c44936e",
+      "hardware": "NVIDIA H200 x1",
+      "cpu_offload": "none",
+      "prefix_cache": false,
+      "speculative": true,
+      "gpu_indices": [
+        "0"
+      ],
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "benchmarks.qwen35.server",
+        "--checkpoint",
+        "/cache/models/9d1823d2dee688a6b25e77009dc727688c44936e",
+        "--bundle",
+        "/cache/batch-scaling/6bb9f26be4d65641/decode-profile/decoder",
+        "--prefill-bundle",
+        "/__modal/volumes/vo-NroLxa4lxPdBUDMrv2ZzIx/batch-scaling/6bb9f26be4d65641/compact",
+        "--compact-experts",
+        "--hopper-bundle",
+        "/cache/dense-m128/aa15883d4bce7f2d/hopper",
+        "--attention-workspace-bundle",
+        "/cache/batch-scaling/6bb9f26be4d65641/attention-workspace",
+        "--port",
+        "8013",
+        "--output-lookup",
+        "--fallback-proposals",
+        "3",
+        "--resident-speculative-graphs",
+        "--draft-bundle",
+        "/__modal/volumes/vo-NroLxa4lxPdBUDMrv2ZzIx/batch-scaling/6bb9f26be4d65641/mtp",
+        "--draft-prefill-bundle",
+        "/__modal/volumes/vo-NroLxa4lxPdBUDMrv2ZzIx/batch-scaling/6bb9f26be4d65641/mtp-prefill",
+        "--verify-bundle",
+        "/cache/batch-padded-attention/ba3c45459be4f87a/verify",
+        "--repair-bundle",
+        "/__modal/volumes/vo-NroLxa4lxPdBUDMrv2ZzIx/batch-scaling/6bb9f26be4d65641/repair-attention"
+      ],
+      "model_throughput_qualified": false,
+      "full_stress_target_reached": false,
+      "settings": {
+        "max_model_len": 48000,
+        "max_num_seqs": 32,
+        "prefill_chunk": 512,
+        "prefill_dense_block_m": 128,
+        "verification_window": 128,
+        "adaptive_verification": true,
+        "adaptive_windows": [
+          4,
+          128
+        ],
+        "speculative_graphs_resident": true,
+        "prefill_attention_workspace_dtype": "bfloat16",
+        "verification_attention_workspace_dtype": "bfloat16",
+        "output_lookup": true,
+        "fallback_proposals": 3,
+        "scheduler": "fixed native cohort",
+        "recurrent_state_restore": "accepted-prefix-recompute"
+      }
+    }
+  ]
+}

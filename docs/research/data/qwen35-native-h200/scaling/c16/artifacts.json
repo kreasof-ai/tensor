@@ -1,0 +1,80 @@
+{
+  "run": {
+    "run_id": "20261010T062218Z-c16-d3526524823f2cfa",
+    "volume": "tensor-qwen35-h200"
+  },
+  "artifacts": [
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/batch-quality.json",
+      "bytes": 2562432,
+      "sha256": "9d8bcb6a496ae825b0f5b97ec88c9af10245ca055875f13eb5588ee8f67e9984",
+      "local_path": "batch-quality.json.gz"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/kernel-tests.log",
+      "bytes": 663,
+      "sha256": "c165dbad35ee41335d8740f29b944e7d4a7752fb3c345470d381f14bcf7c6401",
+      "local_path": "kernel-tests.log"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/serial-quality/report.json",
+      "bytes": 669,
+      "sha256": "f5b7dd17149007abdff471de3760e9cba3cf709411cea67aafc2c514fd7cf0da",
+      "local_path": "serial-quality/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/serial-quality/sample.npz",
+      "bytes": 63579674,
+      "sha256": "6f8661eafa361a5ef43fb4efcf0803e2d560a7ea5a9aa59b5165f9f736aa3f55",
+      "retention": "Modal volume; workload also reproducible from shared master"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/servers.json",
+      "bytes": 2750,
+      "sha256": "79559d36e1903b07e05dda2a73d2964e2abfc20338e6a4be67462dee9fb9b0cb",
+      "local_path": "servers.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/summary.json",
+      "bytes": 59092,
+      "sha256": "afb313b9243aa9cee49d0c4abd7df55e411ed3d2a552077990b4db8269c27ad4",
+      "local_path": "summary.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/tensor-h200-mtp-lookup-c16/report.json",
+      "bytes": 9546,
+      "sha256": "1085655485f356c7b3e03d867470ca2843f7f4f3403eb7123f0e5ba55d06deae",
+      "local_path": "tensor-h200-mtp-lookup-c16/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/c16-r0-requests.jsonl",
+      "bytes": 449698,
+      "sha256": "9299a139459865c5872901f3e99ae245e993ddc09bccc2ac818e43dd51c63f9a",
+      "local_path": "tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/c16-r0-requests.jsonl"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/c16-r0-telemetry.jsonl",
+      "bytes": 111897,
+      "sha256": "e952db375b0e9ae0d83b129f5bda2551f0d6b676e0966fa9e4f84e6c6eaaf654",
+      "local_path": "tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/c16-r0-telemetry.jsonl"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/c16-r0-warmup.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "local_path": "tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/c16-r0-warmup.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/server.log",
+      "bytes": 594,
+      "sha256": "99a2e50936819e204b6b57939793325cbca4b0e8b927d2af6024523a95700b75",
+      "local_path": "tensor-h200-mtp-lookup-c16/tensor-h200-mtp-lookup-c16/server.log"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T062218Z-c16-d3526524823f2cfa/tensor-h200-mtp-lookup-c16/workload.json",
+      "bytes": 7966162,
+      "sha256": "475c38a01e0097bb99ff96ac5b1d751644a8072a224db4c10143bf3be9dfbcf4",
+      "retention": "Modal volume; workload also reproducible from shared master"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+..............................                                           [100%]
+=============================== warnings summary ===============================
+packages/tensor-llm/tests/test_qwen_kernels.py: 14 warnings
+packages/tensor-llm/tests/test_qwen_batch_scaling.py: 34 warnings
+  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+    deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+30 passed, 48 warnings in 177.49s (0:02:57)

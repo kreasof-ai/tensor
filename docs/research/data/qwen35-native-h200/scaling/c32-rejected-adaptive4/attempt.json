@@ -1,0 +1,6 @@
+{
+  "kind": "rejected-before-timed-replay",
+  "http_requests_sent": 0,
+  "timed_replay_consumed": false,
+  "reason": "Four-position full-model forward and rollback differed from the fixed 128-position control; all 32-slot fixed-window comparisons passed."
+}

@@ -1,0 +1,17 @@
+{
+  "core_bytes": 56615384832,
+  "prefill_bytes": 9228012664,
+  "draft_prefill_bytes": 6417810560,
+  "verification_bytes": 23431638008,
+  "repair_bytes": 2686583936,
+  "adaptive_verification_bytes": 6638346104,
+  "adaptive_repair_bytes": 83956864,
+  "resident_speculative_graphs": true,
+  "known_peak_bytes": 105101732968,
+  "reserve_bytes": 6442450944,
+  "required_with_reserve_bytes": 111544183912,
+  "exclusions": [
+    "CUDA modules/graphs/driver overhead covered by reserve",
+    "small decoder Split-K and quantization scratch covered by reserve"
+  ]
+}

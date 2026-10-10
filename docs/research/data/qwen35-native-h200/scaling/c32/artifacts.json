@@ -1,0 +1,86 @@
+{
+  "run": {
+    "run_id": "20261010T073833Z-c32-ba3c45459be4f87a",
+    "volume": "tensor-qwen35-h200"
+  },
+  "artifacts": [
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/adaptive-quality/report.json",
+      "bytes": 1285,
+      "sha256": "ba7d8907f835d20e486784d33b6f80e85dd6a6094712399bbd6450e9a4222c8a",
+      "local_path": "adaptive-quality/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/batch-quality.json",
+      "bytes": 5124488,
+      "sha256": "d96c83c45e08a4687957f155b7b5f230224c966c567a227410039aa218be0d2d",
+      "local_path": "batch-quality.json.gz"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/kernel-tests.log",
+      "bytes": 719,
+      "sha256": "75a0f660d33f988bc47e93503098c919357b115c945c1ee077363fc38cd40dcf",
+      "local_path": "kernel-tests.log"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/serial-quality/report.json",
+      "bytes": 845,
+      "sha256": "848a33a288ef42a93dedcd4decb50f593af3cb1c7d70eda23634e68435591772",
+      "local_path": "serial-quality/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/serial-quality/sample.npz",
+      "bytes": 127158042,
+      "sha256": "5698eeed75a76132f7b5afb88c0c31507518bb1a124b8ca12bc30494b9f39437",
+      "retention": "Modal volume; workload also reproducible from shared master"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/servers.json",
+      "bytes": 2789,
+      "sha256": "321d3d335e0bb94e520ae76049ce194c401c757ccf24059b28263160718b7e19",
+      "local_path": "servers.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/summary.json",
+      "bytes": 135680,
+      "sha256": "9b4a8d8fe903b2da4ef3fe0180154a273a828695537cb5eabfa0dd4116c7a65b",
+      "local_path": "summary.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/tensor-h200-mtp-lookup-c32/report.json",
+      "bytes": 9583,
+      "sha256": "83f46555e8fe8996b2a8dfe3f7d4aa818aca26f8d6b70b3f412bd60ce9c87838",
+      "local_path": "tensor-h200-mtp-lookup-c32/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/c32-r0-requests.jsonl",
+      "bytes": 1611619,
+      "sha256": "c38dda581f8045fe8a2588f0516050c20735fa3e24ad3c474c5c7c5d96c2d28a",
+      "local_path": "tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/c32-r0-requests.jsonl"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/c32-r0-telemetry.jsonl",
+      "bytes": 109807,
+      "sha256": "4976d53829b0d77ceee1fc6b4b8b7bfa2ab4b583d5bb4dd0d49528eb8c6cfdb0",
+      "local_path": "tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/c32-r0-telemetry.jsonl"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/c32-r0-warmup.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "local_path": "tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/c32-r0-warmup.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/server.log",
+      "bytes": 629,
+      "sha256": "279c3ddac1aaf108f36c72f5d66504ebeeb5d8aa1b134b0d4ad4d02624e0f24a",
+      "local_path": "tensor-h200-mtp-lookup-c32/tensor-h200-mtp-lookup-c32/server.log"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T073833Z-c32-ba3c45459be4f87a/tensor-h200-mtp-lookup-c32/workload.json",
+      "bytes": 15930876,
+      "sha256": "49454e98e4c61e516f6c57cc7b7f3c36797102761916d1bdbd40b53ca0d5eac2",
+      "retention": "Modal volume; workload also reproducible from shared master"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "run": {
+    "run_id": "20261010T080313Z-c64-0c151017123742a9",
+    "volume": "tensor-qwen35-h200"
+  },
+  "artifacts": [
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/adaptive-quality/report.json",
+      "bytes": 1860,
+      "sha256": "c6f54b659ad43572d7d3b3eadc7f6663c0500489396ea1ee2f484946cb14c667",
+      "local_path": "adaptive-quality/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/batch-quality.json",
+      "bytes": 10248596,
+      "sha256": "4e24a592c34a514e7351589e38acbf67e337c82898de77a1aa8f04f8dd6908ab",
+      "local_path": "batch-quality.json.gz"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/kernel-tests.log",
+      "bytes": 719,
+      "sha256": "75a0f660d33f988bc47e93503098c919357b115c945c1ee077363fc38cd40dcf",
+      "local_path": "kernel-tests.log"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/serial-quality/report.json",
+      "bytes": 1199,
+      "sha256": "6fb8972f23c82bf36769a587b8ad6c3cba748ea80c3af81c0de6e62ba3051b63",
+      "local_path": "serial-quality/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/serial-quality/sample.npz",
+      "bytes": 254314778,
+      "sha256": "ae693094760d0289b2cfd8706ddd3cc14b689b38b8f07295c4677430de6ae255",
+      "retention": "Modal volume; workload also reproducible from shared master"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/servers.json",
+      "bytes": 2647,
+      "sha256": "dbbae3e169f77e77226d5ccadc423ca175e114353b6eeb06f3ef000453983d3b",
+      "local_path": "servers.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/summary.json",
+      "bytes": 118004,
+      "sha256": "9ae6ad7888d50a7a3ccefbd5ce73eb4ca49f318d580d110425bd5ff9a7e3b277",
+      "local_path": "summary.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/tensor-h200-mtp-lookup-c64/report.json",
+      "bytes": 9454,
+      "sha256": "b155a494ab689b963e30f815a5b8e5897c690cba46103e06eb0c4e8782ffa8a7",
+      "local_path": "tensor-h200-mtp-lookup-c64/report.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/c64-r0-requests.jsonl",
+      "bytes": 3212568,
+      "sha256": "eeef3f00a5d6808ec15eff260a4586b74b95a44d1acc83ca1ee627fc561cf9b4",
+      "local_path": "tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/c64-r0-requests.jsonl"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/c64-r0-telemetry.jsonl",
+      "bytes": 174348,
+      "sha256": "33da36f17eec064e9fae2b326fb002ead7cf0b6171b982a1bd30e8ff40f87c91",
+      "local_path": "tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/c64-r0-telemetry.jsonl"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/c64-r0-warmup.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "local_path": "tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/c64-r0-warmup.json"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/server.log",
+      "bytes": 522,
+      "sha256": "9c9f0bf7f372017914366a301af9b700955e29c90ded7b6100fea4845c946a3b",
+      "local_path": "tensor-h200-mtp-lookup-c64/tensor-h200-mtp-lookup-c64/server.log"
+    },
+    {
+      "remote_path": "/batch-runs/20261010T080313Z-c64-0c151017123742a9/tensor-h200-mtp-lookup-c64/workload.json",
+      "bytes": 31860391,
+      "sha256": "0929b537ade1676385fa4b05c5e8f8586859e644671fea2a326b3912d5b08016",
+      "retention": "Modal volume; workload also reproducible from shared master"
+    }
+  ]
+}

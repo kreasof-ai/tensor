@@ -1,0 +1,21 @@
+{
+  "proof": {
+    "key": "f6677948a754caafbf12ba25c3042d90cff12dd7f95b9f52ef33f49acbe34403",
+    "source": "executed",
+    "path": "/cache/kernel-qualification/f6677948a754caafbf12ba25c3042d90cff12dd7f95b9f52ef33f49acbe34403",
+    "log_sha256": "c165dbad35ee41335d8740f29b944e7d4a7752fb3c345470d381f14bcf7c6401"
+  },
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "pytest",
+    "packages/tensor-llm/tests/test_qwen_kernels.py",
+    "packages/tensor-llm/tests/test_qwen_batch_scaling.py",
+    "packages/tensor-llm/tests/test_qwen_recompute.py",
+    "-q",
+    "-o",
+    "addopts="
+  ],
+  "exit_code": 0,
+  "log": "..............................                                           [100%]\n=============================== warnings summary ===============================\npackages/tensor-llm/tests/test_qwen_kernels.py: 14 warnings\npackages/tensor-llm/tests/test_qwen_batch_scaling.py: 34 warnings\n  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead\n    deprecated_warning(\"T.reinterpret(dtype, value)\", \"reinterpret(value, dtype)\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n30 passed, 48 warnings in 177.49s (0:02:57)\n"
+}
