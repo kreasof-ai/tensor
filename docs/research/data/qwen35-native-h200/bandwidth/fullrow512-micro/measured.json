@@ -1,0 +1,178 @@
+{
+  "prepared": {
+    "root": "/cache/attention-workspace/aaa6a3046a57839c",
+    "source_hashes": {
+      "/root/modal_bandwidth.py": "8e48613c004fb6aec976638fad3b26879c2a2ca0e96c57b4f7d6fbdef410e576",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "9348295d765be5471c37d6cb6998bedf4e319af5d716e7487d88a85b2c760f91"
+    },
+    "candidates": [
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 128,
+          "threads": 256,
+          "joint_kv": false
+        },
+        "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j0.tbin",
+        "compiled": true
+      },
+      {
+        "path": "/cache/attention-workspace/aaa6a3046a57839c/attention.tbin",
+        "compiled": true,
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "query_rows": 128,
+          "threads": 512,
+          "decoded_kv": true,
+          "joint_kv": false,
+          "value_splits": 1,
+          "square_warps": false
+        }
+      }
+    ],
+    "copy": "/cache/bandwidth/0006096995e3a98e/copy.tbin",
+    "decode": "/cache/attention-workspace/aaa6a3046a57839c/decode.tbin",
+    "fullrow512_sources": {
+      "/root/benchmarks/qwen35/modal_bandwidth.py": "fa3f3f584b56c042078e4c06a85b94d3cf8a30a3fff372e7e37a178902eef121",
+      "benchmarks/qwen35/attention_workspace_producer.py": "9f31fbe6a879bb628db69ab0ec78943d1dc6a45f9db084e6b3aeba8d14d63804",
+      "packages/tensor-llm/src/tensor_llm/qwen35/attention_workspace.py": "18bcb2e58cdd8075f127fccdb066853eb69082663ccc4e0e0b660f6490cd5e60",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "b6f63d02fb3c33b25dca80c3939a7bbced18e192a8a123d7d9a2851b4d2e4600"
+    }
+  },
+  "cases": [
+    {
+      "context": 0,
+      "candidates": [
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "joint_kv": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.3991359869639079,
+            0.39547733465830487,
+            0.39601067701975506,
+            0.3944213390350342,
+            0.39818668365478516
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "query_rows": 128,
+            "threads": 512,
+            "decoded_kv": true,
+            "joint_kv": false,
+            "value_splits": 1,
+            "square_warps": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.397269328435262,
+            0.39929600556691486,
+            0.39790932337443036,
+            0.4014506737391154,
+            0.3970346848169963
+          ],
+          "timing_includes_workspace_decode": true
+        }
+      ]
+    },
+    {
+      "context": 32000,
+      "candidates": [
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "joint_kv": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            28.62567392985026,
+            28.6868896484375,
+            28.698209126790363,
+            28.704811096191406,
+            28.738176981608074
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "query_rows": 128,
+            "threads": 512,
+            "decoded_kv": true,
+            "joint_kv": false,
+            "value_splits": 1,
+            "square_warps": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            28.2387212117513,
+            28.234731038411457,
+            28.2763188680013,
+            28.230239868164062,
+            28.27147674560547
+          ],
+          "timing_includes_workspace_decode": true
+        }
+      ]
+    }
+  ],
+  "timing": "CUDA graph events; isolated kernels, not model throughput",
+  "nsight_compute": "/usr/local/cuda/bin/ncu",
+  "nvidia_smi": "Sat Oct 10 03:17:51 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:59:00.0 Off |                    0 |\n| N/A   34C    P0             76W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  },
+  "streaming_copy": {
+    "bytes_read_per_launch": 1073741824,
+    "bytes_written_per_launch": 1073741824,
+    "milliseconds": [
+      0.5280479788780212,
+      0.5280560255050659,
+      0.5275999903678894,
+      0.5271520018577576,
+      0.5280240178108215
+    ],
+    "useful_read_write_GB_per_second": [
+      4066.834329264742,
+      4066.7723580012403,
+      4070.2875041801735,
+      4073.7465483047895,
+      4067.0188771022767
+    ],
+    "note": "Useful copy traffic; not hardware DRAM counters or achieved model bandwidth"
+  }
+}

@@ -2,9 +2,11 @@
 
 def partial(p):
     import tilelang.language as T
+    from tensor.compiler.entry import primitive
     r, chunk, cap, splits, d = p['slots'],p['chunk'],p['capacity'],p.get('splits',16),256
     rows=r*chunk
     packed=p.get('packed_loads',False)
+    decoded=p.get('decoded_kv',False)
     tile_rows=p.get('key_rows',64)
     query_tokens=min(chunk,p.get('query_tokens',8))
     query_rows=max(16,query_tokens*8)
@@ -12,20 +14,22 @@ def partial(p):
     threads=p.get('threads',128 if query_rows<=64 else 256)
     policy=T.GemmWarpPolicy.FullRow if query_rows>=128 else T.GemmWarpPolicy.Square
     if packed and cap%tile_rows:raise ValueError('packed KV requires capacity divisible by the key tile')
-    @T.prim_func
-    def kernel(q: T.Tensor((rows, 16, d), 'bfloat16'),
-               kc: T.Tensor((r, 2, cap, d), 'uint8'), vc: T.Tensor((r, 2, cap, d), 'uint8'),
-               ks: T.Tensor((r, 2, cap, 2), 'float32'), vs: T.Tensor((r, 2, cap, 2), 'float32'),
-               positions: T.Tensor((r,), 'int32'), lengths: T.Tensor((r,), 'int32'),
-               out: T.Tensor((r, 2, splits, chunk*8, d), 'float32'),
-               stats: T.Tensor((r, 2, splits, chunk*8, 2), 'float32')):
+    arguments=[('q',(rows,16,d),'bfloat16'),
+        ('kc',(r,2,cap,d),'bfloat16' if decoded else 'uint8'),
+        ('vc',(r,2,cap,d),'bfloat16' if decoded else 'uint8')]
+    if not decoded:
+        arguments += [('ks',(r,2,cap,2),'float32'),('vs',(r,2,cap,2),'float32')]
+    arguments += [('positions',(r,),'int32'),('lengths',(r,),'int32'),
+        ('out',(r,2,splits,chunk*8,d),'float32'),('stats',(r,2,splits,chunk*8,2),'float32')]
+    @T.macro
+    def algorithm(q,kc,vc,ks,vs,positions,lengths,out,stats):
         with T.Kernel(r, 2, splits*query_tiles, threads=threads) as (slot, head, group):
             part=group//query_tiles;query_tile=group%query_tiles
             query = T.alloc_shared((query_rows, d), 'bfloat16')
             key = T.alloc_shared((tile_rows, d), 'bfloat16')
             value = T.alloc_shared((tile_rows, d), 'bfloat16')
             prob = T.alloc_shared((query_rows, tile_rows), 'bfloat16')
-            if packed:
+            if packed and not decoded:
                 encoded=T.alloc_shared((tile_rows,d),'float8_e4m3fn')
                 scales=T.alloc_shared((tile_rows,2),'float32')
             scores = T.alloc_fragment((query_rows, tile_rows), 'float32')
@@ -44,7 +48,14 @@ def partial(p):
             tiles = T.ceildiv(T.ceildiv(count, tile_rows), splits)
             if (lengths[slot] > query_tile*query_tokens) & (part * tiles * tile_rows < count):
                 for tile in T.serial(tiles):
-                    if packed:
+                    if decoded:
+                        start=(part*tiles+tile)*tile_rows
+                        if start<cap:
+                            T.copy(kc[slot,head,start:start+tile_rows,0:d],key)
+                            T.copy(vc[slot,head,start:start+tile_rows,0:d],value)
+                        else:
+                            T.clear(key);T.clear(value)
+                    elif packed:
                         start=(part*tiles+tile)*tile_rows
                         if start<cap:
                             keys=T.view(kc,dtype='float8_e4m3fn')
@@ -88,4 +99,9 @@ def partial(p):
                 if query_tile*query_tokens*8+i<chunk*8:
                     stats[slot, head, part, query_tile*query_tokens*8+i, 0] = maximum[i]
                     stats[slot, head, part, query_tile*query_tokens*8+i, 1] = normalizer[i]
-    return kernel
+    if decoded:
+        @T.macro
+        def decoded_algorithm(q,kc,vc,positions,lengths,out,stats):
+            algorithm(q,kc,vc,kc,vc,positions,lengths,out,stats)
+        return primitive(arguments,decoded_algorithm)
+    return primitive(arguments,algorithm)

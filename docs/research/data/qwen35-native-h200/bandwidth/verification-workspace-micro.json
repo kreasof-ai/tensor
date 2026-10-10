@@ -1,0 +1,133 @@
+{
+  "scope": "isolated verification attention; not complete model throughput",
+  "prepared": {
+    "workspace": "/cache/attention-workspace-verification/local-v1",
+    "control": "/cache/bandwidth-projections/verify64-v1/66b849b3d40440d6c6f12a5e.tbin"
+  },
+  "cases": [
+    {
+      "context": 0,
+      "lengths": [
+        64,
+        63,
+        37,
+        0,
+        1,
+        9,
+        64,
+        48
+      ],
+      "bitwise_equal": true,
+      "finite": true,
+      "relative_rms": 0.0,
+      "control_milliseconds": [
+        0.05228800078233083,
+        0.05083733300367991,
+        0.05075199902057648,
+        0.050154666105906166,
+        0.050240000089009605
+      ],
+      "candidate_milliseconds": [
+        0.056757330894470215,
+        0.05516799787680308,
+        0.05532800157864889,
+        0.05559466779232025,
+        0.054805333415667214
+      ],
+      "timing_includes_workspace_decode": true,
+      "workspace_bytes": 786432000
+    },
+    {
+      "context": 32000,
+      "lengths": [
+        64,
+        63,
+        37,
+        0,
+        1,
+        9,
+        64,
+        48
+      ],
+      "bitwise_equal": true,
+      "finite": true,
+      "relative_rms": 0.0,
+      "control_milliseconds": [
+        1.2304426829020183,
+        1.228874683380127,
+        1.2300159931182861,
+        1.2286826769510906,
+        1.227552016576131
+      ],
+      "candidate_milliseconds": [
+        1.0344959894816081,
+        1.031434694925944,
+        1.0280106862386067,
+        1.0308159987131755,
+        1.0289279619852703
+      ],
+      "timing_includes_workspace_decode": true,
+      "workspace_bytes": 786432000
+    },
+    {
+      "context": 47936,
+      "lengths": [
+        64,
+        63,
+        37,
+        0,
+        1,
+        9,
+        64,
+        48
+      ],
+      "bitwise_equal": true,
+      "finite": true,
+      "relative_rms": 0.0,
+      "control_milliseconds": [
+        1.817855993906657,
+        1.8149654070536296,
+        1.8169066111246746,
+        1.8143893877665203,
+        1.8176426887512207
+      ],
+      "candidate_milliseconds": [
+        1.5187093416849773,
+        1.5157546997070312,
+        1.5144640604654949,
+        1.5240960121154785,
+        1.5145386060078938
+      ],
+      "timing_includes_workspace_decode": true,
+      "workspace_bytes": 786432000
+    }
+  ],
+  "source_hashes": {
+    "/root/modal_verify_workspace.py": "b26093b99af5e5b3827742e75c6c6669ffee37c49fdf4bf86580fdf12b9147c3",
+    "benchmarks/qwen35/kernel_timing.py": "4987a9cfaa9f91d7026186ffb20908c8f06172e623605756d2ea6597006f899d",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_attention.py": "41924135d13c90e5d8c9b8b6a8867967652a3081dae14027f2f9f7f70be22946",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d",
+    "packages/tensor-llm/tests/test_qwen_hopper.py": "26e6adfaf064238ae2a7592523174c0b043dcb53af7ab531d6375b83e0661c45"
+  },
+  "kernel_checks": {
+    "command": [
+      "/usr/local/bin/python",
+      "-m",
+      "pytest",
+      "packages/tensor-llm/tests/test_qwen_hopper.py",
+      "-k",
+      "query_tiles and True",
+      "-q",
+      "-o",
+      "addopts="
+    ],
+    "exit_code": 0,
+    "log": ".....                                                                    [100%]\n5 passed, 75 deselected in 197.33s (0:03:17)\n"
+  },
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  }
+}

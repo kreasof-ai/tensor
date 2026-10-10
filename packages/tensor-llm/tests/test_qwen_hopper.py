@@ -5,7 +5,8 @@ import pytest
 
 
 @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='Hopper padded attention qualification')
-def test_hopper_prefill_attention_preserves_control_bits(tmp_path):
+@pytest.mark.parametrize('query_rows,threads,joint,decoded,value_splits',[(128,256,False,False,1),(128,256,True,False,1),(64,128,True,False,1),(128,128,True,False,1),(256,256,True,False,1),(128,256,False,True,1),(128,256,False,True,2)])
+def test_hopper_prefill_attention_preserves_control_bits(tmp_path,query_rows,threads,joint,decoded,value_splits):
     import torch,tensor
     from tensor.compiler.entry import export_source
     from tensor.compiler.build import build_artifact
@@ -20,14 +21,24 @@ def test_hopper_prefill_attention_preserves_control_bits(tmp_path):
     p=dict(slots=s,chunk=c,capacity=cap,query_rows=128,key_rows=16,packed_loads=True)
     artifacts=[]
     for module,target in [('fp8_kv','sm_90'),('hopper_prefill_attention','sm_90a')]:
+        schedule=p if module=='fp8_kv' else dict(p,query_rows=query_rows,threads=threads,joint_kv=joint,decoded_kv=decoded,value_splits=value_splits)
         entry=tmp_path/(module+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,'attention',p,
+        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,'attention',schedule,
                                        dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,artifact,target=target,compiler='nvrtc',
                        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
         artifacts.append(artifact)
+    if decoded:
+        entry=tmp_path/'decode.py';artifact=entry.with_suffix('.tbin')
+        entry.write_text(export_source('tensor_llm.qwen35.kernels.attention_workspace','decode',
+                        dict(slots=s,capacity=cap),dependencies=('tensor.compiler.entry',)))
+        build_artifact(entry,artifact,target='sm_90a',compiler='nvrtc',
+                       nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as device:
         kernels=[device.load(path) for path in artifacts]
+        if decoded:
+            decoder=device.load(artifact)
+            workspace=[device.empty((s,2,cap,d),'bfloat16') for _ in range(2)]
         shared=[device.from_numpy(q,dtype='bfloat16'),
                 *[device.from_numpy(x.numpy()) for x in (kb,vb,ks,vs)],device.from_numpy(projection)]
         for pos,length in [([0,0],[32,17]),([96,64],[31,3]),([96,64],[0,32])]:
@@ -41,9 +52,13 @@ def test_hopper_prefill_attention_preserves_control_bits(tmp_path):
                 shared[index].release();shared[index]=device.from_numpy(value)
             args=[*shared,device.from_numpy(np.array(pos,'int32')),device.from_numpy(np.array(length,'int32'))]
             results=[]
-            for kernel in kernels:
+            for index,kernel in enumerate(kernels):
+                selected=args
+                if decoded and index==1:
+                    decoder.launch(*shared[1:5],*args[-2:],*workspace)
+                    selected=[shared[0],*workspace,shared[5],*args[-2:]]
                 output=device.zeros((rows,4096),'bfloat16')
-                kernel.launch(*args,output);results.append(output.to_numpy());output.release()
+                kernel.launch(*selected,output);results.append(output.to_numpy());output.release()
             assert np.isfinite(results[1]).all()
             np.testing.assert_array_equal(results[1],results[0])
 
@@ -81,7 +96,7 @@ def tensor_export():return {'kernel':kernel,'outputs':['out']}
 
 
 @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='native Hopper projection qualification')
-@pytest.mark.parametrize('paired',[False,True,'async','pipeline','warp','persistent'])
+@pytest.mark.parametrize('paired',[False,True,'async','pipeline','warp','persistent','packed'])
 @pytest.mark.parametrize('columns',[64,128])
 @pytest.mark.parametrize('grouped',[False,True])
 @pytest.mark.parametrize('parts',[1,2])
@@ -107,6 +122,7 @@ def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,pa
     p=dict(r=rows,k=k,o=o,block_m=64,threads=128 if columns==64 else 256,columns=columns,partitions=parts)
     if paired=='warp':p.update(block_m=16,threads=128)
     if paired:p.update(mma_reduction=32,mma_reorder=True,async_mma=paired in ('async','pipeline'))
+    if paired=='packed':p.update(packed_widen=True)
     if paired=='pipeline':p.update(stages=2,packed_gather=True)
     if grouped:
         p.update(rows=rows,routed_input=True,compact=True,packed_gather=True,bf16_mma=paired!='warp')
@@ -128,7 +144,7 @@ def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,pa
         (selected_module,selected_factory,selected_args,'sm_90' if paired=='warp' and grouped else 'sm_90a')]):
         entry=tmp_path/(str(i)+'.py');artifact=entry.with_suffix('.tbin')
         entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,*args,
-                                      dependencies=('tensor.compiler.entry',)))
+            dependencies=('tensor.compiler.entry','tensor_llm.qwen35.kernels.fp8_operand')))
         build_artifact(entry,artifact,target=target,compiler='nvrtc',
                        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
         artifacts.append(artifact)
@@ -159,13 +175,15 @@ def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,pa
 
 
 @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='native Hopper dense Split-K qualification')
-@pytest.mark.parametrize('paired',[True,'async'])
-def test_hopper_dense_preserves_eight_part_control_bits(tmp_path,paired):
-    test_wide_hopper_projections_preserve_control_bits(tmp_path,False,8,paired,128)
+@pytest.mark.parametrize('paired',[True,'async','packed'])
+@pytest.mark.parametrize('columns',[64,128])
+def test_hopper_dense_preserves_eight_part_control_bits(tmp_path,paired,columns):
+    test_wide_hopper_projections_preserve_control_bits(tmp_path,False,8,paired,columns)
 
 @pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='native speculative attention qualification')
 @pytest.mark.parametrize('chunk,query_tokens',[(8,8),(16,8),(32,8),(16,16),(32,16)])
-def test_hopper_query_tiles_preserve_long_window_causality(tmp_path,chunk,query_tokens):
+@pytest.mark.parametrize('decoded',[False,True])
+def test_hopper_query_tiles_preserve_long_window_causality(tmp_path,chunk,query_tokens,decoded):
     import tensor,torch
     from tensor.compiler.entry import export_source
     from tensor.compiler.build import build_artifact
@@ -192,13 +210,34 @@ def test_hopper_query_tiles_preserve_long_window_causality(tmp_path,chunk,query_
     for kind in ('partial','merge'):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
         entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_attention' if kind=='partial' else 'tensor_llm.qwen35.kernels.speculative_attention',kind,
-            dict(slots=s,chunk=c,capacity=cap,splits=splits,packed_loads=True,key_rows=32,query_tokens=query_tokens),dependencies=('tensor.compiler.entry',)))
+            dict(slots=s,chunk=c,capacity=cap,splits=splits,packed_loads=True,key_rows=32,query_tokens=query_tokens,
+                 decoded_kv=decoded if kind=='partial' else False),dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,out,target='sm_90a' if kind=='partial' else 'sm_90',compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));artifacts.append(out)
+    if decoded:
+        for name,module,factory,schedule in (
+            ('decode','attention_workspace','decode',dict(slots=s,capacity=cap)),
+            ('control','hopper_attention','partial',dict(slots=s,chunk=c,capacity=cap,
+                splits=splits,packed_loads=True,key_rows=32,query_tokens=query_tokens))):
+            entry=tmp_path/(name+'.py')
+            entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,schedule,
+                dependencies=('tensor.compiler.entry',)))
+            build_artifact(entry,entry.with_suffix('.tbin'),target='sm_90a',compiler='nvrtc',
+                nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:
         qq=dev.from_numpy(q.float().numpy(),dtype='bfloat16')
         caches=[dev.from_numpy(x.numpy()) for x in (kb,vb,ks,vs)]
         parts=dev.empty((s,2,splits,c*8,d));stats=dev.empty((s,2,splits,c*8,2))
-        dev.load(artifacts[0]).launch(qq,*caches,dev.from_numpy(pos),dev.from_numpy(lengths),parts,stats)
+        positions=dev.from_numpy(pos);length_buffer=dev.from_numpy(lengths)
+        if decoded:
+            dev.load(tmp_path/'control.tbin').launch(qq,*caches,positions,length_buffer,parts,stats)
+            expected_parts=parts.to_numpy();expected_stats=stats.to_numpy()
+            scratch=[dev.empty((s,2,cap,d),'bfloat16') for _ in range(2)]
+            dev.load(tmp_path/'decode.tbin').launch(*caches,positions,length_buffer,*scratch)
+            dev.load(artifacts[0]).launch(qq,*scratch,positions,length_buffer,parts,stats)
+            np.testing.assert_array_equal(parts.to_numpy(),expected_parts)
+            np.testing.assert_array_equal(stats.to_numpy(),expected_stats)
+        else:
+            dev.load(artifacts[0]).launch(qq,*caches,positions,length_buffer,parts,stats)
         out=dev.empty(want.shape,'bfloat16')
         dev.load(artifacts[1]).launch(parts,stats,dev.from_numpy(proj),dev.from_numpy(active),out)
         got=out.to_numpy();assert np.isfinite(got).all()

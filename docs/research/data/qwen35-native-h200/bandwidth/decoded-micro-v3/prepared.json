@@ -1,0 +1,139 @@
+{
+  "root": "/cache/bandwidth-decoded/ce685aa22f4252d2",
+  "source_hashes": {
+    "/root/modal_bandwidth.py": "8e48613c004fb6aec976638fad3b26879c2a2ca0e96c57b4f7d6fbdef410e576",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "9348295d765be5471c37d6cb6998bedf4e319af5d716e7487d88a85b2c760f91"
+  },
+  "candidates": [
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j0.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "joint_kv": true
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j1.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 64,
+        "threads": 128,
+        "joint_kv": true
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q64-t128-j1.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 128,
+        "joint_kv": true
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t128-j1.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 256,
+        "threads": 256,
+        "joint_kv": true
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q256-t256-j1.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "decoded_kv": true,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth-decoded/ce685aa22f4252d2/attention.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "decoded_kv": true,
+        "joint_kv": false,
+        "value_splits": 2
+      },
+      "path": "/cache/bandwidth-decoded/ce685aa22f4252d2/attention-split2.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 512,
+        "decoded_kv": true,
+        "joint_kv": false,
+        "square_warps": true
+      },
+      "path": "/cache/bandwidth-decoded/ce685aa22f4252d2/attention-512.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 64,
+        "threads": 256,
+        "decoded_kv": true,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth-decoded/ce685aa22f4252d2/attention-q64-256.tbin",
+      "compiled": true
+    }
+  ],
+  "copy": "/cache/bandwidth/0006096995e3a98e/copy.tbin",
+  "decoded_source_hashes": {
+    "/root/modal_bandwidth.py": "b19eecc4196d6ed65a42f7133ea2a836d9fd5c1e91e812541a9229eb9062edb6",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "b6f63d02fb3c33b25dca80c3939a7bbced18e192a8a123d7d9a2851b4d2e4600",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d"
+  },
+  "decode": "/cache/bandwidth-decoded/ce685aa22f4252d2/decode.tbin"
+}

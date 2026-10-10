@@ -1,5 +1,9 @@
 # H200 serving beam search
 
+Further work resumed on 2026-10-10 in the
+[bandwidth optimization experiment](qwen35-h200-bandwidth.md). This report
+retains the earlier experiment's observations and closure.
+
 An actual beam search and its subsequent candidates have measured **2,126.824 output tok/s** on one H200,
 at C8 with eight distinct 32,000-token prompts and 16,000 output tokens per
 request. This is an experimental timing: verification still fails its

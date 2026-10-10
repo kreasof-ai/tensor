@@ -1,0 +1,393 @@
+{
+  "prepared": {
+    "root": "/cache/bandwidth-decoded/6ff133b1bcb968ff",
+    "source_hashes": {
+      "/root/modal_bandwidth.py": "8e48613c004fb6aec976638fad3b26879c2a2ca0e96c57b4f7d6fbdef410e576",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "9348295d765be5471c37d6cb6998bedf4e319af5d716e7487d88a85b2c760f91"
+    },
+    "candidates": [
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 128,
+          "threads": 256,
+          "joint_kv": false
+        },
+        "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j0.tbin",
+        "compiled": true
+      },
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 128,
+          "threads": 256,
+          "joint_kv": true
+        },
+        "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j1.tbin",
+        "compiled": true
+      },
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 64,
+          "threads": 128,
+          "joint_kv": true
+        },
+        "path": "/cache/bandwidth/0006096995e3a98e/attention-q64-t128-j1.tbin",
+        "compiled": true
+      },
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 128,
+          "threads": 128,
+          "joint_kv": true
+        },
+        "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t128-j1.tbin",
+        "compiled": true
+      },
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 256,
+          "threads": 256,
+          "joint_kv": true
+        },
+        "path": "/cache/bandwidth/0006096995e3a98e/attention-q256-t256-j1.tbin",
+        "compiled": true
+      },
+      {
+        "schedule": {
+          "slots": 8,
+          "chunk": 512,
+          "capacity": 48000,
+          "packed_loads": true,
+          "query_rows": 128,
+          "threads": 256,
+          "decoded_kv": true,
+          "joint_kv": false
+        },
+        "path": "/cache/bandwidth-decoded/6ff133b1bcb968ff/attention.tbin",
+        "compiled": true
+      }
+    ],
+    "copy": "/cache/bandwidth/0006096995e3a98e/copy.tbin",
+    "decoded_source_hashes": {
+      "/root/modal_bandwidth.py": "8ea0561f31e38ed0c1188e3343b8f6798ecc30b312c6d95cc9162eea32717e56",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "12e88753d93c08bba2df9cdc407e4d6203994122f9e0b744a4b787f5540728af",
+      "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d"
+    },
+    "decode": "/cache/bandwidth-decoded/6ff133b1bcb968ff/decode.tbin"
+  },
+  "cases": [
+    {
+      "context": 0,
+      "candidates": [
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "joint_kv": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.3957226673762004,
+            0.3979946772257487,
+            0.39770666758219403,
+            0.39689600467681885,
+            0.3963199853897095
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.3859413464864095,
+            0.38574934005737305,
+            0.38517332077026367,
+            0.37730133533477783,
+            0.3792959849039714
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 64,
+            "threads": 128,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.42237865924835205,
+            0.41945600509643555,
+            0.4192213217417399,
+            0.42007466157277423,
+            0.41972267627716064
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 128,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.7025813261667887,
+            0.7098666826883951,
+            0.7032960255940756,
+            0.7073173522949219,
+            0.706549326578776
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 256,
+            "threads": 256,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.7547307014465332,
+            0.755242665608724,
+            0.7515520254770914,
+            0.7517120043436686,
+            0.7536213397979736
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "decoded_kv": true,
+            "joint_kv": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.2982719937960307,
+            0.29792000850041706,
+            0.29895466566085815,
+            0.2995733420054118,
+            0.30037333567937213
+          ],
+          "timing_includes_workspace_decode": true
+        }
+      ]
+    },
+    {
+      "context": 32000,
+      "candidates": [
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "joint_kv": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            28.65302276611328,
+            28.685941060384113,
+            28.627092997233074,
+            28.621973673502605,
+            28.641866048177082
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            27.03199005126953,
+            26.98985544840495,
+            27.10370127360026,
+            26.975967407226562,
+            27.032918294270832
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 64,
+            "threads": 128,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            30.290367126464844,
+            30.324020385742188,
+            30.2401606241862,
+            30.23608652750651,
+            30.288843790690105
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 128,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            49.9287363688151,
+            49.7989247639974,
+            49.69664001464844,
+            49.58285013834635,
+            49.69559224446615
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 256,
+            "threads": 256,
+            "joint_kv": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            48.21429443359375,
+            48.4445546468099,
+            48.07996622721354,
+            47.75706481933594,
+            48.60967508951823
+          ]
+        },
+        {
+          "schedule": {
+            "slots": 8,
+            "chunk": 512,
+            "capacity": 48000,
+            "packed_loads": true,
+            "query_rows": 128,
+            "threads": 256,
+            "decoded_kv": true,
+            "joint_kv": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            15.653386433919271,
+            15.66006342569987,
+            15.625621795654297,
+            15.628597259521484,
+            15.638144175211588
+          ],
+          "timing_includes_workspace_decode": true
+        }
+      ]
+    }
+  ],
+  "timing": "CUDA graph events; isolated kernels, not model throughput",
+  "nsight_compute": "/usr/local/cuda/bin/ncu",
+  "nvidia_smi": "Sat Oct 10 02:24:22 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:5A:00.0 Off |                    0 |\n| N/A   29C    P0             76W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  },
+  "streaming_copy": {
+    "bytes_read_per_launch": 1073741824,
+    "bytes_written_per_launch": 1073741824,
+    "milliseconds": [
+      0.5279759764671326,
+      0.5273759961128235,
+      0.527400016784668,
+      0.5272960066795349,
+      0.527463972568512
+    ],
+    "useful_read_write_GB_per_second": [
+      4067.3889413862084,
+      4072.0162916565146,
+      4071.830829836313,
+      4072.6340059410636,
+      4071.337114348724
+    ],
+    "note": "Useful copy traffic; not hardware DRAM counters or achieved model bandwidth"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "exit_code": 0,
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "pytest",
+    "packages/tensor-llm/tests/test_qwen_recompute.py",
+    "-q",
+    "-o",
+    "addopts="
+  ],
+  "output": ".                                                                        [100%]\n1 passed in 20.92s\n",
+  "source_hashes": {
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/recompute.py": "12627145da74aa5cc9636844b79096ab6d446766819155a4f1c5a74b5f1d4b31",
+    "packages/tensor-llm/tests/test_qwen_recompute.py": "374dea49039b94df14af26ca0e4f93bb1e1915f060c5859765db5ed40380f636"
+  }
+}

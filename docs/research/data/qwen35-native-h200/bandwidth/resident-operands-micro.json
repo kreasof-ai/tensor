@@ -1,0 +1,752 @@
+{
+  "source_hashes": {
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_experts.py": "03d27a5178dab083e19166d591423e1d1e30740bcd3ca47d833805852cd85d77",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/resident_operands.py": "eb44db66828a76de88946008b3e05769e36989f3c50f0e23d612427857408c91",
+    "/root/modal_resident_operands.py": "2dc5296953cc8dc7bb49d70dd28d729e7595872b8e7798606e8cda4fd36d451b"
+  },
+  "cases": [
+    {
+      "rows": 512,
+      "k": 2048,
+      "o": 512,
+      "routing": "balanced256",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.28216532866160077,
+            0.28101332982381183,
+            0.2807360092798869,
+            0.2801706592241923,
+            0.28037333488464355
+          ],
+          "cubin_sha256": "1488855ccb3f367406b0dce4b3d2eccfd0cb23c01946b6d4fdbb84d4df46f61c"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.39686401685078937,
+            0.3963306744893392,
+            0.39740800857543945,
+            0.39532800515492755,
+            0.3956586519877116
+          ],
+          "cubin_sha256": "13e8c79a25de299316b57b5618e29673f190919dc71bcf1916f55f945efd89a8"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.43483734130859375,
+            0.43406931559244794,
+            0.4339946508407593,
+            0.4344746669133504,
+            0.43327999114990234
+          ],
+          "cubin_sha256": "0da457bef73088213fe254da0b72ec29df920a13fb4495be19a9fc7af4d1d6e8"
+        }
+      ]
+    },
+    {
+      "rows": 512,
+      "k": 2048,
+      "o": 512,
+      "routing": "hot8",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.08634666601816814,
+            0.0848533312479655,
+            0.08480000495910645,
+            0.08457600076993306,
+            0.08549333612124126
+          ],
+          "cubin_sha256": "1488855ccb3f367406b0dce4b3d2eccfd0cb23c01946b6d4fdbb84d4df46f61c"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.086709330479304,
+            0.08621866504351298,
+            0.08617599805196126,
+            0.08586666981379192,
+            0.08596266309420268
+          ],
+          "cubin_sha256": "13e8c79a25de299316b57b5618e29673f190919dc71bcf1916f55f945efd89a8"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.1129919985930125,
+            0.11264000336329143,
+            0.11160533626874287,
+            0.1120746632417043,
+            0.11172266801198323
+          ],
+          "cubin_sha256": "0da457bef73088213fe254da0b72ec29df920a13fb4495be19a9fc7af4d1d6e8"
+        }
+      ]
+    },
+    {
+      "rows": 4096,
+      "k": 2048,
+      "o": 512,
+      "routing": "balanced256",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.6954240004221598,
+            0.6947306791941324,
+            0.6949973106384277,
+            0.6932693322499593,
+            0.6936000188191732
+          ],
+          "cubin_sha256": "c09dc42c7dc18088b1f3dc69f81c4fdaf3a5c91017c7c7e3dbf1c68ff9a346ac"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.9017386436462402,
+            0.8995412985483805,
+            0.9026666482289633,
+            0.901642640431722,
+            0.8992533683776855
+          ],
+          "cubin_sha256": "415dbcb4e8ecbff89d129e5ea3435f894d0f1c0389dce42c0b457135925c62d9"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            1.052191972732544,
+            1.0567893187204997,
+            1.053546667098999,
+            1.054901361465454,
+            1.046229362487793
+          ],
+          "cubin_sha256": "92c41a9e67e2fc0ad251fc7f3af1f875659b0e0c243061b24aab7693e9c1c2d2"
+        }
+      ]
+    },
+    {
+      "rows": 4096,
+      "k": 2048,
+      "o": 512,
+      "routing": "hot8",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.6546346743901571,
+            0.6532906691233317,
+            0.652725338935852,
+            0.6538559993108114,
+            0.6526613235473633
+          ],
+          "cubin_sha256": "c09dc42c7dc18088b1f3dc69f81c4fdaf3a5c91017c7c7e3dbf1c68ff9a346ac"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.692746639251709,
+            0.6913493474324545,
+            0.692021369934082,
+            0.6923413276672363,
+            0.6911359628041586
+          ],
+          "cubin_sha256": "415dbcb4e8ecbff89d129e5ea3435f894d0f1c0389dce42c0b457135925c62d9"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 2048,
+            "o": 512,
+            "routed_input": false,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.8891626993815104,
+            0.8843093713124593,
+            0.8855679829915365,
+            0.8790826797485352,
+            0.8830933570861816
+          ],
+          "cubin_sha256": "92c41a9e67e2fc0ad251fc7f3af1f875659b0e0c243061b24aab7693e9c1c2d2"
+        }
+      ]
+    },
+    {
+      "rows": 512,
+      "k": 512,
+      "o": 2048,
+      "routing": "balanced256",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.30746666590372723,
+            0.3065279920895894,
+            0.30523733297983807,
+            0.3043733239173889,
+            0.30640000104904175
+          ],
+          "cubin_sha256": "36c0069b8cf4054152b9558440ead36f267798247beb3258802cf540d08bc047"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.43049601713816327,
+            0.4286506573359172,
+            0.428000013033549,
+            0.428053339322408,
+            0.42853331565856934
+          ],
+          "cubin_sha256": "0c99c7aaaa85cc5fe286f450f271d40a4b2db9852fc2cf87c31bee3e504072b9"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.4793813228607178,
+            0.4777493476867676,
+            0.4752426544825236,
+            0.4753066698710124,
+            0.4747733275095622
+          ],
+          "cubin_sha256": "3caa9432c6fffc75eb08bbbcf70b0c33e736f4aaecaffca1c63faeb9d7c97bb8"
+        }
+      ]
+    },
+    {
+      "rows": 512,
+      "k": 512,
+      "o": 2048,
+      "routing": "hot8",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.11154133081436157,
+            0.11109333237012227,
+            0.11015466849009196,
+            0.10974933703740437,
+            0.11045333743095398
+          ],
+          "cubin_sha256": "36c0069b8cf4054152b9558440ead36f267798247beb3258802cf540d08bc047"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.13101866841316223,
+            0.13029332955678305,
+            0.13065600395202637,
+            0.1301866670449575,
+            0.13024000326792398
+          ],
+          "cubin_sha256": "0c99c7aaaa85cc5fe286f450f271d40a4b2db9852fc2cf87c31bee3e504072b9"
+        },
+        {
+          "schedule": {
+            "rows": 512,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.1717546582221985,
+            0.17218132813771567,
+            0.17144532998402914,
+            0.17138133446375528,
+            0.17172267039616904
+          ],
+          "cubin_sha256": "3caa9432c6fffc75eb08bbbcf70b0c33e736f4aaecaffca1c63faeb9d7c97bb8"
+        }
+      ]
+    },
+    {
+      "rows": 4096,
+      "k": 512,
+      "o": 2048,
+      "routing": "balanced256",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.8539733091990153,
+            0.8483626842498779,
+            0.84934401512146,
+            0.8506773312886556,
+            0.8516480127970377
+          ],
+          "cubin_sha256": "a62f9906882ed9e0e455b8b93a8bf795091c8df74c411f60601f5c12c5bae01d"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            1.045141299565633,
+            1.046336015065511,
+            1.0465280214945476,
+            1.0456000169118245,
+            1.0447680155436199
+          ],
+          "cubin_sha256": "ebf19526abf9da5a2f521807b5df98e265c4e19897df0601341c28cbf58cb150"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            1.3512746493021648,
+            1.3488532702128093,
+            1.3492693901062012,
+            1.348416010538737,
+            1.3484586079915364
+          ],
+          "cubin_sha256": "1b34879974b6b3f3e6d026033de30dd859afa35ef96c252f110aac7e0d292392"
+        }
+      ]
+    },
+    {
+      "rows": 4096,
+      "k": 512,
+      "o": 2048,
+      "routing": "hot8",
+      "candidates": [
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.8253013292948405,
+            0.8223253091176351,
+            0.8218133449554443,
+            0.8182720343271891,
+            0.821183999379476
+          ],
+          "cubin_sha256": "a62f9906882ed9e0e455b8b93a8bf795091c8df74c411f60601f5c12c5bae01d"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.8967573642730713,
+            0.8895893096923828,
+            0.8894720077514648,
+            0.8948266506195068,
+            0.895359992980957
+          ],
+          "cubin_sha256": "ebf19526abf9da5a2f521807b5df98e265c4e19897df0601341c28cbf58cb150"
+        },
+        {
+          "schedule": {
+            "rows": 4096,
+            "k": 512,
+            "o": 2048,
+            "routed_input": true,
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "compact": true,
+            "packed_gather": true,
+            "bf16_mma": true,
+            "mma_reduction": 32,
+            "mma_reorder": true,
+            "resident_weights": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            1.2178880373636882,
+            1.2084266344706218,
+            1.211136023203532,
+            1.2062400182088215,
+            1.2083840370178223
+          ],
+          "cubin_sha256": "1b34879974b6b3f3e6d026033de30dd859afa35ef96c252f110aac7e0d292392"
+        }
+      ]
+    }
+  ],
+  "scope": "isolated projection; official FP8 values widened without applying scales",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  }
+}

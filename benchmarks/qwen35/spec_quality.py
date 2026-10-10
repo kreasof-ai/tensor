@@ -7,7 +7,7 @@ import numpy as np
 def run(model, draft, verify_bundle, out, *, steps=2):
     from tensor_llm import Qwen35Verifier
     from .spec_benchmark import PrefixSnapshot
-    from .spec_run import install_selected
+    from .spec_run import install_selected,make_verifier
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     snapshot = PrefixSnapshot(model, draft)
@@ -21,7 +21,7 @@ def run(model, draft, verify_bundle, out, *, steps=2):
             reference.append(logits)
             greedy.append(pending.copy())
         snapshot.restore(model, draft)
-        verifier = Qwen35Verifier(model, verify_bundle)
+        verifier = make_verifier(model, verify_bundle)
         install_selected(verifier, verify_bundle)
         if not 1 <= steps <= verifier.chunk:
             raise ValueError('quality steps must fit the verification chunk')

@@ -1,0 +1,414 @@
+{
+  "prepared": {
+    "cases": [
+      {
+        "k": 2048,
+        "o": 512,
+        "routed": false,
+        "control": "/cache/hopper/f4b5e84e73ca8377/0847ec122cad00ca859dd9f8.tbin",
+        "control_sha256": "eeeb335333c457f450d3fbd633b83297610c4e55768cd1d88f219a0037b7fb57",
+        "candidates": [
+          {
+            "label": "64",
+            "path": "/cache/bandwidth-projections/prefill64-v1/0847ec122cad00ca859dd9f8.tbin",
+            "sha256": "e4ed02a87f1b48713336318308b613a506598f3b189c34491532cbdadb81a4ff",
+            "schedule": {
+              "block_m": 64,
+              "columns": 64,
+              "threads": 128,
+              "packed_widen": false
+            }
+          },
+          {
+            "label": "64-packed",
+            "path": "/cache/bandwidth-projections/prefill64-packed-v1/0847ec122cad00ca859dd9f8.tbin",
+            "sha256": "012dcc46874661943c4dbfd996ceed2e34a64cc441038f241b2759124232eeb3",
+            "schedule": {
+              "block_m": 64,
+              "columns": 64,
+              "threads": 128,
+              "packed_widen": true
+            }
+          },
+          {
+            "label": "128-packed",
+            "path": "/cache/bandwidth-projections/prefill128-packed-v1/0847ec122cad00ca859dd9f8.tbin",
+            "sha256": "8650d399a1660112d21d41225d1037adb148a2a929a359f766477857d8560d9a",
+            "schedule": {
+              "block_m": 64,
+              "columns": 128,
+              "threads": 256,
+              "packed_widen": true
+            }
+          }
+        ]
+      },
+      {
+        "k": 512,
+        "o": 2048,
+        "routed": true,
+        "control": "/cache/hopper/f4b5e84e73ca8377/adbab55dba396ba437cbd218.tbin",
+        "control_sha256": "1118328595fe2fde3230efa3fb027e017bab3d1f4ab2478f26f0b3496dd33b6e",
+        "candidates": [
+          {
+            "label": "64",
+            "path": "/cache/bandwidth-projections/prefill64-v1/adbab55dba396ba437cbd218.tbin",
+            "sha256": "7fb40156b8e6a70739a9120d467b383c4016b73d67d4b3960bb5dee9b7c107a8",
+            "schedule": {
+              "block_m": 64,
+              "columns": 64,
+              "threads": 128,
+              "packed_widen": false
+            }
+          },
+          {
+            "label": "64-packed",
+            "path": "/cache/bandwidth-projections/prefill64-packed-v1/adbab55dba396ba437cbd218.tbin",
+            "sha256": "872a871f2cc1f2f212ad3fe61114c469c759ef7f820217752a3c4ac375ef028c",
+            "schedule": {
+              "block_m": 64,
+              "columns": 64,
+              "threads": 128,
+              "packed_widen": true
+            }
+          },
+          {
+            "label": "128-packed",
+            "path": "/cache/bandwidth-projections/prefill128-packed-v1/adbab55dba396ba437cbd218.tbin",
+            "sha256": "02b6d23802078beae9bb64d01139168b29514bdcbb15c4e5bdb7093d6e986f8b",
+            "schedule": {
+              "block_m": 64,
+              "columns": 128,
+              "threads": 256,
+              "packed_widen": true
+            }
+          }
+        ]
+      }
+    ],
+    "manifests": {
+      "build/qwen35-akbar-artifact-migration/hopper/f4b5e84e73ca8377/f4b5e84e73ca8377": "1aa62359a4aa253898caa6163824be145f0f5afa9eecab471d6783dee64e3429",
+      "build/qwen35-akbar-projections64": "195c093ec7cc9e889e012f42a4e5991f028eae783cce6280b4b5e6bb7c65d720",
+      "build/qwen35-akbar-projections64-packed": "8c0fe657fad75353191a88a2a0952e45564ddc08c415fa384c47741cac52cbbd",
+      "build/qwen35-akbar-projections128-packed": "fd8600d9ff7f0b29cc9743c89628ff0ef0eb2291df2f0655e94a0a98112fcc05"
+    },
+    "root": "/cache/projection-bandwidth/1cc6db7d321be050"
+  },
+  "cases": [
+    {
+      "k": 2048,
+      "o": 512,
+      "routed": false,
+      "routing": "balanced256",
+      "control_milliseconds": [
+        0.6925680041313171,
+        0.6929479837417603,
+        0.6926119923591614
+      ],
+      "candidates": [
+        {
+          "label": "64",
+          "path": "/cache/bandwidth-projections/prefill64-v1/0847ec122cad00ca859dd9f8.tbin",
+          "sha256": "e4ed02a87f1b48713336318308b613a506598f3b189c34491532cbdadb81a4ff",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.8841360211372375,
+            0.8817319869995117,
+            0.8824480175971985
+          ]
+        },
+        {
+          "label": "64-packed",
+          "path": "/cache/bandwidth-projections/prefill64-packed-v1/0847ec122cad00ca859dd9f8.tbin",
+          "sha256": "012dcc46874661943c4dbfd996ceed2e34a64cc441038f241b2759124232eeb3",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.9852240085601807,
+            0.9855279922485352,
+            0.9864879846572876
+          ]
+        },
+        {
+          "label": "128-packed",
+          "path": "/cache/bandwidth-projections/prefill128-packed-v1/0847ec122cad00ca859dd9f8.tbin",
+          "sha256": "8650d399a1660112d21d41225d1037adb148a2a929a359f766477857d8560d9a",
+          "schedule": {
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.7775800228118896,
+            0.7762879729270935,
+            0.7770599722862244
+          ]
+        }
+      ]
+    },
+    {
+      "k": 2048,
+      "o": 512,
+      "routed": false,
+      "routing": "hot8",
+      "control_milliseconds": [
+        0.6532319784164429,
+        0.6532760262489319,
+        0.6530479788780212
+      ],
+      "candidates": [
+        {
+          "label": "64",
+          "path": "/cache/bandwidth-projections/prefill64-v1/0847ec122cad00ca859dd9f8.tbin",
+          "sha256": "e4ed02a87f1b48713336318308b613a506598f3b189c34491532cbdadb81a4ff",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.8281159996986389,
+            0.8275200128555298,
+            0.828279972076416
+          ]
+        },
+        {
+          "label": "64-packed",
+          "path": "/cache/bandwidth-projections/prefill64-packed-v1/0847ec122cad00ca859dd9f8.tbin",
+          "sha256": "012dcc46874661943c4dbfd996ceed2e34a64cc441038f241b2759124232eeb3",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.9222000241279602,
+            0.9212200045585632,
+            0.9201719760894775
+          ]
+        },
+        {
+          "label": "128-packed",
+          "path": "/cache/bandwidth-projections/prefill128-packed-v1/0847ec122cad00ca859dd9f8.tbin",
+          "sha256": "8650d399a1660112d21d41225d1037adb148a2a929a359f766477857d8560d9a",
+          "schedule": {
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.7294440269470215,
+            0.7292240262031555,
+            0.7288920283317566
+          ]
+        }
+      ]
+    },
+    {
+      "k": 512,
+      "o": 2048,
+      "routed": true,
+      "routing": "balanced256",
+      "control_milliseconds": [
+        0.8466519713401794,
+        0.8486999869346619,
+        0.8472840189933777
+      ],
+      "candidates": [
+        {
+          "label": "64",
+          "path": "/cache/bandwidth-projections/prefill64-v1/adbab55dba396ba437cbd218.tbin",
+          "sha256": "7fb40156b8e6a70739a9120d467b383c4016b73d67d4b3960bb5dee9b7c107a8",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            1.195963978767395,
+            1.1963839530944824,
+            1.1965559720993042
+          ]
+        },
+        {
+          "label": "64-packed",
+          "path": "/cache/bandwidth-projections/prefill64-packed-v1/adbab55dba396ba437cbd218.tbin",
+          "sha256": "872a871f2cc1f2f212ad3fe61114c469c759ef7f820217752a3c4ac375ef028c",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            1.1878279447555542,
+            1.1886839866638184,
+            1.1880320310592651
+          ]
+        },
+        {
+          "label": "128-packed",
+          "path": "/cache/bandwidth-projections/prefill128-packed-v1/adbab55dba396ba437cbd218.tbin",
+          "sha256": "02b6d23802078beae9bb64d01139168b29514bdcbb15c4e5bdb7093d6e986f8b",
+          "schedule": {
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.8629239797592163,
+            0.8623600006103516,
+            0.8627520203590393
+          ]
+        }
+      ]
+    },
+    {
+      "k": 512,
+      "o": 2048,
+      "routed": true,
+      "routing": "hot8",
+      "control_milliseconds": [
+        0.8196759819984436,
+        0.81877201795578,
+        0.819167971611023
+      ],
+      "candidates": [
+        {
+          "label": "64",
+          "path": "/cache/bandwidth-projections/prefill64-v1/adbab55dba396ba437cbd218.tbin",
+          "sha256": "7fb40156b8e6a70739a9120d467b383c4016b73d67d4b3960bb5dee9b7c107a8",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": false
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            1.1645480394363403,
+            1.164471983909607,
+            1.1642680168151855
+          ]
+        },
+        {
+          "label": "64-packed",
+          "path": "/cache/bandwidth-projections/prefill64-packed-v1/adbab55dba396ba437cbd218.tbin",
+          "sha256": "872a871f2cc1f2f212ad3fe61114c469c759ef7f820217752a3c4ac375ef028c",
+          "schedule": {
+            "block_m": 64,
+            "columns": 64,
+            "threads": 128,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            1.1694480180740356,
+            1.1710519790649414,
+            1.1695879697799683
+          ]
+        },
+        {
+          "label": "128-packed",
+          "path": "/cache/bandwidth-projections/prefill128-packed-v1/adbab55dba396ba437cbd218.tbin",
+          "sha256": "02b6d23802078beae9bb64d01139168b29514bdcbb15c4e5bdb7093d6e986f8b",
+          "schedule": {
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_widen": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "relative_rms": 0.0,
+          "milliseconds": [
+            0.8429359793663025,
+            0.8414480090141296,
+            0.8423879742622375
+          ]
+        }
+      ]
+    }
+  ],
+  "normal_inputs": true,
+  "timing": "CUDA graph replay; isolated projection, not model throughput",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  },
+  "kernel_checks": {
+    "command": [
+      "/usr/local/bin/python",
+      "-m",
+      "pytest",
+      "packages/tensor-llm/tests/test_qwen_hopper.py",
+      "-k",
+      "packed",
+      "-q",
+      "-o",
+      "addopts="
+    ],
+    "exit_code": 0,
+    "log": "..........                                                               [100%]\n=============================== warnings summary ===============================\npackages/tensor-llm/tests/test_qwen_hopper.py: 10 warnings\n  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead\n    deprecated_warning(\"T.reinterpret(dtype, value)\", \"reinterpret(value, dtype)\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n10 passed, 70 deselected, 10 warnings in 94.10s (0:01:34)\n"
+  }
+}

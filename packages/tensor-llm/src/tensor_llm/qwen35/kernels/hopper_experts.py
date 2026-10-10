@@ -21,6 +21,12 @@ def expert_kernel(p):
     reduction=p.get('mma_reduction',128)
     reorder=p.get('mma_reorder',False)
     asynchronous=p.get('async_mma',False)
+    packed_widen=p.get('packed_widen',False)
+    resident_weights=p.get('resident_weights',False)
+    if resident_weights and (not bf16_mma or not reorder or asynchronous or packed_widen):
+        raise ValueError('resident operands require synchronous paired MMA')
+    if packed_widen and (not bf16_mma or not reorder or asynchronous):
+        raise ValueError('packed widening requires synchronous paired MMA')
     if asynchronous and not (reorder and reduction==32):raise ValueError('async MMA requires paired K32')
     if reorder and reduction!=32:raise ValueError('paired operands require K32')
     if reduction not in (32,128):raise ValueError('invalid Hopper MMA reduction')
@@ -28,12 +34,15 @@ def expert_kernel(p):
     max_tiles=T.ceildiv(rows*top,m)+experts-1
     arguments=[('x',(rows,top,k) if routed else (rows,k),'uint8'),
                ('activation_scales',(rows,top,k//128) if routed else (rows,k//128),'float32'),
-               ('w',(experts,o,k),'uint8'),('scales',(experts,T.ceildiv(o,128),k//128),'bfloat16'),
+               ('w',(experts,o,k),'float16' if resident_weights else 'uint8'),('scales',(experts,T.ceildiv(o,128),k//128),'bfloat16'),
                ('counts',(experts,),'int32'),('routes',(experts,rows),'int32'),
                ('out',(rows,top,parts,o) if parts>1 else (rows,top,o),'float32')]
     @T.macro
     def body(x,activation_scales,w,scales,counts,routes,out,bx,expert,tokens,part):
         if tokens*m<counts[expert]:
+            if packed_widen:
+                from tensor_llm.qwen35.kernels.fp8_operand import CUDA_SOURCE
+                T.import_source(CUDA_SOURCE)
             lhs=T.alloc_shared((m,128),'float8_e4m3fn')
             rhs=T.alloc_shared((n,128),'float8_e4m3fn')
             if bf16_mma:
@@ -83,8 +92,9 @@ def expert_kernel(p):
                             if routed:bits=x[selected[b]//top,selected[b]%top,tile*128+j]
                             else:bits=x[selected[b]//top,tile*128+j]
                         lhs[b,j]=T.reinterpret('float8_e4m3fn',bits)
-                weights=T.view(w,dtype='float8_e4m3fn')
-                T.copy(weights[expert,bx*n:bx*n+n,tile*128:tile*128+128],rhs)
+                if not resident_weights:
+                    weights=T.view(w,dtype='float8_e4m3fn')
+                    T.copy(weights[expert,bx*n:bx*n+n,tile*128:tile*128+128],rhs)
                 if packed_gather:T.sync_threads()
                 if bf16_mma:
                     if asynchronous:
@@ -110,11 +120,24 @@ def expert_kernel(p):
                     else:
                         T.clear(block)
                         for sub in T.serial(128//reduction):
-                            if reorder:
+                            if packed_widen:
+                                lhs_pairs=T.view(lhs,shape=(m,64),dtype='uint16')
+                                rhs_pairs=T.view(rhs,shape=(n,64),dtype='uint16')
+                                a_pairs=T.view(lhs_sub,shape=(m,16),dtype='uint32')
+                                b_pairs=T.view(rhs_sub,shape=(n,16),dtype='uint32')
+                                for b,j in T.Parallel(m,16):
+                                    a_pairs[b,j]=T.call_extern('uint32','tensor_widen_e4m3x2',lhs_pairs[b,sub*16+j%8*2+j//8])
+                                for i,j in T.Parallel(n,16):
+                                    b_pairs[i,j]=T.call_extern('uint32','tensor_widen_e4m3x2',rhs_pairs[i,sub*16+j%8*2+j//8])
+                                T.sync_threads()
+                            elif reorder:
                                 for b,j in T.Parallel(m,reduction):
                                     lhs_sub[b,j]=lhs[b,sub*32+(j%16)//2*4+j%2+j//16*2]
-                                for i,j in T.Parallel(n,reduction):
-                                    rhs_sub[i,j]=rhs[i,sub*32+(j%16)//2*4+j%2+j//16*2]
+                                if resident_weights:
+                                    T.copy(w[expert,bx*n:bx*n+n,tile*128+sub*32:tile*128+(sub+1)*32],rhs_sub)
+                                else:
+                                    for i,j in T.Parallel(n,reduction):
+                                        rhs_sub[i,j]=rhs[i,sub*32+(j%16)//2*4+j%2+j//16*2]
                             else:
                                 T.copy(lhs[:,sub*reduction:(sub+1)*reduction],lhs_sub)
                                 T.copy(rhs[:,sub*reduction:(sub+1)*reduction],rhs_sub)

@@ -1,0 +1,46 @@
+{
+  "root": "/cache/attention-workspace/aaa6a3046a57839c",
+  "source_hashes": {
+    "/root/modal_bandwidth.py": "8e48613c004fb6aec976638fad3b26879c2a2ca0e96c57b4f7d6fbdef410e576",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "9348295d765be5471c37d6cb6998bedf4e319af5d716e7487d88a85b2c760f91"
+  },
+  "candidates": [
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j0.tbin",
+      "compiled": true
+    },
+    {
+      "path": "/cache/attention-workspace/aaa6a3046a57839c/attention.tbin",
+      "compiled": true,
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 128,
+        "threads": 512,
+        "decoded_kv": true,
+        "joint_kv": false,
+        "value_splits": 1,
+        "square_warps": false
+      }
+    }
+  ],
+  "copy": "/cache/bandwidth/0006096995e3a98e/copy.tbin",
+  "decode": "/cache/attention-workspace/aaa6a3046a57839c/decode.tbin",
+  "fullrow512_sources": {
+    "/root/benchmarks/qwen35/modal_bandwidth.py": "fa3f3f584b56c042078e4c06a85b94d3cf8a30a3fff372e7e37a178902eef121",
+    "benchmarks/qwen35/attention_workspace_producer.py": "9f31fbe6a879bb628db69ab0ec78943d1dc6a45f9db084e6b3aeba8d14d63804",
+    "packages/tensor-llm/src/tensor_llm/qwen35/attention_workspace.py": "18bcb2e58cdd8075f127fccdb066853eb69082663ccc4e0e0b660f6490cd5e60",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "b6f63d02fb3c33b25dca80c3939a7bbced18e192a8a123d7d9a2851b4d2e4600"
+  }
+}

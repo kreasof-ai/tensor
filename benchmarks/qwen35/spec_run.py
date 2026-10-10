@@ -32,11 +32,28 @@ def provenance(paths,workload):
 
 def install_selected(executor,bundle):
     manifest=json.loads((Path(bundle)/'prefill.json').read_text())
+    if 'state_recompute' in manifest:
+        from tensor_llm.qwen35.speculative.recompute import Qwen35RecomputeVerifier
+        if not isinstance(executor,Qwen35RecomputeVerifier):
+            raise ValueError('recompute bundle requires make_verifier')
     if 'split_attention' in manifest:install_attention(executor,bundle)
     if 'split_linear' in manifest:install_linear(executor,bundle)
     if 'compact_experts' in manifest:
         from tensor_llm.qwen35.compact_prefill import install as install_compact
         install_compact(executor,bundle)
+    if 'attention_workspace' in manifest:
+        from tensor_llm.qwen35.attention_workspace import install as install_workspace
+        root=Path(bundle).resolve();workspace=(root/manifest['attention_workspace']).resolve()
+        if not workspace.is_relative_to(root):raise ValueError('workspace outside verification bundle')
+        install_workspace(executor,workspace)
+
+
+def make_verifier(model,bundle):
+    manifest=json.loads((Path(bundle)/'prefill.json').read_text())
+    if 'state_recompute' in manifest:
+        from tensor_llm.qwen35.speculative.recompute import Qwen35RecomputeVerifier
+        return Qwen35RecomputeVerifier(model,bundle)
+    return Qwen35Verifier(model,bundle)
 
 
 def execute(target,draft,paths,workload,out,*,output_lookup=False,fallback_proposals=3):
@@ -59,7 +76,7 @@ def execute(target,draft,paths,workload,out,*,output_lookup=False,fallback_propo
         prefix_seconds=time.perf_counter()-start
         setup_start=time.perf_counter()
         try:
-            verifier=Qwen35Verifier(target,paths['verify'])
+            verifier=make_verifier(target,paths['verify'])
             repair=Qwen35MTPPrefill(draft,paths['repair'])
             install_selected(verifier,paths['verify']);install_selected(repair,paths['repair'])
             setup_seconds=time.perf_counter()-setup_start

@@ -47,6 +47,9 @@ class NativeServer:
             output_lookup=bool(self.speculative and self.speculative.get('output_lookup')),
             compact_expert_prefill=bool(getattr(self.prefill,'_compact_experts_installed',False)),
             hopper_prefill=bool(getattr(self.prefill,'_hopper_installed',False)),
+            prefill_attention_workspace_dtype='bfloat16' if getattr(self.prefill,'_attention_workspace_installed',False) else None,
+            prefill_attention_workspace_bytes=sum(b.nbytes for k,b in self.prefill.buffers.items()
+                if k.startswith('_attention_workspace_')),
             model_throughput_qualified=False,full_stress_target_reached=False)
 
     async def worker(self):
@@ -99,7 +102,7 @@ class NativeServer:
     async def speculative_worker(self):
         from tensor_llm import Qwen35Prefill,Qwen35Verifier,Qwen35Speculative
         from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
-        from .spec_run import install_selected
+        from .spec_run import install_selected,make_verifier
         model=self.model;config=self.speculative;draft=config['draft']
         verifier=repair=draft_prefill=None
         try:
@@ -114,6 +117,9 @@ class NativeServer:
                     if config.get('hopper_bundle'):
                         from tensor_llm.qwen35.hopper import install as install_hopper
                         install_hopper(self.prefill,config['hopper_bundle'])
+                    if config.get('attention_workspace_bundle'):
+                        from tensor_llm.qwen35.attention_workspace import install as install_workspace
+                        install_workspace(self.prefill,config['attention_workspace_bundle'])
                 draft_prefill=Qwen35MTPPrefill(draft,config['draft_prefill_bundle'])
                 cached_proposal=np.full(model.slots,-1,'int32')
                 cached_hidden=np.zeros((model.slots,2048),'uint16')
@@ -159,7 +165,7 @@ class NativeServer:
                 draft.device.driver.call('cuMemcpyHtoD_v2',draft.buffers['normal'].pointer,
                     ct.c_void_p(cached_hidden.ctypes.data),cached_hidden.nbytes)
                 draft.device.driver.call('cuStreamSynchronize',None)
-                verifier=Qwen35Verifier(model,config['verify_bundle'])
+                verifier=make_verifier(model,config['verify_bundle'])
                 repair=Qwen35MTPPrefill(draft,config['repair_bundle'])
                 install_selected(verifier,config['verify_bundle']);install_selected(repair,config['repair_bundle'])
                 engine=Qwen35Speculative(model,draft,verifier,repair,
@@ -260,6 +266,7 @@ def main():
     p.add_argument('--output-lookup',action='store_true');p.add_argument('--fallback-proposals',type=int,default=3)
     p.add_argument('--compact-experts',action='store_true')
     p.add_argument('--hopper-bundle',type=Path)
+    p.add_argument('--attention-workspace-bundle',type=Path)
     a=p.parse_args()
     selected=(a.draft_bundle,a.draft_prefill_bundle,a.verify_bundle,a.repair_bundle)
     if any(selected) and not all(selected):p.error('speculative mode needs all four draft/verification/repair bundles')
@@ -273,6 +280,9 @@ def main():
             if a.hopper_bundle:
                 from tensor_llm.qwen35.hopper import install as install_hopper
                 install_hopper(prefill,a.hopper_bundle)
+            if a.attention_workspace_bundle:
+                from tensor_llm.qwen35.attention_workspace import install as install_workspace
+                install_workspace(prefill,a.attention_workspace_bundle)
             config=None
             if all(selected):
                 from tensor_llm import Qwen35MTP
@@ -280,7 +290,7 @@ def main():
                 config=dict(draft=draft,prefill_bundle=a.prefill_bundle,draft_prefill_bundle=a.draft_prefill_bundle,
                     verify_bundle=a.verify_bundle,repair_bundle=a.repair_bundle,output_lookup=a.output_lookup,
                     fallback_proposals=a.fallback_proposals,compact_experts=a.compact_experts,
-                    hopper_bundle=a.hopper_bundle)
+                    hopper_bundle=a.hopper_bundle,attention_workspace_bundle=a.attention_workspace_bundle)
             asyncio.run(NativeServer(model,prefill,a.checkpoint,speculative=config).serve(port=a.port))
         finally:
             prefill.close()

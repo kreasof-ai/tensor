@@ -1,0 +1,29 @@
+{
+  "scope": "teacher-forced verification vs same native serial target at initialized prefix",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  },
+  "prefix_positions": [
+    32000,
+    32000,
+    32000,
+    32000,
+    32000,
+    32000,
+    32000,
+    32000
+  ],
+  "steps": 2,
+  "kv_dtype": "fp8",
+  "threshold": 0.03,
+  "relative_logit_rms": 0.0841076448559761,
+  "greedy_matches": 13,
+  "greedy_total": 16,
+  "finite": true,
+  "canonical_model_qualified": false,
+  "model_throughput_qualified": false,
+  "passed": false
+}

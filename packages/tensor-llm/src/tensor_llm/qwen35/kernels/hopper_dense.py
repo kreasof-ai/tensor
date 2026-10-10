@@ -11,6 +11,8 @@ def make_kernel(p):
     reduction=p.get('mma_reduction',128)
     reorder=p.get('mma_reorder',False)
     asynchronous=p.get('async_mma',False)
+    packed_widen=p.get('packed_widen',False)
+    if packed_widen and (not reorder or asynchronous):raise ValueError('packed widening requires synchronous paired MMA')
     if asynchronous and not (reorder and reduction==32):raise ValueError('async MMA requires paired K32')
     if reorder and reduction!=32:raise ValueError('paired operands require K32')
     if reduction not in (32,128):raise ValueError('invalid Hopper MMA reduction')
@@ -22,6 +24,9 @@ def make_kernel(p):
     @T.macro
     def algorithm(x,w,scales,activation_scales,out):
         with T.Kernel(o//n,T.ceildiv(r,m),parts,threads=threads) as (bx,by,part):
+            if packed_widen:
+                from tensor_llm.qwen35.kernels.fp8_operand import CUDA_SOURCE
+                T.import_source(CUDA_SOURCE)
             lhs=T.alloc_shared((m,128),'float8_e4m3fn');rhs=T.alloc_shared((n,128),'float8_e4m3fn')
             if asynchronous:
                 a_batch=T.alloc_shared((m,128),'float16');b_batch=T.alloc_shared((n,128),'float16')
@@ -78,7 +83,17 @@ def make_kernel(p):
                 else:
                     T.clear(block)
                     for sub in T.serial(128//reduction):
-                        if reorder:
+                        if packed_widen:
+                            lhs_pairs=T.view(lhs,shape=(m,64),dtype='uint16')
+                            rhs_pairs=T.view(rhs,shape=(n,64),dtype='uint16')
+                            a_pairs=T.view(a_sub,shape=(m,16),dtype='uint32')
+                            b_pairs=T.view(b_sub,shape=(n,16),dtype='uint32')
+                            for i,j in T.Parallel(m,16):
+                                a_pairs[i,j]=T.call_extern('uint32','tensor_widen_e4m3x2',lhs_pairs[i,sub*16+j%8*2+j//8])
+                            for i,j in T.Parallel(n,16):
+                                b_pairs[i,j]=T.call_extern('uint32','tensor_widen_e4m3x2',rhs_pairs[i,sub*16+j%8*2+j//8])
+                            T.sync_threads()
+                        elif reorder:
                             for i,j in T.Parallel(m,reduction):
                                 a_sub[i,j]=lhs[i,sub*32+(j%16)//2*4+j%2+j//16*2]
                             for i,j in T.Parallel(n,reduction):

@@ -1,0 +1,115 @@
+✓ Initialized. View run at https://modal.com/apps/akbar2habibullah/main/ap-zf8U17pxhqnquH911QCWOc
+✓ Created objects.
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks/qwen35/modal_verify_workspace.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/docs/research/data/qwen35-native-h200/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+└── ✓ Created Function measure.
+
+==========
+== CUDA ==
+==========
+
+CUDA Version 12.9.1
+
+Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+
+Traceback (most recent call last):
+Stopping app - uncaught exception raised locally: TimeoutExpired(['/usr/local/bin/python', '-m', 'pytest', 'packages/tensor-llm/tests/test_qwen_hopper.py', '-k', 'query_tiles', '-q', '-o', 'addopts='], 300).
+  File "/pkg/modal/_runtime/container_io_manager.py", line 987, in handle_input_exception
+    yield
+  File "/pkg/modal/_container_entrypoint.py", line 189, in run_input_sync
+    values = io_context.call_function_sync()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pkg/modal/_runtime/container_io_manager.py", line 266, in call_function_sync
+    expected_value_or_values = self.finalized_function.callable(*args, **kwargs)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/modal_verify_workspace.py", line 25, in measure
+    test=subprocess.run(command,env=dict(os.environ,TENSOR_QWEN_CUDA='1'),
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 2109, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/usr/local/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['/usr/local/bin/python', '-m', 'pytest', 'packages/tensor-llm/tests/test_qwen_hopper.py', '-k', 'query_tiles', '-q', '-o', 'addopts=']' timed out after 300 seconds
+╭─────────────────────────────── Traceback (most recent call last) ────────────────────────────────╮
+│ /home/sagemaker-user/tensor/benchmarks/qwen35/modal_verify_workspace.py:84 in main               │
+│                                                                                                  │
+│   83 │   from pathlib import Path                                                                │
+│ ❱ 84 │   result=measure.remote(json.loads(Path(prepared_file).read_text()))                      │
+│   85 │   Path(out).write_text(json.dumps(result,indent=2)+'\n')                                  │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_object.py:49 in wrapped                           │
+│                                                                                                  │
+│    48 │   │   await self.hydrate()                                                               │
+│ ❱  49 │   │   return await method(self, *args, **kwargs)                                         │
+│    50                                                                                            │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:2067 in remote                       │
+│                                                                                                  │
+│   2066 │   │                                                                                     │
+│ ❱ 2067 │   │   return await self._call_function(args, kwargs)                                    │
+│   2068                                                                                           │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:2004 in _call_function               │
+│                                                                                                  │
+│   2003 │   │                                                                                     │
+│ ❱ 2004 │   │   return await invocation.run_function()                                            │
+│   2005                                                                                           │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:515 in run_function                  │
+│                                                                                                  │
+│    514 │   │   │   # No more retries left.                                                       │
+│ ❱  515 │   │   │   return await _process_result(                                                 │
+│    516 │   │   │   │   await_response.output.result, await_response.output.data_format, self.cl  │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_utils/function_utils.py:572 in _process_result    │
+│                                                                                                  │
+│   571 │   │   │                                                                                  │
+│ ❱ 572 │   │   │   raise exc_with_hints(exc)                                                      │
+│   573                                                                                            │
+│                                                                                                  │
+│               ...Remote call to Modal Function (ta-01M4HVQT54842W8ZJZ25KBNB0R)...                │
+│                                                                                                  │
+│ /root/modal_verify_workspace.py:25 in measure                                                    │
+│                                                                                                  │
+│ ❱ 25 test=subprocess.run(command,env=dict(os.environ,TENSOR_QWEN_CUDA='1'),                      │
+│                                                                                                  │
+│                                                                                                  │
+│ /usr/local/lib/python3.12/subprocess.py:550 in run                                               │
+│                                                                                                  │
+│ ❱ 550 stdout, stderr = process.communicate(input, timeout=timeout)                               │
+│                                                                                                  │
+│                                                                                                  │
+│ /usr/local/lib/python3.12/subprocess.py:1209 in communicate                                      │
+│                                                                                                  │
+│ ❱ 1209 stdout, stderr = self._communicate(input, endtime, timeout)                               │
+│                                                                                                  │
+│                                                                                                  │
+│ /usr/local/lib/python3.12/subprocess.py:2109 in _communicate                                     │
+│                                                                                                  │
+│ ❱ 2109 self._check_timeout(endtime, orig_timeout, stdout, stderr)                                │
+│                                                                                                  │
+│                                                                                                  │
+│ /usr/local/lib/python3.12/subprocess.py:1253 in _check_timeout                                   │
+│                                                                                                  │
+│ ❱ 1253 raise TimeoutExpired(                                                                     │
+│                                                                                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+TimeoutExpired: Command '['/usr/local/bin/python', '-m', 'pytest', 'packages/tensor-llm/tests/test_qwen_hopper.py', '-k', 'query_tiles', '-q', '-o', 
+'addopts=']' timed out after 300 seconds

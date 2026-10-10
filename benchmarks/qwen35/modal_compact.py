@@ -71,6 +71,8 @@ def measure_compact(prepared, run_id):
             hopper_manifest=json.loads((Path(prepared['hopper'])/'hopper.json').read_text()) if prepared.get('hopper') else {}
             if not hopper_manifest.get('hopper_attention'):
                 test_command.extend(['-k','not prefill_attention'])
+        if prepared.get('state_recompute'):
+            test_command.append('packages/tensor-llm/tests/test_qwen_recompute.py')
         if prepared.get('profile_only'):
             from types import SimpleNamespace
             test=SimpleNamespace(returncode=0,stdout='Diagnostic only; primitive checks retained in prior replay.\n',stderr='')
@@ -93,14 +95,24 @@ def measure_compact(prepared, run_id):
             if prepared.get('hopper'):
                 from tensor_llm.qwen35.hopper import install as install_hopper
                 install_hopper(compact,prepared['hopper'])
+            if prepared.get('attention_workspace'):
+                from tensor_llm.qwen35.attention_workspace import install as install_workspace
+                install_workspace(compact,prepared['attention_workspace'])
             summary['same_state_quality'] = []
+            from benchmarks.qwen35.prefill_comparison import forward as control_forward
+            def original_forward(batch,lengths):
+                if compact.chunk==original.chunk:
+                    return original.forward(batch,lengths,read_logits=True)
+                # Compare a wider batch against successive frozen control
+                # chunks from exactly the same initial model state.
+                return control_forward(original,batch,lengths)
             def compare(label, batch, lengths):
                 snapshot = Snapshot(model)
-                result, logits = original.forward(batch, lengths, read_logits=True)
+                result, logits = original_forward(batch,lengths)
                 expected_state = [(b,a.copy()) for b,a in Snapshot(model).states]
                 position = model.position.copy()
                 snapshot.restore(model)
-                repeated, repeated_logits = original.forward(batch, lengths, read_logits=True)
+                repeated, repeated_logits = original_forward(batch,lengths)
                 repeat_logit_error = float(np.linalg.norm(repeated_logits-logits)/max(np.linalg.norm(logits),1e-20))
                 repeat_state_error = max(float(np.linalg.norm(b.to_numpy()-a)/max(np.linalg.norm(a),1e-20))
                                          for b,a in expected_state)
@@ -110,7 +122,8 @@ def measure_compact(prepared, run_id):
                 logit_error = float(np.linalg.norm(actual_logits-logits)/max(np.linalg.norm(logits),1e-20))
                 state_error = max(float(np.linalg.norm(b.to_numpy()-a)/max(np.linalg.norm(a),1e-20))
                                   for b,a in expected_state)
-                record = dict(label=label, relative_logit_rms=logit_error,
+                record = dict(label=label,control_chunk=original.chunk,candidate_chunk=compact.chunk,
+                    relative_logit_rms=logit_error,
                     original_repeat_relative_logit_rms=repeat_logit_error,
                     original_repeat_maximum_relative_state_rms=repeat_state_error,
                     maximum_relative_state_rms=state_error, greedy_matches=int((actual==result).sum()),
@@ -126,8 +139,10 @@ def measure_compact(prepared, run_id):
                     raise RuntimeError('compact prefill differs from original control')
             try:
                 model.reset()
+                check_lengths=np.array([compact.chunk,compact.chunk-1,compact.chunk//2+1,0,
+                                        128,3,compact.chunk,compact.chunk-1],'int32')
                 compare('early heterogeneous lengths', tokens[:,:compact.chunk],
-                        np.array([512,511,257,0,128,3,512,511], 'int32'))
+                        check_lengths)
                 model.reset()
                 started = time.perf_counter()
                 for offset in range(0,tokens.shape[1],compact.chunk):
@@ -138,8 +153,40 @@ def measure_compact(prepared, run_id):
                     if (offset//compact.chunk+1)%16==0:
                         print('Compact prefix',offset+count,flush=True)
                 summary['compact_target_prefix_seconds'] = time.perf_counter()-started
+                if compact.chunk!=original.chunk:
+                    from benchmarks.qwen35.prefill_comparison import cache_prefix_hashes
+                    selected_snapshot=Snapshot(model)
+                    selected_logits=model.buffers['logits'].to_numpy()
+                    selected_cache=cache_prefix_hashes(model)
+                    model.reset()
+                    for offset in range(0,tokens.shape[1],original.chunk):
+                        count=min(original.chunk,tokens.shape[1]-offset)
+                        block=np.zeros((model.slots,original.chunk),'int32')
+                        block[:,:count]=tokens[:,offset:offset+count]
+                        expected,expected_logits=original.forward(block,np.full(model.slots,count,'int32'),read_logits=True)
+                    error=float(np.linalg.norm(selected_logits-expected_logits)/max(np.linalg.norm(expected_logits),1e-20))
+                    state_error=max(float(np.linalg.norm(buffer.to_numpy()-value)/max(np.linalg.norm(value),1e-20))
+                        for buffer,value in selected_snapshot.states)
+                    record=dict(control_chunk=original.chunk,candidate_chunk=compact.chunk,
+                        prompt_tokens_per_request=tokens.shape[1],relative_logit_rms=error,
+                        maximum_relative_state_rms=state_error,
+                        greedy_matches=int((selected_snapshot.tokens==expected).sum()),
+                        greedy_total=model.slots,positions_match=bool(np.array_equal(model.position,selected_snapshot.position)),
+                        valid_kv_prefix_bitwise_equal=selected_cache==cache_prefix_hashes(model),
+                        finite=bool(np.isfinite(selected_logits).all()),threshold=1e-5)
+                    record['passed']=(record['finite'] and error<=1e-5 and state_error<=1e-5
+                        and record['greedy_matches']==model.slots and record['positions_match']
+                        and record['valid_kv_prefix_bitwise_equal'])
+                    summary['cross_chunk_prefix_quality']=record
+                    print('Cross-chunk full-prefix quality',record,flush=True)
+                    selected_snapshot.restore(model)
+                    if not record['passed']:raise RuntimeError('wider prefill differs across the full frozen prefix')
                 compare('32000 prefix heterogeneous lengths', tokens[:,-compact.chunk:],
-                        np.array([512,511,257,0,128,3,512,511], 'int32'))
+                        check_lengths)
+                if prepared.get('state_recompute'):
+                    from benchmarks.qwen35.recompute_quality import run as recompute_quality
+                    summary['recompute_quality']=recompute_quality(model,prepared['recompute_control_bundle'],
+                        paths['verify'],out/'recompute-quality')
                 if prepared.get('verification_chunk') and prepared.get('profile_phases',False):
                     from benchmarks.qwen35.modal_profile import profile_captured_plan
                     profile_snapshot=Snapshot(model)
@@ -152,10 +199,10 @@ def measure_compact(prepared, run_id):
                         summary['verification_serial_quality']=quality(model,draft,paths['verify'],out/'serial-quality')
                 if prepared.get('verification_chunk') and prepared.get('profile_phases',False):
                     from tensor_llm import Qwen35Verifier
-                    from benchmarks.qwen35.spec_run import install_selected
+                    from benchmarks.qwen35.spec_run import install_selected,make_verifier
                     from benchmarks.qwen35.modal_profile import profile_captured_plan
                     from contextlib import closing
-                    with closing(Qwen35Verifier(model,paths['verify'])) as verifier:
+                    with closing(make_verifier(model,paths['verify'])) as verifier:
                         install_selected(verifier,paths['verify'])
                         proposals=np.repeat(model.buffers['tokens'].to_numpy()[:,None],verifier.chunk,axis=1)
                         verifier.forward(proposals,np.full(model.slots,verifier.chunk,'int32'))
@@ -172,6 +219,8 @@ def measure_compact(prepared, run_id):
                    '--compact-experts','--port','8013','--output-lookup','--fallback-proposals',str(prepared.get('fallback_proposals',3))]
         if prepared.get('hopper'):
             command.extend(['--hopper-bundle',prepared['hopper']])
+        if prepared.get('attention_workspace'):
+            command.extend(['--attention-workspace-bundle',prepared['attention_workspace']])
         for option,key in (('draft-bundle','draft'),('draft-prefill-bundle','draft_prefill'),
                            ('verify-bundle','verify'),('repair-bundle','repair')):
             command.extend(['--'+option,str(paths[key])])
@@ -180,9 +229,14 @@ def measure_compact(prepared, run_id):
             kv_dtype='fp8',state_dtype='float32',tokenizer_name=MODEL,tokenizer_revision=REVISION,
             hardware='NVIDIA H200 x1',cpu_offload='none',prefix_cache=False,speculative=True,
             gpu_indices=['0'],command=command,model_throughput_qualified=False,full_stress_target_reached=False,
-            settings=dict(max_model_len=48000,max_num_seqs=8,prefill_chunk=512,
+            settings=dict(max_model_len=48000,max_num_seqs=8,prefill_chunk=json.loads((Path(prepared['prefill'])/'prefill.json').read_text())['chunk'],
                           compact_expert_tiles=True,hopper=bool(prepared.get('hopper')),
+                          prefill_attention_workspace_dtype='bfloat16' if prepared.get('attention_workspace') else None,
+                          prefill_attention_workspace_bytes=786432000 if prepared.get('attention_workspace') else 0,
+                          verification_attention_workspace_dtype='bfloat16' if prepared.get('verification_attention_workspace') else None,
+                          verification_attention_workspace_bytes=786432000 if prepared.get('verification_attention_workspace') else 0,
                           verification_window=prepared.get('verification_chunk',8),
+                          recurrent_state_restore='accepted-prefix-recompute' if prepared.get('state_recompute') else 'snapshots',
                           output_lookup=True,fallback_proposals=prepared.get('fallback_proposals',3),scheduler='fixed native cohort'))
         config = dict(schema='tensor.llm-serving-servers.v1',
             comparison_group='qwen35-h200-compact-32k16k-c8-native-fp8kv-experimental',servers=[server])
