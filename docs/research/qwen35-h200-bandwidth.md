@@ -199,8 +199,8 @@ The adaptive verification candidate shares one resident model across 8- and
 hidden buffer. The first GPU job passed 86 tests (eight skipped), then timed
 out during the full model checks before serving. Its 20-minute allocation
 was insufficient for the 18-minute primitive suite plus model checks. The
-retry has a one-hour limit. There is no completed adaptive throughput result
-yet; it is not selected as a winner.
+retry had a one-hour limit and completed the primitive checks, but failed the
+full-model adaptive gate. The candidate is not selected as a winner.
 
 A second isolated candidate combines two QK blocks while retaining two
 successive 16-key softmax updates. The compiler requires shared score staging
@@ -208,3 +208,112 @@ and emits synchronization warnings. All three geometries are slower (about
 24.5–44.3 ms versus 15.7 ms at 32K) and change output bits with relative RMS
 around 1.88e-5. The candidate is rejected, removed from the runtime package,
 and retained only as [experiment evidence](data/qwen35-native-h200/bandwidth/batched-attention/measured.json).
+
+## Current captured-plan diagnosis
+
+The window-128 configuration was profiled again in `akbar2habibullah` at the
+real 32K prefix. Its early, full-prefix and later prefill comparisons retain
+zero RMS error; accepted-prefix replay retains bitwise equal valid logits,
+states and commits. This diagnostic does not rerun the primitive suite or
+measure a client replay; it refers to the retained window-128 qualification.
+The serial gate remains failed.
+
+The prefill probe has capacity 2048 per slot and heterogeneous lengths
+`[2048,2047,1025,0,128,3,2048,2047]`; the verifier probe fills all eight
+128-position windows. These are captured CUDA event intervals, including
+instrumentation cost, rather than average serving phase times.
+
+| Group | Prefill probe ms | Verification probe ms |
+|---|---:|---:|
+| Dense projections | 409.525 | 24.664 |
+| Attention workspace kernel | 359.433 | 25.911 |
+| Expert projections | 230.426 | 35.071 |
+| Recurrent scan | 116.599 | 11.599 |
+| Complete captured plan | 1276.356 | 148.514 |
+
+The distribution supports testing projection schedules alongside attention
+and avoiding padded work during short verification batches. It does not
+establish achieved whole-model HBM bandwidth.
+
+- [Prefill event intervals](data/qwen35-native-h200/bandwidth/current-profile/captured-prefill-profile.json)
+- [Verification event intervals](data/qwen35-native-h200/bandwidth/current-profile/captured-verification-profile.json)
+- [Diagnostic provenance and gates](data/qwen35-native-h200/bandwidth/current-profile/summary.json)
+- [Timed-out graph-pool job and primitive checks](data/qwen35-native-h200/bandwidth/graph-pool-timeout/summary.json)
+
+## Larger projection tiles
+
+An isolated dense sweep uses 4096 rows and finite FP8 encodings of both signs,
+with BF16 weight scales and FP32 activation scales. Its M128/N128/256-thread
+candidate is bitwise equal to the existing paired M64/N128 control in all
+three tested shapes. Median CUDA event timings are:
+
+| Dense K × N | Existing M64 ms | Candidate M128 ms |
+|---|---:|---:|
+| 2048 × 8192 | 1.2095 | 0.8553 |
+| 4096 × 2048 | 0.6798 | 0.4605 |
+| 2048 × 512 | 0.0819 | 0.0587 |
+
+These isolated gains are approximately 29–32%. A full candidate replaces only
+prefill dense projections, preserves the expert and attention schedules, and
+must pass the unchanged model gates and client replay. Three added physical
+cases check M128 against frozen M64 FP8 reductions at an odd row tail, with
+one, two and eight reduction partitions. The fixed-width candidate passes 83 physical GPU checks (eight skipped);
+the adaptive, resident-graph candidate passes 93 (eight skipped). Full model
+checks are running. There is no completed M128 client result yet.
+
+Larger expert geometries were also measured at 512 and 4096 rows, using
+balanced and eight-hot-expert routes. All preserve the sampled output bits,
+but none provides a consistent gain across these shapes and routes; no
+larger expert tile is selected.
+
+- [Dense sweep](data/qwen35-native-h200/bandwidth/dense-wide/measured.json)
+- [Expert sweep](data/qwen35-native-h200/bandwidth/expert-wide/measured.json)
+
+## Adaptive-path gate and arithmetic correction
+
+The first completed adaptive model gate rejects the 8-position path: valid
+predictions, logits, recurrent states and commits differ from the frozen
+128-position path. The unchanged 128-position recompute comparison passes.
+No HTTP throughput replay was run for this rejected candidate.
+
+A layer-by-layer diagnostic finds the first difference in the first layer's
+expert projection merge (about 2.01e-8 relative RMS). That difference grows
+through subsequent quantization and routing. The frozen 128-position expert
+profile uses BF16 accumulation, whereas the first small graph was built with
+paired FP16 accumulation. The corrected producer inherits the parent's expert
+geometry and accumulation profile. Its strict bitwise gate remains unchanged;
+a rerun matches all 732 traced stage outputs bit for bit. Full rollback
+qualification and client replay are pending.
+
+A separate opt-in serving candidate captures verification and repair graphs
+at server startup and retains them across cohorts. It performs no inference
+or prompt initialization at startup. This requires additional live GPU memory
+during prefill and is disabled by default. Startup graph preparation time is
+logged separately; the HTTP elapsed-time objective and request load are
+unchanged. Local worker cancellation and failure checks preserve the caller's
+ownership of those resident graphs. Ten local graph-pool and serving tests
+pass, including two fresh request cohorts that reuse the same pair and emit
+independent, exact-length streams. The two-cohort check was added after the
+combined GPU image was frozen; its local result is retained separately.
+
+- [Rejected adaptive gate](data/qwen35-native-h200/bandwidth/graph-pool-rejected/adaptive-quality/report.json)
+- [Layer diagnostic](data/qwen35-native-h200/bandwidth/graph-pool-trace/rejected.json)
+
+
+## Remaining tile sweeps
+
+Smaller BF16 expert tiles preserve the sampled output bits but do not improve
+all routes and shapes. M16 improves the balanced 64-row up projection, while
+hot-expert down projections and the full 1024-row verification shapes regress.
+The compiler also emits synchronization warnings for M16. Neither M16 nor M32
+is selected for model replay.
+
+Recurrent scan value tiles 8, 16 and 64 preserve outputs and persistent state
+bits for heterogeneous 128- and 2048-position windows. They are all slower
+than the existing tile 32. Median timings for tile 32 are 0.2345 ms and
+3.7197 ms; tile 16 takes 0.2468 ms and 3.9409 ms. The scan schedule is retained.
+These are isolated CUDA-event measurements, not client throughput results.
+
+- [Matched adaptive stage trace](data/qwen35-native-h200/bandwidth/graph-pool-trace/matched.json)
+- [BF16 expert tile sweep](data/qwen35-native-h200/bandwidth/expert-bf16-small/measured.json)
+- [Recurrent scan tile sweep](data/qwen35-native-h200/bandwidth/scan-geometry/measured.json)

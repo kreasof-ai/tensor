@@ -1,0 +1,116 @@
+✓ Initialized. View run at https://modal.com/apps/akbar2habibullah/main/ap-63Lvpt6FjHAkYhAoYl78Vz
+✓ Created objects.
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks/qwen35/modal_verifier_pool.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/docs/research/data/qwen35-native-h200/workload.json
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/tests
+├── ✓ Uploaded /home/sagemaker-user/tensor/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/packages/tensor-llm/src
+├── ✓ Uploaded /home/sagemaker-user/tensor/tools/bootstrap_nvrtc.py
+├── ✓ Uploaded /home/sagemaker-user/tensor/benchmarks
+├── ✓ Uploaded PythonPackage:benchmarks
+├── ✓ Created Function prepare.
+├── ✓ Created Function prepare_compact.
+└── ✓ Created Function measure_compact.
+
+==========
+== CUDA ==
+==========
+
+CUDA Version 12.9.1
+
+Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+
+WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be available.
+   Use the NVIDIA Container Toolkit to start this container with GPU support; see
+   https://docs.nvidia.com/datacenter/cloud-native/ .
+
+split_attention {'slots': 8, 'chunk': 8, 'capacity': 48000, 'splits': 16, 'packed_loads': True, 'key_rows': 32, 'query_tokens': 8}
+split_merge {'slots': 8, 'chunk': 8, 'capacity': 48000, 'splits': 16, 'packed_loads': True, 'key_rows': 32}
+Hopper verification dense {'r': 64, 'o': 8192, 'k': 2048, 'partitions': 8, 'block_m': 64, 'columns': 128, 'threads': 256, 'stages': 1, 'packed_gather': True, 'mma_reduction': 32, 'mma_reorder': True, 'async_mma': False}
+Hopper verification dense {'r': 64, 'o': 4096, 'k': 2048, 'partitions': 8, 'block_m': 64, 'columns': 128, 'threads': 256, 'stages': 1, 'packed_gather': True, 'mma_reduction': 32, 'mma_reorder': True, 'async_mma': False}
+Hopper verification dense {'r': 64, 'o': 2048, 'k': 4096, 'partitions': 8, 'block_m': 64, 'columns': 128, 'threads': 256, 'stages': 1, 'packed_gather': True, 'mma_reduction': 32, 'mma_reorder': True, 'async_mma': False}
+Hopper verification dense {'r': 64, 'o': 512, 'k': 2048, 'partitions': 8, 'block_m': 64, 'columns': 128, 'threads': 256, 'stages': 1, 'packed_gather': True, 'mma_reduction': 32, 'mma_reorder': True, 'async_mma': False}
+Hopper verification dense {'r': 64, 'o': 2048, 'k': 512, 'partitions': 4, 'block_m': 64, 'columns': 128, 'threads': 256, 'stages': 1, 'packed_gather': True, 'mma_reduction': 32, 'mma_reorder': True, 'async_mma': False}
+split_attention {'slots': 8, 'chunk': 8, 'capacity': 48000, 'splits': 16, 'packed_loads': True, 'key_rows': 32, 'query_tokens': 8}
+split_merge {'slots': 8, 'chunk': 8, 'capacity': 48000, 'splits': 16, 'packed_loads': True, 'key_rows': 32}
+
+==========
+== CUDA ==
+==========
+
+CUDA Version 12.9.1
+
+Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+
+.................ss.....ss...................ss.....ss.................. [ 76%]
+......................                                                   [100%]
+=============================== warnings summary ===============================
+packages/tensor-llm/tests/test_qwen_compact.py: 4 warnings
+packages/tensor-llm/tests/test_qwen_prefill.py: 2 warnings
+packages/tensor-llm/tests/test_qwen_hopper.py: 58 warnings
+  /usr/local/lib/python3.12/site-packages/tilelang/language/tir/op.py:404: DeprecationWarning: T.reinterpret(dtype, value) is deprecated, use reinterpret(value, dtype) instead
+    deprecated_warning("T.reinterpret(dtype, value)", "reinterpret(value, dtype)")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+86 passed, 8 skipped, 64 warnings in 1092.70s (0:18:12)
+
+uploading native checkpoint weights
+uploaded 35707988096 bytes
+Original prefill repeatability early heterogeneous lengths 0.0 0.0
+Compact same-state quality {'label': 'early heterogeneous lengths', 'control_chunk': 512, 'candidate_chunk': 2048, 'relative_logit_rms': 0.0, 'original_repeat_relative_logit_rms': 0.0, 'original_repeat_maximum_relative_state_rms': 0.0, 'maximum_relative_state_rms': 0.0, 'greedy_matches': 8, 'greedy_total': 8, 'finite': True, 'positions_match': True, 'threshold': 1e-05, 'passed': True}
+Compact prefix 32000
+Task's current input(s) ["in-01M4J0F14F9M3W15DGHYTCXZTC:1791605834897-0"] cancelled because: Task's current input in-01M4J0F14F9M3W15DGHYTCXZTC:1791605834897-0 hit its timeout of 1200s
+Stopping app - uncaught exception raised locally: FunctionTimeoutError("Task's current input in-01M4J0F14F9M3W15DGHYTCXZTC:1791605834897-0 hit its timeout of 1200s").
+[modal-client] 2026-10-10T04:37:18+0000 Received a cancellation signal while processing input ('in-01M4J0F14F9M3W15DGHYTCXZTC:1791605834897-0',)
+[modal-client] 2026-10-10T04:37:22+0000 Successfully canceled input ('in-01M4J0F14F9M3W15DGHYTCXZTC:1791605834897-0',)
+Runner terminated.
+╭─────────────────────────────── Traceback (most recent call last) ────────────────────────────────╮
+│ /home/sagemaker-user/tensor/benchmarks/qwen35/modal_verifier_pool.py:59 in main                  │
+│                                                                                                  │
+│   58 │   (root/'run.json').write_text(json.dumps(dict(run_id=run_id,volume='tensor-qwen35-h20    │
+│ ❱ 59 │   result=measure_compact.remote(ready,run_id)                                             │
+│   60 │   (root/'summary.json').write_text(json.dumps(result,indent=2)+'\n')                      │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_object.py:49 in wrapped                           │
+│                                                                                                  │
+│    48 │   │   await self.hydrate()                                                               │
+│ ❱  49 │   │   return await method(self, *args, **kwargs)                                         │
+│    50                                                                                            │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:2067 in remote                       │
+│                                                                                                  │
+│   2066 │   │                                                                                     │
+│ ❱ 2067 │   │   return await self._call_function(args, kwargs)                                    │
+│   2068                                                                                           │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:2004 in _call_function               │
+│                                                                                                  │
+│   2003 │   │                                                                                     │
+│ ❱ 2004 │   │   return await invocation.run_function()                                            │
+│   2005                                                                                           │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_functions.py:515 in run_function                  │
+│                                                                                                  │
+│    514 │   │   │   # No more retries left.                                                       │
+│ ❱  515 │   │   │   return await _process_result(                                                 │
+│    516 │   │   │   │   await_response.output.result, await_response.output.data_format, self.cl  │
+│                                                                                                  │
+│ /opt/conda/lib/python3.12/site-packages/modal/_utils/function_utils.py:534 in _process_result    │
+│                                                                                                  │
+│   533 │   if result.status == api_pb2.GenericResult.GENERIC_STATUS_TIMEOUT:                      │
+│ ❱ 534 │   │   raise FunctionTimeoutError(result.exception)                                       │
+│   535 │   elif result.status == api_pb2.GenericResult.GENERIC_STATUS_INTERNAL_FAILURE:           │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+FunctionTimeoutError: Task's current input in-01M4J0F14F9M3W15DGHYTCXZTC:1791605834897-0 hit its timeout of 1200s

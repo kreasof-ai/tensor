@@ -76,6 +76,8 @@ def measure_compact(prepared, run_id):
         if prepared.get('adaptive_verification'):
             test_command.extend(['packages/tensor-llm/tests/test_qwen_graph_pool.py',
                 'packages/tensor-llm/tests/test_qwen_spec.py::test_recurrent_snapshots_restore_every_rejection_depth[8]'])
+        if prepared.get('resident_speculative_graphs'):
+            test_command.append('packages/tensor-llm/tests/test_qwen_server.py')
         if prepared.get('profile_only'):
             from types import SimpleNamespace
             test=SimpleNamespace(returncode=0,stdout='Diagnostic only; primitive checks retained in prior replay.\n',stderr='')
@@ -224,6 +226,8 @@ def measure_compact(prepared, run_id):
         command = [sys.executable,'-m','benchmarks.qwen35.server','--checkpoint',base['checkpoint'],
                    '--bundle',str(paths['decoder']),'--prefill-bundle',prepared['prefill'],
                    '--compact-experts','--port','8013','--output-lookup','--fallback-proposals',str(prepared.get('fallback_proposals',3))]
+        if prepared.get('resident_speculative_graphs'):
+            command.append('--resident-speculative-graphs')
         if prepared.get('hopper'):
             command.extend(['--hopper-bundle',prepared['hopper']])
         if prepared.get('attention_workspace'):
@@ -244,6 +248,7 @@ def measure_compact(prepared, run_id):
                           verification_attention_workspace_bytes=786432000 if prepared.get('verification_attention_workspace') else 0,
                           verification_window=prepared.get('verification_chunk',8),
                           adaptive_verification_windows=prepared.get('adaptive_windows'),
+                          speculative_graphs_resident=bool(prepared.get('resident_speculative_graphs')),
                           recurrent_state_restore='accepted-prefix-recompute' if prepared.get('state_recompute') else 'snapshots',
                           output_lookup=True,fallback_proposals=prepared.get('fallback_proposals',3),scheduler='fixed native cohort'))
         config = dict(schema='tensor.llm-serving-servers.v1',

@@ -1,0 +1,154 @@
+{
+  "cases": [
+    {
+      "chunk": 128,
+      "lengths": [
+        128,
+        127,
+        69,
+        0,
+        1,
+        3,
+        128,
+        96
+      ],
+      "candidates": [
+        {
+          "value_tile": 32,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            0.2330026626586914,
+            0.23241599400838217,
+            0.23493333657582602,
+            0.23448532819747925,
+            0.23501867055892944
+          ],
+          "artifact_sha256": "85f4fcdd6ea8a1479e3ba69fa0f54918197db0190cb85a93e437f8eb6dc5254d"
+        },
+        {
+          "value_tile": 16,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            0.24684800704320273,
+            0.24576000372568765,
+            0.24228266874949136,
+            0.25176533063252765,
+            0.24990934133529663
+          ],
+          "artifact_sha256": "bc99051cf2f8373c82088960bb3f8e1d98cbaf425f016c0edbeb6b0bc81602b2"
+        },
+        {
+          "value_tile": 8,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            0.2804266611735026,
+            0.2839039961496989,
+            0.28216532866160077,
+            0.2794346610705058,
+            0.27908267577489215
+          ],
+          "artifact_sha256": "8d6779bb65c6f5299d9c93e18820a13ef47c2438430f27881b9bbfa25e4bce94"
+        },
+        {
+          "value_tile": 64,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            0.27035733064015705,
+            0.2704319953918457,
+            0.27010132869084674,
+            0.26919466257095337,
+            0.2701333363850911
+          ],
+          "artifact_sha256": "e8103878c5f5f6f92caf73026831f0fa2625d745c3ec47d6e58740cbc451b3d3"
+        }
+      ]
+    },
+    {
+      "chunk": 2048,
+      "lengths": [
+        2048,
+        2047,
+        1029,
+        0,
+        1,
+        3,
+        2048,
+        1536
+      ],
+      "candidates": [
+        {
+          "value_tile": 32,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            3.7081705729166665,
+            3.7197227478027344,
+            3.7313172022501626,
+            3.753408114115397,
+            3.717813491821289
+          ],
+          "artifact_sha256": "63a0d37a5417312c65e88bc4b344eafaf467d4e26925b17e5bef68d428353d82"
+        },
+        {
+          "value_tile": 16,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            3.934602737426758,
+            3.902186711629232,
+            3.940938631693522,
+            3.970944086710612,
+            3.948330561319987
+          ],
+          "artifact_sha256": "0c596f66227daaf59fff16e5357f72e555ad9128fdc8feb79206dfa3a757536e"
+        },
+        {
+          "value_tile": 8,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            4.714133262634277,
+            4.767637252807617,
+            4.753376007080078,
+            4.758965492248535,
+            4.7402346928914385
+          ],
+          "artifact_sha256": "75820a7536a0d30aaa6cf57da205fc026de4d33db2e614d92983b7b8a31e5dbd"
+        },
+        {
+          "value_tile": 64,
+          "outputs_bitwise_equal": true,
+          "states_bitwise_equal": true,
+          "finite": true,
+          "milliseconds": [
+            4.2964480717976885,
+            4.289930661519368,
+            4.296181360880534,
+            4.295242627461751,
+            4.291082700093587
+          ],
+          "artifact_sha256": "a0a3c1cd2a78ef49659c2bf123f1c23a6190348cc13eb98a6dfbe6f95ba00ea3"
+        }
+      ]
+    }
+  ],
+  "scope": "scan value tile changes; isolated kernels, not client throughput",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  },
+  "source_sha256": "c7be44fb69580e775f8ce277c9f6511bc406f59b61d0b0ea16f528a8b0b03c3c"
+}

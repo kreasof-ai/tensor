@@ -45,6 +45,7 @@ class NativeServer:
             state_dtype='float32',kv_dtype=getattr(self.model,'kv_dtype','bfloat16'),weight_format='native-F8_E4M3-block128',
             speculative=bool(self.speculative),prefix_cache=False,cpu_offload='none',
             output_lookup=bool(self.speculative and self.speculative.get('output_lookup')),
+            speculative_graphs_resident=bool(self.speculative and self.speculative.get('resident_pair')),
             compact_expert_prefill=bool(getattr(self.prefill,'_compact_experts_installed',False)),
             hopper_prefill=bool(getattr(self.prefill,'_hopper_installed',False)),
             prefill_attention_workspace_dtype='bfloat16' if getattr(self.prefill,'_attention_workspace_installed',False) else None,
@@ -104,7 +105,9 @@ class NativeServer:
         from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
         from .spec_run import make_speculative_pair
         model=self.model;config=self.speculative;draft=config['draft']
-        verifier=repair=draft_prefill=None
+        resident=config.get('resident_pair')
+        verifier,repair=resident if resident is not None else (None,None)
+        draft_prefill=None
         try:
             while not self.closed:
                 request=await self.pending.get();self.slots[0]=request
@@ -165,7 +168,8 @@ class NativeServer:
                 draft.device.driver.call('cuMemcpyHtoD_v2',draft.buffers['normal'].pointer,
                     ct.c_void_p(cached_hidden.ctypes.data),cached_hidden.nbytes)
                 draft.device.driver.call('cuStreamSynchronize',None)
-                verifier,repair=make_speculative_pair(model,draft,config['verify_bundle'],config['repair_bundle'])
+                if resident is None:
+                    verifier,repair=make_speculative_pair(model,draft,config['verify_bundle'],config['repair_bundle'])
                 engine=Qwen35Speculative(model,draft,verifier,repair,
                     output_lookup=config.get('output_lookup',False),fallback_proposals=config.get('fallback_proposals',3))
                 phase_seconds={name:0. for name in ('draft_seconds','verify_seconds','commit_seconds','repair_seconds')}
@@ -196,10 +200,13 @@ class NativeServer:
                     verification_windows=getattr(verifier,'window_calls',None),
                     recurrent_snapshot_cache_bytes=getattr(verifier,'snapshot_cache_bytes',None),
                     elapsed_seconds=time.perf_counter()-decode_start)),flush=True)
-                repair.close();repair=None;verifier.close();verifier=None
+                if resident is None:
+                    repair.close();repair=None;verifier.close();verifier=None
         finally:
-            if repair:repair.close()
-            if verifier:verifier.close()
+            # The caller owns optional graphs prepared before HTTP admission.
+            if resident is None:
+                if repair:repair.close()
+                if verifier:verifier.close()
             if draft_prefill:draft_prefill.close()
             self.prefill.close()
 
@@ -265,14 +272,16 @@ def main():
     p.add_argument('--verify-bundle',type=Path);p.add_argument('--repair-bundle',type=Path)
     p.add_argument('--output-lookup',action='store_true');p.add_argument('--fallback-proposals',type=int,default=3)
     p.add_argument('--compact-experts',action='store_true')
+    p.add_argument('--resident-speculative-graphs',action='store_true')
     p.add_argument('--hopper-bundle',type=Path)
     p.add_argument('--attention-workspace-bundle',type=Path)
     a=p.parse_args()
     selected=(a.draft_bundle,a.draft_prefill_bundle,a.verify_bundle,a.repair_bundle)
     if any(selected) and not all(selected):p.error('speculative mode needs all four draft/verification/repair bundles')
+    if a.resident_speculative_graphs and not all(selected):p.error('resident graphs need speculative mode')
     with tensor.Device() as d,Qwen35Batch(a.checkpoint,a.bundle,d,progress=lambda s:print(s,flush=True)) as model:
         prefill=Qwen35Prefill(model,a.prefill_bundle)
-        draft=None
+        draft=None;resident_pair=None
         try:
             if a.compact_experts:
                 from tensor_llm.qwen35.compact_prefill import install
@@ -287,12 +296,21 @@ def main():
             if all(selected):
                 from tensor_llm import Qwen35MTP
                 draft=Qwen35MTP(model,a.draft_bundle)
-                config=dict(draft=draft,prefill_bundle=a.prefill_bundle,draft_prefill_bundle=a.draft_prefill_bundle,
+                if a.resident_speculative_graphs:
+                    from .spec_run import make_speculative_pair
+                    started=time.perf_counter()
+                    resident_pair=make_speculative_pair(model,draft,a.verify_bundle,a.repair_bundle)
+                    print('Native speculative graph startup '+json.dumps(dict(
+                        seconds=time.perf_counter()-started,inference_tokens=0,
+                        windows=sorted(getattr(resident_pair[0],'contexts',{resident_pair[0].chunk:None})))),flush=True)
+                config=dict(resident_pair=resident_pair,draft=draft,prefill_bundle=a.prefill_bundle,draft_prefill_bundle=a.draft_prefill_bundle,
                     verify_bundle=a.verify_bundle,repair_bundle=a.repair_bundle,output_lookup=a.output_lookup,
                     fallback_proposals=a.fallback_proposals,compact_experts=a.compact_experts,
                     hopper_bundle=a.hopper_bundle,attention_workspace_bundle=a.attention_workspace_bundle)
             asyncio.run(NativeServer(model,prefill,a.checkpoint,speculative=config).serve(port=a.port))
         finally:
+            if resident_pair:
+                resident_pair[1].close();resident_pair[0].close()
             prefill.close()
             if draft:draft.close()
 

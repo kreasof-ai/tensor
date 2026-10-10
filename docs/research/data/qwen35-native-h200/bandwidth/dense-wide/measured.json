@@ -1,0 +1,333 @@
+{
+  "cases": [
+    {
+      "rows": 4096,
+      "k": 2048,
+      "o": 8192,
+      "candidates": [
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 8192,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            1.2104746500651042,
+            1.2094720204671223,
+            1.2100373109181721,
+            1.2093226909637451,
+            1.2090880076090496
+          ],
+          "artifact_sha256": "67b6bed2131825efdb70b7aa719200971f79245216990b40d79b0527d24c281b"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 8192,
+            "block_m": 64,
+            "columns": 256,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.9546453158060709,
+            0.9537599881490072,
+            0.9513066609700521,
+            0.9571626981099447,
+            0.9519360065460205
+          ],
+          "artifact_sha256": "736cf7a89472636ab918873a223128a032dec0811d97128095cb277680f61b0c"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 8192,
+            "block_m": 128,
+            "columns": 128,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.8552213509877523,
+            0.8560106754302979,
+            0.854751984278361,
+            0.8552959760030111,
+            0.8570666313171387
+          ],
+          "artifact_sha256": "3b8cd95aa61911f8145da9ca714a519686a2c2d705b7cf66d6eceb73fd57af17"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 8192,
+            "block_m": 128,
+            "columns": 256,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            1.6158612569173176,
+            1.6184852917989094,
+            1.613418738047282,
+            1.6176427205403645,
+            1.618666648864746
+          ],
+          "artifact_sha256": "5a6ee43d12945e4de30f0602ff7756c4de085ab2abc91eeb73d3cc6d85be5fc4"
+        }
+      ]
+    },
+    {
+      "rows": 4096,
+      "k": 4096,
+      "o": 2048,
+      "candidates": [
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 4096,
+            "o": 2048,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.680565357208252,
+            0.6797760327657064,
+            0.6792746384938558,
+            0.6774826844533285,
+            0.6806293328603109
+          ],
+          "artifact_sha256": "8d41bc81288f0d61f7cc9bdb691accc6e9b94b6be3942c3e8c15f5a0e19f60b0"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 4096,
+            "o": 2048,
+            "block_m": 64,
+            "columns": 256,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.5046399831771851,
+            0.505514661471049,
+            0.5049386819203695,
+            0.5034133195877075,
+            0.5056639909744263
+          ],
+          "artifact_sha256": "7b4dac111e69005c12dff7b172ea62dc7c549fffe0ad2ded970816d31e6d8699"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 4096,
+            "o": 2048,
+            "block_m": 128,
+            "columns": 128,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.4605546792348226,
+            0.4601600170135498,
+            0.460533340771993,
+            0.4607893228530884,
+            0.4595946470896403
+          ],
+          "artifact_sha256": "e18970e1546088affdb31bc371a801df0064f499598ca7d02681aba866e08852"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 4096,
+            "o": 2048,
+            "block_m": 128,
+            "columns": 256,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.7096532980600992,
+            0.7046613693237305,
+            0.7009493509928385,
+            0.7049386501312256,
+            0.7037333647410074
+          ],
+          "artifact_sha256": "1f4f878549145e9e1b3755775fedbedd4d68cb373e1fc2ae3c82d6fe0bda241a"
+        }
+      ]
+    },
+    {
+      "rows": 4096,
+      "k": 2048,
+      "o": 512,
+      "candidates": [
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 512,
+            "block_m": 64,
+            "columns": 128,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.08321066697438557,
+            0.08166400094827016,
+            0.08183466891447704,
+            0.08186666667461395,
+            0.08269866804281871
+          ],
+          "artifact_sha256": "5632b3563b0412ad3bf3e15da47b4a3218b217bb907f429ad090c46c4187f46d"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 512,
+            "block_m": 64,
+            "columns": 256,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.06445866823196411,
+            0.06377600133419037,
+            0.063701331615448,
+            0.06346666812896729,
+            0.06362666686375935
+          ],
+          "artifact_sha256": "312fdbcc9970053b670a5ed8d1aa408102bf6a9404614efef4e0d545d4860184"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 512,
+            "block_m": 128,
+            "columns": 128,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.05932799975077311,
+            0.05869866907596588,
+            0.05870933334032694,
+            0.05844266712665558,
+            0.05844266712665558
+          ],
+          "artifact_sha256": "33e65ab90e00fe50eb56a31b1b0bd193098cc216d46093c1ba21bc7dfe993f8c"
+        },
+        {
+          "schedule": {
+            "r": 4096,
+            "k": 2048,
+            "o": 512,
+            "block_m": 128,
+            "columns": 256,
+            "threads": 256,
+            "packed_gather": true,
+            "stages": 1,
+            "mma_reduction": 32,
+            "mma_reorder": true
+          },
+          "bitwise_equal": true,
+          "finite": true,
+          "maximum_absolute_error": 0.0,
+          "milliseconds": [
+            0.170250674088796,
+            0.1689173380533854,
+            0.16819200913111368,
+            0.16897066434224448,
+            0.16804265975952148
+          ],
+          "artifact_sha256": "12cc0f5e3af7d2b30fc6ee1d730fcf006ccb097c6bfa3fde0298185f50f06596"
+        }
+      ]
+    }
+  ],
+  "scope": "dense projections with finite signed FP8 operands; isolated kernels, not full-model throughput",
+  "source_sha256": "61a64655d82d383e6a3f55d781662f9454d44614df0908671ffa1ba9fd1eaa9f",
+  "device": {
+    "ordinal": 0,
+    "name": "NVIDIA H200",
+    "arch": "sm_90",
+    "provider": "cuda"
+  }
+}

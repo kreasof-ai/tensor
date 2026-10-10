@@ -32,7 +32,10 @@ def prepare(prepared):
     shutil.copytree(source,selected,dirs_exist_ok=True)
     base=Path('/cache/bundles/85cbb54120e2258b')
     small=attention(base/'verify8-selected',root/'attention8',key_rows=32,query_tokens=8,kernel_target='sm_90a')
-    small=experts(small,root/'experts8',paired=True)
+    expert_schedule=manifest['hopper_expert_schedule']
+    paired=expert_schedule.get('paired',expert_schedule['shared_mma_dtype']=='float16')
+    small=experts(small,root/'experts8',block_m=expert_schedule['block_m'],
+                  columns=expert_schedule['columns'],paired=paired)
     produce_dense(small,selected/'profiles/8/verify')
     attention(base/'repair8-attention',selected/'profiles/8/repair',key_rows=32,query_tokens=8,kernel_target='sm_90a')
     manifest['adaptive_verification']=dict(implementation=implementation_hashes(),profiles=[dict(
@@ -41,6 +44,7 @@ def prepare(prepared):
     control=paths['verify'];paths['verify']=str(selected)
     result=dict(prepared,base=dict(prepared['base'],paths=paths),adaptive_verification=True,
                 adaptive_windows=[8,manifest['chunk']],adaptive_control_bundle=control,
+                adaptive_expert_schedule=expert_schedule,
                 source_identity=identity,adaptive_source_hashes=hashes)
     (root/'prepared.json').write_text(json.dumps(result,indent=2)+'\n');volume.commit();return result
 

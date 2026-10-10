@@ -1,0 +1,33 @@
+{
+  "groups": {
+    "controls": 0.008991999551653862,
+    "embedding": 0.10227199643850327,
+    "rms": 0.039423998445272446,
+    "quantize": 40.71801595017314,
+    "fp8_linear": 409.52543875575066,
+    "bf16_linear": 9.871647957712412,
+    "gdn_conv": 33.927744030952454,
+    "gdn_prepare": 15.983264148235321,
+    "gdn_scan": 116.59926319122314,
+    "gdn_norm": 9.698367953300476,
+    "add_rms": 6.511903993785381,
+    "router": 5.5935999900102615,
+    "expert_routes": 1.851135991513729,
+    "expert_tile_map": 1.0520959943532944,
+    "compact_fp8_experts": 230.42585575580597,
+    "swiglu_experts": 9.851936057209969,
+    "swiglu": 1.4435200095176697,
+    "moe_combine": 13.150367945432663,
+    "attention_q": 3.5873600244522095,
+    "attention_kv": 0.7741440013051033,
+    "_attention_workspace_decode": 1.966144010424614,
+    "_attention_workspace_attention": 359.4330253601074,
+    "last_rows": 0.005535999778658152,
+    "target-head": 0.28624000027775764,
+    "advance": 0.005311999935656786
+  },
+  "captured_plan_milliseconds": 1276.3558349609375,
+  "sum_kernel_intervals_milliseconds": 1272.4126071156934,
+  "timing": "captured CUDA event nodes; includes instrumentation overhead, no host launch gaps",
+  "model_throughput_qualified": false
+}

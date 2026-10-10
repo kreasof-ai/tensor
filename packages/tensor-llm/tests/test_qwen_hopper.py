@@ -100,7 +100,7 @@ def tensor_export():return {'kernel':kernel,'outputs':['out']}
 @pytest.mark.parametrize('columns',[64,128])
 @pytest.mark.parametrize('grouped',[False,True])
 @pytest.mark.parametrize('parts',[1,2])
-def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,paired,columns):
+def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,paired,columns,dense_m=64):
     if paired in ('warp','persistent') and not grouped:pytest.skip('expert-only candidate')
     import torch,tensor
     from tensor.compiler.entry import export_source
@@ -119,7 +119,7 @@ def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,pa
     scale_shape=(256,1,k//128) if grouped else (1,k//128)
     a=rng.uniform(.001,.01,(*shape[:-1],k//128)).astype('float32')
     scales=rng.uniform(.001,.01,scale_shape).astype('float32')
-    p=dict(r=rows,k=k,o=o,block_m=64,threads=128 if columns==64 else 256,columns=columns,partitions=parts)
+    p=dict(r=rows,k=k,o=o,block_m=dense_m,threads=128 if columns==64 else 256,columns=columns,partitions=parts)
     if paired=='warp':p.update(block_m=16,threads=128)
     if paired:p.update(mma_reduction=32,mma_reorder=True,async_mma=paired in ('async','pipeline'))
     if paired=='packed':p.update(packed_widen=True)
@@ -136,7 +136,7 @@ def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,pa
             p.update(persistent_tiles=4)
     else:
         control_module,control_factory,control_args=('matmul','make_kernel',
-            ['fp8_linear_mma_prequantized',dict(p,columns=64,packed_copy=True,stages=2)])
+            ['fp8_linear_mma_prequantized',dict(p,block_m=64,columns=64,packed_copy=True,stages=2)])
         selected_module,selected_factory,selected_args='hopper_dense','make_kernel',[p]
     artifacts=[]
     for i,(module,factory,args,target) in enumerate([
@@ -243,3 +243,9 @@ def test_hopper_query_tiles_preserve_long_window_causality(tmp_path,chunk,query_
         got=out.to_numpy();assert np.isfinite(got).all()
         assert np.linalg.norm(got-want)/np.linalg.norm(want)<.005
         np.testing.assert_allclose(got,want,rtol=.025,atol=.025)
+
+
+@pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',reason='native Hopper M128 dense qualification')
+@pytest.mark.parametrize('parts',[1,2,8])
+def test_hopper_dense_m128_preserves_control_bits(tmp_path,parts):
+    test_wide_hopper_projections_preserve_control_bits(tmp_path,False,parts,True,128,dense_m=128)
