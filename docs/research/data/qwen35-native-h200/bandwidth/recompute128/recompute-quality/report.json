@@ -1,0 +1,40 @@
+{
+  "scope": "frozen verifier vs accepted-prefix replay at the real 32K prefix",
+  "prefix_positions": [
+    32000,
+    32000,
+    32000,
+    32000,
+    32000,
+    32000,
+    32000,
+    32000
+  ],
+  "lengths": [
+    128,
+    127,
+    69,
+    0,
+    1,
+    3,
+    128,
+    96
+  ],
+  "rejection_depths": [
+    1,
+    2,
+    3,
+    17,
+    69,
+    127,
+    128
+  ],
+  "forward_bitwise_equal": true,
+  "commits_bitwise_equal": true,
+  "finite": true,
+  "recompute_cache_bytes": 2548040640,
+  "control_bundle": "/__modal/volumes/vo-NroLxa4lxPdBUDMrv2ZzIx/recompute/98f6de1932190751/control",
+  "selected_bundle": "/__modal/volumes/vo-NroLxa4lxPdBUDMrv2ZzIx/recompute/98f6de1932190751/verify",
+  "canonical_model_qualified": false,
+  "passed": true
+}

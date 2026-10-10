@@ -1,0 +1,94 @@
+{
+  "root": "/cache/warpgroup-attention/affecfcf1cd09ad1",
+  "source_hashes": {
+    "/root/modal_bandwidth.py": "8e48613c004fb6aec976638fad3b26879c2a2ca0e96c57b4f7d6fbdef410e576",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "9348295d765be5471c37d6cb6998bedf4e319af5d716e7487d88a85b2c760f91"
+  },
+  "candidates": [
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j0.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 128,
+        "threads": 256,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "warpgroup_qk": false,
+        "warpgroup_pv": false
+      },
+      "path": "/cache/warpgroup-attention/affecfcf1cd09ad1/attention-False-False.tbin",
+      "sha256": "9172760752af09d3ce4943246d832e38111a2d3312c7dc8c350d0a0e666c56d9",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 128,
+        "threads": 256,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "warpgroup_qk": true,
+        "warpgroup_pv": false
+      },
+      "path": "/cache/warpgroup-attention/affecfcf1cd09ad1/attention-True-False.tbin",
+      "sha256": "5c84f178c3a66b0d62273937bb39110111666b55da7a8ac01fc75c2b957f55a7",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 128,
+        "threads": 256,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "warpgroup_qk": false,
+        "warpgroup_pv": true
+      },
+      "path": "/cache/warpgroup-attention/affecfcf1cd09ad1/attention-False-True.tbin",
+      "sha256": "8b9c5414e38df058e7f7e7961bcc9234f07f12bfceeff8857a063721b99b2cd5",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 128,
+        "threads": 256,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "warpgroup_qk": true,
+        "warpgroup_pv": true
+      },
+      "path": "/cache/warpgroup-attention/affecfcf1cd09ad1/attention-True-True.tbin",
+      "sha256": "48d9c6cb4cb195f0e5f4bf65d24980de060dc6db95c441b14bd134054b0969be",
+      "compiled": true
+    }
+  ],
+  "copy": "/cache/bandwidth/0006096995e3a98e/copy.tbin",
+  "decoded_source_hashes": {
+    "/root/modal_bandwidth.py": "8ea0561f31e38ed0c1188e3343b8f6798ecc30b312c6d95cc9162eea32717e56",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "12e88753d93c08bba2df9cdc407e4d6203994122f9e0b744a4b787f5540728af",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d"
+  },
+  "decode": "/cache/bandwidth-decoded/6ff133b1bcb968ff/decode.tbin",
+  "warpgroup_source_sha256": "affecfcf1cd09ad1ef8d45fa093b8d29b4cc83639fa5d4d770016f12e5176ea7"
+}

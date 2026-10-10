@@ -1,0 +1,89 @@
+{
+  "root": "/cache/batched-attention/108ae0f096be48c3",
+  "source_hashes": {
+    "/root/modal_bandwidth.py": "8e48613c004fb6aec976638fad3b26879c2a2ca0e96c57b4f7d6fbdef410e576",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "9348295d765be5471c37d6cb6998bedf4e319af5d716e7487d88a85b2c760f91"
+  },
+  "candidates": [
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth/0006096995e3a98e/attention-q128-t256-j0.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "packed_loads": true,
+        "query_rows": 128,
+        "threads": 256,
+        "decoded_kv": true,
+        "joint_kv": false
+      },
+      "path": "/cache/bandwidth-decoded/6ff133b1bcb968ff/attention.tbin",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 128,
+        "threads": 256,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "batched_keys": true
+      },
+      "path": "/cache/batched-attention/108ae0f096be48c3/attention-q128-t256.tbin",
+      "sha256": "cc8dcfddb31094875af189b534a1a08a7e2d7bf9196d6ce5d3092a3ce1bc95ba",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 64,
+        "threads": 256,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "batched_keys": true
+      },
+      "path": "/cache/batched-attention/108ae0f096be48c3/attention-q64-t256.tbin",
+      "sha256": "3e16d99620915746e9e62f1cf311470f965613dc969d81c1ff33c0c1bdf40ccf",
+      "compiled": true
+    },
+    {
+      "schedule": {
+        "slots": 8,
+        "chunk": 512,
+        "capacity": 48000,
+        "query_rows": 64,
+        "threads": 128,
+        "packed_loads": true,
+        "decoded_kv": true,
+        "batched_keys": true
+      },
+      "path": "/cache/batched-attention/108ae0f096be48c3/attention-q64-t128.tbin",
+      "sha256": "887549eabff083d456813b6729f48f59d82cd08a8147e3803906c2fb23e9bd84",
+      "compiled": true
+    }
+  ],
+  "copy": "/cache/bandwidth/0006096995e3a98e/copy.tbin",
+  "decoded_source_hashes": {
+    "/root/modal_bandwidth.py": "8ea0561f31e38ed0c1188e3343b8f6798ecc30b312c6d95cc9162eea32717e56",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py": "12e88753d93c08bba2df9cdc407e4d6203994122f9e0b744a4b787f5540728af",
+    "packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py": "adde8c62e21e597a2f97ad9fe7a0562d0121554d7601f01eb2f7f0c00c5d733d"
+  },
+  "decode": "/cache/bandwidth-decoded/6ff133b1bcb968ff/decode.tbin",
+  "batched_source_sha256": "108ae0f096be48c3d9cf5da98a70d6fad2b0ddade45cde6b4485ce1d81a2ae4c"
+}

@@ -111,5 +111,5 @@ subprocess.TimeoutExpired: Command '['/usr/local/bin/python', '-m', 'pytest', 'p
 │ ❱ 1253 raise TimeoutExpired(                                                                     │
 │                                                                                                  │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
-TimeoutExpired: Command '['/usr/local/bin/python', '-m', 'pytest', 'packages/tensor-llm/tests/test_qwen_hopper.py', '-k', 'query_tiles', '-q', '-o', 
+TimeoutExpired: Command '['/usr/local/bin/python', '-m', 'pytest', 'packages/tensor-llm/tests/test_qwen_hopper.py', '-k', 'query_tiles', '-q', '-o',
 'addopts=']' timed out after 300 seconds
