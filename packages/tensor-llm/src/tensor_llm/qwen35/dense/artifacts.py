@@ -12,15 +12,10 @@ def implementation():
             "artifacts",
             "checkpoint",
             "engine",
-            "head",
-            "kernels",
             "mtp",
-            "projections",
             "recurrent",
-            "recurrent_kernels",
             "speculative",
-            "spec_graph",
-            "spec_kernels",
+            "speculative_graph",
             "server",
         )
     ]
@@ -28,6 +23,13 @@ def implementation():
         (
             "tensor_llm.common.scheduler",
             "tensor_llm.common.artifacts",
+            "tensor_llm.common.checkpoint",
+            "tensor_llm.common.state",
+            "tensor_llm.qwen35.kernels.dense",
+            "tensor_llm.qwen35.kernels.dense_projections",
+            "tensor_llm.qwen35.kernels.dense_head",
+            "tensor_llm.qwen35.kernels.dense_recurrent",
+            "tensor_llm.qwen35.kernels.dense_speculation",
             "tensor_llm.qwen35.kernels.decode",
             "tensor_llm.qwen35.kernels.mtp",
         )

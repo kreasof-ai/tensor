@@ -109,7 +109,7 @@ def test_resident_speculative_graphs_remain_owned_by_caller_on_worker_exit():
 
 def test_resident_speculative_graphs_reuse_owners_across_fresh_cohorts(monkeypatch):
     import tensor_llm
-    import tensor_llm.qwen35.mtp.prefill as mtp_module
+    import tensor_llm.qwen35.mtp_prefill as mtp_module
     import benchmarks.qwen35.spec_run as spec_run
     from benchmarks.qwen35.server import NativeServer,Request
     class Buffer:

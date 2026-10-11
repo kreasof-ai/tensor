@@ -30,7 +30,9 @@ def weight_decoder(kind, depth, *, packed_words=False):
     @T.macro
     def byte(w, base, offset):
         if packed_words:
-            return (w[(base + offset) // 4] >> ((base + offset) % 4 * 8)) & T.uint32(255)
+            return (w[(base + offset) // 4] >> ((base + offset) % 4 * 8)) & T.uint32(
+                255
+            )
         else:
             return T.cast(w[base + offset], "uint32")
 
@@ -46,7 +48,8 @@ def weight_decoder(kind, depth, *, packed_words=False):
     def signed(value):
         if packed_words:
             return T.cast(
-                T.cast(value, "int32") - T.if_then_else(T.cast(value, "int32") >= 128, 256, 0),
+                T.cast(value, "int32")
+                - T.if_then_else(T.cast(value, "int32") >= 128, 256, 0),
                 "float32",
             )
         else:
@@ -61,7 +64,10 @@ def weight_decoder(kind, depth, *, packed_words=False):
             j = col % block
             if kind == 2:
                 return half(w, base, 0) * (
-                    T.cast((byte(w, base, 2 + j % 16) >> (4 * (j // 16))) & 15, "float32") - 8
+                    T.cast(
+                        (byte(w, base, 2 + j % 16) >> (4 * (j // 16))) & 15, "float32"
+                    )
+                    - 8
                 )
             elif kind == 8:
                 return half(w, base, 0) * signed(byte(w, base, 2 + j))
@@ -70,14 +76,18 @@ def weight_decoder(kind, depth, *, packed_words=False):
                 scale = T.if_then_else(
                     group < 4,
                     byte(w, base, 4 + group) & 63,
-                    (byte(w, base, 8 + group) & 15) | ((byte(w, base, group) >> 6) << 4),
+                    (byte(w, base, 8 + group) & 15)
+                    | ((byte(w, base, group) >> 6) << 4),
                 )
                 minimum = T.if_then_else(
                     group < 4,
                     byte(w, base, 8 + group) & 63,
-                    (byte(w, base, 8 + group) >> 4) | ((byte(w, base, 4 + group) >> 6) << 4),
+                    (byte(w, base, 8 + group) >> 4)
+                    | ((byte(w, base, 4 + group) >> 6) << 4),
                 )
-                quant = (byte(w, base, 16 + j // 64 * 32 + j % 32) >> (4 * (group % 2))) & 15
+                quant = (
+                    byte(w, base, 16 + j // 64 * 32 + j % 32) >> (4 * (group % 2))
+                ) & 15
                 return half(w, base, 0) * T.cast(scale, "float32") * T.cast(
                     quant, "float32"
                 ) - half(w, base, 2) * T.cast(minimum, "float32")
@@ -85,9 +95,13 @@ def weight_decoder(kind, depth, *, packed_words=False):
                 group = j % 128 // 32
                 low = byte(w, base, j // 128 * 64 + group % 2 * 32 + j % 32)
                 high = byte(w, base, 128 + j // 128 * 32 + j % 32)
-                quant = ((low >> (4 * (group // 2))) & 15) | (((high >> (2 * group)) & 3) << 4)
+                quant = ((low >> (4 * (group // 2))) & 15) | (
+                    ((high >> (2 * group)) & 3) << 4
+                )
                 scale = byte(w, base, 192 + j // 16)
-                return half(w, base, 208) * signed(scale) * (T.cast(quant, "float32") - 32)
+                return (
+                    half(w, base, 208) * signed(scale) * (T.cast(quant, "float32") - 32)
+                )
             else:
                 raise ValueError("unsupported GGML encoding")
 
@@ -102,7 +116,11 @@ def source(kind, parameters):
         "make_kernel",
         kind,
         parameters,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -182,7 +200,9 @@ def make_kernel(kind, p):
                     square[i] = x[row * c + i] * x[row * c + i]
                 T.reduce_sum(square, total, dim=0)
                 for i in T.Parallel(c):
-                    out[row * c + i] = x[row * c + i] * T.rsqrt(total[0] / c + p["eps"]) * w[i]
+                    out[row * c + i] = (
+                        x[row * c + i] * T.rsqrt(total[0] / c + p["eps"]) * w[i]
+                    )
 
         return kernel
     if kind in ("add", "swiglu"):
@@ -198,7 +218,11 @@ def make_kernel(kind, p):
                 for lane in T.Parallel(256):
                     i = block * 256 + lane
                     if i < n:
-                        out[i] = x[i] + y[i] if kind == "add" else x[i] / (1 + T.exp(-x[i])) * y[i]
+                        out[i] = (
+                            x[i] + y[i]
+                            if kind == "add"
+                            else x[i] / (1 + T.exp(-x[i])) * y[i]
+                        )
 
         return kernel
     if kind == "embedding":
@@ -241,7 +265,10 @@ def make_kernel(kind, p):
                         right = state[c + col]
                         for row in T.serial(r):
                             if row < pos[1]:
-                                current = x[row * (3 * c) + col] * x[row * (3 * c) + 2 * c + col]
+                                current = (
+                                    x[row * (3 * c) + col]
+                                    * x[row * (3 * c) + 2 * c + col]
+                                )
                                 out[row * c + col] = x[row * (3 * c) + c + col] * (
                                     left * w[col * 3]
                                     + right * w[col * 3 + 1]
@@ -276,26 +303,42 @@ def make_kernel(kind, p):
                 total = T.alloc_fragment((1,), "float32")
                 norm = T.alloc_shared((d,), "float32")
                 for i in T.Parallel(d):
-                    square[i] = q[(row * h + head) * d + i] * q[(row * h + head) * d + i]
+                    square[i] = (
+                        q[(row * h + head) * d + i] * q[(row * h + head) * d + i]
+                    )
                 T.reduce_sum(square, total, dim=0)
                 for i in T.Parallel(d):
-                    norm[i] = q[(row * h + head) * d + i] * T.rsqrt(total[0] / d + eps) * qw[i]
+                    norm[i] = (
+                        q[(row * h + head) * d + i]
+                        * T.rsqrt(total[0] / d + eps)
+                        * qw[i]
+                    )
                 for i in T.Parallel(d // 2):
-                    angle = T.cast(pos[0] + row, "float32") * T.exp(-(math.log(theta) * 2 / d) * i)
+                    angle = T.cast(pos[0] + row, "float32") * T.exp(
+                        -(math.log(theta) * 2 / d) * i
+                    )
                     qo[(row * h + head) * d + i] = norm[i] * T.cos(angle) - norm[
                         i + d // 2
                     ] * T.sin(angle)
-                    qo[(row * h + head) * d + i + d // 2] = norm[i] * T.sin(angle) + norm[
-                        i + d // 2
-                    ] * T.cos(angle)
+                    qo[(row * h + head) * d + i + d // 2] = norm[i] * T.sin(
+                        angle
+                    ) + norm[i + d // 2] * T.cos(angle)
                 if head < kh:
                     for i in T.Parallel(d):
-                        square[i] = k[(row * kh + head) * d + i] * k[(row * kh + head) * d + i]
+                        square[i] = (
+                            k[(row * kh + head) * d + i] * k[(row * kh + head) * d + i]
+                        )
                     T.reduce_sum(square, total, dim=0)
                     for i in T.Parallel(d):
-                        norm[i] = k[(row * kh + head) * d + i] * T.rsqrt(total[0] / d + eps) * kw[i]
+                        norm[i] = (
+                            k[(row * kh + head) * d + i]
+                            * T.rsqrt(total[0] / d + eps)
+                            * kw[i]
+                        )
                         if row < pos[1]:
-                            vc[((pos[0] + row) * kh + head) * d + i] = v[(row * kh + head) * d + i]
+                            vc[((pos[0] + row) * kh + head) * d + i] = v[
+                                (row * kh + head) * d + i
+                            ]
                     for i in T.Parallel(d // 2):
                         angle = T.cast(pos[0] + row, "float32") * T.exp(
                             -(math.log(theta) * 2 / d) * i
@@ -304,9 +347,9 @@ def make_kernel(kind, p):
                             kc[((pos[0] + row) * kh + head) * d + i] = norm[i] * T.cos(
                                 angle
                             ) - norm[i + d // 2] * T.sin(angle)
-                            kc[((pos[0] + row) * kh + head) * d + i + d // 2] = norm[i] * T.sin(
-                                angle
-                            ) + norm[i + d // 2] * T.cos(angle)
+                            kc[((pos[0] + row) * kh + head) * d + i + d // 2] = norm[
+                                i
+                            ] * T.sin(angle) + norm[i + d // 2] * T.cos(angle)
 
         return kernel
     if kind == "attention":
@@ -337,7 +380,8 @@ def make_kernel(kind, p):
                     for tile in T.serial(T.ceildiv(pos[0] + 1, 64)):
                         for i, j in T.Parallel(64, d):
                             dots[i, j] = q[head * d + j] * T.cast(
-                                kc[((tile * 64 + i) * kh + head // (h // kh)) * d + j], "float32"
+                                kc[((tile * 64 + i) * kh + head // (h // kh)) * d + j],
+                                "float32",
                             )
                         T.reduce_sum(dots, scores, dim=1)
                         T.copy(maximum, previous)
@@ -351,14 +395,19 @@ def make_kernel(kind, p):
                         for i in T.Parallel(64):
                             scores[i] = T.exp(scores[i] - maximum[0])
                         T.reduce_sum(scores, total, dim=0)
-                        normalizer[0] = normalizer[0] * T.exp(previous[0] - maximum[0]) + total[0]
+                        normalizer[0] = (
+                            normalizer[0] * T.exp(previous[0] - maximum[0]) + total[0]
+                        )
                         for i, j in T.Parallel(64, d):
                             products[i, j] = scores[i] * T.cast(
-                                vc[((tile * 64 + i) * kh + head // (h // kh)) * d + j], "float32"
+                                vc[((tile * 64 + i) * kh + head // (h // kh)) * d + j],
+                                "float32",
                             )
                         T.reduce_sum(products, partial, dim=0)
                         for j in T.Parallel(d):
-                            result[j] = result[j] * T.exp(previous[0] - maximum[0]) + partial[j]
+                            result[j] = (
+                                result[j] * T.exp(previous[0] - maximum[0]) + partial[j]
+                            )
                     for j in T.Parallel(d):
                         out[head * d + j] = result[j] / normalizer[0]
 
@@ -393,8 +442,12 @@ def make_kernel(kind, p):
                 T.fill(maximum, -T.infinity("float32"))
                 for tile in T.serial(T.ceildiv(pos[0] + T.min(r, (bx + 1) * 32), 64)):
                     for i, j in T.Parallel(64, d):
-                        key[i, j] = kc[((tile * 64 + i) * kh + head // (h // kh)) * d + j]
-                        value[i, j] = vc[((tile * 64 + i) * kh + head // (h // kh)) * d + j]
+                        key[i, j] = kc[
+                            ((tile * 64 + i) * kh + head // (h // kh)) * d + j
+                        ]
+                        value[i, j] = vc[
+                            ((tile * 64 + i) * kh + head // (h // kh)) * d + j
+                        ]
                     T.gemm(query, key, scores, transpose_B=True, clear_accum=True)
                     T.copy(maximum, previous)
                     for i, j in T.Parallel(32, 64):
@@ -482,9 +535,9 @@ def argmax_kernel(p, explicit_unroll=False):
             for step in T.unroll(8):
                 stride = 128 >> step
                 if tx < stride:
-                    if (values[tx + stride] > values[tx]) | (values[tx + stride] == values[tx]) & (
-                        indices[tx + stride] < indices[tx]
-                    ):
+                    if (values[tx + stride] > values[tx]) | (
+                        values[tx + stride] == values[tx]
+                    ) & (indices[tx + stride] < indices[tx]):
                         values[tx] = values[tx + stride]
                         indices[tx] = indices[tx + stride]
                 T.sync_threads()

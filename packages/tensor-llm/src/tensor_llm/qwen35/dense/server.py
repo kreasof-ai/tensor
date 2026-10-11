@@ -5,7 +5,7 @@ import asyncio
 import json
 from threading import Thread
 
-from .scheduler import Request, Scheduler
+from tensor_llm.common.scheduler import Request, Scheduler
 
 
 def main():

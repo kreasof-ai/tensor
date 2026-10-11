@@ -2,8 +2,8 @@
 import os
 import numpy as np
 import pytest
-from tensor_llm.speculative.acceptance import accepted_prefix
-from tensor_llm.speculative.lookup import OutputLookup
+from tensor_llm.common.acceptance import accepted_prefix
+from tensor_llm.common.lookup import OutputLookup
 
 
 def test_acceptance_commits_pending_input_and_emits_corrected_bonus():

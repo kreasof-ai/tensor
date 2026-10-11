@@ -8,7 +8,7 @@ import shutil
 from .build import build_artifact, needs_build
 from tensor.compiler.entry import export_source
 from tensor_llm.qwen35.artifacts import identity
-from tensor_llm.qwen35.speculative.verifier import implementation_hashes
+from tensor_llm.qwen35.verifier import implementation_hashes
 
 
 def produce(prefill, out):

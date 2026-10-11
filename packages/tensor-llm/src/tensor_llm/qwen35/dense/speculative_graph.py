@@ -1,7 +1,6 @@
 """One CUDA graph for drafting, verification, prefix commit, and draft repair."""
 
 import ctypes as ct
-import hashlib
 import json
 
 import numpy as np
@@ -9,7 +8,8 @@ import numpy as np
 from tensor.providers.cuda_graph import CudaGraph
 from tensor.runtime.abi import BoundCall
 from tensor_llm.common.artifacts import identity
-from .artifacts import validate_implementation
+from tensor_llm.common.artifacts import load_kernels
+from tensor_llm.qwen35.dense.artifacts import validate_implementation
 
 
 class SpeculativeRound:
@@ -32,15 +32,7 @@ class SpeculativeRound:
             or (manifest["slots"], manifest["window"]) != (self.slots, self.window)
         ):
             raise ValueError("speculative control profile mismatch")
-        self.kernels = {}
-        for key, row in manifest["kernels"].items():
-            path = (directory / row["path"]).resolve()
-            if (
-                not path.is_relative_to(directory)
-                or hashlib.sha256(path.read_bytes()).hexdigest() != row["sha256"]
-            ):
-                raise ValueError("speculative artifact integrity mismatch")
-            self.kernels[key] = self.device.load(path)
+        self.kernels = load_kernels(self.device, directory, manifest["kernels"])
         self.control = self.device.empty((self.slots, 5), "int32")
         self.result = self.device.empty((self.slots, self.window + 2), "int32")
         self.calls = []

@@ -12,7 +12,7 @@ app.include(replay_app)
 def prepare(prepared):
     import hashlib,json,os,shutil
     from pathlib import Path
-    from tensor_llm.qwen35.speculative.graph_pool import implementation_hashes
+    from tensor_llm.qwen35.graph_pool import implementation_hashes
     from benchmarks.qwen35.spec_attention_producer import produce as attention
     from benchmarks.qwen35.hopper_verify_producer import produce_dense,produce as experts
     os.chdir('/workspace');volume.reload()

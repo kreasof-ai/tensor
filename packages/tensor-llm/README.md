@@ -26,43 +26,53 @@ same package.
 ## Source layout
 
 The public classes stay available through `from tensor_llm import ...`. Internal
-modules are grouped by model and responsibility:
+modules are grouped around shared runtime resources and model-specific execution:
+
+`common` owns safetensors storage validation, raw-bit weight upload, artifact
+integrity/loading, hybrid recurrent/KV allocation, and continuous scheduling.
+Dense Qwen, MoE Qwen, and their MTP branches use that backbone. Model adapters
+keep their weight contracts, projection packing, FFN operators, and execution
+plans. Dense and MoE plans still differ; the shared resource layer does not yet
+make every kernel or serving policy interchangeable.
 
 ```text
 tensor_llm/
 ├── __init__.py, __main__.py, cli.py
 ├── common/
-│   ├── artifacts.py              # Shared logical kernel identities
-│   ├── gguf.py                   # GGUF parsing and packed weight utilities
-│   └── tokenizer.py              # GGUF byte-level BPE
-├── speculative/
-│   ├── acceptance.py             # Model-independent greedy prefix acceptance
-│   └── lookup.py                 # Bounded output-history proposals
+│   ├── artifacts.py              # Kernel identities, integrity, and loading
+│   ├── checkpoint.py             # Safetensors validation and raw-bit upload
+│   ├── state.py, scheduler.py    # Persistent state and request scheduling
+│   ├── acceptance.py, lookup.py  # Generic speculative decoding helpers
+│   └── gguf.py, tokenizer.py     # GGUF storage and byte-level BPE
 ├── lfm2/
 │   ├── config.py, model.py, provenance.py
-│   └── kernels/
-│       └── baseline.py, cuda.py, webgpu.py
+│   └── kernels/                 # CUDA, WebGPU, and baseline factories
 └── qwen35/
-    ├── checkpoint.py             # Safetensors metadata and weight loading
-    ├── artifacts.py              # Shared logical kernel requirements
+    ├── checkpoint.py, artifacts.py
     ├── decode.py, prefill.py, pipeline.py
-    ├── kernels/                  # Producer factories shared by execution phases
-    │   ├── decode.py, prefill.py, fp8_kv.py, matmul.py, mtp.py
-    │   └── speculative.py, speculative_attention.py, speculative_linear.py
-    ├── mtp/
-    │   └── decode.py, prefill.py
-    └── speculative/
-        └── verifier.py, engine.py, attention.py, linear.py
+    ├── mtp.py, mtp_prefill.py
+    ├── speculative.py, verifier.py, recompute.py, graph_pool.py
+    ├── split_attention.py, split_linear.py
+    ├── dense/                   # Dense weight contract and execution adapter
+    │   ├── checkpoint.py, engine.py, artifacts.py
+    │   ├── mtp.py, server.py
+    │   └── speculative.py, speculative_graph.py, recurrent.py
+    └── kernels/                 # All Qwen producer factories, including dense
+        ├── decode.py, prefill.py, matmul.py, mtp.py, fp8_kv.py
+        ├── dense.py, dense_projections.py, dense_head.py
+        ├── dense_speculation.py, dense_recurrent.py, dense_fp8_attention.py
+        └── speculative*.py, hopper*.py, compact_experts.py, ...
 ```
 
 Kernel factories import the compiler only when invoked by a producer. Executors,
 checkpoint utilities and speculative helpers remain usable in the consumer
-environment. `qwen35/speculative/attention.py` and `linear.py` install selected
+environment. `qwen35/split_attention.py` and `split_linear.py` install selected
 kernel graphs; their producer algorithms live under `qwen35/kernels/`.
 
 Internal module paths changed with this organization. Producers and source-hash
 tracking use the new paths; regenerate inference bundles because their source
-identities changed. Retained benchmark reports and frozen executed sources keep
+identities changed. The public classes exported by `tensor_llm` keep their names.
+Retained benchmark reports and frozen executed sources keep
 their original provenance.
 
 ## Experimental native Qwen CUDA execution
@@ -162,7 +172,7 @@ target/drafter and measures short teacher-forced and autoregressive one-token
 agreement against serial target evaluation. This is a drafting diagnostic.
 MTP measurements retain separate labels from pure AR.
 
-`Qwen35MTPPrefill` in `tensor_llm.qwen35.mtp.prefill` supports native chunked
+`Qwen35MTPPrefill` in `tensor_llm.qwen35.mtp_prefill` supports native chunked
 initialization using `forward(shifted_token_ids, flat_target_hidden, lengths)`.
 Build its artifacts with `benchmarks.qwen35.mtp_prefill_producer --checkpoint
 ... --prefill ... --out ...`. The `benchmarks.qwen35.mtp_benchmark` command

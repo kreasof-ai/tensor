@@ -7,7 +7,7 @@ import shutil
 from .build import build_artifact, needs_build
 from tensor.compiler.entry import export_source
 from tensor_llm.qwen35.artifacts import identity
-from tensor_llm.qwen35.speculative.attention import implementation_hashes
+from tensor_llm.qwen35.split_attention import implementation_hashes
 
 
 def produce(prefill,out,*,splits=16,key_rows=64,query_tokens=None,kernel_target=None,pad_queries=False):

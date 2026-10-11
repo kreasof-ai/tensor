@@ -9,7 +9,7 @@ from pathlib import Path
 import time
 import ctypes as ct
 import numpy as np
-from tensor_llm.speculative.acceptance import accepted_prefix
+from tensor_llm.common.acceptance import accepted_prefix
 
 
 class PrefixSnapshot:
@@ -62,7 +62,7 @@ def run(model, mtp, verifier, repair, out, *, output_tokens=16000, prefill_secon
     pending=model.buffers['tokens'].to_numpy()
     generated=np.full(slots,1 if initial_output else 0,'int32')
     streams=[[int(pending[s])] if initial_output else [] for s in range(slots)]
-    from tensor_llm.qwen35.speculative.engine import Qwen35Speculative
+    from tensor_llm.qwen35.speculative import Qwen35Speculative
     engine=Qwen35Speculative(model,mtp,verifier,repair,output_lookup=output_lookup,
                              fallback_proposals=fallback_proposals)
     engine.seed(pending);lookups=engine.lookups

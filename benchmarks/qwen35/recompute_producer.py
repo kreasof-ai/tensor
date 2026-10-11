@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 from tensor.compiler.entry import export_source
 from tensor_llm.qwen35.artifacts import identity
-from tensor_llm.qwen35.speculative.recompute import implementation_hashes
+from tensor_llm.qwen35.recompute import implementation_hashes
 from .build import build_artifact
 
 

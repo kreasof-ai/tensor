@@ -7,7 +7,7 @@ import time
 
 from tensor.providers.cuda import Device
 from tensor_llm.qwen35.dense.engine import DenseEngine
-from tensor_llm.qwen35.dense.scheduler import Request, Scheduler
+from tensor_llm.common.scheduler import Request, Scheduler
 from tensor_llm.qwen35.dense.speculative import SpeculativeEngine
 from .dense_qualification import snapshot
 

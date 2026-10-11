@@ -93,7 +93,7 @@ def prepare_short(prepared):
     from benchmarks.qwen35.spec_linear_producer import produce as linear
     from benchmarks.qwen35.hopper_verify_producer import produce as experts,produce_dense
     from benchmarks.qwen35.mtp_prefill_producer import produce as repair
-    from tensor_llm.qwen35.speculative.graph_pool import implementation_hashes
+    from tensor_llm.qwen35.graph_pool import implementation_hashes
     os.chdir('/workspace');volume.reload()
     if prepared.get('adaptive_verification'):raise ValueError('parent already has an adaptive pool')
     sources=[*Path('src/tensor').rglob('*.py'),*Path('packages/tensor-llm/src').rglob('*.py'),

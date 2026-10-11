@@ -7,9 +7,9 @@ import time
 import numpy as np
 import tensor
 from tensor_llm import Qwen35Batch,Qwen35MTP,Qwen35Prefill,Qwen35Verifier
-from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
-from tensor_llm.qwen35.speculative.attention import install as install_attention
-from tensor_llm.qwen35.speculative.linear import install as install_linear
+from tensor_llm.qwen35.mtp_prefill import Qwen35MTPPrefill
+from tensor_llm.qwen35.split_attention import install as install_attention
+from tensor_llm.qwen35.split_linear import install as install_linear
 from .spec_benchmark import initialize,run
 from .spec_telemetry import Monitor
 
@@ -33,7 +33,7 @@ def provenance(paths,workload):
 def install_selected(executor,bundle):
     manifest=json.loads((Path(bundle)/'prefill.json').read_text())
     if 'state_recompute' in manifest:
-        from tensor_llm.qwen35.speculative.recompute import Qwen35RecomputeVerifier
+        from tensor_llm.qwen35.recompute import Qwen35RecomputeVerifier
         if not isinstance(executor,Qwen35RecomputeVerifier):
             raise ValueError('recompute bundle requires make_verifier')
     if 'split_attention' in manifest:install_attention(executor,bundle)
@@ -51,13 +51,13 @@ def install_selected(executor,bundle):
 def make_verifier(model,bundle):
     manifest=json.loads((Path(bundle)/'prefill.json').read_text())
     if 'state_recompute' in manifest:
-        from tensor_llm.qwen35.speculative.recompute import Qwen35RecomputeVerifier
+        from tensor_llm.qwen35.recompute import Qwen35RecomputeVerifier
         return Qwen35RecomputeVerifier(model,bundle)
     return Qwen35Verifier(model,bundle)
 
 
 def adaptive_profiles(bundle):
-    from tensor_llm.qwen35.speculative.graph_pool import implementation_hashes
+    from tensor_llm.qwen35.graph_pool import implementation_hashes
     root=Path(bundle).resolve();manifest=json.loads((root/'prefill.json').read_text())
     profile=manifest.get('adaptive_verification')
     if not profile:return []
@@ -76,7 +76,7 @@ def adaptive_profiles(bundle):
 
 
 def make_verifier_pool(model,bundle):
-    from tensor_llm.qwen35.speculative.graph_pool import VerifierPool
+    from tensor_llm.qwen35.graph_pool import VerifierPool
     profiles=adaptive_profiles(bundle);verifiers={}
     try:
         verifier=make_verifier(model,bundle);verifiers[verifier.chunk]=verifier
@@ -93,7 +93,7 @@ def make_verifier_pool(model,bundle):
 
 def make_speculative_pair(model,draft,bundle,repair_bundle):
     """Install graph pairs that share resident target and draft owners."""
-    from tensor_llm.qwen35.speculative.graph_pool import RepairPool
+    from tensor_llm.qwen35.graph_pool import RepairPool
     verifier=make_verifier_pool(model,bundle);repairs={}
     try:
         repair=Qwen35MTPPrefill(draft,repair_bundle);repairs[repair.chunk]=repair

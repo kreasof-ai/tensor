@@ -25,8 +25,8 @@ def allocation_plan(prepared):
     from tensor_llm.qwen35.checkpoint import Qwen35Checkpoint
     from tensor_llm.qwen35.decode import Qwen35Batch
     from tensor_llm.qwen35.prefill import Qwen35Prefill
-    from tensor_llm.qwen35.speculative.recompute import Qwen35RecomputeVerifier
-    from tensor_llm.qwen35.speculative.verifier import Qwen35Verifier
+    from tensor_llm.qwen35.recompute import Qwen35RecomputeVerifier
+    from tensor_llm.qwen35.verifier import Qwen35Verifier
     sizes={'float32':4,'int32':4,'bfloat16':2,'uint8':1}
     class Device:
         def empty(self,shape,dtype='float32'):

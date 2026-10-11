@@ -102,7 +102,7 @@ class NativeServer:
 
     async def speculative_worker(self):
         from tensor_llm import Qwen35Prefill,Qwen35Verifier,Qwen35Speculative
-        from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
+        from tensor_llm.qwen35.mtp_prefill import Qwen35MTPPrefill
         from .spec_run import make_speculative_pair
         model=self.model;config=self.speculative;draft=config['draft']
         resident=config.get('resident_pair')

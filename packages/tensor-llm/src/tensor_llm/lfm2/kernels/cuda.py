@@ -4,7 +4,12 @@ All arithmetic and control flow remain visible in TIRx. Runtime constants can
 be imported without loading TileLang; factories import the compiler lazily.
 """
 
-from .baseline import make_kernel as baseline_kernel, weight_decoder, weight_storage, argmax_kernel
+from .baseline import (
+    make_kernel as baseline_kernel,
+    weight_decoder,
+    weight_storage,
+    argmax_kernel,
+)
 from ...common.gguf import TYPES
 
 CUDA_PROFILES = ("default", "optimized")
@@ -19,7 +24,11 @@ def source(kind, parameters):
         "make_kernel",
         kind,
         parameters,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -31,7 +40,11 @@ def gemv_source(kind, parameters):
         "gemv_kernel",
         kind,
         parameters,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -43,7 +56,11 @@ def prefill_source(kind, parameters):
         "prefill_kernel",
         kind,
         parameters,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -55,7 +72,11 @@ def fused_source(kind, parameters):
         "fused_kernel",
         kind,
         parameters,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -72,7 +93,9 @@ def hardware_loads():
 
     @T.macro
     def half(w, offset):
-        return T.cast(T.reinterpret("float16", T.cast(u16(w, offset), "uint16")), "float32")
+        return T.cast(
+            T.reinterpret("float16", T.cast(u16(w, offset), "uint16")), "float32"
+        )
 
     return u16, word, half
 
@@ -97,7 +120,9 @@ def packed_dot(q, k, row_bytes, width=4):
             dot = 0
             for component in T.unroll(width):
                 dot = T.ieee_fmaf(
-                    activation[component], T.cast(coefficient[component], "float32"), dot
+                    activation[component],
+                    T.cast(coefficient[component], "float32"),
+                    dot,
                 )
             return dot
         elif q == 2:
@@ -144,7 +169,9 @@ def packed_dot(q, k, row_bytes, width=4):
             hi = 0
             for component in T.unroll(4):
                 lo = T.ieee_fmaf(
-                    activation[component], T.cast((packed >> (component * 8)) & 15, "float32"), lo
+                    activation[component],
+                    T.cast((packed >> (component * 8)) & 15, "float32"),
+                    lo,
                 )
                 hi = T.ieee_fmaf(
                     activation_hi[component],
@@ -172,7 +199,9 @@ def packed_dot(q, k, row_bytes, width=4):
                 (w[base + 9 + group] >> 4) | ((w[base + 5 + group] >> 6) << 4),
             )
             sum0 = (activation[0] + activation[1]) + (activation[2] + activation[3])
-            sum1 = (activation_hi[0] + activation_hi[1]) + (activation_hi[2] + activation_hi[3])
+            sum1 = (activation_hi[0] + activation_hi[1]) + (
+                activation_hi[2] + activation_hi[3]
+            )
             dot = half_value(w, base) * (
                 T.cast(s0, "float32") * lo + T.cast(s1, "float32") * hi
             ) - half_value(w, base + 2) * (
@@ -188,16 +217,23 @@ def packed_dot(q, k, row_bytes, width=4):
                 high = word(w, base + 128 + half * 32 + lane % 8 * 4)
                 activation = T.alloc_local((4,), "float32")
                 for component in T.vectorized(4):
-                    activation[component] = x[tile * 256 + half * 128 + lane * 4 + component]
+                    activation[component] = x[
+                        tile * 256 + half * 128 + lane * 4 + component
+                    ]
                 value = T.alloc_var("float32")
                 value = 0
                 for component in T.unroll(4):
                     quant = T.cast(
                         (low >> (component * 8 + lane // 16 * 4)) & 15, "int32"
-                    ) | T.cast(((high >> (component * 8 + lane // 8 * 2)) & 3) << 4, "int32")
-                    value = T.ieee_fmaf(activation[component], T.cast(quant - 32, "float32"), value)
+                    ) | T.cast(
+                        ((high >> (component * 8 + lane // 8 * 2)) & 3) << 4, "int32"
+                    )
+                    value = T.ieee_fmaf(
+                        activation[component], T.cast(quant - 32, "float32"), value
+                    )
                 scale = T.cast(
-                    T.reinterpret("int8", w[base + 192 + half * 8 + lane // 4]), "float32"
+                    T.reinterpret("int8", w[base + 192 + half * 8 + lane // 4]),
+                    "float32",
                 )
                 dot = T.ieee_fmaf(scale, value, dot)
             dot = half_value(w, base + 208) * dot
@@ -246,7 +282,8 @@ def projection_abi(kind, p, algorithm):
             call,
         )
     return primitive(
-        [("x", r * k, "float32"), ("w", count, dtype), ("out", r * o, "float32")], algorithm
+        [("x", r * k, "float32"), ("w", count, dtype), ("out", r * o, "float32")],
+        algorithm,
     )
 
 
@@ -256,7 +293,11 @@ def gemv_kernel(kind, p):
     k, o, q = p["k"], p["o"], p["type"]
     if q not in (0, 1, 2, 12, 14) or k % 256:
         return fused_kernel(kind, p)
-    threads, unroll, width = p.get("threads", 128), p.get("unroll", 4), p.get("f16_values", 4)
+    threads, unroll, width = (
+        p.get("threads", 128),
+        p.get("unroll", 4),
+        p.get("f16_values", 4),
+    )
     if (
         threads not in (64, 128, 256)
         or unroll not in (1, 2, 4, 8)
@@ -361,7 +402,9 @@ def pair_decoder(q, k):
             base = row * row_bytes + col // 256 * 210
             weight_col = col % 256
             group = weight_col % 128 // 32
-            low = u16(w, base + weight_col // 128 * 64 + group % 2 * 32 + weight_col % 32)
+            low = u16(
+                w, base + weight_col // 128 * 64 + group % 2 * 32 + weight_col % 32
+            )
             high = u16(w, base + 128 + weight_col // 128 * 32 + weight_col % 32)
             a = T.cast((low >> (group // 2 * 4)) & 15, "int32") | T.cast(
                 ((high >> (group * 2)) & 3) << 4, "int32"
@@ -403,7 +446,9 @@ def prefill_kernel(kind, p):
                 rhs[i, j * 2] = T.reinterpret(
                     "float16", T.cast(bits & T.uint32(65535), "uint16")
                 )
-                rhs[i, j * 2 + 1] = T.reinterpret("float16", T.cast(bits >> 16, "uint16"))
+                rhs[i, j * 2 + 1] = T.reinterpret(
+                    "float16", T.cast(bits >> 16, "uint16")
+                )
             else:
                 rhs[i, j * 2] = 0
                 rhs[i, j * 2 + 1] = 0
@@ -503,7 +548,9 @@ def fused_kernel(kind, p):
             for row in T.Parallel(4):
                 if bx * 4 + row < o:
                     if paired:
-                        out[bx * 4 + row] = total[row] / (1 + T.exp(-total[row])) * total2[row]
+                        out[bx * 4 + row] = (
+                            total[row] / (1 + T.exp(-total[row])) * total2[row]
+                        )
                     else:
                         out[bx * 4 + row] = residual[bx * 4 + row] + total[row]
 
@@ -557,7 +604,9 @@ def warp_partial_kernel(p, splits):
                 correction = T.exp(maximum - next_max)
                 probability = T.exp(score - next_max)
                 a0 = a0 * correction + probability * T.cast(vc[base + lane], "float32")
-                a1 = a1 * correction + probability * T.cast(vc[base + lane + 32], "float32")
+                a1 = a1 * correction + probability * T.cast(
+                    vc[base + lane + 32], "float32"
+                )
                 normalizer = normalizer * correction + probability
                 maximum = next_max
             values[warp, lane] = a0
@@ -567,7 +616,9 @@ def warp_partial_kernel(p, splits):
                 sums[warp] = normalizer
             T.sync_threads()
             if warp == 0:
-                merged_max = T.max(T.max(maxima[0], maxima[1]), T.max(maxima[2], maxima[3]))
+                merged_max = T.max(
+                    T.max(maxima[0], maxima[1]), T.max(maxima[2], maxima[3])
+                )
                 total = T.alloc_var("float32")
                 result0 = T.alloc_var("float32")
                 result1 = T.alloc_var("float32")
@@ -608,7 +659,11 @@ def warp_partial_source(p, splits):
         "warp_partial_kernel",
         p,
         splits,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -659,10 +714,14 @@ def grouped_kernel(p, stage=32, warps=2):
                 base = begin + block * stage
                 for token, col in T.Parallel(stage, 64):
                     keys[token, col] = T.if_then_else(
-                        base + token < end, kc[((base + token) * kh + kvhead) * 64 + col], 0
+                        base + token < end,
+                        kc[((base + token) * kh + kvhead) * 64 + col],
+                        0,
                     )
                     vals[token, col] = T.if_then_else(
-                        base + token < end, vc[((base + token) * kh + kvhead) * 64 + col], 0
+                        base + token < end,
+                        vc[((base + token) * kh + kvhead) * 64 + col],
+                        0,
                     )
                 T.sync_threads()
                 for offset in T.serial(
@@ -681,8 +740,12 @@ def grouped_kernel(p, stage=32, warps=2):
                     next_max = T.max(maximum, score)
                     correction = T.exp(maximum - next_max)
                     probability = T.exp(score - next_max)
-                    a0 = a0 * correction + probability * T.cast(vals[token, lane], "float32")
-                    a1 = a1 * correction + probability * T.cast(vals[token, lane + 32], "float32")
+                    a0 = a0 * correction + probability * T.cast(
+                        vals[token, lane], "float32"
+                    )
+                    a1 = a1 * correction + probability * T.cast(
+                        vals[token, lane + 32], "float32"
+                    )
                     normalizer = normalizer * correction + probability
                     maximum = next_max
                 T.sync_threads()
@@ -739,7 +802,11 @@ def grouped_source(p, stage=32, warps=2):
         p,
         stage,
         warps,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -776,7 +843,8 @@ def merge_kernel(p, splits):
                 out[head * d + j] = result[j] / normalizer[0]
 
     return primitive(
-        [("parts", h * splits * stride, "float32"), ("out", h * d, "float32")], algorithm
+        [("parts", h * splits * stride, "float32"), ("out", h * d, "float32")],
+        algorithm,
     )
 
 
@@ -788,7 +856,11 @@ def merge_source(p, splits):
         "merge_kernel",
         p,
         splits,
-        dependencies=("tensor_llm.lfm2.kernels.baseline", "tensor_llm.common.gguf", "tensor.compiler.entry"),
+        dependencies=(
+            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.common.gguf",
+            "tensor.compiler.entry",
+        ),
     )
 
 
@@ -808,30 +880,36 @@ def normalization_kernel(kind, p):
             total = T.alloc_fragment((1,), "float32")
             norm = T.alloc_shared((d,), "float32")
             for i in T.Parallel(d):
-                square[i] = x[(row * heads + head) * d + i] * x[(row * heads + head) * d + i]
+                square[i] = (
+                    x[(row * heads + head) * d + i] * x[(row * heads + head) * d + i]
+                )
             T.reduce_sum(square, total, dim=0)
             for i in T.Parallel(d):
-                norm[i] = x[(row * heads + head) * d + i] * T.rsqrt(total[0] / d + eps) * w[i]
+                norm[i] = (
+                    x[(row * heads + head) * d + i] * T.rsqrt(total[0] / d + eps) * w[i]
+                )
                 if kind == "kvnorm":
                     if row < pos[1]:
-                        vc[((pos[0] + row) * kh + head) * d + i] = v[(row * kh + head) * d + i]
+                        vc[((pos[0] + row) * kh + head) * d + i] = v[
+                            (row * kh + head) * d + i
+                        ]
             for i in T.Parallel(d // 2):
                 angle = T.cast(pos[0] + row, "float32") * T.exp(-angle_scale * i)
                 if kind == "qnorm":
                     out[(row * heads + head) * d + i] = norm[i] * T.cos(angle) - norm[
                         i + d // 2
                     ] * T.sin(angle)
-                    out[(row * heads + head) * d + i + d // 2] = norm[i] * T.sin(angle) + norm[
-                        i + d // 2
-                    ] * T.cos(angle)
+                    out[(row * heads + head) * d + i + d // 2] = norm[i] * T.sin(
+                        angle
+                    ) + norm[i + d // 2] * T.cos(angle)
                 else:
                     if row < pos[1]:
                         out[((pos[0] + row) * heads + head) * d + i] = norm[i] * T.cos(
                             angle
                         ) - norm[i + d // 2] * T.sin(angle)
-                        out[((pos[0] + row) * heads + head) * d + i + d // 2] = norm[i] * T.sin(
-                            angle
-                        ) + norm[i + d // 2] * T.cos(angle)
+                        out[((pos[0] + row) * heads + head) * d + i + d // 2] = norm[
+                            i
+                        ] * T.sin(angle) + norm[i + d // 2] * T.cos(angle)
 
     if kind == "qnorm":
         return primitive(
@@ -924,7 +1002,9 @@ def make_kernel(kind, p):
                 for i in T.Parallel(c):
                     residual[row * c + i] = x[row * c + i] + mixed[row * c + i]
                     out[row * c + i] = (
-                        (x[row * c + i] + mixed[row * c + i]) * T.rsqrt(total[0] / c + eps) * w[i]
+                        (x[row * c + i] + mixed[row * c + i])
+                        * T.rsqrt(total[0] / c + eps)
+                        * w[i]
                     )
 
         return kernel

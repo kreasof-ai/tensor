@@ -139,7 +139,7 @@ def measure(prepared, run_id):
         import tensor
         import numpy as np
         from tensor_llm import Qwen35Batch, Qwen35MTP, Qwen35Prefill
-        from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
+        from tensor_llm.qwen35.mtp_prefill import Qwen35MTPPrefill
         from benchmarks.qwen35.spec_benchmark import initialize
         from benchmarks.qwen35.spec_quality import run as quality
         paths = {k: Path(v) for k, v in prepared['paths'].items()}

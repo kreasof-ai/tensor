@@ -10,7 +10,7 @@ from .build import build_artifact
 from tensor.compiler.entry import export_source
 from tensor_llm.qwen35.checkpoint import Qwen35Checkpoint
 from tensor_llm.qwen35.artifacts import identity
-from tensor_llm.qwen35.mtp.decode import mtp_implementation_hashes
+from tensor_llm.qwen35.mtp import mtp_implementation_hashes
 
 
 def produce(checkpoint, decoder, out):

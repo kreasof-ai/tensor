@@ -2,7 +2,8 @@
 from types import SimpleNamespace
 import numpy as np
 import pytest
-from tensor_llm.qwen35.speculative.graph_pool import VerifierPool,RepairPool
+from tensor_llm.qwen35.graph_pool import VerifierPool
+from tensor_llm.qwen35.graph_pool import RepairPool
 
 
 class Context:

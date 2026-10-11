@@ -8,7 +8,7 @@ from pathlib import Path
 from tensor.compiler.entry import export_source
 from tensor_llm.common.artifacts import identity
 from tensor_llm.qwen35.dense.checkpoint import DenseCheckpoint
-from tensor_llm.qwen35.dense.projections import schedule
+from tensor_llm.qwen35.kernels.dense_projections import schedule
 from .build import build_artifact, needs_build
 
 
@@ -117,7 +117,7 @@ def produce_control(out, *, slots, window, width=1024, target="sm_89"):
         parameters = dict(slots=slots, window=window, **extra)
         key = identity(kind, parameters)
         text = export_source(
-            "tensor_llm.qwen35.dense.spec_kernels",
+            "tensor_llm.qwen35.kernels.dense_speculation",
             "make_kernel",
             kind,
             parameters,
@@ -167,7 +167,7 @@ def produce_recurrent(out, *, slots, window, pool=256, target="sm_89"):
         parameters = dict(common, **extra)
         key = identity(kind, parameters)
         text = export_source(
-            "tensor_llm.qwen35.dense.recurrent_kernels",
+            "tensor_llm.qwen35.kernels.dense_recurrent",
             "make_kernel",
             kind,
             parameters,
@@ -237,15 +237,15 @@ def produce(
             "tensor_llm.qwen35.kernels.decode"
             if kind in ("embedding", "rms", "add_rms", "argmax")
             else (
-                "tensor_llm.qwen35.dense.head"
+                "tensor_llm.qwen35.kernels.dense_head"
                 if kind in ("head_linear", "head_argmax")
                 else (
                     "tensor_llm.qwen35.kernels.mtp"
                     if kind in ("mtp_join", "mtp_cast")
                     else (
-                        "tensor_llm.qwen35.dense.projections"
+                        "tensor_llm.qwen35.kernels.dense_projections"
                         if kind in ("split_linear", "split_merge")
-                        else "tensor_llm.qwen35.dense.kernels"
+                        else "tensor_llm.qwen35.kernels.dense"
                     )
                 )
             )

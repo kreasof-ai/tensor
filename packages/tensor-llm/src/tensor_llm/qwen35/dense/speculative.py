@@ -24,7 +24,7 @@ class SpeculativeEngine:
             target.deferred = RecurrentJournal(target, window)
 
     def round(self, count):
-        from .spec_graph import SpeculativeRound
+        from tensor_llm.qwen35.dense.speculative_graph import SpeculativeRound
 
         slots = 1 << (count - 1).bit_length()
         if slots not in self.rounds:

@@ -1,6 +1,6 @@
 """Scheduling contracts independent of CUDA or checkpoint availability."""
 
-from tensor_llm.qwen35.dense.scheduler import Request, Scheduler
+from tensor_llm.common.scheduler import Request, Scheduler
 
 
 class FakeEngine:

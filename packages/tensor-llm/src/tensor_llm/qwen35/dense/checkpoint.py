@@ -1,15 +1,16 @@
 """Read official dense BF16 Qwen checkpoints without a framework runtime."""
 
 from dataclasses import dataclass
-import ctypes as ct
-import json
-import math
 from pathlib import Path
-import struct
 
 import numpy as np
 
-from ..checkpoint import TensorInfo, _json
+from ...common.checkpoint import (
+    inspect_tensors,
+    read_tensor,
+    upload_bits,
+    json_document as _json,
+)
 
 
 @dataclass(frozen=True)
@@ -168,52 +169,18 @@ class DenseCheckpoint:
         expected = self.config.expected_tensors()
         if selected != expected.keys():
             raise ValueError("dense checkpoint tensor set mismatch")
-        for filename in sorted({index[name] for name in selected}):
-            path = (self.directory / filename).resolve()
-            if path.parent != self.directory:
-                raise ValueError("checkpoint shard escapes its directory")
-            with path.open("rb") as stream:
-                length = struct.unpack("<Q", stream.read(8))[0]
-                if not 2 <= length <= min(100_000_000, path.stat().st_size - 8):
-                    raise ValueError("invalid safetensors header")
-                header = _json(stream.read(length))
-            for name in selected:
-                if index[name] != filename:
-                    continue
-                info = header[name]
-                size = {"BF16": 2, "F32": 4}.get(info["dtype"])
-                begin, end = info["data_offsets"]
-                expected_dtype = (
-                    "F32"
-                    if name.endswith(("linear_attn.A_log", "linear_attn.norm.weight"))
-                    else "BF16"
-                )
-                if (
-                    size is None
-                    or tuple(info["shape"]) != expected[name]
-                    or info["dtype"] != expected_dtype
-                    or end - begin != math.prod(info["shape"]) * size
-                    or not 0 <= begin <= end <= path.stat().st_size - length - 8
-                ):
-                    raise ValueError(f"invalid dense checkpoint tensor: {name}")
-                self.tensors[name] = TensorInfo(
-                    path,
-                    info["dtype"],
-                    tuple(info["shape"]),
-                    8 + length + begin,
-                    end - begin,
-                )
+        dtypes = {
+            name: (
+                "F32"
+                if name.endswith(("linear_attn.A_log", "linear_attn.norm.weight"))
+                else "BF16"
+            )
+            for name in expected
+        }
+        self.tensors = inspect_tensors(self.directory, index, expected, dtypes)
 
     def read(self, name):
-        info = self.tensors[name]
-        with info.shard.open("rb") as stream:
-            stream.seek(info.offset)
-            raw = stream.read(info.nbytes)
-        if len(raw) != info.nbytes:
-            raise ValueError("checkpoint changed after validation")
-        return np.frombuffer(
-            raw, dtype="uint16" if info.dtype == "BF16" else "float32"
-        ).reshape(info.shape)
+        return read_tensor(self.tensors[name])
 
     def upload(self, device, *, branch="text"):
         if branch not in ("text", "mtp"):
@@ -221,52 +188,47 @@ class DenseCheckpoint:
         weights = {}
 
         def upload(raw, dtype):
-            # BF16 uint16 arrays contain storage bits, not numeric uint16
-            # values. from_numpy(dtype='bfloat16') would convert the latter.
-            raw = np.ascontiguousarray(raw)
-            buffer = device.empty(raw.shape, dtype)
-            device.driver.call(
-                "cuMemcpyHtoD_v2",
-                buffer.pointer,
-                ct.c_void_p(raw.ctypes.data),
-                raw.nbytes,
-            )
-            device.driver.call("cuStreamSynchronize", None)
-            return buffer
+            return upload_bits(device, raw, dtype)
 
-        for name, info in self.tensors.items():
-            if name.startswith("mtp.") != (branch == "mtp"):
-                continue
-            weights[name] = upload(
-                self.read(name), "bfloat16" if info.dtype == "BF16" else "float32"
-            )
-        # Pack adjacent independent projections once. This changes no weights.
-        c = self.config
-        layers = c.layers if branch == "text" else ("full_attention",)
-        for layer, kind in enumerate(layers):
-            root = (
-                f"model.language_model.layers.{layer}."
-                if branch == "text"
-                else f"mtp.layers.{layer}."
-            )
-            if kind == "linear_attention":
-                names = [
-                    root + "linear_attn.in_proj_" + n + ".weight"
-                    for n in ("qkv", "z", "a", "b")
-                ]
-                packed = root + "linear_attn.input.weight"
-            else:
-                names = [
-                    root + "self_attn." + n + "_proj.weight" for n in ("q", "k", "v")
-                ]
-                packed = root + "self_attn.input.weight"
-            weights[packed] = upload(
-                np.concatenate([self.read(n) for n in names]), "bfloat16"
-            )
-            names += [root + "mlp." + n + "_proj.weight" for n in ("gate", "up")]
-            weights[root + "mlp.input.weight"] = upload(
-                np.concatenate([self.read(n) for n in names[-2:]]), "bfloat16"
-            )
-            for name in names:
-                weights.pop(name).release()
-        return weights
+        try:
+            for name, info in self.tensors.items():
+                if name.startswith("mtp.") != (branch == "mtp"):
+                    continue
+                weights[name] = upload(
+                    self.read(name), "bfloat16" if info.dtype == "BF16" else "float32"
+                )
+            # Pack adjacent independent projections once. This changes no weights.
+            c = self.config
+            layers = c.layers if branch == "text" else ("full_attention",)
+            for layer, kind in enumerate(layers):
+                root = (
+                    f"model.language_model.layers.{layer}."
+                    if branch == "text"
+                    else f"mtp.layers.{layer}."
+                )
+                if kind == "linear_attention":
+                    names = [
+                        root + "linear_attn.in_proj_" + n + ".weight"
+                        for n in ("qkv", "z", "a", "b")
+                    ]
+                    packed = root + "linear_attn.input.weight"
+                else:
+                    names = [
+                        root + "self_attn." + n + "_proj.weight"
+                        for n in ("q", "k", "v")
+                    ]
+                    packed = root + "self_attn.input.weight"
+                weights[packed] = upload(
+                    np.concatenate([self.read(n) for n in names]), "bfloat16"
+                )
+                names += [root + "mlp." + n + "_proj.weight" for n in ("gate", "up")]
+                weights[root + "mlp.input.weight"] = upload(
+                    np.concatenate([self.read(n) for n in names[-2:]]), "bfloat16"
+                )
+                for name in names:
+                    weights.pop(name).release()
+            return weights
+        except BaseException:
+            for buffer in weights.values():
+                buffer.release()
+            raise

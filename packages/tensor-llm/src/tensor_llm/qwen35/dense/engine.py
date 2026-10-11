@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import ctypes as ct
 from dataclasses import asdict
-import hashlib
 import json
 from pathlib import Path
 from threading import get_ident
@@ -14,9 +13,10 @@ import numpy as np
 from tensor.providers.cuda_graph import CudaGraph
 from tensor.runtime import Buffer
 from tensor.runtime.abi import BoundCall
-from tensor_llm.common.artifacts import identity
+from tensor_llm.common.artifacts import identity, load_kernels
+from tensor_llm.common.state import allocate_hybrid_states
 from .checkpoint import DenseCheckpoint
-from .projections import schedule
+from tensor_llm.qwen35.kernels.dense_projections import schedule
 from .artifacts import implementation, validate_implementation
 
 
@@ -47,14 +47,7 @@ class ExecutionBatch:
         self.commit_graph = None
         self.commit_calls = []
         directory = Path(manifest).resolve().parent
-        for key, row in value["kernels"].items():
-            path = (directory / row["path"]).resolve()
-            if (
-                not path.is_relative_to(directory)
-                or hashlib.sha256(path.read_bytes()).hexdigest() != row["sha256"]
-            ):
-                raise ValueError("dense artifact integrity mismatch")
-            self.kernels[key] = self.device.load(path)
+        self.kernels = load_kernels(self.device, directory, value["kernels"])
         self._allocate()
         self.calls = self._plan()
         self.graph = CudaGraph(
@@ -616,18 +609,7 @@ class DenseEngine:
             ct.c_size_t,
         ]
         self.device.driver.lib.cuMemsetD8_v2.restype = ct.c_int
-        c = self.config
-        for layer, kind in enumerate(c.layers):
-            shapes = (
-                (
-                    (capacity, c.value_heads, c.value_dim, c.key_dim),
-                    (capacity, c.qkv_width, 3),
-                )
-                if kind == "linear_attention"
-                else ((capacity, c.kv_heads, context, c.head_dim),) * 2
-            )
-            dtype = "float32" if kind == "linear_attention" else "bfloat16"
-            self.states[layer] = [device.empty(shape, dtype) for shape in shapes]
+        self.states = allocate_hybrid_states(device, self.config, capacity, context)
 
     def _check(self):
         if self.closed or self.generation != self.device._generation:

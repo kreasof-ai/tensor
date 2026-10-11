@@ -1,14 +1,13 @@
 """Own exact speculative update journals and materialize state on demand."""
 
 import ctypes as ct
-import hashlib
 import json
 
 import numpy as np
 
 from tensor.providers.cuda_graph import CudaGraph
 from tensor.runtime.abi import BoundCall
-from tensor_llm.common.artifacts import identity
+from tensor_llm.common.artifacts import identity, load_kernels
 from .artifacts import validate_implementation
 
 
@@ -50,15 +49,7 @@ class RecurrentJournal:
                 != (slots, self.window, self.target.capacity)
             ):
                 raise ValueError("recurrent journal profile mismatch")
-            kernels = {}
-            for key, row in manifest["kernels"].items():
-                path = (directory / row["path"]).resolve()
-                if (
-                    not path.is_relative_to(directory)
-                    or hashlib.sha256(path.read_bytes()).hexdigest() != row["sha256"]
-                ):
-                    raise ValueError("recurrent artifact integrity mismatch")
-                kernels[key] = self.device.load(path)
+            kernels = load_kernels(self.device, directory, manifest["kernels"])
             mapping = self.device.empty((slots,), "int32")
             common = dict(slots=slots, window=self.window, pool=self.target.capacity)
 

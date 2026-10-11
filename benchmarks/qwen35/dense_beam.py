@@ -75,7 +75,7 @@ def cases(*, extended=False):
                     family=family,
                     kind="split_linear",
                     parameters=p,
-                    module="tensor_llm.qwen35.dense.projections",
+                    module="tensor_llm.qwen35.kernels.dense_projections",
                     factory="make_kernel",
                 )
         for tile in (() if extended else (8, 16, 32, 64)):
@@ -85,7 +85,7 @@ def cases(*, extended=False):
                 parameters=dict(
                     slots=rows, chunk=1, pool=256, heads=16, d=128, tile=tile
                 ),
-                module="tensor_llm.qwen35.dense.kernels",
+                module="tensor_llm.qwen35.kernels.dense",
                 factory="make_kernel",
             )
 

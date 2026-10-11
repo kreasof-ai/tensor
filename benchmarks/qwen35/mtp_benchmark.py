@@ -7,7 +7,7 @@ import numpy as np
 import tensor
 
 from tensor_llm import Qwen35Batch, Qwen35MTP, Qwen35Prefill
-from tensor_llm.qwen35.mtp.prefill import Qwen35MTPPrefill
+from tensor_llm.qwen35.mtp_prefill import Qwen35MTPPrefill
 from .mtp_calibrate import calibrate_long
 from .mtp_chain import measure
 

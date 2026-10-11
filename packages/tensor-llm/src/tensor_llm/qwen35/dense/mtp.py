@@ -6,6 +6,7 @@ from threading import get_ident
 import numpy as np
 
 from .engine import DenseEngine
+from ...common.state import allocate_hybrid_states
 
 
 class DenseMTP(DenseEngine):
@@ -39,14 +40,9 @@ class DenseMTP(DenseEngine):
             "model.language_model.embed_tokens.weight"
         ]
         c = self.config
-        self.states = {
-            0: [
-                self.device.empty(
-                    (self.capacity, c.kv_heads, self.context, c.head_dim), "bfloat16"
-                )
-                for _ in range(2)
-            ]
-        }
+        self.states = allocate_hybrid_states(
+            self.device, self.config, self.capacity, self.context
+        )
         self.hidden = self.device.empty((self.capacity, c.width), "bfloat16")
 
     def _check(self):
