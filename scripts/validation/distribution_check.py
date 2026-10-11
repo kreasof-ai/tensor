@@ -92,7 +92,7 @@ def check_archives(out):
                              "tensor/native/host.rs", "tensor/native/webgpu_plan.c"):
                     require(item in names, f"missing installed native source/header: {item}")
             if name == "tensor-torch":
-                require("tensor_torch/templates/attention.py" in names, "missing Torch kernel template")
+                require("tensor_torch/compile/attention.py" in names, "missing Torch kernel template")
             wheels[name] = path
     for path in sorted(out.glob("*.tar.gz")):
         with tarfile.open(path) as archive:
@@ -108,7 +108,7 @@ def check_archives(out):
                     f"sdist license differs: {path}")
             require(prefix + "README.md" in members, f"sdist missing README: {path}")
             if name == "tensor-torch":
-                for item in ("src/tensor_torch/launch.c", "src/tensor_torch/executor.cpp"):
+                for item in ("src/tensor_torch/native/launch.c", "src/tensor_torch/native/executor.cpp"):
                     require(prefix + item in members, f"sdist missing native source: {item}")
             sources[name] = path
     require(wheels.keys() == PROJECTS.keys(), "build one wheel for each of the four distributions")

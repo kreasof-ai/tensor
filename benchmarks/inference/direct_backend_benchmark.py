@@ -24,8 +24,8 @@ from torch.fx.node import map_arg
 from torch._subclasses.fake_tensor import FakeTensorMode
 
 import tensor_torch as tt
-from tensor_torch.backend import Region
-from tensor_torch.bridge import _executor
+from tensor_torch.compile.backend import Region
+from tensor_torch.runtime.launch import _executor
 from tensor.artifacts.format import read_artifact
 from benchmarks.inference.fx_producer import Metadata
 from benchmarks.inference.backend_benchmark import cases

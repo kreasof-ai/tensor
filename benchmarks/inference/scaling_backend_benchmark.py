@@ -20,7 +20,7 @@ from pathlib import Path
 
 import torch
 import tensor_torch as tt
-from tensor_torch.bridge import _executor
+from tensor_torch.runtime.launch import _executor
 from benchmarks.inference.direct_backend_benchmark import digest, prepare_case, host_samples, gpu_samples
 
 

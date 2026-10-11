@@ -12,7 +12,9 @@ import time
 from pathlib import Path
 
 import torch
-from tensor_torch import bridge
+from tensor_torch.runtime import launch
+from tensor_torch.kernel import Kernel
+from tensor_torch.runtime.prepared import LaunchPlan
 
 
 def main():
@@ -21,21 +23,21 @@ def main():
                         help='cached phase4 pointwise-129 artifact, with two FP32 inputs')
     parser.add_argument('--out', type=Path, required=True)
     opts = parser.parse_args()
-    if bridge._executor is None:
+    if launch._executor is None:
         raise RuntimeError('install the matching C++ executor wheel')
     stream = torch.cuda.Stream()
     with torch.inference_mode(), torch.cuda.stream(stream):
         a, b = (torch.ones(129, device='cuda') for _ in range(2))
-        kernel = bridge.Kernel(opts.artifact)
+        kernel = Kernel(opts.artifact)
         reference = lambda a, b: torch.relu(a*2+b)
-        native = bridge._executor
+        native = launch._executor
         try:
-            bridge._executor = None
-            python_plan = bridge.LaunchPlan(kernel, (a,b), reference)
+            launch._executor = None
+            python_plan = LaunchPlan(kernel, (a,b), reference)
             python_fixed = kernel.prepare(a,b)
         finally:
-            bridge._executor = native
-        cpp_plan = bridge.LaunchPlan(kernel, (a,b), reference)
+            launch._executor = native
+        cpp_plan = LaunchPlan(kernel, (a,b), reference)
         cpp_fixed = kernel.prepare(a,b)
         plans = {'python_allocating': lambda: python_plan(a,b),
                  'cpp_allocating': lambda: cpp_plan(a,b),

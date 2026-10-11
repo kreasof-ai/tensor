@@ -30,7 +30,7 @@ import tensor_torch as tt
 from torch._dynamo.backends.registry import lookup_backend
 
 assert lookup_backend('tensor') is tt.backend
-from tensor_torch.bridge import _submit, _executor
+from tensor_torch.runtime.launch import _submit, _executor
 assert _submit is not None, 'CI must produce the native submission shim'
 if opts.require_native:
     assert _executor is not None, 'native wheel must import its matching C++ executor'

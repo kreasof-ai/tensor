@@ -13,7 +13,8 @@ import torch
 from torch.fx import Interpreter,symbolic_trace
 from torch._subclasses.fake_tensor import FakeTensorMode
 import tensor
-from tensor_torch.lowering import emit,regions
+from tensor_torch.compile.lowering import emit
+from tensor_torch.compile.partition import regions
 
 
 def affine(a,b):return torch.relu(a*2+b)

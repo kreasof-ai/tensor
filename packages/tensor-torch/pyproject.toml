@@ -25,4 +25,4 @@ tensor = "tensor_torch:backend"
 where = ["src"]
 
 [tool.setuptools.package-data]
-tensor_torch = ["templates/*.py", "*.c", "*.cpp"]
+tensor_torch = ["native/*.c", "native/*.cpp"]

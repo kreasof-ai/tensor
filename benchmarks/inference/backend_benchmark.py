@@ -69,7 +69,7 @@ def main():
     torch.manual_seed(42)
     torch.cuda.init()
     stream=torch.cuda.Stream()
-    from tensor_torch.bridge import _submit, _executor
+    from tensor_torch.runtime.launch import _submit, _executor
     report={'native_submission':_submit is not None,'native_executor':_executor is not None,'torch':torch.__version__,'device':torch.cuda.get_device_name(),'cases':[],
             'timing':'median 7 batches; warm end-to-end includes Python submission, output allocation and stream completion; GPU times use 50-call CUDA graph replay',
             'targets':{'max_geomean_inductor_ratio':1.10,'max_case_inductor_ratio':1.25,'selected_eager_speedup':1.25,'prepared_submission_us':15,'cached_prepare_seconds':.1,'cold_pointwise_seconds':10,'cold_gemm_seconds':30}}
