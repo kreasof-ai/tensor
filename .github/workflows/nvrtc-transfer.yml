@@ -65,10 +65,11 @@ jobs:
           import tensor
           import importlib.util
           assert callable(tensor.build)
-          for name in ('abi', 'cuda', 'build', 'modules', 'nn'):
+          for name in ('abi', 'cuda', 'build', 'nn'):
               assert importlib.util.find_spec('tensor.' + name) is None
           from tensor.artifacts.format import read_artifact
-          from tensor.artifacts.modules import Project, add, install
+          from tensor.modules.project import Project
+          from tensor.modules.resolver import add, install
           for artifact in pathlib.Path('build/phase2-transfer').glob('*.tbin'):
               manifest,_=read_artifact(artifact)
               assert manifest['format_version']==3

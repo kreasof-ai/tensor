@@ -53,3 +53,19 @@ def test_incomplete_or_misleading_evidence_fails(failure):
         result["software_adapter"] = True
     with pytest.raises(ValueError):
         audit(suite,result,suite_sha256="suite")
+
+
+@pytest.mark.parametrize("relative", ["runtime/buffer.py", "providers/webgpu/device.py", "modules/resolver.py"])
+def test_transfer_fingerprints_cover_split_consumer_implementations(tmp_path, relative):
+    from pathlib import Path
+    import shutil
+    from tools.validation.webgpu_validation import source_hashes
+
+    source = Path(__file__).resolve().parents[2] / "src/tensor"
+    consumer = tmp_path / "tensor"
+    shutil.copytree(source, consumer, ignore=shutil.ignore_patterns("__pycache__"))
+    before = source_hashes(consumer)
+    implementation = consumer / relative
+    implementation.write_bytes(implementation.read_bytes() + b"\n# changed consumer\n")
+    after = source_hashes(consumer)
+    assert {name for name in before if before[name] != after[name]} == {relative}

@@ -25,13 +25,16 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-CONSUMER_FILES = ("providers/webgpu.py", "providers/webgpu_contract.py", "runtime/abi.py",
-                  "runtime/signature.py", "artifacts/format.py", "runtime/__init__.py",
-                  "artifacts/modules.py", "providers/__init__.py")
+CONSUMER_DIRECTORIES = ("runtime", "modules", "artifacts", "providers/webgpu")
+CONSUMER_FILES = ("__init__.py", "providers/__init__.py", "providers/cpu.py", "native/webgpu_plan.c")
 
 
 def source_hashes(root):
-    return {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in CONSUMER_FILES}
+    root = Path(root)
+    files = set(CONSUMER_FILES)
+    for directory in CONSUMER_DIRECTORIES:
+        files.update(path.relative_to(root).as_posix() for path in (root / directory).glob("*.py"))
+    return {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in sorted(files)}
 
 
 def specialize(source, constants):
@@ -45,6 +48,7 @@ def specialize(source, constants):
 def produce(directory):
     import tensor as tx
     from tensor.modules.archive import pack
+    from tensor.compiler.webgpu.identity import lowering_hash
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     cases, exports = [], {}
@@ -104,7 +108,7 @@ def produce(directory):
               "consumer_source_sha256": source_hashes(ROOT / "src/tensor"),
               "producer": {"tilelang": version("tilelang"), "tvm_ffi": version("apache-tvm-ffi"),
                            "hostname": socket.gethostname(),
-                           "lowering_sha256": hashlib.sha256((ROOT / "src/tensor/compiler/webgpu_lowering.py").read_bytes()).hexdigest()}}
+                           "lowering_sha256": lowering_hash()}}
     (directory / "suite.json").write_text(json.dumps(report, indent=2)+"\n", encoding="utf-8")
     return report
 
