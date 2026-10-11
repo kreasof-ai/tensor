@@ -1,16 +1,20 @@
 """Own a transient BF16 attention workspace while retaining FP8 KV storage."""
 
+from tensor_llm.common.artifacts import backbone_hashes
 import hashlib
 import json
 from pathlib import Path
 from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from tensor_llm.common.artifacts import artifact_path
 from tensor.runtime.cuda_target import matches_device
 
 
 def implementation_hashes():
-    return {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    return {
+        __name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    } | backbone_hashes()
 
 
 def install(executor, bundle):
@@ -45,10 +49,7 @@ def install(executor, bundle):
 
         def bind(kernel, values):
             args = tuple(values[a["name"]] for a in kernel.manifest["arguments"])
-            storage, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-            return kernel, BoundCall(
-                d, kernel.manifest, storage, symbols, launch, validated=True
-            )
+            return kernel, bind_call(d, kernel, args)
 
         plan = []
         replaced = 0
@@ -72,7 +73,7 @@ def install(executor, bundle):
             raise ValueError("attention workspace source plan mismatch")
         graph = CudaGraph(
             d,
-            lambda: [d._launch(k, v) for k, v in plan],
+            lambda: submit_calls(d, plan),
             resources=(*executor.graph.resources, *loaded.values(), *buffers.values()),
         )
     except BaseException:

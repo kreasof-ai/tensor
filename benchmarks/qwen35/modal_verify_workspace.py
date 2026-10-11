@@ -17,8 +17,8 @@ def measure(prepared):
     result=dict(scope='isolated verification attention; not complete model throughput',
         prepared=prepared,cases=[],source_hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest()
             for p in (Path(__file__),Path('benchmarks/qwen35/kernel_timing.py'),
-                Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_attention.py'),
-                Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py'),
+                Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_attention.py'),
+                Path('packages/tensor-llm/src/tensor_llm/kernels/attention_workspace.py'),
                 Path('packages/tensor-llm/tests/test_qwen_hopper.py'))})
     command=[sys.executable,'-m','pytest','packages/tensor-llm/tests/test_qwen_hopper.py',
              '-k','query_tiles and True','-q','-o','addopts=']

@@ -37,14 +37,14 @@ def produce(checkpoint, decoder, out):
     r = manifest['slots']
     for kind, p, module, factory, args in (
             ('mtp_join', dict(r=r, c=2048, eps=checkpoint.config.epsilon),
-             'tensor_llm.qwen35.kernels.mtp', 'make_kernel', None),
-            ('mtp_cast', dict(r=r, c=2048), 'tensor_llm.qwen35.kernels.mtp', 'make_kernel', None),
+             'tensor_llm.kernels.mtp', 'make_kernel', None),
+            ('mtp_cast', dict(r=r, c=2048), 'tensor_llm.kernels.mtp', 'make_kernel', None),
             ('bf16_linear', dict(r=r, k=4096, o=2048),
-             'tensor_llm.qwen35.kernels.matmul', 'bf16_head_kernel', None)):
+             'tensor_llm.kernels.matmul', 'bf16_head_kernel', None)):
         key = identity(kind, p)
         args = (kind, p) if factory == 'make_kernel' else (dict(p, columns=128, depth=128),)
         entry = out/(key+'.py'); artifact = entry.with_suffix('.tbin')
-        entry.write_text(export_source(module, factory, *args, dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source(module, factory, *args, dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact.unlink(missing_ok=True)
         build_artifact(entry, artifact, target=manifest['target'])
         manifest['kernels'][key] = dict(kind=kind, parameters=p, path=artifact.name,

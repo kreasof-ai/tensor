@@ -1,5 +1,6 @@
 """Verifier that stores recurrent inputs and replays only rejected prefixes."""
 
+from tensor_llm.common.artifacts import backbone_hashes
 import hashlib
 import json
 from pathlib import Path
@@ -11,14 +12,14 @@ from tensor_llm.qwen35.verifier import Qwen35Verifier
 
 
 def implementation_hashes():
-    from tensor_llm.qwen35.kernels import recompute
+    from tensor_llm.kernels import recompute
 
     return {
         recompute.__name__: hashlib.sha256(
             Path(recompute.__file__).read_bytes()
         ).hexdigest(),
         __name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-    }
+    } | backbone_hashes()
 
 
 class Qwen35RecomputeVerifier(Qwen35Verifier):

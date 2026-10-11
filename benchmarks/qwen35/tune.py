@@ -28,8 +28,8 @@ def mma_bundle(source_bundle,out,*,columns=64,threads=128,partitions=1,prequanti
             actual_parts=min(partitions,p['k']//128)
             newp=dict(p,columns=columns,threads=threads,partitions=actual_parts,stages=stages,packed_copy=packed_copy)
             entry=out/(key+'.py')
-            entry.write_text(export_source('tensor_llm.qwen35.kernels.matmul','make_kernel',kind+('_mma_prequantized' if prequantized else '_mma'),newp,
-                dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering')))
+            entry.write_text(export_source('tensor_llm.kernels.matmul','make_kernel',kind+('_mma_prequantized' if prequantized else '_mma'),newp,
+                dependencies=('tensor.compiler.entry', 'tensor.compiler.cuda_lowering', "tensor_llm.kernels.elementwise")))
             build_artifact(entry,target,target=manifest['target'])
             row['schedule']=dict(family='mma',columns=columns,threads=threads,partitions=actual_parts,stages=stages,packed_copy=packed_copy)
             if prequantized:
@@ -38,8 +38,8 @@ def mma_bundle(source_bundle,out,*,columns=64,threads=128,partitions=1,prequanti
                 qkey=hashlib.sha256(json.dumps(qp,sort_keys=True).encode()).hexdigest()[:16]
                 if qkey not in quantizers:
                     qe=out/('quantize-'+qkey+'.py');qa=qe.with_suffix('.tbin')
-                    qe.write_text(export_source('tensor_llm.qwen35.kernels.matmul','quantize_kernel',qp,
-                        dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering')))
+                    qe.write_text(export_source('tensor_llm.kernels.matmul','quantize_kernel',qp,
+                        dependencies=('tensor.compiler.entry', 'tensor.compiler.cuda_lowering', "tensor_llm.kernels.elementwise")))
                     build_artifact(qe,qa,target=manifest['target'])
                     quantizers[qkey]=dict(path=qa.name,sha256=hashlib.sha256(qa.read_bytes()).hexdigest())
                 row['quantize']=quantizers[qkey]
@@ -47,8 +47,8 @@ def mma_bundle(source_bundle,out,*,columns=64,threads=128,partitions=1,prequanti
                 mergep=dict(r=p['r'],o=p['o'],partitions=actual_parts)
                 if kind=='fp8_experts':mergep['top']=p['top']
                 merge_entry=out/(key+'-merge.py');merge_artifact=merge_entry.with_suffix('.tbin')
-                merge_entry.write_text(export_source('tensor_llm.qwen35.kernels.matmul','merge_kernel',mergep,
-                    dependencies=('tensor.compiler.entry',)))
+                merge_entry.write_text(export_source('tensor_llm.kernels.matmul','merge_kernel',mergep,
+                    dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
                 build_artifact(merge_entry,merge_artifact,target=manifest['target'])
                 row['merge']=dict(path=merge_artifact.name,sha256=hashlib.sha256(merge_artifact.read_bytes()).hexdigest())
         else:
@@ -57,8 +57,8 @@ def mma_bundle(source_bundle,out,*,columns=64,threads=128,partitions=1,prequanti
         row['sha256']=hashlib.sha256(target.read_bytes()).hexdigest()
     # This tuning bundle binds the original consumer and records the producer
     # separately. Shipping it requires the final producer/consumer manifest.
-    manifest['tuning_producer']=dict(module='tensor_llm.qwen35.kernels.matmul',
-        sha256=hashlib.sha256(Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/matmul.py').read_bytes()).hexdigest())
+    manifest['tuning_producer']=dict(module='tensor_llm.kernels.matmul',
+        sha256=hashlib.sha256(Path('packages/tensor-llm/src/tensor_llm/kernels/matmul.py').read_bytes()).hexdigest())
     from tensor_llm.qwen35.decode import implementation_hashes
     manifest['implementation']=implementation_hashes()
     (out/'inference.json').write_text(json.dumps(manifest,indent=2)+'\n')

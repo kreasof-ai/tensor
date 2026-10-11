@@ -1,16 +1,15 @@
-"""TileLang DSL for the measured packed CUDA inference schedules.
+"""Packed projections, attention, normalization, and reductions for CUDA.
 
-All arithmetic and control flow remain visible in TIRx. Runtime constants can
-be imported without loading TileLang; factories import the compiler lazily.
+Factories are producer-only; consumers execute Tensor artifacts.
 """
 
-from .baseline import (
-    make_kernel as baseline_kernel,
-    weight_decoder,
-    weight_storage,
-    argmax_kernel,
-)
-from ...common.gguf import TYPES
+from .elementwise import rms_kernel, swiglu_kernel
+
+from tensor_llm.kernels.ggml import make_kernel as baseline_kernel
+from tensor_llm.kernels.ggml import weight_decoder
+from tensor_llm.kernels.ggml import weight_storage
+from tensor_llm.kernels.ggml import argmax_kernel
+from tensor_llm.common.gguf import TYPES
 
 CUDA_PROFILES = ("default", "optimized")
 CUDA_GROUPED_THRESHOLD = 4096
@@ -25,7 +24,8 @@ def source(kind, parameters):
         kind,
         parameters,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -41,7 +41,8 @@ def gemv_source(kind, parameters):
         kind,
         parameters,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -57,7 +58,8 @@ def prefill_source(kind, parameters):
         kind,
         parameters,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -73,7 +75,8 @@ def fused_source(kind, parameters):
         kind,
         parameters,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -660,7 +663,8 @@ def warp_partial_source(p, splits):
         p,
         splits,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -803,7 +807,8 @@ def grouped_source(p, stage=32, warps=2):
         stage,
         warps,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -857,7 +862,8 @@ def merge_source(p, splits):
         p,
         splits,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -981,31 +987,5 @@ def make_kernel(kind, p):
 
         return kernel
     if kind == "add_rms":
-        r, c, eps = p["r"], p["c"], p["eps"]
-
-        @T.prim_func
-        def kernel(
-            x: T.Tensor((r * c,), "float32"),
-            mixed: T.Tensor((r * c,), "float32"),
-            residual: T.Tensor((r * c,), "float32"),
-            w: T.Tensor((c,), "float32"),
-            out: T.Tensor((r * c,), "float32"),
-        ):
-            with T.Kernel(r, threads=256) as row:
-                square = T.alloc_fragment((c,), "float32")
-                total = T.alloc_fragment((1,), "float32")
-                for i in T.Parallel(c):
-                    square[i] = (x[row * c + i] + mixed[row * c + i]) * (
-                        x[row * c + i] + mixed[row * c + i]
-                    )
-                T.reduce_sum(square, total, dim=0)
-                for i in T.Parallel(c):
-                    residual[row * c + i] = x[row * c + i] + mixed[row * c + i]
-                    out[row * c + i] = (
-                        (x[row * c + i] + mixed[row * c + i])
-                        * T.rsqrt(total[0] / c + eps)
-                        * w[i]
-                    )
-
-        return kernel
+        return rms_kernel(dict(p, flat=True, fused=True, separate_residual=True))
     return baseline_kernel(kind, p)

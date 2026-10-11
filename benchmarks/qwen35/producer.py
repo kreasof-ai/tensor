@@ -10,7 +10,7 @@ from tensor.compiler.entry import export_source
 from tensor_llm.qwen35.checkpoint import Qwen35Checkpoint
 from tensor_llm.qwen35.decode import implementation_hashes
 from tensor_llm.qwen35.artifacts import requirements
-from tensor_llm.qwen35.kernels.decode import source
+from tensor_llm.kernels.hybrid import source
 
 
 def produce(checkpoint,out,*,slots=8,context=48000,target='sm_89',splits=16,kv_dtype='bfloat16'):
@@ -26,9 +26,9 @@ def produce(checkpoint,out,*,slots=8,context=48000,target='sm_89',splits=16,kv_d
         # The scalar GEMV schedule owns at most eight rows. Larger logical
         # projections keep the same ABI and use the existing tensor-core path.
         if kind=='fp8_linear' and slots>8:
-            text=export_source('tensor_llm.qwen35.kernels.matmul','make_kernel',
+            text=export_source('tensor_llm.kernels.matmul','make_kernel',
                 'fp8_linear_mma',dict(p,block_m=16,columns=64,threads=128),
-                dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering'))
+                dependencies=('tensor.compiler.entry', 'tensor.compiler.cuda_lowering', "tensor_llm.kernels.elementwise"))
         else:
             text=source(kind,p)
         if needs_build(entry, artifact, text, target):

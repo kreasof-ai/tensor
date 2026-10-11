@@ -14,7 +14,7 @@ import tensor
 from tensor.artifacts.format import read_artifact
 from tensor.runtime.abi import BoundCall
 from tensor_llm import LFM2
-from tensor_llm.lfm2.kernels.baseline import source
+from tensor_llm.kernels.ggml import source
 from benchmarks.lfm2.text_helpers import emit, reference_attention_source
 from benchmarks.lfm2.fp16_decode import linear_source, HALF2
 

@@ -24,7 +24,7 @@ def produce(source, out):
         key = identity(kind, parameters)
         entry = out/(key+'.py')
         artifact = entry.with_suffix('.tbin')
-        text = export_source(module, factory, specialization, dependencies=('tensor.compiler.entry',))
+        text = export_source(module, factory, specialization, dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise"))
         if needs_build(entry, artifact, text, manifest['target']):
             entry.write_text(text)
             artifact.unlink(missing_ok=True)
@@ -33,14 +33,14 @@ def produce(source, out):
                                         sha256=hashlib.sha256(artifact.read_bytes()).hexdigest())
         return key
     p = dict(rows=rows, block_m=m)
-    record['tile_map'] = add('expert_tile_map', p, 'tensor_llm.qwen35.kernels.compact_experts',
+    record['tile_map'] = add('expert_tile_map', p, 'tensor_llm.kernels.compact_experts',
                              'tile_map_kernel', p)
     for logical, row in list(manifest['kernels'].items()):
         if row['kind'] != 'fp8_experts': continue
         p = row['parameters']
         schedule = dict(rows=rows, k=p['k'], o=p['o'], routed_input=p['routed_input'],
                         block_m=m, threads=256 if m>=32 else 128, compact=True)
-        selected = add('compact_fp8_experts', p, 'tensor_llm.qwen35.kernels.prefill',
+        selected = add('compact_fp8_experts', p, 'tensor_llm.kernels.hybrid_prefill',
                        'expert_kernel', schedule)
         record['projections'][logical] = selected
     manifest['compact_experts'] = record

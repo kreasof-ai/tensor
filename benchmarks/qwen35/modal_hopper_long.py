@@ -11,7 +11,7 @@ def prepare_dense_tiles(prepared,asynchronous=False):
     from benchmarks.qwen35.hopper_verify_producer import produce_dense
     os.chdir('/workspace');volume.reload()
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-        Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_dense.py'),
+        Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_dense.py'),
         Path('benchmarks/qwen35/hopper_verify_producer.py'))}
     identity=hashlib.sha256(json.dumps(dict(hashes=hashes,prepared=prepared,
         asynchronous=asynchronous),sort_keys=True).encode()).hexdigest()[:16]
@@ -46,7 +46,7 @@ def prepare_expert_tiles(prepared,block_m,columns,warp_mma,persistent_tiles=0,pa
     from benchmarks.qwen35.hopper_verify_producer import produce
     os.chdir('/workspace');volume.reload()
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-        Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_experts.py'),
+        Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_experts.py'),
         Path('benchmarks/qwen35/hopper_verify_producer.py'))}
     identity=hashlib.sha256(json.dumps(dict(hashes=hashes,prepared=prepared,
         block_m=block_m,columns=columns,warp_mma=warp_mma,persistent_tiles=persistent_tiles,paired=paired),sort_keys=True).encode()).hexdigest()[:16]
@@ -86,7 +86,7 @@ def prepare_query_tiles(prepared,query_tokens,key_rows=32,kernel_target='sm_90a'
     from benchmarks.qwen35.spec_attention_producer import produce
     os.chdir('/workspace');volume.reload()
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-        Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_attention.py'),
+        Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_attention.py'),
         Path('benchmarks/qwen35/spec_attention_producer.py'))}
     identity=hashlib.sha256(json.dumps(dict(hashes=hashes,prepared=prepared,
         query_tokens=query_tokens,key_rows=key_rows,kernel_target=kernel_target),sort_keys=True).encode()).hexdigest()[:16]
@@ -131,7 +131,7 @@ def prepare_long(prepared,chunk,prefix_mma='mma-experts'):
     os.chdir('/workspace');volume.reload()
     ready=prepare_hopper.local(prepared,'bf16-pairs',True) if prefix_mma=='bf16-pairs-attention' else prepare_hopper.local(prepared,prefix_mma)
     paths=ready['base']['paths'].copy();checkpoint=ready['base']['checkpoint']
-    sources=[*Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels').glob('hopper_*.py'),
+    sources=[*Path('packages/tensor-llm/src/tensor_llm/kernels').glob('hopper_*.py'),
              Path('benchmarks/qwen35/hopper_verify_producer.py'),Path(__file__)]
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     identity=hashlib.sha256(json.dumps(dict(hashes=hashes,chunk=chunk,

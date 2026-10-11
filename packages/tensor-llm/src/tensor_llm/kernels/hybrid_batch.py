@@ -1,5 +1,7 @@
 """Dense projections and hybrid attention with indirect request-owned state."""
 
+from .elementwise import swiglu_kernel
+
 
 def make_kernel(kind, p):
     import tilelang.language as T
@@ -333,21 +335,9 @@ def make_kernel(kind, p):
         return kernel
 
     if kind == "swiglu":
-        c = p["c"]
-
-        @T.prim_func
-        def kernel(
-            x: T.Tensor((rows, 2 * c), "float32"), out: T.Tensor((rows, c), "bfloat16")
-        ):
-            with T.Kernel(rows, T.ceildiv(c, 256), threads=256) as (row, tile):
-                for j in T.Parallel(256):
-                    col = tile * 256 + j
-                    if col < c:
-                        gate = T.cast(T.cast(x[row, col], "bfloat16"), "float32")
-                        up = T.cast(T.cast(x[row, c + col], "bfloat16"), "float32")
-                        out[row, col] = gate / (1 + T.exp(-gate)) * up
-
-        return kernel
+        return swiglu_kernel(
+            dict(p, r=rows, packed=True, output_dtype="bfloat16", round_inputs=True)
+        )
 
     if kind == "last_rows":
         c = p["c"]

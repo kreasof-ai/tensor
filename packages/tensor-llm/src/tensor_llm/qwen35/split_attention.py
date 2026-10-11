@@ -1,21 +1,27 @@
 """Install split-context attention in an existing native chunk execution graph."""
 
+from tensor_llm.common.artifacts import backbone_hashes
 import hashlib
 import json
 from pathlib import Path
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from tensor_llm.common.artifacts import artifact_path
 from tensor.providers.cuda_graph import CudaGraph
 from tensor_llm.qwen35.artifacts import identity
 
 
 def implementation_hashes():
-    from tensor_llm.qwen35.kernels import speculative_attention
+    from tensor_llm.kernels import speculative_attention
 
-    return {
-        m.__name__: hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest()
-        for m in (speculative_attention,)
-    } | {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    return (
+        {
+            m.__name__: hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest()
+            for m in (speculative_attention,)
+        }
+        | {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+        | backbone_hashes()
+    )
 
 
 def install(prefill, bundle):
@@ -60,10 +66,7 @@ def install(prefill, bundle):
 
         def bind(kernel, values):
             args = tuple(values[a["name"]] for a in kernel.manifest["arguments"])
-            values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-            return kernel, BoundCall(
-                d, kernel.manifest, values, symbols, launch, validated=True
-            )
+            return kernel, bind_call(d, kernel, args)
 
         for kernel, bound in prefill.plan:
             if kernel is not old:
@@ -99,9 +102,7 @@ def install(prefill, bundle):
         if len(plan) == len(prefill.plan):
             raise ValueError("no chunk attention calls found")
         resources = (*prefill.graph.resources, *allocated, *(k for _, k in loaded))
-        graph = CudaGraph(
-            d, lambda: [d._launch(k, v) for k, v in plan], resources=resources
-        )
+        graph = CudaGraph(d, lambda: submit_calls(d, plan), resources=resources)
     except BaseException:
         for value in allocated:
             value.release()

@@ -19,7 +19,7 @@ def run(root,out):
         raise ValueError('implementation changed since final measurement')
     sources={}
     paths=['src/tensor/providers/webgpu.py','packages/tensor-llm/src/tensor_llm/lfm2/model.py',
-           'packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py','src/tensor/compiler/webgpu_lowering.py',
+           'packages/tensor-llm/src/tensor_llm/kernels/webgpu.py','src/tensor/compiler/webgpu_lowering.py',
            'src/tensor/compiler/search.py','src/tensor/compiler/webgpu_schedules.py','tests/providers/test_webgpu.py',
            'tests/providers/test_webgpu_lowering.py','tests/compiler/test_webgpu_decode_schedule.py']
     paths += [str(p) for p in Path('benchmarks/lfm2').glob('runtime*.py')]
@@ -28,7 +28,7 @@ def run(root,out):
     for p in paths:sources[p]=dict(sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest(),text=Path(p).read_text())
     snapshots={p.name:dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(),text=p.read_text())
                for p in (root/'runtime-sources').glob('*.py')}
-    for module,path in [('tensor_llm.lfm2.model','model.py'),('tensor_llm.lfm2.kernels.webgpu','webgpu_kernels.py'),('tensor.providers.webgpu','webgpu.py')]:
+    for module,path in [('tensor_llm.lfm2.model','model.py'),('tensor_llm.kernels.webgpu','webgpu_kernels.py'),('tensor.providers.webgpu','webgpu.py')]:
         if snapshots[path]['sha256']!=initial['bundles']['searched']['implementation'][module]:
             raise ValueError('runtime-only source snapshot mismatch: '+module)
     shaders={}

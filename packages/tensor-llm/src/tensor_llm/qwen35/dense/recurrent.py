@@ -6,7 +6,8 @@ import json
 import numpy as np
 
 from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from tensor_llm.common.artifacts import identity, load_kernels
 from .artifacts import validate_implementation
 
@@ -55,15 +56,7 @@ class RecurrentJournal:
 
             def bind(kind, args, **extra):
                 kernel = kernels[identity(kind, dict(common, **extra))]
-                values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-                return kernel, BoundCall(
-                    self.device,
-                    kernel.manifest,
-                    values,
-                    symbols,
-                    launch,
-                    validated=True,
-                )
+                return kernel, bind_call(self.device, kernel, args)
 
             calls = []
             c = self.target.config
@@ -86,8 +79,7 @@ class RecurrentJournal:
             calls.append(bind("defer_clear", (mapping, self.counts)))
 
             def submit():
-                for kernel, call in calls:
-                    self.device._launch(kernel, call)
+                submit_calls(self.device, calls)
 
             resources = (
                 mapping,

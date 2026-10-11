@@ -9,7 +9,7 @@ def build(tmp_path,kind,p):
     from tensor.compiler.entry import export_source
     from tensor.compiler.build import build_artifact
     entry=tmp_path/(kind+'.py');artifact=entry.with_suffix('.tbin')
-    entry.write_text(export_source('tensor_llm.qwen35.kernels.prefill','make_kernel',kind,p,
+    entry.write_text(export_source('tensor_llm.kernels.hybrid_prefill','make_kernel',kind,p,
         dependencies=('tensor.compiler.entry',)))
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     return artifact
@@ -118,7 +118,7 @@ def test_causal_chunk_attention_matches_independent_dense_attention(tmp_path,kv_
 @GPU
 def test_decode_attention_merge_rounds_before_gate(tmp_path):
     import tensor,torch
-    from tensor_llm.qwen35.kernels.decode import source
+    from tensor_llm.kernels.hybrid import source
     from tensor.compiler.build import build_artifact
     slots,splits=8,16
     rng=np.random.default_rng(427)
@@ -163,7 +163,7 @@ def test_large_expert_tiles_preserve_hot_experts_and_tail_rows(tmp_path,routed):
         wd=w[rank].float()*scales[rank].float().repeat_interleave(128,0).repeat_interleave(128,1)
         expected[:,rank]=(xd@wd.T).numpy()
     entry=tmp_path/'expert-m64.py';artifact=entry.with_suffix('.tbin')
-    entry.write_text(export_source('tensor_llm.qwen35.kernels.prefill','expert_kernel',
+    entry.write_text(export_source('tensor_llm.kernels.hybrid_prefill','expert_kernel',
         dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256),dependencies=('tensor.compiler.entry',)))
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:

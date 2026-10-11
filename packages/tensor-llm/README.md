@@ -23,57 +23,57 @@ implemented for LFM2; its request handles execute one sequence per call. The
 experimental Qwen adapter below implements native batched execution within the
 same package.
 
-## Source layout
+## Shared execution backbone
 
-The public classes stay available through `from tensor_llm import ...`. Internal
-modules are grouped around shared runtime resources and model-specific execution:
-
-`common` owns safetensors storage validation, raw-bit weight upload, artifact
-integrity/loading, hybrid recurrent/KV allocation, and continuous scheduling.
-Dense Qwen, MoE Qwen, and their MTP branches use that backbone. Model adapters
-keep their weight contracts, projection packing, FFN operators, and execution
-plans. Dense and MoE plans still differ; the shared resource layer does not yet
-make every kernel or serving policy interchangeable.
+The public classes remain available through `from tensor_llm import ...`.
+LFM2 and Qwen are model adapters over the same execution and kernel layers:
 
 ```text
 tensor_llm/
-├── __init__.py, __main__.py, cli.py
-├── common/
-│   ├── artifacts.py              # Kernel identities, integrity, and loading
-│   ├── checkpoint.py             # Safetensors validation and raw-bit upload
-│   ├── state.py, scheduler.py    # Persistent state and request scheduling
-│   ├── acceptance.py, lookup.py  # Generic speculative decoding helpers
-│   └── gguf.py, tokenizer.py     # GGUF storage and byte-level BPE
-├── lfm2/
-│   ├── config.py, model.py, provenance.py
-│   └── kernels/                 # CUDA, WebGPU, and baseline factories
-└── qwen35/
-    ├── checkpoint.py, artifacts.py
-    ├── decode.py, prefill.py, pipeline.py
-    ├── mtp.py, mtp_prefill.py
-    ├── speculative.py, verifier.py, recompute.py, graph_pool.py
-    ├── split_attention.py, split_linear.py
-    ├── dense/                   # Dense weight contract and execution adapter
-    │   ├── checkpoint.py, engine.py, artifacts.py
-    │   ├── mtp.py, server.py
-    │   └── speculative.py, speculative_graph.py, recurrent.py
-    └── kernels/                 # All Qwen producer factories, including dense
-        ├── decode.py, prefill.py, matmul.py, mtp.py, fp8_kv.py
-        ├── dense.py, dense_projections.py, dense_head.py
-        ├── dense_speculation.py, dense_recurrent.py, dense_fp8_attention.py
-        └── speculative*.py, hopper*.py, compact_experts.py, ...
+├── common/                      # Runtime used by every adapter
+│   ├── plan.py                  # ABI binding, submission, CUDA/WebGPU capture
+│   ├── state.py                 # Convolution, GDN, and KV allocation
+│   ├── artifacts.py             # Kernel identity, integrity, and loading
+│   ├── checkpoint.py, gguf.py    # Safetensors/GGUF storage contracts
+│   ├── scheduler.py             # Continuous request scheduling
+│   └── acceptance.py, lookup.py, tokenizer.py
+├── kernels/                     # One library; no model-private kernel trees
+│   ├── elementwise.py           # Shared RMSNorm and SwiGLU implementations
+│   ├── ggml.py                  # Packed GGML storage/decoding and baseline ops
+│   ├── cuda.py, webgpu.py        # Provider-specific schedules
+│   ├── matmul.py, split_linear.py, head.py
+│   ├── hybrid.py, hybrid_batch.py, hybrid_prefill.py
+│   └── fp8*.py, hopper*.py, mtp.py, recurrent.py, speculation*.py, ...
+├── lfm2/                        # GGUF configuration and layer-plan adapter
+│   └── config.py, model.py, provenance.py
+└── qwen35/                      # Safetensors contracts and layer-plan adapters
+    ├── checkpoint.py, artifacts.py, decode.py, prefill.py
+    ├── mtp.py, mtp_prefill.py, speculative.py, verifier.py, ...
+    └── dense/                   # Dense FFN/configuration and serving adapter
+        └── checkpoint.py, engine.py, mtp.py, server.py, ...
 ```
 
-Kernel factories import the compiler only when invoked by a producer. Executors,
-checkpoint utilities and speculative helpers remain usable in the consumer
-environment. `qwen35/split_attention.py` and `split_linear.py` install selected
-kernel graphs; their producer algorithms live under `qwen35/kernels/`.
+Start with `common/plan.py`: adapters describe an ordered list of operators,
+then the same code binds the Tensor ABI, submits the list, and captures it for
+CUDA or WebGPU. Target, draft, prefill, and verification use the same binding
+function. The common state allocator also owns partial-allocation cleanup.
 
-Internal module paths changed with this organization. Producers and source-hash
-tracking use the new paths; regenerate inference bundles because their source
-identities changed. The public classes exported by `tensor_llm` keep their names.
-Retained benchmark reports and frozen executed sources keep
-their original provenance.
+`kernels/elementwise.py` specializes RMSNorm and SwiGLU by shape, storage layout,
+precision, and weight convention. LFM2 uses ordinary FP32 normalization; Qwen
+uses zero-centered BF16 weights and its required BF16 rounding boundaries.
+Both call the same factories. Packed weights, FP8 operands, gated-delta state,
+short convolution, and device-specific schedules are operator/precision
+specializations in the common library. They are not interchangeable arithmetic.
+Model adapters select the layer order, checkpoint tensor names, operator
+parameters, and request state; they do not implement their own launch loops or
+private normalization/activation kernels.
+
+Kernel factories import compiler dependencies only when invoked by a producer.
+Consumer imports remain framework/compiler-free. Internal module paths and
+source identities changed; regenerate inference bundles before running them.
+The public class names stay stable. Historical benchmark reports and frozen
+sources retain their original provenance. This cleanup does not establish new
+numerical or throughput results.
 
 ## Experimental native Qwen CUDA execution
 

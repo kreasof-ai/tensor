@@ -1,22 +1,28 @@
 """Install selected Split-K projections into an existing native chunk graph."""
 
+from tensor_llm.common.artifacts import backbone_hashes
 import hashlib
 import json
 from pathlib import Path
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from tensor_llm.common.artifacts import artifact_path
 from tensor.providers.cuda_graph import CudaGraph
 from tensor_llm.qwen35.artifacts import identity
 
 
 def implementation_hashes():
-    from tensor_llm.qwen35.kernels import speculative_linear
-    from tensor_llm.qwen35.kernels import matmul
+    from tensor_llm.kernels import speculative_linear
+    from tensor_llm.kernels import matmul
 
-    return {
-        m.__name__: hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest()
-        for m in (speculative_linear, matmul)
-    } | {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    return (
+        {
+            m.__name__: hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest()
+            for m in (speculative_linear, matmul)
+        }
+        | {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+        | backbone_hashes()
+    )
 
 
 def install(executor, bundle):
@@ -64,10 +70,7 @@ def install(executor, bundle):
 
         def bind(kernel, values):
             args = tuple(values[a["name"]] for a in kernel.manifest["arguments"])
-            values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-            return kernel, BoundCall(
-                d, kernel.manifest, values, symbols, launch, validated=True
-            )
+            return kernel, bind_call(d, kernel, args)
 
         for kernel, bound in executor.plan:
             if "fixed_routes" in manifest and kernel is executor.kernels.get(
@@ -128,7 +131,7 @@ def install(executor, bundle):
             )
         graph = CudaGraph(
             d,
-            lambda: [d._launch(k, v) for k, v in plan],
+            lambda: submit_calls(d, plan),
             resources=(*executor.graph.resources, *buffers.values(), *loaded.values()),
         )
     except BaseException:

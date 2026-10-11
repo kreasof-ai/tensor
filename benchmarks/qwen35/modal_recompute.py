@@ -20,7 +20,7 @@ def qualify():
     print(test.stdout,test.stderr,flush=True)
     return dict(exit_code=test.returncode,command=command,output=test.stdout+test.stderr,
         source_hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-            Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/recompute.py'),
+            Path('packages/tensor-llm/src/tensor_llm/kernels/recompute.py'),
             Path('packages/tensor-llm/tests/test_qwen_recompute.py'))})
 
 

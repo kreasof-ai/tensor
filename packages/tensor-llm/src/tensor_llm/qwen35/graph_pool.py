@@ -1,12 +1,15 @@
 """Choose a captured verification width while borrowing one resident model."""
 
+from tensor_llm.common.artifacts import backbone_hashes
 import hashlib
 from pathlib import Path
 import numpy as np
 
 
 def implementation_hashes():
-    return {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    return {
+        __name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    } | backbone_hashes()
 
 
 class VerifierPool:

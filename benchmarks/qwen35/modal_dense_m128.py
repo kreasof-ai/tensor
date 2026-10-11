@@ -16,7 +16,7 @@ def prepare(prepared):
     from benchmarks.qwen35.build import build_artifact
     os.chdir('/workspace'); volume.reload()
     hashes = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-        Path(__file__), Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_dense.py'))}
+        Path(__file__), Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_dense.py'))}
     identity = hashlib.sha256(json.dumps(dict(prepared=prepared, sources=hashes),
                                         sort_keys=True).encode()).hexdigest()[:16]
     root = Path('/cache/dense-m128')/identity; root.mkdir(parents=True, exist_ok=True)
@@ -35,8 +35,8 @@ def prepare(prepared):
                         columns=128, threads=256, packed_gather=True, stages=1,
                         mma_reduction=32, mma_reorder=True, async_mma=False)
         artifact = selected/row['path']; entry = artifact.with_suffix('.py')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_dense',
-                         'make_kernel', schedule, dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.hopper_dense',
+                         'make_kernel', schedule, dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact.unlink(); build_artifact(entry, artifact, target='sm_90a')
         row['sha256'] = hashlib.sha256(artifact.read_bytes()).hexdigest(); count += 1
         print('Prepared M128 prefill dense', schedule, flush=True)

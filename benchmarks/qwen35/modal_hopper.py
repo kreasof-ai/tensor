@@ -21,9 +21,9 @@ def prepare_hopper(prepared,expert_mma='control',hopper_attention=False,expert_c
         prepared=prepare_compact.local(prepare.local())
     sources=[Path('src/tensor/compiler/build.py'),Path('src/tensor/runtime/cuda_target.py'),
              Path('benchmarks/qwen35/hopper_producer.py'),
-             Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_experts.py'),
-             Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_dense.py'),
-             Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py'),
+             Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_experts.py'),
+             Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_dense.py'),
+             Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_prefill_attention.py'),
              Path('packages/tensor-llm/src/tensor_llm/qwen35/hopper.py')]
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     control=Path(prepared['prefill'])/'prefill.json'

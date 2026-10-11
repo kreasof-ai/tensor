@@ -10,13 +10,12 @@ from threading import get_ident
 
 import numpy as np
 
-from tensor.providers.cuda_graph import CudaGraph
+from ...common.plan import ExecutionPlan, capture, submit
 from tensor.runtime import Buffer
-from tensor.runtime.abi import BoundCall
 from tensor_llm.common.artifacts import identity, load_kernels
 from tensor_llm.common.state import allocate_hybrid_states
 from .checkpoint import DenseCheckpoint
-from tensor_llm.qwen35.kernels.dense_projections import schedule
+from tensor_llm.kernels.split_linear import schedule
 from .artifacts import implementation, validate_implementation
 
 
@@ -45,14 +44,14 @@ class ExecutionBatch:
         self.views = []
         self.graph = None
         self.commit_graph = None
-        self.commit_calls = []
+        self.commit_calls = ExecutionPlan(self.device)
         directory = Path(manifest).resolve().parent
         self.kernels = load_kernels(self.device, directory, value["kernels"])
         self._allocate()
         self.calls = self._plan()
-        self.graph = CudaGraph(
+        self.graph = capture(
             self.device,
-            self._submit,
+            self.calls,
             resources=(
                 *self.buffers.values(),
                 *self.kernels.values(),
@@ -62,8 +61,8 @@ class ExecutionBatch:
             ),
         )
         if self.verify:
-            self.commit_graph = CudaGraph(
-                self.device, self._submit_commit, resources=self.graph.resources
+            self.commit_graph = capture(
+                self.device, self.commit_calls, resources=self.graph.resources
             )
 
     def _allocate(self):
@@ -144,24 +143,11 @@ class ExecutionBatch:
         r = self.rows
         s = self.slots
         common = dict(slots=s, chunk=self.chunk, pool=self.owner.capacity)
-        calls = []
+        calls = ExecutionPlan(self.device)
 
         def add(kind, p, *args, to_commit=False):
             kernel = self.kernels[identity(kind, p)]
-            values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-            (self.commit_calls if to_commit else calls).append(
-                (
-                    kernel,
-                    BoundCall(
-                        self.device,
-                        kernel.manifest,
-                        values,
-                        symbols,
-                        launch,
-                        validated=True,
-                    ),
-                )
-            )
+            (self.commit_calls if to_commit else calls).bind(kernel, args)
 
         def linear(name, x, out, rows=r):
             weight = w[name + ".weight"]
@@ -431,12 +417,10 @@ class ExecutionBatch:
         return calls
 
     def _submit(self):
-        for kernel, call in self.calls:
-            self.device._launch(kernel, call)
+        submit(self.device, self.calls)
 
     def _submit_commit(self):
-        for kernel, call in self.commit_calls:
-            self.device._launch(kernel, call)
+        submit(self.device, self.commit_calls)
 
     def write(self, name, value):
         value = np.ascontiguousarray(value, dtype="int32")

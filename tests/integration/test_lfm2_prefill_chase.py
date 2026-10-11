@@ -113,7 +113,7 @@ def test_forward_chunk_controls_and_last_readback(rows,count,expected,read):
 @pytest.mark.parametrize('layout,fma',[('km',True),('mk',False)])
 def test_mixed_activation_outer_product_fusion_and_tails(tmp_path,kind,layout,fma):
     import tensor
-    from tensor_llm.lfm2.kernels.webgpu import source
+    from tensor_llm.kernels.webgpu import source
     from benchmarks.lfm2.prefill_chase_search import reference
     r,k,o=35,129,33
     p=dict(r=r,k=k,o=o,type=1,schedule='outer',outer=dict(
@@ -143,7 +143,7 @@ def test_mixed_activation_outer_product_fusion_and_tails(tmp_path,kind,layout,fm
 @pytest.mark.parametrize('group_order',['column','row'])
 def test_short_half_fma_chains_against_explicit_rounding(tmp_path,kind,unroll,magnitude,group_order):
     import tensor
-    from tensor_llm.lfm2.kernels.webgpu import source
+    from tensor_llm.kernels.webgpu import source
     r,k,o=35,37,34;rng=np.random.default_rng(1683)
     weights=[(rng.normal(size=(o,k))*.02).astype(np.float16) for _ in range(2 if kind=='ffn' else 1)]
     x=(rng.normal(size=(r,k))*magnitude).astype(np.float32);aa=x.astype(np.float16).astype(np.float64)
@@ -175,7 +175,7 @@ def test_short_half_fma_chains_against_explicit_rounding(tmp_path,kind,unroll,ma
 @pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires native WebGPU')
 def test_parallel_prefill_rms_matches_independent_reduction(tmp_path):
     import tensor
-    from tensor_llm.lfm2.kernels.webgpu import source
+    from tensor_llm.kernels.webgpu import source
     r,c=35,2048;rng=np.random.default_rng(1725);w=rng.normal(size=c).astype(np.float32)
     path=tmp_path/'rms.py';path.write_text(source('rms',dict(r=r,c=c,eps=1e-5,sg=True,parallel_rows=True)))
     artifact=path.with_suffix('.tbin');tensor.build(path,artifact,provider='webgpu')
@@ -199,7 +199,7 @@ def test_parallel_prefill_rms_matches_independent_reduction(tmp_path):
 def test_packed_outer_product_rounding_fusion_and_output_tail(tmp_path,encoding,kind,shared_dtype,dot_width,packed_pairs):
     import tensor
     from tensor_llm.common.gguf import TYPES,dequantize
-    from tensor_llm.lfm2.kernels.webgpu import source
+    from tensor_llm.kernels.webgpu import source
     from benchmarks.lfm2.prefill_chase_search import reference
     r,k,o=35,288 if encoding==2 else 256,34;_,block,size=TYPES[encoding];rng=np.random.default_rng(914)
     raw=[];weights=[]

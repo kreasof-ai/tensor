@@ -6,7 +6,8 @@ import json
 import numpy as np
 
 from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from tensor_llm.common.artifacts import identity
 from tensor_llm.common.artifacts import load_kernels
 from tensor_llm.qwen35.dense.artifacts import validate_implementation
@@ -55,18 +56,10 @@ class SpeculativeRound:
     def _add(self, kind, arguments, **extra):
         parameters = dict(slots=self.slots, window=self.window, **extra)
         kernel = self.kernels[identity(kind, parameters)]
-        values, symbols, launch = kernel._bind(arguments, {}, include_outputs=True)
         self.calls.append(
             (
                 kernel,
-                BoundCall(
-                    self.device,
-                    kernel.manifest,
-                    values,
-                    symbols,
-                    launch,
-                    validated=True,
-                ),
+                bind_call(self.device, kernel, arguments),
             )
         )
 
@@ -168,8 +161,7 @@ class SpeculativeRound:
         self._add("spec_result", (r["predicted"], self.result))
 
     def _submit(self):
-        for kernel, call in self.calls:
-            self.device._launch(kernel, call)
+        submit_calls(self.device, self.calls)
 
     def run(self, requests):
         target = self.engine.target

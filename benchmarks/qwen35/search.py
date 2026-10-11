@@ -70,8 +70,8 @@ def search(model,out,*,candidates=12,width=4):
                 cp={**p,**{k:v for k,v in config.items() if k!='family'}}
                 tag=hashlib.sha256(json.dumps([key,cp],sort_keys=True).encode()).hexdigest()[:24]
                 entry=out/(tag+'.py');artifact=entry.with_suffix('.tbin')
-                text=export_source('tensor_llm.qwen35.kernels.matmul','make_kernel',kind+'_mma_prequantized',cp,
-                    dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering'))
+                text=export_source('tensor_llm.kernels.matmul','make_kernel',kind+'_mma_prequantized',cp,
+                    dependencies=('tensor.compiler.entry', 'tensor.compiler.cuda_lowering', "tensor_llm.kernels.elementwise"))
                 if not artifact.is_file() or not entry.is_file() or entry.read_text()!=text:
                     artifact.unlink(missing_ok=True);entry.write_text(text)
                     build_artifact(entry,artifact,target=d.info['arch'],compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
@@ -89,7 +89,7 @@ def search(model,out,*,candidates=12,width=4):
                     mp=dict(r=p['r'],o=p['o'],partitions=config['partitions'])
                     if kind=='fp8_experts':mp['top']=p['top']
                     me=out/(tag+'-merge.py');ma=me.with_suffix('.tbin')
-                    mt=export_source('tensor_llm.qwen35.kernels.matmul','merge_kernel',mp,dependencies=('tensor.compiler.entry',))
+                    mt=export_source('tensor_llm.kernels.matmul','merge_kernel',mp,dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise"))
                     if not ma.is_file() or not me.is_file() or me.read_text()!=mt:
                         ma.unlink(missing_ok=True);me.write_text(mt);build_artifact(me,ma,target=d.info['arch'],compiler='nvrtc',nvrtc_home='build/nvrtc-12.9')
                     merge=d.load(ma);kernels.append(merge)

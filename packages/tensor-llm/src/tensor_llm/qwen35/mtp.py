@@ -5,6 +5,7 @@ Callers must initialize its shifted-token/target-hidden cache over the prefix.
 Target verification and recurrent rollback remain separate required work.
 """
 
+from tensor_llm.common.artifacts import backbone_hashes
 from dataclasses import asdict
 from dataclasses import replace as config_replace
 import hashlib
@@ -15,7 +16,7 @@ from threading import get_ident
 import numpy as np
 
 from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
 from tensor_llm.qwen35.checkpoint import Qwen35Checkpoint
 from tensor_llm.qwen35.decode import Qwen35Batch
 from tensor_llm.qwen35.decode import implementation_hashes
@@ -24,12 +25,12 @@ from tensor_llm.common.artifacts import load_kernels
 
 
 def mtp_implementation_hashes():
-    from tensor_llm.qwen35.kernels import mtp
+    from tensor_llm.kernels import mtp
 
     result = implementation_hashes()
     for name, path in ((__name__, __file__), (mtp.__name__, mtp.__file__)):
         result[name] = hashlib.sha256(Path(path).read_bytes()).hexdigest()
-    return result
+    return result | backbone_hashes()
 
 
 class Qwen35MTP(Qwen35Batch):
@@ -97,18 +98,10 @@ class Qwen35MTP(Qwen35Batch):
 
             def bind(kind, p, *args):
                 kernel = self.kernels[identity(kind, p)]
-                values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
                 prefix.append(
                     (
                         kernel,
-                        BoundCall(
-                            self.device,
-                            kernel.manifest,
-                            values,
-                            symbols,
-                            launch,
-                            validated=True,
-                        ),
+                        bind_call(self.device, kernel, args),
                         None,
                     )
                 )

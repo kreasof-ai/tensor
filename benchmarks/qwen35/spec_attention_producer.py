@@ -25,14 +25,14 @@ def produce(prefill,out,*,splits=16,key_rows=64,query_tokens=None,kernel_target=
     for kind,factory in (('split_attention','partial'),('split_merge','merge')):
         key=identity(kind,p);entry=out/(key+'.py');artifact=entry.with_suffix('.tbin')
         schedule=dict(p,packed_loads=True,key_rows=key_rows)
-        module='tensor_llm.qwen35.kernels.speculative_attention'
+        module='tensor_llm.kernels.speculative_attention'
         target=manifest.get('target','sm_89')
         if kind=='split_attention' and query_tokens is not None:
-            module='tensor_llm.qwen35.kernels.hopper_attention'
+            module='tensor_llm.kernels.hopper_attention'
             schedule['query_tokens']=query_tokens
             schedule['pad_queries']=pad_queries
             target=kernel_target or target
-        source=export_source(module,factory,schedule,dependencies=('tensor.compiler.entry',))
+        source=export_source(module,factory,schedule,dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise"))
         if needs_build(entry, artifact, source, target):
             entry.write_text(source);artifact.unlink(missing_ok=True)
             build_artifact(entry,artifact,target=target)

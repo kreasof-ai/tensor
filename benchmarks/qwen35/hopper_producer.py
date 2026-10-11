@@ -45,22 +45,22 @@ def produce(source,out,*,expert_mma='control',hopper_attention=False,expert_colu
                 compact=True,packed_gather=True,
                 stages=2 if expert_mma=='bf16-pipeline' else 1,bf16_mma=expert_mma.startswith('bf16'),mma_reduction=32 if expert_mma in ('bf16-32','bf16-pairs','bf16-async','bf16-pipeline') else 128,
                 mma_reorder=expert_mma in ('bf16-pairs','bf16-async','bf16-pipeline'),async_mma=expert_mma in ('bf16-async','bf16-pipeline'))
-            new_entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_experts',
-                'expert_kernel',schedule,dependencies=('tensor.compiler.entry',)))
+            new_entry.write_text(export_source('tensor_llm.kernels.hopper_experts',
+                'expert_kernel',schedule,dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         elif expert_mma in ('bf16','bf16-32','bf16-pairs','bf16-async','bf16-pipeline') and record['kind']=='fp8_linear':
             from tensor.compiler.entry import export_source
-            new_entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_dense','make_kernel',
+            new_entry.write_text(export_source('tensor_llm.kernels.hopper_dense','make_kernel',
                 dict(record['parameters'],block_m=64,columns=128,threads=256,
                      packed_gather=True,
                      stages=2 if expert_mma=='bf16-pipeline' else 1,
                      mma_reduction=32 if expert_mma in ('bf16-32','bf16-pairs','bf16-async','bf16-pipeline') else 128,
                 mma_reorder=expert_mma in ('bf16-pairs','bf16-async','bf16-pipeline'),async_mma=expert_mma in ('bf16-async','bf16-pipeline')),
-                dependencies=('tensor.compiler.entry',)))
+                dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         elif hopper_attention and record['kind']=='attention':
             from tensor.compiler.entry import export_source
-            new_entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_prefill_attention',
+            new_entry.write_text(export_source('tensor_llm.kernels.hopper_prefill_attention',
                 'attention',dict(record['parameters'],packed_loads=True),
-                dependencies=('tensor.compiler.entry',)))
+                dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         else:new_entry.write_bytes(entry.read_bytes())
         destination=new_entry.with_suffix('.tbin');destination.unlink(missing_ok=True)
         build_artifact(new_entry,destination,target=manifest['target'])

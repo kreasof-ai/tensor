@@ -30,10 +30,10 @@ def produce(checkpoint, prefill, out):
     for kind, p in (('mtp_join', dict(r=r, c=2048, eps=checkpoint.config.epsilon)),
                     ('mtp_cast', dict(r=r, c=2048)), ('bf16_linear', dict(r=r, k=4096, o=2048))):
         key = identity(kind, p); entry = out/(key+'.py'); artifact = entry.with_suffix('.tbin')
-        module, factory, args = ('tensor_llm.qwen35.kernels.mtp', 'make_kernel', (kind, p))
+        module, factory, args = ('tensor_llm.kernels.mtp', 'make_kernel', (kind, p))
         if kind == 'bf16_linear':
-            module, factory, args = ('tensor_llm.qwen35.kernels.matmul', 'bf16_head_kernel', (dict(p, columns=128, depth=128),))
-        entry.write_text(export_source(module, factory, *args, dependencies=('tensor.compiler.entry',)))
+            module, factory, args = ('tensor_llm.kernels.matmul', 'bf16_head_kernel', (dict(p, columns=128, depth=128),))
+        entry.write_text(export_source(module, factory, *args, dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact.unlink(missing_ok=True)
         build_artifact(entry, artifact, target=manifest.get('target','sm_89'))
         manifest['kernels'][key] = dict(kind=kind, parameters=p, path=artifact.name,

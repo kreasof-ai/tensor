@@ -10,7 +10,7 @@ GPU=pytest.mark.skipif(os.environ.get('TENSOR_QWEN_CUDA')!='1',
 
 def build(tmp_path,kind,p):
     from tensor.compiler.build import build_artifact
-    from tensor_llm.qwen35.kernels.decode import source
+    from tensor_llm.kernels.hybrid import source
     entry=tmp_path/(kind+'.py');entry.write_text(source(kind,p))
     artifact=tmp_path/(kind+'.tbin')
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',
@@ -22,7 +22,7 @@ def build_mma(tmp_path,factory,*args):
     from tensor.compiler.build import build_artifact
     from tensor.compiler.entry import export_source
     entry=tmp_path/(factory+str(len(list(tmp_path.glob('*.py'))))+'.py')
-    entry.write_text(export_source('tensor_llm.qwen35.kernels.matmul',factory,*args,
+    entry.write_text(export_source('tensor_llm.kernels.matmul',factory,*args,
         dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering')))
     artifact=entry.with_suffix('.tbin')
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))

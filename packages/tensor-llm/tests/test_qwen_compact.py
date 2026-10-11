@@ -12,7 +12,7 @@ def test_compact_tiles_cover_every_route_once(tmp_path):
     rows, m = 4096, 64
     source = tmp_path/'tiles.py'
     artifact = source.with_suffix('.tbin')
-    source.write_text(export_source('tensor_llm.qwen35.kernels.compact_experts', 'tile_map_kernel',
+    source.write_text(export_source('tensor_llm.kernels.compact_experts', 'tile_map_kernel',
                                     dict(rows=rows, block_m=m), dependencies=('tensor.compiler.entry',)))
     build_artifact(source, artifact, target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),
                    compiler='nvrtc', nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
@@ -64,7 +64,7 @@ def test_compact_experts_match_original_with_shuffled_routes(tmp_path, routed):
         ('control','prefill','expert_kernel',dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256)),
         ('compact','prefill','expert_kernel',dict(rows=rows,k=k,o=o,routed_input=routed,block_m=64,threads=256,compact=True))]:
         source = tmp_path/(name+'.py'); artifact = source.with_suffix('.tbin')
-        source.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,p,
+        source.write_text(export_source('tensor_llm.kernels.'+module,factory,p,
                                         dependencies=('tensor.compiler.entry',)))
         build_artifact(source,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),
                        compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))

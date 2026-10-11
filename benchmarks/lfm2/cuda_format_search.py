@@ -14,8 +14,10 @@ from tensor.compiler.search import ScheduleSearch,ScheduleProfile
 from tensor.compiler.cuda_schedules import projection_space,projection_legal
 from tensor.artifacts.format import read_artifact
 from tensor_llm import GGUF
-from tensor_llm.lfm2.kernels.cuda import gemv_source, fused_source, prefill_source
-from tensor_llm.lfm2.kernels.baseline import source as baseline_source
+from tensor_llm.kernels.cuda import gemv_source
+from tensor_llm.kernels.cuda import fused_source
+from tensor_llm.kernels.cuda import prefill_source
+from tensor_llm.kernels.ggml import source as baseline_source
 
 
 def current_source(kind,p):
@@ -42,7 +44,7 @@ def search(models, out, phase='prefill', rows=(128,), family='tiles', formats=('
     torch.backends.cuda.matmul.allow_tf32=False
     models=Path(models);out=Path(out);out.mkdir(parents=True,exist_ok=True)
     repo=Path(__file__).resolve().parents[2]
-    sources={name:dict(sha256=hashlib.sha256((repo/name).read_bytes()).hexdigest(),text=(repo/name).read_text()) for name in ('benchmarks/lfm2/cuda_format_search.py', 'src/tensor/compiler/search.py', 'src/tensor/compiler/cuda_schedules.py', 'src/tensor/compiler/cuda_lowering.py', 'packages/tensor-llm/src/tensor_llm/lfm2/kernels/cuda.py')}
+    sources={name:dict(sha256=hashlib.sha256((repo/name).read_bytes()).hexdigest(),text=(repo/name).read_text()) for name in ('benchmarks/lfm2/cuda_format_search.py', 'src/tensor/compiler/search.py', 'src/tensor/compiler/cuda_schedules.py', 'src/tensor/compiler/cuda_lowering.py', 'packages/tensor-llm/src/tensor_llm/kernels/cuda.py')}
     cases=[];seen=set();model_hashes={};profile_entries=[]
     profile=ScheduleProfile(json.loads(Path(__file__).with_name('profiles').joinpath('cuda-sm86-lfm2.5-2.6b.json').read_text()))
     for fmt in formats:

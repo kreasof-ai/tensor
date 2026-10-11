@@ -22,14 +22,17 @@ def implementation_hashes(provider="cuda"):
     names = (
         "tensor_llm.lfm2.model",
         "tensor_llm.lfm2.config",
-        "tensor_llm.lfm2.kernels.baseline",
+        "tensor_llm.kernels.ggml",
         "tensor_llm.common.gguf",
         "tensor_llm.common.tokenizer",
         "tensor_llm.common.artifacts",
+        "tensor_llm.common.plan",
+        "tensor_llm.common.state",
+        "tensor_llm.kernels.elementwise",
         __name__,
     )
     if provider == "cuda":
-        names += ("tensor_llm.lfm2.kernels.cuda",)
+        names += ("tensor_llm.kernels.cuda",)
     if provider == "webgpu":
         import tensor.providers.webgpu
         import tensor.providers.webgpu_contract
@@ -41,7 +44,7 @@ def implementation_hashes(provider="cuda"):
             tensor.providers.webgpu_contract,
             tensor.artifacts.format,
         )
-        names += ("tensor_llm.lfm2.kernels.webgpu",)
+        names += ("tensor_llm.kernels.webgpu",)
     result = {
         module.__name__: hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
         for module in modules

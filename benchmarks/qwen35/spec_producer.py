@@ -25,7 +25,7 @@ def produce(prefill, out):
         shutil.copyfile(source, out/row['path'])
     def add(kind, p, module, factory, *args):
         key = identity(kind, p); entry = out/(key+'.py'); artifact = entry.with_suffix('.tbin')
-        source = export_source(module, factory, *args, dependencies=('tensor.compiler.entry',))
+        source = export_source(module, factory, *args, dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise"))
         if needs_build(entry, artifact, source, manifest.get('target','sm_89')):
             entry.write_text(source); artifact.unlink(missing_ok=True)
             build_artifact(entry, artifact, target=manifest.get('target','sm_89'))
@@ -34,19 +34,19 @@ def produce(prefill, out):
         print('verification', kind, p, flush=True)
     for kind in ('gdn_scan','gdn_conv'):
         p = dict(slots=slots, chunk=chunk)
-        add('spec_'+kind, p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', kind, p)
+        add('spec_'+kind, p, 'tensor_llm.kernels.speculative', 'make_kernel', kind, p)
     for shape in ((32,128,128),(8192,3)):
         p = dict(slots=slots, chunk=chunk, shape=list(shape))
         # Flat views compare bit counts through an int32 literal. A short
         # window also exceeds it when sufficiently many states are resident.
         if chunk>8 or slots*(chunk-1)*math.prod(shape)*32>=2**31:
-            add('restore',p,'tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',p)
-        else:add('restore', p, 'tensor_llm.qwen35.kernels.speculative', 'make_kernel', 'restore', p)
+            add('restore',p,'tensor_llm.kernels.hopper_restore','restore_kernel',p)
+        else:add('restore', p, 'tensor_llm.kernels.speculative', 'make_kernel', 'restore', p)
     p = dict(r=slots*chunk, k=2048, o=248320)
-    add('verify_head', p, 'tensor_llm.qwen35.kernels.speculative', 'head_kernel',
+    add('verify_head', p, 'tensor_llm.kernels.speculative', 'head_kernel',
         dict(p, block_m=16 if slots*chunk<=16 else (64 if slots*chunk>=64 else 32), columns=128, depth=128, threads=128))
     p = dict(r=slots*chunk, vocab=248320)
-    add('argmax', p, 'tensor_llm.qwen35.kernels.decode', 'make_kernel', 'argmax', p)
+    add('argmax', p, 'tensor_llm.kernels.hybrid', 'make_kernel', 'argmax', p)
     manifest.update(verification='greedy-prefix-snapshots', implementation=implementation_hashes(),
                     speculative_verification=True, model_throughput_qualified=False,
                     prefill_lineage=dict(path=str(prefill),

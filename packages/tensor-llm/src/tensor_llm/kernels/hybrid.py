@@ -1,9 +1,9 @@
-"""Inspectable CUDA primitives for Qwen's native FP8 and gated delta state.
+"""CUDA primitives for block-scaled FP8, grouped experts, and gated delta state.
 
-Factories are producer-only. Consumers load the resulting Tensor artifacts.
-These primitives are experimental until a full model oracle and serving run
-qualify them together; kernel timings are never model throughput claims.
+Factories are producer-only; consumers execute Tensor artifacts.
 """
+
+from .elementwise import rms_kernel, swiglu_kernel
 
 
 def source(kind, parameters):
@@ -15,9 +15,10 @@ def source(kind, parameters):
         kind,
         parameters,
         dependencies=(
+            "tensor_llm.kernels.elementwise",
             "tensor.compiler.entry",
             "tensor.compiler.cuda_lowering",
-            "tensor_llm.qwen35.kernels.fp8_kv",
+            "tensor_llm.kernels.fp8_kv",
         ),
     )
 
@@ -26,7 +27,7 @@ def make_kernel(kind, p):
     import tilelang.language as T
 
     if p.get("kv_dtype") == "fp8":
-        from .fp8_kv import make_kernel as fp8_kv
+        from tensor_llm.kernels.fp8_kv import make_kernel as fp8_kv
 
         return fp8_kv(kind, p)
 
@@ -206,46 +207,19 @@ def make_kernel(kind, p):
         return kernel
 
     if kind in ("rms", "add_rms"):
-        r, c, eps = p["r"], p["c"], p["eps"]
-        from tensor.compiler.entry import primitive
-
-        arguments = ([("x", (r, c), "float32")] if kind == "add_rms" else []) + [
-            ("residual", (r, c), "bfloat16"),
-            ("w", (c,), "bfloat16"),
-            ("out", (r, c), "bfloat16"),
-        ]
-
-        @T.macro
-        def algorithm(x, residual, w, out):
-            with T.Kernel(r, threads=256) as b:
-                values = T.alloc_fragment((c,), "float32")
-                squares = T.alloc_fragment((c,), "float32")
-                total = T.alloc_fragment((1,), "float32")
-                for j in T.Parallel(c):
-                    if kind == "add_rms":
-                        values[j] = T.cast(
-                            T.cast(T.cast(x[b, j], "bfloat16"), "float32")
-                            + T.cast(residual[b, j], "float32"),
-                            "bfloat16",
-                        )
-                    else:
-                        values[j] = T.cast(residual[b, j], "float32")
-                    squares[j] = values[j] * values[j]
-                T.reduce_sum(squares, total, dim=0)
-                for j in T.Parallel(c):
-                    if kind == "add_rms":
-                        residual[b, j] = values[j]
-                    out[b, j] = (
-                        values[j]
-                        * T.rsqrt(total[0] / c + eps)
-                        * (1 + T.cast(w[j], "float32"))
-                    )
-
-        @T.macro
-        def normalize(residual, w, out):
-            algorithm(residual, residual, w, out)
-
-        return primitive(arguments, algorithm if kind == "add_rms" else normalize)
+        return rms_kernel(
+            dict(
+                p,
+                fused=kind == "add_rms",
+                zero_centered=True,
+                round_inputs=True,
+                input_name="x" if kind == "add_rms" else "residual",
+                input_dtype="float32" if kind == "add_rms" else "bfloat16",
+                residual_dtype="bfloat16",
+                output_dtype="bfloat16",
+                weight_dtype="bfloat16",
+            )
+        )
 
     if kind == "router":
         r, e, top = p["r"], p["experts"], p["top"]
@@ -285,23 +259,7 @@ def make_kernel(kind, p):
         return kernel
 
     if kind == "swiglu":
-        r, c = p["r"], p["c"]
-
-        @T.prim_func
-        def kernel(
-            g: T.Tensor((r, c), "float32"),
-            u: T.Tensor((r, c), "float32"),
-            out: T.Tensor((r, c), "bfloat16"),
-        ):
-            with T.Kernel(r, T.ceildiv(c, 256), threads=256) as (b, tile):
-                for j in T.Parallel(256):
-                    col = tile * 256 + j
-                    if col < c:
-                        gate = T.cast(T.cast(g[b, col], "bfloat16"), "float32")
-                        up = T.cast(T.cast(u[b, col], "bfloat16"), "float32")
-                        out[b, col] = gate / (1 + T.exp(-gate)) * up
-
-        return kernel
+        return swiglu_kernel(dict(p, output_dtype="bfloat16", round_inputs=True))
 
     if kind == "swiglu_experts":
         r, top, c = p["r"], p["top"], p["c"]

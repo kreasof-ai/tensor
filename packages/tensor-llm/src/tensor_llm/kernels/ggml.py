@@ -1,12 +1,13 @@
-"""TileLang DSL for packed GGML weights and LFM2 forward execution.
+"""Packed GGML weights and baseline inference operators.
 
-Factories import TileLang only when producing a kernel. Runtime identity and
-storage metadata remain usable without the compiler dependencies.
+Factories are producer-only; consumers execute Tensor artifacts.
 """
 
+from .elementwise import rms_kernel, swiglu_kernel
+
 import math
-from ...common.artifacts import identity
-from ...common.gguf import TYPES
+from tensor_llm.common.artifacts import identity
+from tensor_llm.common.gguf import TYPES
 
 
 def weight_storage(kind, elements, *, packed_words=False):
@@ -117,7 +118,8 @@ def source(kind, parameters):
         kind,
         parameters,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
         ),
@@ -186,26 +188,10 @@ def make_kernel(kind, p):
 
         return kernel
     if kind == "rms":
-
-        @T.prim_func
-        def kernel(
-            x: T.Tensor((r * c,), "float32"),
-            w: T.Tensor((c,), "float32"),
-            out: T.Tensor((r * c,), "float32"),
-        ):
-            with T.Kernel(r, threads=256) as row:
-                square = T.alloc_fragment((c,), "float32")
-                total = T.alloc_fragment((1,), "float32")
-                for i in T.Parallel(c):
-                    square[i] = x[row * c + i] * x[row * c + i]
-                T.reduce_sum(square, total, dim=0)
-                for i in T.Parallel(c):
-                    out[row * c + i] = (
-                        x[row * c + i] * T.rsqrt(total[0] / c + p["eps"]) * w[i]
-                    )
-
-        return kernel
-    if kind in ("add", "swiglu"):
+        return rms_kernel(dict(p, flat=True))
+    if kind == "swiglu":
+        return swiglu_kernel(dict(p, flat=True, input_names=("x", "y")))
+    if kind == "add":
         n = r * c
 
         @T.prim_func
@@ -218,11 +204,7 @@ def make_kernel(kind, p):
                 for lane in T.Parallel(256):
                     i = block * 256 + lane
                     if i < n:
-                        out[i] = (
-                            x[i] + y[i]
-                            if kind == "add"
-                            else x[i] / (1 + T.exp(-x[i])) * y[i]
-                        )
+                        out[i] = x[i] + y[i]
 
         return kernel
     if kind == "embedding":

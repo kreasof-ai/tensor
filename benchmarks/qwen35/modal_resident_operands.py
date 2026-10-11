@@ -16,15 +16,15 @@ def measure():
     from benchmarks.qwen35.build import build_artifact
     from benchmarks.qwen35.kernel_timing import time_calls
     os.chdir('/workspace');volume.reload();torch.set_num_threads(4)
-    sources=[Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/'+name+'.py')
+    sources=[Path('packages/tensor-llm/src/tensor_llm/kernels/'+name+'.py')
              for name in ('hopper_experts','resident_operands')]+[Path(__file__)]
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     identity=hashlib.sha256(json.dumps(hashes,sort_keys=True).encode()).hexdigest()[:16]
     root=Path('/cache/resident-operands')/identity;root.mkdir(parents=True,exist_ok=True)
     def compile(name,module,factory,p):
         entry=root/(name+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,p,
-                                      dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.'+module,factory,p,
+                                      dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact.unlink(missing_ok=True);build_artifact(entry,artifact,target='sm_90a')
         return artifact
     rng=np.random.default_rng(19163);result=dict(source_hashes=hashes,cases=[],

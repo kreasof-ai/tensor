@@ -75,7 +75,7 @@ def cases(*, extended=False):
                     family=family,
                     kind="split_linear",
                     parameters=p,
-                    module="tensor_llm.qwen35.kernels.dense_projections",
+                    module="tensor_llm.kernels.split_linear",
                     factory="make_kernel",
                 )
         for tile in (() if extended else (8, 16, 32, 64)):
@@ -85,7 +85,7 @@ def cases(*, extended=False):
                 parameters=dict(
                     slots=rows, chunk=1, pool=256, heads=16, d=128, tile=tile
                 ),
-                module="tensor_llm.qwen35.kernels.dense",
+                module="tensor_llm.kernels.hybrid_batch",
                 factory="make_kernel",
             )
 
@@ -121,7 +121,7 @@ def prepare(directory, *, extended=False):
             row["module"],
             row["factory"],
             *args,
-            dependencies=("tensor.compiler.entry", "tensor.compiler.cuda_lowering"),
+            dependencies=('tensor.compiler.entry', 'tensor.compiler.cuda_lowering', "tensor_llm.kernels.elementwise"),
         )
         entry = directory / (key + ".py")
         artifact = directory / row["path"]

@@ -4,7 +4,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
 from tensor_llm.common.artifacts import artifact_path
 from tensor.runtime.signature import resolve_shape
 
@@ -53,18 +53,10 @@ def replace(model, bundle):
         arguments = tuple(
             bindings[item["name"]] for item in kernel.manifest["arguments"]
         )
-        values, symbols, launch = kernel._bind(arguments, {}, include_outputs=True)
         new_plan.append(
             (
                 kernel,
-                BoundCall(
-                    model.device,
-                    kernel.manifest,
-                    values,
-                    symbols,
-                    launch,
-                    validated=True,
-                ),
+                bind_call(model.device, kernel, arguments),
                 label,
             )
         )

@@ -21,7 +21,7 @@ def prepare_micro():
     from tensor.compiler.entry import export_source
     from benchmarks.qwen35.build import build_artifact
     os.chdir('/workspace');volume.reload()
-    paths=[Path(__file__),Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py')]
+    paths=[Path(__file__),Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_prefill_attention.py')]
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     key=hashlib.sha256(json.dumps(hashes,sort_keys=True).encode()).hexdigest()[:16]
     root=Path('/cache/bandwidth')/key;root.mkdir(parents=True,exist_ok=True)
@@ -30,8 +30,8 @@ def prepare_micro():
         schedule=dict(slots=8,chunk=512,capacity=48000,packed_loads=True,
                       query_rows=q,threads=t,joint_kv=joint)
         entry=root/f'attention-q{q}-t{t}-j{int(joint)}.py'
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_prefill_attention',
-                         'attention',schedule,dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.hopper_prefill_attention',
+                         'attention',schedule,dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact=entry.with_suffix('.tbin')
         row=dict(schedule=schedule,path=str(artifact))
         try:
@@ -152,8 +152,8 @@ def prepare_decoded_micro(prepared):
     from benchmarks.qwen35.build import build_artifact
     os.chdir('/workspace');volume.reload()
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-        Path(__file__),Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py'),
-        Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py'))}
+        Path(__file__),Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_prefill_attention.py'),
+        Path('packages/tensor-llm/src/tensor_llm/kernels/attention_workspace.py'))}
     key=hashlib.sha256(json.dumps(hashes,sort_keys=True).encode()).hexdigest()[:16]
     root=Path('/cache/bandwidth-decoded')/key;root.mkdir(parents=True,exist_ok=True)
     result=dict(prepared,root=str(root),decoded_source_hashes=hashes,candidates=list(prepared['candidates']))
@@ -168,8 +168,8 @@ def prepare_decoded_micro(prepared):
         ('attention-q64-256','hopper_prefill_attention','attention',dict(slots=8,chunk=512,capacity=48000,
                 packed_loads=True,query_rows=64,threads=256,decoded_kv=True,joint_kv=False))):
         entry=root/(name+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,schedule,
-                         dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.'+module,factory,schedule,
+                         dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         build_artifact(entry,artifact,target='sm_90a')
         if name=='decode':result['decode']=str(artifact)
         else:result['candidates'].append(dict(schedule=schedule,path=str(artifact),compiled=True))
@@ -202,7 +202,7 @@ def prepare_selected(prepared,query_rows=128,threads=256,joint=True):
     original=json.loads((control/'prefill.json').read_text())
     schedule=dict(query_rows=query_rows,threads=threads,joint_kv=joint,packed_loads=True)
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
-        Path(__file__),Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py'))}
+        Path(__file__),Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_prefill_attention.py'))}
     key=hashlib.sha256(json.dumps(dict(source_sha256=hashlib.sha256((source/'hopper.json').read_bytes()).hexdigest(),
                 schedule=schedule,hashes=hashes),sort_keys=True).encode()).hexdigest()[:16]
     root=Path('/cache/bandwidth-selected')/key;root.mkdir(parents=True,exist_ok=True)
@@ -221,8 +221,8 @@ def prepare_selected(prepared,query_rows=128,threads=256,joint=True):
         if row['original_cubin_sha256']!=descriptor['files']['kernel.cubin']:
             raise ValueError('attention control cubin mismatch')
         entry=destination.with_suffix('.py')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_prefill_attention',
-                'attention',dict(old['parameters'],**schedule),dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.hopper_prefill_attention',
+                'attention',dict(old['parameters'],**schedule),dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         destination.unlink(missing_ok=True);build_artifact(entry,destination,target='sm_90a')
         row['sha256']=hashlib.sha256(destination.read_bytes()).hexdigest();count+=1
     if not count:raise ValueError('prefill attention absent')
@@ -276,8 +276,8 @@ def prepare_workspace(prepared,query_rows=128,threads=256,value_splits=1):
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (
         Path(__file__),Path('benchmarks/qwen35/attention_workspace_producer.py'),
         Path('packages/tensor-llm/src/tensor_llm/qwen35/attention_workspace.py'),
-        Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/attention_workspace.py'),
-        Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_prefill_attention.py'))}
+        Path('packages/tensor-llm/src/tensor_llm/kernels/attention_workspace.py'),
+        Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_prefill_attention.py'))}
     key=hashlib.sha256(json.dumps(dict(prepared=prepared,hashes=hashes,
                     query_rows=query_rows,threads=threads,value_splits=value_splits),sort_keys=True).encode()).hexdigest()[:16]
     root=produce(prepared,Path('/cache/attention-workspace')/key,query_rows,threads,value_splits)

@@ -8,7 +8,7 @@ from pathlib import Path
 from tensor.compiler.entry import export_source
 from tensor_llm.common.artifacts import identity
 from tensor_llm.qwen35.dense.checkpoint import DenseCheckpoint
-from tensor_llm.qwen35.kernels.dense_projections import schedule
+from tensor_llm.kernels.split_linear import schedule
 from .build import build_artifact, needs_build
 
 
@@ -117,11 +117,15 @@ def produce_control(out, *, slots, window, width=1024, target="sm_89"):
         parameters = dict(slots=slots, window=window, **extra)
         key = identity(kind, parameters)
         text = export_source(
-            "tensor_llm.qwen35.kernels.dense_speculation",
+            "tensor_llm.kernels.speculation",
             "make_kernel",
             kind,
             parameters,
-            dependencies=("tensor.compiler.entry", "tensor.compiler.cuda_lowering"),
+            dependencies=(
+                "tensor.compiler.entry",
+                "tensor.compiler.cuda_lowering",
+                "tensor_llm.kernels.elementwise",
+            ),
         )
         entry, artifact = out / (key + ".py"), out / (key + ".tbin")
         if needs_build(entry, artifact, text, target):
@@ -167,11 +171,15 @@ def produce_recurrent(out, *, slots, window, pool=256, target="sm_89"):
         parameters = dict(common, **extra)
         key = identity(kind, parameters)
         text = export_source(
-            "tensor_llm.qwen35.kernels.dense_recurrent",
+            "tensor_llm.kernels.recurrent",
             "make_kernel",
             kind,
             parameters,
-            dependencies=("tensor.compiler.entry", "tensor.compiler.cuda_lowering"),
+            dependencies=(
+                "tensor.compiler.entry",
+                "tensor.compiler.cuda_lowering",
+                "tensor_llm.kernels.elementwise",
+            ),
         )
         entry, artifact = out / (key + ".py"), out / (key + ".tbin")
         if needs_build(entry, artifact, text, target):
@@ -234,18 +242,18 @@ def produce(
         c, slots, chunk, pool, context, verify=verify, draft=draft
     ).items():
         module = (
-            "tensor_llm.qwen35.kernels.decode"
+            "tensor_llm.kernels.hybrid"
             if kind in ("embedding", "rms", "add_rms", "argmax")
             else (
-                "tensor_llm.qwen35.kernels.dense_head"
+                "tensor_llm.kernels.head"
                 if kind in ("head_linear", "head_argmax")
                 else (
-                    "tensor_llm.qwen35.kernels.mtp"
+                    "tensor_llm.kernels.mtp"
                     if kind in ("mtp_join", "mtp_cast")
                     else (
-                        "tensor_llm.qwen35.kernels.dense_projections"
+                        "tensor_llm.kernels.split_linear"
                         if kind in ("split_linear", "split_merge")
-                        else "tensor_llm.qwen35.kernels.dense"
+                        else "tensor_llm.kernels.hybrid_batch"
                     )
                 )
             )
@@ -255,7 +263,11 @@ def produce(
             "make_kernel",
             kind,
             p,
-            dependencies=("tensor.compiler.entry", "tensor.compiler.cuda_lowering"),
+            dependencies=(
+                "tensor.compiler.entry",
+                "tensor.compiler.cuda_lowering",
+                "tensor_llm.kernels.elementwise",
+            ),
         )
         entry = out / (key + ".py")
         artifact = out / (key + ".tbin")

@@ -18,8 +18,8 @@ def _compile(out, original, old, module, schedule, **settings):
         ('decode','attention_workspace','decode',dict(slots=original['slots'],capacity=original['context'])),
         ('attention',module,'partial' if module=='hopper_attention' else 'attention',schedule)):
         entry=out/(name+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+producer,factory,p,
-                                      dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.'+producer,factory,p,
+                                      dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact.unlink(missing_ok=True);build_artifact(entry,artifact,target='sm_90a')
         result['kernels'][name]=dict(path=artifact.name,sha256=hashlib.sha256(artifact.read_bytes()).hexdigest())
     (out/'attention-workspace.json').write_text(json.dumps(result,indent=2)+'\n')

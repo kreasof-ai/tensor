@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 import numpy as np
 from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from .artifacts import identity, requirements
 from ..common.artifacts import load_kernels
 
@@ -104,13 +105,10 @@ class Qwen35Prefill:
         def call(kind, p, **bindings):
             kernel = self.kernels[identity(kind, p)]
             args = tuple(bindings[a["name"]] for a in kernel.manifest["arguments"])
-            values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
             self.plan.append(
                 (
                     kernel,
-                    BoundCall(
-                        d, kernel.manifest, values, symbols, launch, validated=True
-                    ),
+                    bind_call(d, kernel, args),
                 )
             )
             if "out" in bindings:
@@ -370,8 +368,7 @@ class Qwen35Prefill:
         )
 
     def _submit(self):
-        for kernel, call in self.plan:
-            self.device._launch(kernel, call)
+        submit_calls(self.device, self.plan)
 
     def forward(self, tokens, lengths=None, *, read_logits=False):
         self.model._check()

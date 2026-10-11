@@ -5,6 +5,21 @@ import json
 from pathlib import Path
 
 
+def backbone_hashes():
+    """Bind every runtime component to the shared execution/state/operators."""
+    root = Path(__file__).parent
+    paths = {
+        __name__: Path(__file__),
+        "tensor_llm.common.plan": root / "plan.py",
+        "tensor_llm.common.state": root / "state.py",
+        "tensor_llm.kernels.elementwise": root.parent / "kernels" / "elementwise.py",
+    }
+    return {
+        name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for name, path in paths.items()
+    }
+
+
 def identity(kind, parameters):
     return hashlib.sha256(
         json.dumps([kind, parameters], sort_keys=True).encode()

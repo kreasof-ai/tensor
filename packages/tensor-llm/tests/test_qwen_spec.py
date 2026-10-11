@@ -52,8 +52,8 @@ def test_recurrent_snapshots_restore_every_rejection_depth(tmp_path,chunk):
     def artifact(kind,p):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
         if kind=='restore' and chunk>8:
-            entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',p,dependencies=('tensor.compiler.entry',)))
-        else:entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
+            entry.write_text(export_source('tensor_llm.kernels.hopper_restore','restore_kernel',p,dependencies=('tensor.compiler.entry',)))
+        else:entry.write_text(export_source('tensor_llm.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));return out
     scan=artifact('gdn_scan',dict(slots=slots,chunk=chunk))
     restore=artifact('restore',dict(slots=slots,chunk=chunk,shape=[heads,d,d]))
@@ -84,7 +84,7 @@ def test_convolution_history_restore_keeps_only_accepted_inputs(tmp_path):
             expected[slot,:,2]=rounded[slot,step]
     def artifact(kind,p):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.speculative','make_kernel',kind,p,dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));return out
     conv=artifact('gdn_conv',dict(slots=slots,chunk=chunk))
     restore=artifact('restore',dict(slots=slots,chunk=chunk,shape=[channels,3]))
@@ -124,7 +124,7 @@ def test_split_attention_preserves_causality_at_partition_boundaries(tmp_path,ch
     artifacts=[]
     for kind in ('partial','merge'):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative_attention',kind,
+        entry.write_text(export_source('tensor_llm.kernels.speculative_attention',kind,
             dict(slots=s,chunk=c,capacity=cap,splits=splits,packed_loads=True,key_rows=32),dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,out,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));artifacts.append(out)
     with tensor.Device() as dev:
@@ -164,7 +164,7 @@ def test_split_experts_preserve_hot_routes_and_scales(tmp_path,routed,block_m):
         wd=w[rank].float()*scales[rank].float().repeat_interleave(128,0).repeat_interleave(128,1)
         want[:,rank]=(xd@wd.T).numpy()
     entry=tmp_path/'expert.py';artifact=entry.with_suffix('.tbin')
-    entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative_linear','expert_kernel',
+    entry.write_text(export_source('tensor_llm.kernels.speculative_linear','expert_kernel',
         dict(rows=rows,k=k,o=o,routed_input=routed,columns=128,block_m=block_m,
              threads=256 if block_m>=32 else 128,partitions=parts,stages=2),dependencies=('tensor.compiler.entry',)))
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
@@ -191,7 +191,7 @@ def test_all_row_head_matches_independent_bf16_projection(tmp_path,rows):
     w=torch.from_numpy(rng.normal(size=(256,2048)).astype('float32')).bfloat16()
     want=(x.float()@w.float().T).numpy()
     entry=tmp_path/'head.py';artifact=entry.with_suffix('.tbin')
-    entry.write_text(export_source('tensor_llm.qwen35.kernels.speculative','head_kernel',
+    entry.write_text(export_source('tensor_llm.kernels.speculative','head_kernel',
         dict(r=rows,k=2048,o=256,block_m=rows,columns=128,depth=128),dependencies=('tensor.compiler.entry',)))
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     with tensor.Device() as dev:

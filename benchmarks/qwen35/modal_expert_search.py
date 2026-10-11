@@ -12,7 +12,7 @@ def prepare_candidates():
     from tensor.compiler.entry import export_source
     from benchmarks.qwen35.build import build_artifact
     os.chdir('/workspace');volume.reload()
-    source=Path('packages/tensor-llm/src/tensor_llm/qwen35/kernels/hopper_experts.py')
+    source=Path('packages/tensor-llm/src/tensor_llm/kernels/hopper_experts.py')
     digest=hashlib.sha256(source.read_bytes()).hexdigest()
     root=Path('/cache/expert-search')/digest[:16];root.mkdir(parents=True,exist_ok=True)
     schedules=[dict(block_m=m,columns=n,threads=t,stages=s) for m,n,t,s in
@@ -21,17 +21,17 @@ def prepare_candidates():
     result=dict(source_sha256=digest,root=str(root),cases=[])
     def compile(name,module,factory,p,target):
         entry=root/(name+'.py');entry.write_text(export_source(module,factory,p,
-                                                   dependencies=('tensor.compiler.entry',)))
+                                                   dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact=entry.with_suffix('.tbin');artifact.unlink(missing_ok=True)
         build_artifact(entry,artifact,target=target)
         return str(artifact)
     for routed,k,o in [(False,2048,512),(True,512,2048)]:
         case=dict(routed=routed,k=k,o=o,candidates=[])
         p=dict(rows=4096,k=k,o=o,routed_input=routed,block_m=64,threads=256,compact=True)
-        case['control']=compile(f'control-{k}','tensor_llm.qwen35.kernels.prefill','expert_kernel',p,'sm_90')
+        case['control']=compile(f'control-{k}','tensor_llm.kernels.hybrid_prefill','expert_kernel',p,'sm_90')
         for index,schedule in enumerate(schedules):
             p.update(schedule)
-            artifact=compile(f'candidate-{k}-{index}','tensor_llm.qwen35.kernels.hopper_experts',
+            artifact=compile(f'candidate-{k}-{index}','tensor_llm.kernels.hopper_experts',
                              'expert_kernel',p,'sm_90a')
             case['candidates'].append(dict(schedule=schedule,path=artifact))
             print('Prepared expert candidate',k,schedule,flush=True)

@@ -94,7 +94,7 @@ def test_padded_short_attention_preserves_parent_accumulation(tmp_path):
         caches.append(quantize(x))
     def compile_kernel(chunk,decoded):
         entry=tmp_path/f'attention-{chunk}.py';artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_attention','partial',
+        entry.write_text(export_source('tensor_llm.kernels.hopper_attention','partial',
             dict(slots=slots,chunk=chunk,capacity=cap,splits=splits,key_rows=32,
                  query_tokens=8,pad_queries=True,packed_loads=True,decoded_kv=decoded),
             dependencies=('tensor.compiler.entry',)))

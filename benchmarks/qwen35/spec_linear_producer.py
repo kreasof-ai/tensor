@@ -22,7 +22,7 @@ def produce(prefill,out,*,expert_parts=4,dense_parts=8,expert_columns=128,groupe
         shutil.copyfile(source,out/row['path'])
     def add(kind,p,module,factory,*args):
         key=identity(kind,p);entry=out/(key+'.py');artifact=entry.with_suffix('.tbin')
-        source=export_source(module,factory,*args,dependencies=('tensor.compiler.entry',))
+        source=export_source(module,factory,*args,dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise"))
         if needs_build(entry, artifact, source, manifest.get('target','sm_89')):
             entry.write_text(source);artifact.unlink(missing_ok=True)
             build_artifact(entry,artifact,target=manifest.get('target','sm_89'))
@@ -32,32 +32,32 @@ def produce(prefill,out,*,expert_parts=4,dense_parts=8,expert_columns=128,groupe
     for logical,row in logicals:
         kind,p=row['kind'],row['parameters']
         if kind=='bf16_linear' and p['o'] in (1,32,256):
-            records[logical]=dict(matmul=add('small_bf16',p,'tensor_llm.qwen35.kernels.matmul','bf16_decode_kernel',p))
+            records[logical]=dict(matmul=add('small_bf16',p,'tensor_llm.kernels.matmul','bf16_decode_kernel',p))
             continue
         if kind not in ('fp8_experts','fp8_linear'):continue
         grouped=kind=='fp8_experts';parts=min(expert_parts if grouped else dense_parts,p['k']//128)
         selected=dict(p,partitions=parts)
         if grouped and grouped_rows:
             if p['r']>16:raise ValueError('fixed row groups support up to sixteen verification rows')
-            matmul=add('split_experts',selected,'tensor_llm.qwen35.kernels.matmul','make_kernel','fp8_experts_mma_prequantized',
+            matmul=add('split_experts',selected,'tensor_llm.kernels.matmul','make_kernel','fp8_experts_mma_prequantized',
                 dict(p,columns=expert_columns,block_m=16,partitions=parts,stages=2,packed_copy=True))
         elif grouped:
-            matmul=add('split_experts',selected,'tensor_llm.qwen35.kernels.speculative_linear','expert_kernel',
+            matmul=add('split_experts',selected,'tensor_llm.kernels.speculative_linear','expert_kernel',
                 dict(rows=p['r'],k=p['k'],o=p['o'],routed_input=p['routed_input'],
                      columns=expert_columns,block_m=expert_block_m,threads=256 if expert_block_m>=32 else 128,partitions=parts,stages=2))
         else:
-            matmul=add('split_dense',selected,'tensor_llm.qwen35.kernels.matmul','make_kernel','fp8_linear_mma_prequantized',
+            matmul=add('split_dense',selected,'tensor_llm.kernels.matmul','make_kernel','fp8_linear_mma_prequantized',
                 dict(p,columns=64,block_m=16 if p['r']<=16 else (64 if p['r']>=64 else 32),
                      threads=256 if p['r']>=64 else 128,packed_copy=True,partitions=parts,stages=2))
         merge_p=dict(r=p['r'],o=p['o'],partitions=parts)
         if grouped:merge_p['top']=8
-        merge=add('split_linear_merge',merge_p,'tensor_llm.qwen35.kernels.matmul','merge_kernel',merge_p)
+        merge=add('split_linear_merge',merge_p,'tensor_llm.kernels.matmul','merge_kernel',merge_p)
         records[logical]=dict(matmul=matmul,merge=merge,
                              partial_shape=[p['r'],*([8] if grouped else []),parts,p['o']])
         if grouped and grouped_rows:records[logical]['fixed_rows']=True
     if grouped_rows:
         p=dict(r=manifest['slots']*manifest['chunk'],top=8)
-        key=add('fixed_routes',p,'tensor_llm.qwen35.kernels.decode','make_kernel','moe_groups',p)
+        key=add('fixed_routes',p,'tensor_llm.kernels.hybrid','make_kernel','moe_groups',p)
         manifest['fixed_routes']=key
     manifest.update(split_linear=records,split_linear_implementation=implementation_hashes(),
         split_linear_schedule=dict(expert_parts=expert_parts,dense_parts=dense_parts,expert_columns=expert_columns,grouped_rows=grouped_rows,expert_block_m=expert_block_m))

@@ -43,7 +43,7 @@ def run(root,reference,out):
     source_paths=[__file__,'benchmarks/lfm2/q16_prefill_search.py','benchmarks/lfm2/prefill_chase_search.py',
         'benchmarks/lfm2/prefill_chase_compare.py','benchmarks/lfm2/producer.py',
         'benchmarks/lfm2/webgpu_profile.py',
-        'packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py',
+        'packages/tensor-llm/src/tensor_llm/lfm2/model.py','packages/tensor-llm/src/tensor_llm/kernels/webgpu.py',
         'packages/tensor-llm/src/tensor_llm/common/gguf.py','src/tensor/compiler/webgpu_lowering.py',
         'src/tensor/providers/webgpu.py','src/tensor/native/webgpu_plan.c',
         'tests/integration/test_lfm2_q16_prefill.py','tests/integration/test_lfm2_prefill_chase.py',

@@ -20,7 +20,7 @@ def test_recompute_matches_every_frozen_prefix(tmp_path,chunk):
         *((name,'recompute',name,(dict(slots=s,chunk=c),))
           for name in ('save_scan','save_conv','restore_scan','restore_conv'))):
         entry=tmp_path/(name+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,*args,
+        entry.write_text(export_source('tensor_llm.kernels.'+module,factory,*args,
             dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,artifact,target='sm_90',compiler='nvrtc',
             nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
@@ -81,7 +81,7 @@ def test_c64_input_copy_at_int32_bitcount_boundary(tmp_path):
     from tensor.compiler.build import build_artifact
     from tensor.runtime.dtypes import encode_bfloat16,decode_bfloat16
     source=tmp_path/'save_conv.py';artifact=source.with_suffix('.tbin')
-    source.write_text(export_source('tensor_llm.qwen35.kernels.recompute','save_conv',
+    source.write_text(export_source('tensor_llm.kernels.recompute','save_conv',
         dict(slots=64,chunk=128),dependencies=('tensor.compiler.entry',)))
     build_artifact(source,artifact,target='sm_90',compiler='nvrtc',
         nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
@@ -102,7 +102,7 @@ def test_c64_short_snapshot_restore_without_flat_bitcount_view(tmp_path):
     from tensor.compiler.entry import export_source
     from tensor.compiler.build import build_artifact
     source=tmp_path/'restore.py';artifact=source.with_suffix('.tbin')
-    source.write_text(export_source('tensor_llm.qwen35.kernels.hopper_restore','restore_kernel',
+    source.write_text(export_source('tensor_llm.kernels.hopper_restore','restore_kernel',
         dict(slots=64,chunk=4,shape=[32,128,128]),dependencies=('tensor.compiler.entry',)))
     build_artifact(source,artifact,target='sm_90',compiler='nvrtc',
         nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))

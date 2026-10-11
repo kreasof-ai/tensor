@@ -7,6 +7,7 @@ qualification, not just a successful decode microbenchmark.
 """
 
 from __future__ import annotations
+from tensor_llm.common.artifacts import backbone_hashes
 
 import ctypes as ct
 from dataclasses import asdict
@@ -17,11 +18,11 @@ from threading import get_ident
 
 import numpy as np
 
-from tensor.providers.cuda_graph import CudaGraph
-from tensor.runtime.abi import BoundCall
+from ..common.plan import ExecutionPlan, capture, submit
 from .checkpoint import Qwen35Checkpoint
 from ..common.artifacts import identity, load_kernels
 from ..common import state as common_state
+from ..common import plan as common_plan
 from .artifacts import requirements
 
 
@@ -31,16 +32,20 @@ def implementation_hashes():
     import tensor.runtime.abi
     from ..common import artifacts as common_artifacts, checkpoint as common_checkpoint
     from . import artifacts, checkpoint
-    from .kernels import decode, fp8_kv
+    from tensor_llm.kernels import hybrid as decode
+    from tensor_llm.kernels import elementwise
+    from tensor_llm.kernels import fp8_kv
     from . import pipeline
 
     modules = (
+        common_plan,
         common_state,
         common_artifacts,
         common_checkpoint,
         artifacts,
         checkpoint,
         decode,
+        elementwise,
         pipeline,
         fp8_kv,
         tensor.providers.cuda,
@@ -52,7 +57,7 @@ def implementation_hashes():
         for m in modules
     }
     result[__name__] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-    return result
+    return result | backbone_hashes()
 
 
 class Qwen35Batch:
@@ -118,9 +123,9 @@ class Qwen35Batch:
 
                 replace(self, self.bundle)
             if graphs:
-                self.graph = CudaGraph(
+                self.graph = capture(
                     device,
-                    self._submit,
+                    self.plan,
                     resources=(
                         *self.weights.values(),
                         *self.buffers.values(),
@@ -265,9 +270,9 @@ class Qwen35Batch:
 
                 replace(self, bundle)
             if had_graph:
-                self.graph = CudaGraph(
+                self.graph = capture(
                     self.device,
-                    self._submit,
+                    self.plan,
                     resources=(
                         *self.weights.values(),
                         *self.buffers.values(),
@@ -282,25 +287,11 @@ class Qwen35Batch:
 
     def _plan(self):
         w, b, r = self.weights, self.buffers, self.slots
-        calls = []
+        calls = ExecutionPlan(self.device, labeled=True)
 
         def add(kind, p, *args, label=None):
             kernel = self.kernels[identity(kind, p)]
-            values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-            calls.append(
-                (
-                    kernel,
-                    BoundCall(
-                        self.device,
-                        kernel.manifest,
-                        values,
-                        symbols,
-                        launch,
-                        validated=True,
-                    ),
-                    label,
-                )
-            )
+            calls.bind(kernel, args, label=label)
 
         def fp8(name, x, out):
             weight = w[name + ".weight"]
@@ -529,8 +520,7 @@ class Qwen35Batch:
         return calls
 
     def _submit(self):
-        for kernel, call, _ in self.plan:
-            self.device._launch(kernel, call)
+        submit(self.device, self.plan)
 
     def _write(self, name, value):
         buffer = self.buffers[name]
@@ -567,8 +557,9 @@ class Qwen35Batch:
         if np.any(self.position[self.active != 0] >= self.context):
             raise ValueError("Qwen context capacity exhausted")
         if debug is not None:
-            for kernel, call, label in self.plan:
-                self.device._launch(kernel, call)
+
+            def inspect(entry):
+                _, _, label = entry
                 if label is not None:
                     debug(
                         label,
@@ -576,6 +567,8 @@ class Qwen35Batch:
                             "ffn" if label[1] == "mlp" else "normal"
                         ].to_numpy(),
                     )
+
+            submit(self.device, self.plan, after_launch=inspect)
         elif self.graph is not None:
             self.graph.launch()
         else:

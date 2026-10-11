@@ -23,14 +23,14 @@ def test_hopper_prefill_attention_preserves_control_bits(tmp_path,query_rows,thr
     for module,target in [('fp8_kv','sm_90'),('hopper_prefill_attention','sm_90a')]:
         schedule=p if module=='fp8_kv' else dict(p,query_rows=query_rows,threads=threads,joint_kv=joint,decoded_kv=decoded,value_splits=value_splits)
         entry=tmp_path/(module+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,'attention',schedule,
+        entry.write_text(export_source('tensor_llm.kernels.'+module,'attention',schedule,
                                        dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,artifact,target=target,compiler='nvrtc',
                        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
         artifacts.append(artifact)
     if decoded:
         entry=tmp_path/'decode.py';artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.attention_workspace','decode',
+        entry.write_text(export_source('tensor_llm.kernels.attention_workspace','decode',
                         dict(slots=s,capacity=cap),dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,artifact,target='sm_90a',compiler='nvrtc',
                        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
@@ -143,8 +143,8 @@ def test_wide_hopper_projections_preserve_control_bits(tmp_path,grouped,parts,pa
         (control_module,control_factory,control_args,'sm_90a' if paired=='persistent' else 'sm_90'),
         (selected_module,selected_factory,selected_args,'sm_90' if paired=='warp' and grouped else 'sm_90a')]):
         entry=tmp_path/(str(i)+'.py');artifact=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,*args,
-            dependencies=('tensor.compiler.entry','tensor_llm.qwen35.kernels.fp8_operand')))
+        entry.write_text(export_source('tensor_llm.kernels.'+module,factory,*args,
+            dependencies=('tensor.compiler.entry','tensor_llm.kernels.fp8_operand')))
         build_artifact(entry,artifact,target=target,compiler='nvrtc',
                        nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
         artifacts.append(artifact)
@@ -209,7 +209,7 @@ def test_hopper_query_tiles_preserve_long_window_causality(tmp_path,chunk,query_
     artifacts=[]
     for kind in ('partial','merge'):
         entry=tmp_path/(kind+'.py');out=entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_attention' if kind=='partial' else 'tensor_llm.qwen35.kernels.speculative_attention',kind,
+        entry.write_text(export_source('tensor_llm.kernels.hopper_attention' if kind=='partial' else 'tensor_llm.kernels.speculative_attention',kind,
             dict(slots=s,chunk=c,capacity=cap,splits=splits,packed_loads=True,key_rows=32,query_tokens=query_tokens,
                  decoded_kv=decoded if kind=='partial' else False),dependencies=('tensor.compiler.entry',)))
         build_artifact(entry,out,target='sm_90a' if kind=='partial' else 'sm_90',compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'));artifacts.append(out)
@@ -219,7 +219,7 @@ def test_hopper_query_tiles_preserve_long_window_causality(tmp_path,chunk,query_
             ('control','hopper_attention','partial',dict(slots=s,chunk=c,capacity=cap,
                 splits=splits,packed_loads=True,key_rows=32,query_tokens=query_tokens))):
             entry=tmp_path/(name+'.py')
-            entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,schedule,
+            entry.write_text(export_source('tensor_llm.kernels.'+module,factory,schedule,
                 dependencies=('tensor.compiler.entry',)))
             build_artifact(entry,entry.with_suffix('.tbin'),target='sm_90a',compiler='nvrtc',
                 nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))

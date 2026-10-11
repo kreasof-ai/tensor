@@ -9,7 +9,7 @@ import tensor
 from tensor.runtime.abi import BoundCall
 from tensor_llm import GGUF
 from tensor_llm.common.gguf import dequantize
-from tensor_llm.lfm2.kernels.webgpu import source
+from tensor_llm.kernels.webgpu import source
 
 
 def run(model,out):

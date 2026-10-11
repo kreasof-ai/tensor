@@ -25,13 +25,15 @@ def implementation():
             "tensor_llm.common.artifacts",
             "tensor_llm.common.checkpoint",
             "tensor_llm.common.state",
-            "tensor_llm.qwen35.kernels.dense",
-            "tensor_llm.qwen35.kernels.dense_projections",
-            "tensor_llm.qwen35.kernels.dense_head",
-            "tensor_llm.qwen35.kernels.dense_recurrent",
-            "tensor_llm.qwen35.kernels.dense_speculation",
-            "tensor_llm.qwen35.kernels.decode",
-            "tensor_llm.qwen35.kernels.mtp",
+            "tensor_llm.common.plan",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.hybrid_batch",
+            "tensor_llm.kernels.split_linear",
+            "tensor_llm.kernels.head",
+            "tensor_llm.kernels.recurrent",
+            "tensor_llm.kernels.speculation",
+            "tensor_llm.kernels.hybrid",
+            "tensor_llm.kernels.mtp",
         )
     )
     return {

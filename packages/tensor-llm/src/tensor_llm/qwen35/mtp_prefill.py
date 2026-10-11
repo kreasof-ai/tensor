@@ -1,10 +1,11 @@
 """Native chunked initialization of the MTP shifted-token/target-hidden cache."""
 
+from tensor_llm.common.artifacts import backbone_hashes
 import hashlib
 import json
 from pathlib import Path
 
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
 from tensor_llm.qwen35.artifacts import identity
 from tensor_llm.qwen35.mtp import mtp_implementation_hashes
 from tensor_llm.qwen35.prefill import Qwen35Prefill
@@ -16,7 +17,7 @@ def implementation_hashes():
     result = mtp_implementation_hashes()
     for name, path in ((__name__, __file__), (prefill.__name__, prefill.__file__)):
         result[name] = hashlib.sha256(Path(path).read_bytes()).hexdigest()
-    return result
+    return result | backbone_hashes()
 
 
 class Qwen35MTPPrefill(Qwen35Prefill):
@@ -36,18 +37,10 @@ class Qwen35MTPPrefill(Qwen35Prefill):
         def call(kind, p, **bindings):
             kernel = self.kernels[identity(kind, p)]
             args = tuple(bindings[a["name"]] for a in kernel.manifest["arguments"])
-            values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
             extra.append(
                 (
                     kernel,
-                    BoundCall(
-                        self.device,
-                        kernel.manifest,
-                        values,
-                        symbols,
-                        launch,
-                        validated=True,
-                    ),
+                    bind_call(self.device, kernel, args),
                 )
             )
 

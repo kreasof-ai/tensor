@@ -10,7 +10,7 @@ import numpy as np
 from tensor.providers.cuda import Device
 from tensor_llm.common.artifacts import identity
 from tensor_llm.qwen35.dense.checkpoint import DenseCheckpoint
-from tensor_llm.qwen35.kernels.dense_projections import schedule
+from tensor_llm.kernels.split_linear import schedule
 
 
 def qualify(checkpoint, bundle, out, counts):

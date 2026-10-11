@@ -3,7 +3,8 @@
 
 def half_conversion_kernel(n, unpack=False):
     import tilelang.language as T
-    from tensor_llm.lfm2.kernels.webgpu import half_bits, round_half
+    from tensor_llm.kernels.webgpu import half_bits
+    from tensor_llm.kernels.webgpu import round_half
 
     convert = half_bits() if unpack else round_half()
 
@@ -23,7 +24,7 @@ def half_conversion_kernel(n, unpack=False):
 def kernel_with_subgroup_size(kind, parameters, size):
     """Exercise the actual small-subgroup branch, without editing Python source."""
     import tvm
-    from tensor_llm.lfm2.kernels.webgpu import make_kernel
+    from tensor_llm.kernels.webgpu import make_kernel
 
     ir = tvm.tirx
     kernel = make_kernel(kind, parameters)
@@ -57,11 +58,5 @@ def subgroup_source(kind, parameters, size):
         kind,
         parameters,
         size,
-        dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
-            "tensor_llm.common.gguf",
-            "tensor_llm.lfm2.kernels.webgpu",
-            "tensor.compiler.entry",
-            "tensor.compiler.webgpu_templates",
-        ),
+        dependencies=('tensor_llm.kernels.ggml', 'tensor_llm.common.gguf', 'tensor_llm.kernels.webgpu', 'tensor.compiler.entry', 'tensor.compiler.webgpu_templates', "tensor_llm.kernels.elementwise"),
     )

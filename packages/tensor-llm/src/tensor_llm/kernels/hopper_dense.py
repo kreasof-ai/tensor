@@ -43,7 +43,7 @@ def make_kernel(p):
             part,
         ):
             if packed_widen:
-                from tensor_llm.qwen35.kernels.fp8_operand import CUDA_SOURCE
+                from tensor_llm.kernels.fp8_operand import CUDA_SOURCE
 
                 T.import_source(CUDA_SOURCE)
             lhs = T.alloc_shared((m, 128), "float8_e4m3fn")

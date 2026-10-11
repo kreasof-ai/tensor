@@ -6,7 +6,7 @@ def make_kernel(kind, p):
     from tensor.compiler.entry import primitive
 
     if p.get("kv_dtype") == "fp8":
-        from .fp8_kv import make_kernel as fp8_kv
+        from tensor_llm.kernels.fp8_kv import make_kernel as fp8_kv
 
         return fp8_kv(kind, p)
     slots, chunk = p["slots"], p["chunk"]

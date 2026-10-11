@@ -29,8 +29,8 @@ def produce(source, out):
     for factory in ('save_scan', 'save_conv', 'restore_scan', 'restore_conv'):
         kind = 'recompute_'+factory
         name = identity(kind, p); entry = out/(name+'.py'); artifact = entry.with_suffix('.tbin')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.recompute', factory, p,
-                                      dependencies=('tensor.compiler.entry',)))
+        entry.write_text(export_source('tensor_llm.kernels.recompute', factory, p,
+                                      dependencies=('tensor.compiler.entry', "tensor_llm.kernels.elementwise")))
         artifact.unlink(missing_ok=True); build_artifact(entry, artifact, target='sm_90')
         manifest['kernels'][name] = dict(kind=kind,parameters=p,path=artifact.name,
                                         sha256=hashlib.sha256(artifact.read_bytes()).hexdigest())

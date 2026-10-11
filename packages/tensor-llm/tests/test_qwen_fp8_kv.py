@@ -9,8 +9,8 @@ def build(tmp_path,kind,p):
     from tensor.compiler.entry import export_source
     from tensor.compiler.build import build_artifact
     entry=tmp_path/(kind+'-'+str(p.get('kv_dtype','bfloat16'))+'.py')
-    entry.write_text(export_source('tensor_llm.qwen35.kernels.decode','make_kernel',kind,p,
-        dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering','tensor_llm.qwen35.kernels.fp8_kv')))
+    entry.write_text(export_source('tensor_llm.kernels.hybrid','make_kernel',kind,p,
+        dependencies=('tensor.compiler.entry','tensor.compiler.cuda_lowering','tensor_llm.kernels.fp8_kv')))
     artifact=entry.with_suffix('.tbin')
     build_artifact(entry,artifact,target=os.environ.get('TENSOR_QWEN_TARGET','sm_89'),compiler='nvrtc',nvrtc_home=os.environ.get('TENSOR_NVRTC_HOME','build/nvrtc-12.9'))
     return artifact

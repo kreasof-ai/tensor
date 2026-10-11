@@ -7,15 +7,16 @@ from threading import get_ident
 from types import MappingProxyType
 import json
 import numpy as np
-from tensor.runtime.abi import BoundCall
-from tensor.providers.cuda_graph import CudaGraph
+from ..common.plan import ExecutionPlan, bind, capture, submit
+from ..common.state import allocate_hybrid_states
 from .config import Config
 from ..common.gguf import GGUF, TYPES
 from ..common.artifacts import artifact_path, load_kernels
-from .kernels.baseline import identity
+from tensor_llm.kernels.ggml import identity
 from ..common.tokenizer import Tokenizer
 from .provenance import implementation_hashes
-from .kernels.cuda import CUDA_PROFILES, CUDA_GROUPED_THRESHOLD
+from tensor_llm.kernels.cuda import CUDA_PROFILES
+from tensor_llm.kernels.cuda import CUDA_GROUPED_THRESHOLD
 
 DECODE_GEMV_COMMON = dict(
     lanes=32,
@@ -979,26 +980,29 @@ class LFM2Request:
 
         self.control = upload(np.array([0, 1], np.int32))
         self.logits = upload(np.zeros(self.config.vocab, np.float32))
-        self.states = {}
-        self.caches = {}
-        for i, kind in enumerate(self.config.layers):
-            if kind == "conv":
-                self.states[i] = upload(np.zeros(2 * self.config.width, np.float32))
-            else:
-                self.caches[i] = (
-                    upload(
-                        np.zeros(
-                            self.capacity * self.config.kv_heads * self.config.head_dim,
-                            np.float16,
-                        )
-                    ),
-                    upload(
-                        np.zeros(
-                            self.capacity * self.config.kv_heads * self.config.head_dim,
-                            np.float16,
-                        )
-                    ),
-                )
+        persistent = allocate_hybrid_states(
+            device,
+            self.config,
+            1,
+            self.capacity,
+            kv_dtype="float16",
+            zero_recurrent=True,
+            zero_cache=True,
+            flat=True,
+        )
+        self.states = {
+            layer: values[0]
+            for layer, values in persistent.items()
+            if self.config.layers[layer] == "conv"
+        }
+        self.caches = {
+            layer: tuple(values)
+            for layer, values in persistent.items()
+            if self.config.layers[layer] == "attention"
+        }
+        self.buffers.extend(
+            buffer for values in persistent.values() for buffer in values
+        )
         for r in self.rows:
             self.plans[r] = self._plan(r)
         if self.grouped_decode:
@@ -1017,13 +1021,10 @@ class LFM2Request:
                     )
                     self.state_plans[r] = (*plan[: end + 1], plan[-1])
             sample = self.kernels[identity("argmax", dict(n=self.config.vocab))]
-            values, symbols, launch = sample._bind(
+            call = bind(
+                device,
+                sample,
                 (self.logits, self.workspaces[1]["tokens"], self.control),
-                {},
-                include_outputs=True,
-            )
-            call = BoundCall(
-                device, sample.manifest, values, symbols, launch, validated=True
             )
             self.greedy_plans = {
                 r: (*plan, (sample, call)) for r, plan in self.plans.items()
@@ -1032,7 +1033,7 @@ class LFM2Request:
                 self.long_greedy_plan = (*self.long_plan, (sample, call))
         if self.provider == "webgpu":
             for r, plan in self.plans.items():
-                self.prepared[r] = device.prepare_plan(plan)
+                self.prepared[r] = capture(device, plan, resources=())
             if self.prefill_tail:
                 kinds = {
                     id(self.kernels[key]): record["kind"]
@@ -1046,26 +1047,23 @@ class LFM2Request:
                         for i, (kernel, _) in enumerate(plan)
                         if kinds[id(kernel)] == "conv"
                     )
-                    self.prepared_states[r] = device.prepare_plan(
-                        (*plan[: end + 1], plan[-1])
+                    self.prepared_states[r] = capture(
+                        device, (*plan[: end + 1], plan[-1]), resources=()
                     )
             sample = self.kernels[identity("argmax", dict(n=self.config.vocab))]
-            values, symbols, launch = sample._bind(
+            call = bind(
+                device,
+                sample,
                 (self.logits, self.workspaces[1]["tokens"], self.control),
-                {},
-                include_outputs=True,
-            )
-            call = BoundCall(
-                device, sample.manifest, values, symbols, launch, validated=True
             )
             for r, plan in self.plans.items():
-                self.greedy[r] = device.prepare_plan((*plan, (sample, call)))
+                self.greedy[r] = capture(device, (*plan, (sample, call)), resources=())
             self.graphs_enabled = False
         elif graphs:
             for r, plan in self.plans.items():
-                self.graphs[r] = CudaGraph(
+                self.graphs[r] = capture(
                     device,
-                    lambda plan=plan: self._submit(plan),
+                    plan,
                     resources=(
                         *resources.buffers,
                         *self.buffers,
@@ -1073,9 +1071,9 @@ class LFM2Request:
                     ),
                 )
             for r, plan in self.state_plans.items():
-                self.state_graphs[r] = CudaGraph(
+                self.state_graphs[r] = capture(
                     device,
-                    lambda plan=plan: self._submit(plan),
+                    plan,
                     resources=(
                         *resources.buffers,
                         *self.buffers,
@@ -1083,9 +1081,9 @@ class LFM2Request:
                     ),
                 )
             for r, plan in self.greedy_plans.items():
-                self.greedy[r] = CudaGraph(
+                self.greedy[r] = capture(
                     device,
-                    lambda plan=plan: self._submit(plan),
+                    plan,
                     resources=(
                         *resources.buffers,
                         *self.buffers,
@@ -1093,18 +1091,18 @@ class LFM2Request:
                     ),
                 )
             if self.long_plan:
-                self.long_graph = CudaGraph(
+                self.long_graph = capture(
                     device,
-                    lambda: self._submit(self.long_plan),
+                    self.long_plan,
                     resources=(
                         *resources.buffers,
                         *self.buffers,
                         *self.kernels.values(),
                     ),
                 )
-                self.long_greedy_graph = CudaGraph(
+                self.long_greedy_graph = capture(
                     device,
-                    lambda: self._submit(self.long_greedy_plan),
+                    self.long_greedy_plan,
                     resources=(
                         *resources.buffers,
                         *self.buffers,
@@ -1131,7 +1129,7 @@ class LFM2Request:
         cfg = self.config
         c = cfg.width
         ws = self.workspaces[r]
-        plan = []
+        plan = ExecutionPlan(self.device)
         final_hidden = None
         scheduled_rows = r
         control = self.control
@@ -1143,20 +1141,7 @@ class LFM2Request:
             if self.provider == "webgpu":
                 p = webgpu_parameters(kind, p, self.webgpu_profile)
             executable = self.kernels[identity(kind, p)]
-            values, symbols, launch = executable._bind(args, {}, include_outputs=True)
-            plan.append(
-                (
-                    executable,
-                    BoundCall(
-                        self.device,
-                        executable.manifest,
-                        values,
-                        symbols,
-                        launch,
-                        validated=True,
-                    ),
-                )
-            )
+            plan.bind(executable, args)
 
         def inputs(kind, p, x):
             selected = (
@@ -1482,8 +1467,7 @@ class LFM2Request:
         return plan
 
     def _submit(self, plan):
-        for executable, call in plan:
-            self.device._launch(executable, call)
+        submit(self.device, plan)
 
     def _write(self, buffer, host):
         host = np.ascontiguousarray(host, dtype=buffer.dtype)

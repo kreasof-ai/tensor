@@ -30,8 +30,8 @@ def prefill(prepared,out,columns=64,packed_widen=False):
         else:
             module,factory='hopper_dense','make_kernel';schedule.update(p)
         entry=destination.with_suffix('.py')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.'+module,factory,schedule,
-                                      dependencies=('tensor.compiler.entry','tensor_llm.qwen35.kernels.fp8_operand')))
+        entry.write_text(export_source('tensor_llm.kernels.'+module,factory,schedule,
+                                      dependencies=('tensor.compiler.entry', 'tensor_llm.kernels.fp8_operand', "tensor_llm.kernels.elementwise")))
         destination.unlink(missing_ok=True);build_artifact(entry,destination,target='sm_90a')
         row['sha256']=hashlib.sha256(destination.read_bytes()).hexdigest()
         print('Prefill projection',module,schedule,flush=True)
@@ -60,8 +60,8 @@ def dense_verification(source,out,columns=64,packed_widen=False):
             packed_gather=True,stages=1,mma_reduction=32,mma_reorder=True,async_mma=False,
             packed_widen=packed_widen)
         entry=destination.with_suffix('.py')
-        entry.write_text(export_source('tensor_llm.qwen35.kernels.hopper_dense','make_kernel',schedule,
-                                      dependencies=('tensor.compiler.entry','tensor_llm.qwen35.kernels.fp8_operand')))
+        entry.write_text(export_source('tensor_llm.kernels.hopper_dense','make_kernel',schedule,
+                                      dependencies=('tensor.compiler.entry', 'tensor_llm.kernels.fp8_operand', "tensor_llm.kernels.elementwise")))
         destination.unlink(missing_ok=True);build_artifact(entry,destination,target='sm_90a')
         row['sha256']=hashlib.sha256(destination.read_bytes()).hexdigest()
         print('Verification dense',schedule,flush=True)

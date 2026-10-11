@@ -1,7 +1,9 @@
 """TileLang DSL for packed portable and standard-subgroup LFM2 schedules."""
 
 import math
-from .baseline import make_kernel as baseline_kernel, weight_decoder, weight_storage
+from tensor_llm.kernels.ggml import make_kernel as baseline_kernel
+from tensor_llm.kernels.ggml import weight_decoder
+from tensor_llm.kernels.ggml import weight_storage
 
 
 def source(kind, parameters):
@@ -13,7 +15,8 @@ def source(kind, parameters):
         kind,
         parameters,
         dependencies=(
-            "tensor_llm.lfm2.kernels.baseline",
+            "tensor_llm.kernels.elementwise",
+            "tensor_llm.kernels.ggml",
             "tensor_llm.common.gguf",
             "tensor.compiler.entry",
             "tensor.compiler.webgpu_templates",
@@ -186,11 +189,9 @@ def projection_abi(kind, p, algorithm):
 
 def prefill_kernel(kind, p):
     import tilelang.language as T
-    from tensor.compiler.webgpu_templates import (
-        register_matmul,
-        partitioned_matmul,
-        outer_product_matmul,
-    )
+    from tensor.compiler.webgpu_templates import register_matmul
+    from tensor.compiler.webgpu_templates import partitioned_matmul
+    from tensor.compiler.webgpu_templates import outer_product_matmul
 
     r, k, o, q = (p[n] for n in ("r", "k", "o", "type"))
     parts = 2 if kind == "ffn" else 1
@@ -264,11 +265,9 @@ def prefill_kernel(kind, p):
 
 def decode_kernel(kind, p):
     import tilelang.language as T
-    from tensor.compiler.webgpu_templates import (
-        registers,
-        shared_buffers,
-        streamed_gemv,
-    )
+    from tensor.compiler.webgpu_templates import registers
+    from tensor.compiler.webgpu_templates import shared_buffers
+    from tensor.compiler.webgpu_templates import streamed_gemv
 
     k, o, q = p["k"], p["o"], p["type"]
     parts = 2 if kind == "ffn" else 1
@@ -1384,7 +1383,7 @@ def make_kernel(kind, p):
         return kernel
     if kind == "argmax":
         # This shared-memory reduction has identical CUDA and WebGPU semantics.
-        from .baseline import argmax_kernel
+        from tensor_llm.kernels.ggml import argmax_kernel
 
         return argmax_kernel(p, explicit_unroll=True)
     if kind == "prefill_tail":

@@ -4,12 +4,14 @@ KV rows beyond the committed prefix are overwritten on the next pass. GDN
 matrices and convolution histories instead require explicit prefix restoration.
 """
 
+from tensor_llm.common.artifacts import backbone_hashes
 import ctypes as ct
 import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from tensor.runtime.abi import BoundCall
+from tensor_llm.common.plan import bind as bind_call
+from tensor_llm.common.plan import submit as submit_calls
 from tensor.providers.cuda_graph import CudaGraph
 from tensor_llm.qwen35.artifacts import identity
 from tensor_llm.qwen35.prefill import Qwen35Prefill
@@ -17,12 +19,16 @@ from tensor_llm.qwen35.prefill import Qwen35Prefill
 
 def implementation_hashes():
     from tensor_llm.qwen35 import prefill
-    from tensor_llm.qwen35.kernels import speculative
+    from tensor_llm.kernels import speculative
 
-    return {
-        m.__name__: hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest()
-        for m in (prefill, speculative)
-    } | {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    return (
+        {
+            m.__name__: hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest()
+            for m in (prefill, speculative)
+        }
+        | {__name__: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+        | backbone_hashes()
+    )
 
 
 class Qwen35Verifier(Qwen35Prefill):
@@ -55,10 +61,7 @@ class Qwen35Verifier(Qwen35Prefill):
     def _bind(self, kind, p, **values):
         kernel = self.kernels[identity(kind, p)]
         args = tuple(values[a["name"]] for a in kernel.manifest["arguments"])
-        values, symbols, launch = kernel._bind(args, {}, include_outputs=True)
-        return kernel, BoundCall(
-            self.device, kernel.manifest, values, symbols, launch, validated=True
-        )
+        return kernel, bind_call(self.device, kernel, args)
 
     def _plan(self):
         super()._plan()
@@ -154,8 +157,7 @@ class Qwen35Verifier(Qwen35Prefill):
         )
 
     def _submit_commit(self):
-        for kernel, bound in self.commit_plan:
-            self.device._launch(kernel, bound)
+        submit_calls(self.device, self.commit_plan)
 
     def forward(self, tokens, lengths=None, *, read_logits=False):
         if self.pending_verification:
