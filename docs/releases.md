@@ -21,7 +21,7 @@ uv run --locked python -m pytest
 uv run --locked python tools/validation/distribution_check.py --out build/release-candidate
 ```
 
-Use a fresh output directory for each candidate. The script builds all four
+Use a fresh output directory for each candidate. The script builds all three
 wheels and source archives, verifies metadata, READMEs, licenses, native source
 inclusions, and package boundaries, then runs Twine's metadata checks. It rebuilds
 each source archive in isolation and installs the core wheel into a temporary

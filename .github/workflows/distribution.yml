@@ -2,9 +2,9 @@ name: Distribution checks
 
 on:
   push:
-    paths: ["src/**", "packages/**", "examples/**", "tools/validation/distribution_check.py", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
+    paths: ["src/**", "packages/**", "examples/**", "tools/validation/distribution_check.py", "tools/validation/installer_check.py", "tools/install/**", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
   pull_request:
-    paths: ["src/**", "packages/**", "examples/**", "tools/validation/distribution_check.py", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
+    paths: ["src/**", "packages/**", "examples/**", "tools/validation/distribution_check.py", "tools/validation/installer_check.py", "tools/install/**", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
   workflow_dispatch:
 
 permissions:
@@ -30,6 +30,8 @@ jobs:
           uv run --locked --no-default-groups tensor --help
       - name: Build and verify all distributions without a GPU or compiler stack
         run: uv run --locked --no-default-groups python tools/validation/distribution_check.py
+      - name: Check streamed runtime install and reinstall
+        run: uv run --locked --no-default-groups python tools/validation/installer_check.py build/distributions/tensor_workspace-0.1.0-py3-none-any.whl
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-distributions-${{ matrix.os }}

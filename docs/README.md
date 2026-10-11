@@ -6,6 +6,7 @@ Commands run from the repository root unless stated otherwise.
 
 | Document | Purpose |
 |---|---|
+| [Installation](installation.md) | One-line CLI setup and Python project dependencies |
 | [Quickstart](quickstart.md) | Installation and one complete kernel |
 | [Architecture](architecture.md) | Responsibilities, dependencies, and source reading order |
 | [Compilation](compilation.md) | TileLang exports, targets, schedules, and caching |

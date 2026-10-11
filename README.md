@@ -11,6 +11,25 @@ hardware driver, without TileLang, TVM, or PyTorch. CUDA, WebGPU, and a scoped C
 provider share buffer and executable contracts. Tensor is pre-1.0 (`0.1.0`);
 see [compatibility](docs/compatibility.md) before transferring artifacts.
 
+## Install the CLI
+
+Linux/macOS:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/kreasof-ai/tensor/main/tools/install/install.sh | bash
+```
+
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/kreasof-ai/tensor/main/tools/install/install.ps1 | iex"
+```
+
+Open a new terminal and run `tensor --help`. The installer manages Python 3.12
+and installs the runtime under `~/.tensor`, without a system Python or Git.
+[Installation](docs/installation.md) covers optional compiler/WebGPU dependencies,
+custom paths, updates, removal, and installing Tensor into a Python project.
+
 ## First kernel
 
 Use 64-bit Python 3.12 and [uv](https://docs.astral.sh/uv/):

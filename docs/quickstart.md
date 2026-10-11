@@ -4,6 +4,9 @@ Use Python 3.12 and [uv](https://docs.astral.sh/uv/). Tensor's distribution is
 `tensor-workspace`; its import and command are `tensor`. Read
 [compatibility](compatibility.md) for the supported scope.
 
+For the standalone CLI, use the [one-line installer](installation.md).
+The checkout below provides kernel examples and the development environment.
+
 ## Choose the environment
 
 | Environment | Install | Purpose |
