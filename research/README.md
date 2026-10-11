@@ -61,7 +61,7 @@ Use [current documentation](../docs/README.md) for installation and APIs.
 
 ### Repository layout
 
-- [Executed migration and audit](../docs/migration.md).
+- [Executed migration and audit](studies/repository-layout/migration/README.md).
 
 - [Canonical import cleanup](studies/repository-layout/reports/canonical-layout.md)
 - [Repository reorganization acceptance](studies/repository-layout/reports/reorganization.md)

@@ -83,5 +83,5 @@ Keep library dependencies independent of CLI presentation. Initializers expose
 imports; implementations belong in named modules. Update the example or usage
 page when behavior changes and run checks appropriate to the affected contract.
 
-The [migration ledger](migration.md) records source ownership and verification.
+Historical source ownership and verification are indexed under [research](../research/README.md).
 See [Contributing](../CONTRIBUTING.md) for the review process.

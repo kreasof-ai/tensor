@@ -6,10 +6,10 @@ The rule is complete ownership: every existing file has explicit destinations. S
 
 ## Complete inventory
 
-- [File destinations](../research/studies/repository-layout/migration/migration-files.csv): all 2,304 existing tracked or nonignored untracked repository files, including package code, tests, examples, native code, configuration, documentation, evidence, and historical source snapshots. Each row contains source, targets, action, rationale, source SHA-256, and checks of existing destination files.
-- [Code ownership](../research/studies/repository-layout/migration/migration-units.csv): 605 definition, state, statement-block, or whole-file routes. Split definitions include their original line ranges; nonsplit implementation files have whole-file routes.
-- [References to update](../research/studies/repository-layout/migration/migration-references.csv): original imports and detected path/fingerprint references, with source line numbers. This is an editing checklist, not proof that string-based references are exhaustive. Migration verification must check the resulting tree and run consumers.
-- [Coverage and incoming sources](../research/studies/repository-layout/migration/migration-coverage.json): counts, baseline revision, all merged targets and their incoming files, and explicit conflicts.
+- [File destinations](migration-files.csv): all 2,304 existing tracked or nonignored untracked repository files, including package code, tests, examples, native code, configuration, documentation, evidence, and historical source snapshots. Each row contains source, targets, action, rationale, source SHA-256, and checks of existing destination files.
+- [Code ownership](migration-units.csv): 605 definition, state, statement-block, or whole-file routes. Split definitions include their original line ranges; nonsplit implementation files have whole-file routes.
+- [References to update](migration-references.csv): original imports and detected path/fingerprint references, with source line numbers. This is an editing checklist, not proof that string-based references are exhaustive. Migration verification must check the resulting tree and run consumers.
+- [Coverage and incoming sources](migration-coverage.json): counts, baseline revision, all merged targets and their incoming files, and explicit conflicts.
 
 This baseline includes the uncommitted NN rewrite and AKAS extraction already in the checkout. Files already deleted before this inventory are not represented as existing sources. Generated or ignored builds, environments, caches, and package metadata are outside the source migration; this plan neither deletes nor moves them. Historical source snapshots and evidence are treated as immutable historical bytes rather than live implementations.
 
@@ -104,7 +104,7 @@ Each documentation source also has a CSV row. The merged destinations have expli
 - `docs/reference/runtime-abi.md`, `docs/development.md`, `docs/releases.md`, and `docs/README.md` retain their current roles.
 - PyTorch usage merges into `packages/tensor-torch/README.md`. NN instructions remain in `packages/tensor-nn/README.md`.
 
-Repeated setup sections should be reconciled when merging, rather than concatenating the old documents. Stale imports, ownership claims and commands must be corrected. Original plans and decisions are preserved as history rather than presented as current implementation. [Architecture](architecture.md) describes the verified implementation ownership.
+Repeated setup sections should be reconciled when merging, rather than concatenating the old documents. Stale imports, ownership claims and commands must be corrected. Original plans and decisions are preserved as history rather than presented as current implementation. [Architecture](../../../../docs/architecture.md) describes the verified implementation ownership.
 
 ## Transfers to independent projects
 
@@ -136,7 +136,7 @@ No conflicting target can be replaced simply because its source has a migration 
 
 All 2,304 baseline file rows have existing targets. All 605 code-unit routes have
 existing targets; every named split definition and state binding was found in its
-assigned file. [Unit results](../research/studies/repository-layout/migration/migration-unit-results.csv)
+assigned file. [Unit results](migration-unit-results.csv)
 include current target line numbers. Whole-file and statement-block routes are
 checked by destination presence and the implementation tests below.
 

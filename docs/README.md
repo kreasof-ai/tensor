@@ -27,5 +27,3 @@ For command options, use `tensor --help` and `tensor COMMAND --help`.
 [Research](../research/README.md) retains old experiments, measurements, plans,
 and decisions. Those documents describe their measured revisions.
 
-The [migration ledger](migration.md) records every old file's destination and
-split/merge ownership. It is an audit record, not part of the usage tutorial.
