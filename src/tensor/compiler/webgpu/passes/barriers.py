@@ -20,6 +20,21 @@ def verify_uniform_barriers(function):
     def collect(node):
         if isinstance(node, ir.BufferStore):
             written.add(node.buffer.data)
+        if isinstance(node, ir.Call) and getattr(node.op, "name", "") in (
+            "tirx.address_of",
+            "tirx.tvm_access_ptr",
+        ):
+            # An exposed address may be mutated by an opaque intrinsic.
+            ir.stmt_functor.post_order_visit(
+                node,
+                lambda value: (
+                    written.add(value.buffer.data)
+                    if isinstance(value, ir.BufferLoad)
+                    else written.add(value)
+                    if isinstance(value, ir.Var) and value.dtype == "handle"
+                    else None
+                ),
+            )
         if isinstance(node, ir.AttrStmt) and node.attr_key == "thread_extent":
             if str(node.node.thread_tag).startswith("threadIdx."):
                 varying.add(node.node.var)
@@ -37,8 +52,11 @@ def verify_uniform_barriers(function):
             expression,
             lambda n: (
                 found.append(True)
-                if isinstance(n, ir.BufferLoad) and (
-                    not noalias or n.buffer.scope() != "global" or n.buffer.data in written
+                if isinstance(n, ir.BufferLoad)
+                and (
+                    not noalias
+                    or n.buffer.scope() != "global"
+                    or n.buffer.data in written
                 )
                 or isinstance(n, ir.Var)
                 and n in varying

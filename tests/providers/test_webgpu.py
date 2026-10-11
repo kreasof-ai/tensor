@@ -357,3 +357,18 @@ def test_barrier_loop_readonly_uniform_control(index_kind, noalias, written, sco
     else:
         with pytest.raises(ValueError, match="nonuniform"):
             verify_uniform_barriers(kernel)
+
+
+def test_barrier_uniformity_rejects_control_with_exposed_address():
+    from tilelang import tvm
+    from tensor.compiler.webgpu.passes.barriers import verify_uniform_barriers
+
+    ir = tvm.tirx
+    control = ir.decl_buffer((1,), "int32", "control")
+    iteration = ir.Var("iteration", "int32")
+    expose = ir.Evaluate(ir.call_intrin("handle", "tirx.address_of", ir.BufferLoad(control, [0])))
+    barrier = ir.Evaluate(ir.call_intrin("int32", "tirx.tvm_storage_sync", "shared"))
+    loop = ir.For(iteration, 0, ir.BufferLoad(control, [0]), ir.ForKind.SERIAL, barrier)
+    kernel = ir.PrimFunc([], ir.SeqStmt([expose, loop])).with_attr("tirx.noalias", True)
+    with pytest.raises(ValueError, match="nonuniform"):
+        verify_uniform_barriers(kernel)
