@@ -327,3 +327,33 @@ def test_packed_x_dispatch_masks_last_workgroup_plane(artifacts):
             np.testing.assert_allclose(output.to_numpy(),2.5*np.arange(size,dtype="float32")+1)
         finally:
             device._gpu.limits["max-compute-workgroups-per-dimension"] = limit
+
+
+@pytest.mark.parametrize("index_kind,noalias,written,scope,accepted", [
+    ("block", True, False, "global", True),
+    ("lane", True, False, "global", False),
+    ("block", False, False, "global", False),
+    ("block", True, True, "global", False),
+    ("block", True, False, "shared", False),
+])
+def test_barrier_loop_readonly_uniform_control(index_kind, noalias, written, scope, accepted):
+    from tilelang import tvm
+    from tensor.compiler.webgpu.passes.barriers import verify_uniform_barriers
+
+    ir = tvm.tirx
+    lane, block, iteration = (ir.Var(name, "int32") for name in ("lane", "block", "iteration"))
+    local = ir.IterVar(tvm.ir.Range(0, 128), lane, ir.IterVar.ThreadIndex, "threadIdx.x")
+    group = ir.IterVar(tvm.ir.Range(0, 4), block, ir.IterVar.ThreadIndex, "blockIdx.x")
+    control = ir.decl_buffer((128,), "int32", "lengths", scope=scope)
+    barrier = ir.Evaluate(ir.call_intrin("int32", "tirx.tvm_storage_sync", "shared"))
+    bound = ir.BufferLoad(control, [block if index_kind == "block" else lane])
+    body = ir.For(iteration, 0, bound, ir.ForKind.SERIAL, barrier)
+    if written:
+        body = ir.SeqStmt([ir.BufferStore(control, lane, [0]), body])
+    body = ir.AttrStmt(group, "thread_extent", 4, ir.AttrStmt(local, "thread_extent", 128, body))
+    kernel = ir.PrimFunc([], body).with_attr("tirx.noalias", noalias)
+    if accepted:
+        verify_uniform_barriers(kernel)
+    else:
+        with pytest.raises(ValueError, match="nonuniform"):
+            verify_uniform_barriers(kernel)

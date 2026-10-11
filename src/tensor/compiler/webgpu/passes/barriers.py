@@ -8,14 +8,18 @@ def verify_uniform_barriers(function):
 
     Native shader validation is not a substitute for this check: some native
     backends accept shaders with divergent barriers and produce wrong results.
-    Buffer-dependent control flow is conservatively considered nonuniform.
+    Read-only global loads with uniform indices are uniform under an explicit
+    no-alias contract. Shared memory and possibly aliased loads remain varying.
     """
     import tvm
 
     ir = tvm.tirx
-    varying, definitions = set(), []
+    varying, definitions, written = set(), [], set()
+    noalias = bool(function.attrs and function.attrs.get("tirx.noalias", False))
 
     def collect(node):
+        if isinstance(node, ir.BufferStore):
+            written.add(node.buffer.data)
         if isinstance(node, ir.AttrStmt) and node.attr_key == "thread_extent":
             if str(node.node.thread_tag).startswith("threadIdx."):
                 varying.add(node.node.var)
@@ -33,7 +37,9 @@ def verify_uniform_barriers(function):
             expression,
             lambda n: (
                 found.append(True)
-                if isinstance(n, ir.BufferLoad)
+                if isinstance(n, ir.BufferLoad) and (
+                    not noalias or n.buffer.scope() != "global" or n.buffer.data in written
+                )
                 or isinstance(n, ir.Var)
                 and n in varying
                 else None
