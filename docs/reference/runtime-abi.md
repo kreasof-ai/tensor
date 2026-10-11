@@ -1,6 +1,6 @@
 # Tensor runtime contract — ABI 1.3
 
-[Documentation](../README.md) · [Python runtime guide](../guides/runtime.md)
+[Documentation](../README.md) · [Python runtime guide](../runtime.md)
 
 This contract separates an executable call from compiler representations and
 provider mechanisms. It applies to the current contiguous, positive-extent,
@@ -175,6 +175,6 @@ The CPU executable compiler is the host C++ compiler. Neither compiler belongs
 to the consumer/provider path. Producer compiler versions and hashes identify
 cache entries; they are not runtime version-equality requirements.
 
-See [ADR 0011](../adr/0011-runtime-call-abi-and-nvrtc.md) for the TVM FFI evaluation
-and the post-v1 direct-PTX decision, and [ADR 0012](../adr/0012-phase2-executable-and-workspace-contract.md)
+See [ADR 0011](../../research/decisions/0011-runtime-call-abi-and-nvrtc.md) for the TVM FFI evaluation
+and the post-v1 direct-PTX decision, and [ADR 0012](../../research/decisions/0012-phase2-executable-and-workspace-contract.md)
 for the ABI 1.1 executable, event and workspace contract.

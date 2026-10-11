@@ -1,7 +1,8 @@
 """Explicit, framework-independent forward/backward contracts; no differentiation engine."""
+
 from __future__ import annotations
 
-from tensor.runtime import Buffer
+from tensor.runtime.buffer import Buffer
 
 
 class BackwardContext:
@@ -96,7 +97,7 @@ class ManualFunction:
                 raise ValueError("backward must return one gradient or None per input")
             for value, gradient in zip(context.inputs, result):
                 if gradient is not None:
-                    if value.dtype.kind != 'f':
+                    if value.dtype.kind != "f":
                         raise ValueError("integer inputs cannot have gradients")
                     self._match(value, gradient)
             return result
@@ -105,8 +106,12 @@ class ManualFunction:
 
     @staticmethod
     def _match(value, gradient):
-        if (not isinstance(gradient, Buffer) or gradient.device is not value.device
-                or gradient.shape != value.shape or gradient.dtype != value.dtype):
+        if (
+            not isinstance(gradient, Buffer)
+            or gradient.device is not value.device
+            or gradient.shape != value.shape
+            or gradient.dtype != value.dtype
+        ):
             raise ValueError("gradient must match buffer shape, dtype and device")
         value._check()
         gradient._check()

@@ -1,0 +1,167 @@
+{
+  "baseline_commit": "96f423b5867027fbd0ecaf4f7863854ff3109851",
+  "existing_files": 2304,
+  "code_units": 605,
+  "split_sources": 12,
+  "actions": {
+    "retain": 155,
+    "move": 529,
+    "reconcile-conflict": 3,
+    "merge-document": 10,
+    "deduplicate-verified": 1595,
+    "split": 12
+  },
+  "conflicts": [
+    {
+      "source": "tensor/benchmarks/qwen35/dense_ablation.py",
+      "targets": "akas/benchmarks/qwen35/dense_ablation.py"
+    },
+    {
+      "source": "tensor/benchmarks/qwen35/dense_ablation_report.py",
+      "targets": "akas/benchmarks/qwen35/dense_ablation_report.py"
+    },
+    {
+      "source": "tensor/docs/guides/llm-serving-benchmarks.md",
+      "targets": "akas/docs/guides/llm-serving-benchmarks.md"
+    }
+  ],
+  "merged_targets": {
+    "tensor/docs/compilation.md": [
+      "tensor/docs/guides/from-tilelang.md",
+      "tensor/docs/guides/schedule-search.md"
+    ],
+    "tensor/docs/quickstart.md": [
+      "tensor/docs/guides/installation.md",
+      "tensor/docs/guides/quickstart.md"
+    ],
+    "tensor/docs/runtime.md": [
+      "tensor/docs/guides/manual-backward.md",
+      "tensor/docs/guides/runtime.md"
+    ],
+    "tensor/packages/tensor-torch/README.md": [
+      "tensor/docs/guides/pytorch.md",
+      "tensor/packages/tensor-torch/README.md"
+    ],
+    "tensor/src/tensor/cli/doctor.py": [
+      "tensor/src/tensor/cli/__init__.py",
+      "tensor/src/tensor/cli/doctor.py"
+    ],
+    "tensor/src/tensor/cli/run.py": [
+      "tensor/src/tensor/cli/__init__.py",
+      "tensor/src/tensor/cli/commands.py"
+    ],
+    "tensor/src/tensor/compiler/cuda/toolchain.py": [
+      "tensor/src/tensor/cli/doctor.py",
+      "tensor/src/tensor/compiler/__init__.py"
+    ],
+    "tensor/src/tensor/compiler/frontend/signature.py": [
+      "tensor/src/tensor/compiler/build.py",
+      "tensor/src/tensor/compiler/lowering.py"
+    ],
+    "tensor/src/tensor/compiler/webgpu/schedules/gemv.py": [
+      "tensor/src/tensor/compiler/webgpu_lowering.py",
+      "tensor/src/tensor/compiler/webgpu_templates.py"
+    ],
+    "tensor/src/tensor/compiler/webgpu/schedules/outer_product.py": [
+      "tensor/src/tensor/compiler/webgpu_lowering.py",
+      "tensor/src/tensor/compiler/webgpu_templates.py"
+    ],
+    "tensor/src/tensor/compiler/webgpu/schedules/packed_integer.py": [
+      "tensor/src/tensor/compiler/webgpu_lowering.py",
+      "tensor/src/tensor/compiler/webgpu_templates.py"
+    ],
+    "tensor/src/tensor/compiler/webgpu/schedules/packed_outer_product.py": [
+      "tensor/src/tensor/compiler/webgpu_lowering.py",
+      "tensor/src/tensor/compiler/webgpu_templates.py"
+    ],
+    "tensor/src/tensor/compiler/webgpu/schedules/partitioned.py": [
+      "tensor/src/tensor/compiler/webgpu_lowering.py",
+      "tensor/src/tensor/compiler/webgpu_templates.py"
+    ],
+    "tensor/src/tensor/compiler/webgpu/schedules/register_matmul.py": [
+      "tensor/src/tensor/compiler/webgpu_lowering.py",
+      "tensor/src/tensor/compiler/webgpu_templates.py"
+    ]
+  },
+  "unassigned_sources": 0,
+  "ignored_generated_files": "build/dist/env/cache/egg-info ignored by Git; no migration or deletion",
+  "manifest_only": false,
+  "executed": true,
+  "audit": {
+    "missing_targets": [],
+    "unretired_sources": [],
+    "baseline_hash_mismatches": [],
+    "verified_duplicate_mismatches": [],
+    "evidence_hash_mismatches": [],
+    "missing_named_units": [],
+    "verified_file_rows": 2304,
+    "verified_unit_rows": 605
+  },
+  "additions": [
+    "docs/architecture.md",
+    "docs/migration.md",
+    "research/studies/repository-layout/migration/migration-coverage.json",
+    "research/studies/repository-layout/migration/migration-files.csv",
+    "research/studies/repository-layout/migration/migration-references.csv",
+    "research/studies/repository-layout/migration/migration-unit-results.csv",
+    "research/studies/repository-layout/migration/migration-units.csv",
+    "research/studies/webgpu-validation/reports/backend-guide-before-refactor.md",
+    "src/tensor/compiler/cuda/__init__.py",
+    "src/tensor/compiler/frontend/__init__.py",
+    "src/tensor/compiler/webgpu/__init__.py",
+    "src/tensor/compiler/webgpu/identity.py",
+    "src/tensor/compiler/webgpu/passes/__init__.py",
+    "src/tensor/compiler/webgpu/schedules/__init__.py",
+    "src/tensor/modules/__init__.py",
+    "src/tensor/providers/cuda/__init__.py",
+    "src/tensor/providers/webgpu/__init__.py"
+  ],
+  "definition_preservation": {
+    "unchanged_ast_excluding_imports_and_docstrings": 89,
+    "reviewed_differences": {
+      "Buffer": "Removed annotation referring to Device factory, not a type",
+      "Executable": "Removed annotation referring to Device factory, not a type",
+      "check_nvrtc": "Updated diagnostic bootstrap path"
+    }
+  },
+  "validation": {
+    "tensor_default": {
+      "passed": 205,
+      "skipped": 134
+    },
+    "historical_phase0": {
+      "passed": 33,
+      "skipped": 7
+    },
+    "cuda_runtime_and_compilers": {
+      "passed": 14
+    },
+    "tensor_torch_cuda": {
+      "passed": 28,
+      "skipped": 4
+    },
+    "nanogpt_native_training": {
+      "passed": 12
+    },
+    "akas_default": {
+      "passed": 264,
+      "skipped": 397
+    },
+    "akas_cuda_requests": {
+      "passed": 28
+    },
+    "llt": {
+      "passed": 17,
+      "subtests_passed": 1053
+    },
+    "distributions": {
+      "wheels": 3,
+      "source_archives": 3,
+      "source_rebuilds": "passed",
+      "isolated_compiler_free_consumer": "passed"
+    },
+    "current_markdown_links": "passed",
+    "core_undefined_unused_duplicate_import_checks": "passed",
+    "cli_help_and_doctor": "ran; doctor reports local NumPy version differs from package pin"
+  }
+}

@@ -11,7 +11,7 @@ import time
 
 import numpy as np
 import tensor as tx
-from tensor.compiler.entry import export_source
+from tensor.compiler.frontend.source import export_source
 from tensor.compiler.search import ScheduleProfile, ScheduleSearch
 from tensor.compiler.tuning import measure_cuda
 

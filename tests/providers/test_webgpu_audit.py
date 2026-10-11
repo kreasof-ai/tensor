@@ -3,7 +3,7 @@ import copy
 
 import pytest
 
-from scripts.validation.webgpu_audit import audit
+from tools.validation.webgpu_audit import audit
 
 
 def evidence():

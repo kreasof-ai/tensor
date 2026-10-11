@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tensor-nn"
 version = "0.1.0"
-description = "Optional manual training templates for Tensor"
+description = "Native Tensor neural-network module templates with a nanoGPT example"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -18,5 +18,10 @@ Repository = "https://github.com/kreasof-ai/tensor"
 Documentation = "https://github.com/kreasof-ai/tensor/blob/main/packages/tensor-nn/README.md"
 Issues = "https://github.com/kreasof-ai/tensor/issues"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools]
+packages = ["tensor_nn", "tensor_nn.templates", "tensor_nn.kernels",
+            "tensor_nn_examples", "tensor_nn_examples.nanogpt"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+tensor_nn_examples = "examples"

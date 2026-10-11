@@ -1,5 +1,5 @@
 """Hardware helper lowering leaves ordinary kernels untouched."""
-from tensor.compiler.cuda_lowering import lower_cuda_intrinsics
+from tensor.compiler.cuda.lowering import lower_cuda_intrinsics
 
 
 def test_ordinary_cuda_has_no_helper_or_header_dependency():

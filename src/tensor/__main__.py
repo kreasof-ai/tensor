@@ -1,4 +1,4 @@
-from tensor.cli import main
+from tensor.cli.main import main
 
 
 if __name__ == "__main__":

@@ -2,12 +2,7 @@
 
 import numpy as np
 import pytest
-from tensor.runtime.abi import (
-    DTYPES,
-    CAPABILITIES,
-    check_requirement,
-    runtime_requirement,
-)
+from tensor.runtime.abi import DTYPES, CAPABILITIES, check_requirement, runtime_requirement
 from tensor.runtime.dtypes import encode_bfloat16, decode_bfloat16
 from tests.runtime.test_dlpack import Producer
 from tensor.runtime.dlpack import borrow, DLDataType

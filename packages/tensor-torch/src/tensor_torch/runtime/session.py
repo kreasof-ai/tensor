@@ -3,8 +3,8 @@
 import atexit
 import threading
 import torch
-from tensor.providers.cuda import Device
-from .streams import clear
+from tensor.providers.cuda.device import Device
+from tensor_torch.runtime.streams import clear
 
 _sessions = {}
 _lock = threading.RLock()

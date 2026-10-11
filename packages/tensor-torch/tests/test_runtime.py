@@ -202,7 +202,7 @@ def test_native_fixed_and_fx_calls_reject_closed_session(tmp_path):
 @GPU
 def test_native_cuda_failures_preserve_provider_exception(tmp_path):
     _require_native()
-    from tensor.providers.cuda import CudaError
+    from tensor.providers.cuda.driver import CudaError
     from tensor_torch.kernel import Kernel
     from tensor_torch.runtime.launch import _native_plan
 

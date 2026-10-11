@@ -41,10 +41,10 @@ where = ["src"]
 [tool.setuptools.package-data]
 tensor = ["include/tensor/*.h", "native/*.cpp", "native/*.rs", "native/*.c"]
 
-# Keep the historical p0 group as the pinned producer stack. Ordinary runtime
-# dependencies stay minimal; optional training templates are a workspace member.
+# Compiler dependencies belong to the producer environment. Runtime installs
+# stay minimal; NN templates are a separate workspace distribution.
 [dependency-groups]
-p0 = [
+compiler = [
     "tilelang==0.1.14",
     "apache-tvm-ffi==0.1.12",
     "numpy==2.5.3",
@@ -52,23 +52,21 @@ p0 = [
 dev = [
     "pytest>=8.0",
     "tensor-nn==0.1.0",
-    "tensor-llm==0.1.0",
 ]
 
 [tool.uv.workspace]
-members = ["packages/tensor-nn", "packages/tensor-llm"]
+members = ["packages/tensor-nn"]
 
 [tool.uv.sources]
 tensor-workspace = { workspace = true }
 tensor-nn = { workspace = true }
-tensor-llm = { workspace = true }
 
 [tool.uv]
 # TileLang's transitive dependencies are recorded in uv.lock. The compiler-free
 # consumer is tested in a separate environment containing only NumPy.
-default-groups = ["p0", "dev"]
+default-groups = ["compiler", "dev"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "packages/tensor-nn/tests", "packages/tensor-torch/tests", "packages/tensor-llm/tests"]
+testpaths = ["tests", "packages/tensor-nn/tests", "packages/tensor-torch/tests"]
 addopts = "-q"
 pythonpath = ["."]

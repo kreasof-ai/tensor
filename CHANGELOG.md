@@ -1,6 +1,6 @@
 # Changelog
 
-User-facing changes belong here. The [research archive](docs/research/README.md)
+User-facing changes belong here. The [research archive](research/README.md)
 contains the detailed experimental record. The package version is currently
 `0.1.0`; this file does not imply that a public release has been published.
 
@@ -80,7 +80,7 @@ contains the detailed experimental record. The package version is currently
 
 The existing implementation includes CUDA artifact execution, modules and
 transport wheels, the optional PyTorch adapter, native WebGPU, manual training,
-and bounded LFM2 inference. See the [roadmap](docs/plan/roadmap.md),
-[architecture decisions](docs/adr/README.md), and research reports for their
+and bounded LFM2 inference. See the [roadmap](research/plans/roadmap.md),
+[architecture decisions](research/decisions/README.md), and research reports for their
 accepted scope and measured evidence. Historical entries have not been assigned
 invented release dates or tags.

@@ -10,7 +10,7 @@ import operator
 
 def make_kernel(specification):
     import tilelang.language as T
-    from tensor.compiler.entry import primitive
+    from tensor.compiler.frontend.source import primitive
 
     dtype, shape = specification["dtype"], specification["shape"]
     input_shapes, gemm = specification["inputs"], specification.get("gemm")

@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from benchmarks.inference.webgpu_gemm_accumulation_comparison import compare
+from benchmarks.kernels.webgpu.webgpu_gemm_accumulation_comparison import compare
 
 
 def evidence():
-    root=Path(__file__).resolve().parents[2]/'docs/research/data'
+    root=Path(__file__).resolve().parents[2]/'research/studies/clblast-rx6700xt/evidence'
     report=json.loads((root/'clblast-rx6700xt-stock.json').read_text())
     suite=json.loads((root/'clblast-rx6700xt-suite.json').read_text())
     return report,deepcopy(report),suite,deepcopy(suite)

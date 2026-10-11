@@ -11,12 +11,12 @@ from pathlib import Path
 import torch
 from torch.fx import Graph, GraphModule
 
-from ..kernel import Kernel
-from ..runtime.prepared import LaunchPlan
-from .lowering import emit
-from .partition import regions
-from .reporting import _reports
-from .cache import artifact
+from tensor_torch.kernel import Kernel
+from tensor_torch.runtime.prepared import LaunchPlan
+from tensor_torch.compile.lowering import emit
+from tensor_torch.compile.partition import regions
+from tensor_torch.compile.reporting import _reports
+from tensor_torch.compile.cache import artifact
 
 
 class Region:

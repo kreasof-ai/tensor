@@ -1,8 +1,14 @@
 """Tensor's CUDA kernel workbench. Compiler imports are deferred until build."""
 
-from tensor.runtime import Buffer, Executable, Event, bench, TensorRuntimeError
+from tensor.runtime.buffer import Buffer
+from tensor.runtime.executable import Executable
+from tensor.runtime.event import Event
+from tensor.runtime.timing import bench
+from tensor.runtime.errors import TensorRuntimeError
 from tensor.providers import Device
-from tensor.artifacts.modules import Project, Module, ModuleError
+from tensor.modules.project import Project
+from tensor.modules.module import Module
+from tensor.modules.errors import ModuleError
 from tensor.runtime.manual import ManualFunction, BackwardContext
 
 
@@ -17,21 +23,55 @@ def assert_close(actual, expected, *, rtol=1e-5, atol=1e-8) -> None:
     np.testing.assert_allclose(actual, expected, rtol=rtol, atol=atol)
 
 
-def build(source, out, *, target=None, nvcc=None, cache_dir=None, compiler=None, nvrtc_home=None,
-          provider="cuda") -> dict:
+def build(
+    source,
+    out,
+    *,
+    target=None,
+    nvcc=None,
+    cache_dir=None,
+    compiler=None,
+    nvrtc_home=None,
+    provider="cuda",
+) -> dict:
     """Build a TileLang source file through the same path as `tensor build`."""
     from pathlib import Path
     from tensor.compiler.build import build_artifact as _build_artifact
-    return _build_artifact(Path(source), Path(out), target=target, nvcc=nvcc, cache_dir=cache_dir,
-                          compiler=compiler, nvrtc_home=nvrtc_home, provider=provider)
+
+    return _build_artifact(
+        Path(source),
+        Path(out),
+        target=target,
+        nvcc=nvcc,
+        cache_dir=cache_dir,
+        compiler=compiler,
+        nvrtc_home=nvrtc_home,
+        provider=provider,
+    )
 
 
 def cache_info(cache_dir=None) -> dict:
     from pathlib import Path
-    from tensor.compiler.build import cache_info as _cache_info
+    from tensor.compiler.cache import cache_info as _cache_info
 
     return _cache_info(Path(cache_dir) if cache_dir else None)
 
+
 __version__ = "0.1.0"
 
-__all__ = ["TensorRuntimeError", "Buffer", "Device", "Executable", "Event", "Project", "Module", "ModuleError", "ManualFunction", "BackwardContext", "assert_close", "bench", "build", "cache_info"]
+__all__ = [
+    "TensorRuntimeError",
+    "Buffer",
+    "Device",
+    "Executable",
+    "Event",
+    "Project",
+    "Module",
+    "ModuleError",
+    "ManualFunction",
+    "BackwardContext",
+    "assert_close",
+    "bench",
+    "build",
+    "cache_info",
+]

@@ -29,7 +29,7 @@ def exercise(operation, args, expected, *, atol=.002, rtol=.02):
 
 def test_pointwise_tail_and_nan():
     import torch
-    from benchmarks.inference.direct_triton_kernels import Operation
+    from benchmarks.kernels.comparison.direct_triton_kernels import Operation
     a, b = (torch.randn(257, device='cuda') for _ in range(2))
     a[0] = float('nan')
     b[-1] = float('nan')
@@ -39,7 +39,7 @@ def test_pointwise_tail_and_nan():
 @pytest.mark.parametrize('relu', [False, True])
 def test_linear_all_three_tails(relu):
     import torch
-    from benchmarks.inference.direct_triton_kernels import Operation
+    from benchmarks.kernels.comparison.direct_triton_kernels import Operation
     args = tuple(torch.randn(shape, device='cuda', dtype=torch.float16)
                  for shape in ((33,65), (67,65), (67,)))
     # Explicit FP32 accumulation/bias then FP16 rounding is Tensor's contract.
@@ -53,7 +53,7 @@ def test_linear_all_three_tails(relu):
                          [(17,64,True), (65,64,True), (129,128,False), (257,128,True)])
 def test_attention_uniform_scores_short_causal_blocks_and_tails(length, dim, causal):
     import torch
-    from benchmarks.inference.direct_triton_kernels import Operation
+    from benchmarks.kernels.comparison.direct_triton_kernels import Operation
     shape = (2,2,length,dim)
     q, k = (torch.zeros(shape, device='cuda', dtype=torch.float16) for _ in range(2))
     v = ((torch.arange(q.numel(), device='cuda')%17-8)/8).half().reshape(shape)

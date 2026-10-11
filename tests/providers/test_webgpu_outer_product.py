@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 import tensor
-from tensor.compiler.webgpu_lowering import outer_product_matmul_schedule
+from tensor.compiler.webgpu.schedules.outer_product import outer_product_matmul_schedule
 
 
 @pytest.mark.parametrize('change', [
@@ -41,7 +41,7 @@ def test_illegal_outer_product_resources_rejected(change):
          unroll=4,dot_width=2,packed_pairs=True,group_order='row',explicit_unroll=True),
 ])
 def test_outer_product_tails_precision_and_fused_epilogue(tmp_path,dtype,mode,config):
-    from benchmarks.inference.webgpu_outer_product_search import source
+    from benchmarks.kernels.webgpu.webgpu_outer_product_search import source
     if config.get('packed_pairs') and dtype!='float16':
         pytest.skip('packed half pairs require F16 operands')
     # Multiple workgroups, partial M/N/K tiles and a long reduction.
@@ -76,8 +76,8 @@ def test_outer_product_tails_precision_and_fused_epilogue(tmp_path,dtype,mode,co
 
 
 def test_explicit_unroll_expands_only_marked_bounded_loops(tmp_path):
-    from tensor.artifacts.portable import export_spec
-    from tensor.compiler.webgpu_lowering import lower_explicit_unroll
+    from tensor.compiler.frontend.portable import export_spec
+    from tensor.compiler.webgpu.passes.unroll import lower_explicit_unroll
     path=tmp_path/'loops.py'
     path.write_text('''import tilelang.language as T
 @T.prim_func

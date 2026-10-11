@@ -11,7 +11,7 @@ pytestmark = pytest.mark.skipif(os.environ.get('TENSOR_ATTENTION_CUDA') != '1',
 def test_zero_logits_attention_handles_causal_and_tail_tiles(tmp_path, length, causal):
     import torch
     import tensor as tx
-    from benchmarks.inference.flash_attention_demo import specialize
+    from benchmarks.kernels.attention.flash_attention_demo import specialize
     shape = (2, 2, length, 64)
     source = tmp_path / 'attention.py'
     source.write_text(specialize(shape, causal))

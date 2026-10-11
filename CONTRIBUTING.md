@@ -17,8 +17,7 @@ uv run --locked tensor --version
 uv run --locked python -m pytest
 ```
 
-The default environment installs the pinned compiler, pytest, Tensor NN, and
-Tensor LLM. The ordinary suite needs no physical GPU. Tests for real devices,
+The default environment installs the pinned compiler, pytest, Tensor NN. The ordinary suite needs no physical GPU. Tests for real devices,
 NVRTC, native hosts, or optional frameworks may skip unless their dependencies
 and opt-in flags are present. Skips do not establish hardware support.
 
@@ -28,7 +27,7 @@ For a quicker runtime-only change, start with:
 uv run --locked python -m pytest tests/runtime tests/integration/test_layout.py tests/integration/test_doctor.py
 ```
 
-For actual CUDA builds, follow the [quickstart](docs/guides/quickstart.md) to
+For actual CUDA builds, follow the [quickstart](docs/quickstart.md) to
 bootstrap NVRTC. For optional adapters, native builds, provider flags, and the
 source map, see the [development guide](docs/development.md). Use
 `uv run --no-sync` when preserving additional local Torch/Triton/wgpu installs.
@@ -47,9 +46,9 @@ source map, see the [development guide](docs/development.md). Use
 Keep runtime imports independent of compiler and optional framework packages.
 Keep reusable code in `src/tensor` or the relevant package, small examples in
 `examples`, and workload-specific measurements in `benchmarks`. Document current
-usage in `docs/guides`; retain historical evidence in `docs/research` with its
+usage in `docs/`; retain historical evidence in `research/` with its
 original revision and provenance. Consult the existing
-[architecture decisions](docs/adr/README.md) for changes to contracts.
+[architecture decisions](research/decisions/README.md) for changes to contracts.
 
 Package changes should also pass the [distribution checks](docs/releases.md).
 The core distribution name is intentionally still `tensor-workspace`; changing

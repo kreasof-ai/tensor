@@ -1,9 +1,9 @@
 """Discovery rejects invalid scores and keeps exploring after convergence."""
 import math
 import pytest
-from tensor.compiler.search import ScheduleSearch,neighbors,key
-from tensor.compiler.webgpu_schedules import SPACES,coupled_moves
-from tensor.compiler.webgpu_lowering import partitioned_matmul_schedule
+from tensor.compiler.search import ScheduleSearch, neighbors, key
+from tensor.compiler.webgpu.schedules.search_space import SPACES, coupled_moves
+from tensor.compiler.webgpu.schedules.partitioned import partitioned_matmul_schedule
 
 SEED=dict(family='partitioned',tile_m=8,tile_n=32,threads=128,partitions=8,unroll=4,dot_width=1)
 

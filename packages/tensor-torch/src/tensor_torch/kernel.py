@@ -6,10 +6,10 @@ import threading
 import torch
 from tensor.artifacts.format import read_artifact
 from tensor.runtime.signature import buffer_argument
-from .signatures import metadata
-from .registration import register
-from .runtime.launch import launch
-from .runtime.prepared import Prepared
+from tensor_torch.signatures import metadata
+from tensor_torch.registration import register
+from tensor_torch.runtime.launch import launch
+from tensor_torch.runtime.prepared import Prepared
 
 
 class Kernel:

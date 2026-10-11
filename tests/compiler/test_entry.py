@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 
 def test_source_identity_tracks_every_factory_dependency(tmp_path, monkeypatch):
-    from tensor.compiler import entry
+    from tensor.compiler.frontend import source as entry
 
     paths = {}
     for name in ("factory", "decoder"):
@@ -44,8 +44,8 @@ def test_macro_primitive_preserves_named_buffers_shapes_and_scalar_abi():
 
     pytest.importorskip("tilelang")
     import tilelang.language as T
-    from tensor.compiler.entry import primitive
-    from tensor.compiler.lowering import frontend_arguments
+    from tensor.compiler.frontend.source import primitive
+    from tensor.compiler.frontend.signature import frontend_arguments
 
     @T.macro
     def affine(x, out, scale):

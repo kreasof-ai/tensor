@@ -37,7 +37,7 @@ def test_custom_op_fake_dynamic_mutation_and_module_loading(tmp_path):
             }
         )
     )
-    from tensor.artifacts.modules import install
+    from tensor.modules.resolver import install
 
     install(tmp_path, cache_dir=tmp_path / "module-cache")
     kernel = tt.load(

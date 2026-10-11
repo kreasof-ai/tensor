@@ -5,8 +5,8 @@ import threading
 from contextlib import nullcontext
 import torch
 from tensor.runtime.signature import SCALAR_TYPES, buffer_argument
-from .launch import _native_plan, _enqueue
-from .streams import current_stream as _current_stream
+from tensor_torch.runtime.launch import _native_plan, _enqueue
+from tensor_torch.runtime.streams import current_stream as _current_stream
 
 
 class Prepared:

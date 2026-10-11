@@ -10,7 +10,7 @@ import pytest
 import tensor as tx
 from tensor.runtime.abi import BoundCall, check_requirement
 from tensor.artifacts.format import ArtifactError, read_artifact, validate_manifest
-from tensor.compiler.build import BuildError
+from tensor.compiler.errors import BuildError
 
 ROOT = Path(__file__).resolve().parents[2]
 NATIVE = pytest.mark.skipif(os.environ.get("TENSOR_WEBGPU") != "1", reason="set TENSOR_WEBGPU=1 for native adapter tests")
@@ -20,7 +20,7 @@ NATIVE = pytest.mark.skipif(os.environ.get("TENSOR_WEBGPU") != "1", reason="set 
 @pytest.mark.parametrize('encoding',['python','native_encode','native_submit'])
 def test_prepared_plan_replay_scalar_isolation_and_released_resources(tmp_path,encoding):
     if encoding!='python':pytest.importorskip('tensor.providers._webgpu_native')
-    from tensor.runtime import TensorRuntimeError
+    from tensor.runtime.errors import TensorRuntimeError
     source=tmp_path/'affine.py'
     source.write_text('''import tilelang.language as T
 @T.prim_func
@@ -88,8 +88,8 @@ def test_buffer_limit_option_is_provider_specific():
 
 @NATIVE
 def test_native_buffer_limit_opt_in():
-    from tensor.runtime import TensorRuntimeError
-    from tensor.providers.webgpu import probe
+    from tensor.runtime.errors import TensorRuntimeError
+    from tensor.providers.webgpu.adapter import probe
     default = 134217728
     info = probe()
     maximum = min(info['limits']['max-buffer-size'], info['limits']['max-storage-buffer-binding-size'])
@@ -184,7 +184,7 @@ def test_rejects_vendor_compiler_and_unsupported_integer_profile(tmp_path):
 def test_nonuniform_barriers_fail_before_native_execution():
     import tilelang
     from tilelang import tvm
-    from tensor.compiler.webgpu_lowering import verify_uniform_barriers
+    from tensor.compiler.webgpu.passes.barriers import verify_uniform_barriers
     ir = tvm.tirx
     lane = ir.Var("lane", "int32")
     binding = ir.IterVar(tvm.ir.Range(0,128),lane,ir.IterVar.ThreadIndex,"threadIdx.x")
@@ -197,7 +197,7 @@ def test_nonuniform_barriers_fail_before_native_execution():
 
 @NATIVE
 def test_native_symbolic_dispatch_and_session_handles(artifacts):
-    from tensor.runtime import TensorRuntimeError
+    from tensor.runtime.errors import TensorRuntimeError
     with tx.Device(provider="webgpu") as device, tx.Device(provider="webgpu") as other:
         kernel = device.load(artifacts["dynamic_affine"])
         for size in (1,127,128,129,4097):
@@ -239,7 +239,7 @@ def test_native_symbolic_dispatch_and_session_handles(artifacts):
 @NATIVE
 def test_native_fp16_tail_and_adapter_feature_gate(artifacts):
     from types import SimpleNamespace
-    from tensor.providers.webgpu import Device
+    from tensor.providers.webgpu.device import Device
     with tx.Device(provider="webgpu") as device:
         if "shader-f16" not in device.info["features"]:
             pytest.skip("adapter has no shader-f16")

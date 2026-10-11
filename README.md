@@ -1,110 +1,61 @@
 # Tensor
 
-Build tensor kernels once. Run them with a small runtime.
+Build TileLang kernels into portable artifacts. Execute them with a small runtime.
 
-Tensor compiles TileLang/TIRx kernels into `.tbin` artifacts that can run on a
-separate machine without the compiler stack. A Python API and one CLI cover
-building, inspection, execution, and reusable kernel modules.
+```text
+TileLang kernel → Tensor compiler → .tbin → Tensor runtime → device
+```
 
-**Pre-1.0 software:** the current package version is `0.1.0`. APIs and artifact
-compatibility can change; pin versions and rebuild artifacts when upgrading.
-See [support and compatibility](docs/guides/compatibility.md) for the tested scope.
+Compilation and execution are separate: consumers need the runtime and their
+hardware driver, without TileLang, TVM, or PyTorch. CUDA, WebGPU, and a scoped CPU
+provider share buffer and executable contracts. Tensor is pre-1.0 (`0.1.0`);
+see [compatibility](docs/compatibility.md) before transferring artifacts.
 
-## Start here
+## First kernel
 
-| Your goal | Next step |
-|---|---|
-| Explore the CLI without a GPU or compiler | Install the runtime below |
-| Build and execute your first kernel | [Quickstart](docs/guides/quickstart.md) |
-| Package a TileLang kernel you already wrote | [From TileLang to Tensor](docs/guides/from-tilelang.md) |
-| Search schedule choices for a kernel | [Schedule discovery](docs/guides/schedule-search.md) |
-| Run an artifact someone shared with you | [Runtime installation](docs/guides/installation.md) |
-| Use AMD/Intel/Apple through native wgpu | [WebGPU guide](docs/guides/webgpu.md) |
-| Work on Tensor | [Contributing](CONTRIBUTING.md) |
-
-## Install the runtime
-
-Use 64-bit Python **3.12** and [uv](https://docs.astral.sh/uv/). Start from a
-checkout; these commands work in PowerShell and a POSIX shell:
+Use 64-bit Python 3.12 and [uv](https://docs.astral.sh/uv/):
 
 ```sh
 git clone https://github.com/kreasof-ai/tensor.git
 cd tensor
-uv sync --locked --no-default-groups
-uv run --locked --no-default-groups tensor --version
-uv run --locked --no-default-groups tensor --help
-```
-
-This installs the core and NumPy. Exploring the CLI requires no GPU. Executing
-an artifact requires the corresponding driver and hardware. The distribution is
-named `tensor-workspace`; the import and CLI are named `tensor`.
-
-To build your own kernels, install the pinned development/compiler environment:
-
-```sh
 uv sync --locked
-uv run --locked python tools/bootstrap_nvrtc.py --out build/nvrtc-12.9
-```
-
-Set the NVRTC bundle location in your shell:
-
-```sh
+uv run --locked python tools/bootstrap/bootstrap_nvrtc.py --out build/nvrtc-12.9
 export TENSOR_NVRTC_HOME="$PWD/build/nvrtc-12.9"
-```
-
-```powershell
-$env:TENSOR_NVRTC_HOME = "$PWD/build/nvrtc-12.9"
-```
-
-With an NVIDIA GPU, build and check the included example:
-
-```sh
-uv run --locked tensor doctor
 uv run --locked tensor build examples/elementwise.py --out build/elementwise.tbin
 uv run --locked python examples/run_elementwise.py build/elementwise.tbin
 ```
 
-The runner compares `relu(2 * a + b)` against NumPy and prints a success message.
-Use a new artifact output path each time. A GPU-free producer can build with an
-explicit `--target sm_86`; execution requires a GPU with that exact architecture.
-The [quickstart](docs/guides/quickstart.md) explains each step and the separate
-compiler-free consumer path.
+The example checks `relu(2 * a + b)` against NumPy. The
+[quickstart](docs/quickstart.md) includes PowerShell, explicit GPU targets, and a
+separate compiler-free consumer. To explore the CLI without a compiler or GPU:
 
-## What you can do
-
-```text
-TileLang kernel → TIRx lowering → provider compiler → .tbin artifact
-                                                       ↓
-                                             Tensor runtime → GPU
+```sh
+uv sync --locked --no-default-groups
+uv run --locked --no-default-groups tensor --help
 ```
 
-| Component | Scope | Guide |
-|---|---|---|
-| Runtime and CLI | CUDA kernels, contiguous buffers, symbolic dimensions, typed scalars, DLPack, streams, inspection, caching | [Runtime](docs/guides/runtime.md) |
-| Kernel modules | Named exports, pinned dependencies, `.tpack` archives, offline distribution and PyPI transport wheels | [Modules](docs/guides/modules.md) |
-| `tensor-torch` | Optional `torch.compile` inference adapter and custom operators | [PyTorch](docs/guides/pytorch.md) |
-| WebGPU | Optional native wgpu provider for bounded elementwise, linear/MLP and forward-attention profiles | [WebGPU](docs/guides/webgpu.md) |
-| `tensor-nn` | Optional manual nanoGPT training templates | [Tensor NN](packages/tensor-nn/README.md) |
-| `tensor-llm` | Optional single-sequence LFM2 GGUF inference | [Tensor LLM](packages/tensor-llm/README.md) |
+## Read and extend
 
-CUDA is the primary backend. CUDA compilation uses a local NVRTC bundle;
-consumers need only the core wheel, NumPy, an NVIDIA driver, and matching hardware.
-WebGPU artifacts carry WGSL and explicit adapter feature/limit requirements.
-A Linux x86-64 CPU provider exercises the shared runtime contract.
+| Task | Start here |
+|---|---|
+| Build and execute a kernel | [Quickstart](docs/quickstart.md) |
+| Understand the implementation | [Architecture](docs/architecture.md) |
+| Import TileLang kernels or search schedules | [Compilation](docs/compilation.md) |
+| Allocate buffers, launch kernels, use streams or manual backward | [Runtime](docs/runtime.md) |
+| Package named exports and distribute artifacts | [Modules](docs/modules.md) |
+| Use WebGPU | [Backends](docs/backends.md) |
+| Bind kernels to PyTorch | [Tensor Torch](packages/tensor-torch/README.md) |
+| Compose native NN modules and train nanoGPT | [Tensor NN](packages/tensor-nn/README.md) |
+| Develop and validate Tensor | [Development](docs/development.md) |
 
-Standalone autograd, arbitrary graph fusion, complete TileLang/TIRx coverage on
-WebGPU, and general GGUF model support are future work. Performance claims apply
-to the specific workloads and hardware in the [benchmark reports](docs/research/README.md).
+[AKAS](https://github.com/kreasof-ai/akas) owns model inference, generation,
+scheduling, and serving. [Loop Latent Transformer](https://github.com/kreasof-ai/loop-latent-transformer)
+owns LLT workloads. Tensor supplies their compilation and execution primitives.
 
-## Documentation and community
+The distribution is named `tensor-workspace`; Python imports and the CLI use
+`tensor`. Optional bindings/templates have separate distributions. See the
+[documentation index](docs/README.md), [changelog](CHANGELOG.md), and
+[contribution guide](CONTRIBUTING.md). Historical measurements and design decisions
+are retained under [research](research/README.md), separate from current usage.
 
-- [Documentation](docs/README.md): installation, guides, and API contracts.
-- [Contributing](CONTRIBUTING.md): setup, tests, and how to propose a change.
-- [Changelog](CHANGELOG.md) and [release guide](docs/releases.md).
-- [Path to 1.0](docs/plan/v1.md): planned stability contracts and release milestones.
-- [1.0 evaluation plan](docs/plan/v1-benchmarks.md): planned model/kernel comparisons and demonstrations.
-- [GitHub issues](https://github.com/kreasof-ai/tensor/issues): bugs and ideas.
-- [Project history](docs/research/README.md): experiments, measurements, and provenance.
-
-Tensor is licensed under [MIT](LICENSE). Compiler dependencies and model weights
-retain their own licenses.
+MIT licensed. Compiler dependencies retain their own licenses.

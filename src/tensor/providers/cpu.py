@@ -8,9 +8,17 @@ from pathlib import Path
 import platform
 import tempfile
 
-from tensor.runtime.abi import CAPABILITIES, ErrorDescriptor, StreamDescriptor, check_requirement
+from tensor.runtime.abi import (
+    CAPABILITIES,
+    ErrorDescriptor,
+    StreamDescriptor,
+    check_requirement,
+)
 from tensor.artifacts.format import ArtifactError, read_artifact
-from tensor.runtime import Buffer, Executable, Session, TensorRuntimeError
+from tensor.runtime.buffer import Buffer
+from tensor.runtime.executable import Executable
+from tensor.runtime.session import Session
+from tensor.runtime.errors import TensorRuntimeError
 
 
 class Device(Session):
@@ -20,10 +28,17 @@ class Device(Session):
 
     def __init__(self, ordinal=0, *, stream=None):
         if type(ordinal) is not int or ordinal != 0 or stream not in (None, 0):
-            raise ValueError("CPU provider supports ordinal 0 and its synchronous stream")
+            raise ValueError(
+                "CPU provider supports ordinal 0 and its synchronous stream"
+            )
         self.ordinal = ordinal
-        self.info = {"ordinal": 0, "name": "CPU", "arch": "cpu-linux-x86_64", "provider": "cpu"}
-        self.limits = {"grid": [(1<<31)-1]*3, "block": [1024]*3}
+        self.info = {
+            "ordinal": 0,
+            "name": "CPU",
+            "arch": "cpu-linux-x86_64",
+            "provider": "cpu",
+        }
+        self.limits = {"grid": [(1 << 31) - 1] * 3, "block": [1024] * 3}
         self._buffers = set()
         self._modules = []
         self._events = set()
@@ -52,6 +67,7 @@ class Device(Session):
 
     def empty(self, shape, dtype="float32"):
         import numpy as np
+
         self._check()
         shape = (shape,) if isinstance(shape, int) else tuple(shape)
         if not shape or any(type(size) is not int or size < 1 for size in shape):
@@ -62,12 +78,12 @@ class Device(Session):
         size = dtype.itemsize
         for extent in shape:
             size *= extent
-        if size >= (1<<63)-4096:
+        if size >= (1 << 63) - 4096:
             raise ValueError("buffer allocation size exceeds CPU address space")
         # Satisfy any alignment accepted by the artifact profile, not NumPy's incidental alignment.
         storage = np.empty(size + 4095, dtype="uint8")
         offset = (-storage.ctypes.data) % 4096
-        array = storage[offset:offset + size].view(dtype).reshape(shape)
+        array = storage[offset : offset + size].view(dtype).reshape(shape)
         buffer = Buffer(self, array.ctypes.data, shape, dtype)
         buffer._storage = array
         self._buffers.add(buffer)
@@ -75,6 +91,7 @@ class Device(Session):
 
     def from_numpy(self, array):
         import numpy as np
+
         array = np.ascontiguousarray(array)
         buffer = self.empty(array.shape, array.dtype)
         buffer._storage[...] = array
@@ -82,6 +99,7 @@ class Device(Session):
 
     def from_dlpack(self, source):
         import numpy as np
+
         if source.__dlpack_device__() != (1, 0):
             raise BufferError("CPU provider imports CPU DLPack tensors only")
         return self.from_numpy(np.from_dlpack(source))
@@ -94,6 +112,7 @@ class Device(Session):
 
     def full(self, shape, fill_value, dtype="float32"):
         import numpy as np
+
         return self.from_numpy(np.full(shape, fill_value, dtype=dtype))
 
     def zeros(self, shape, dtype="float32"):
@@ -104,10 +123,14 @@ class Device(Session):
 
     def randn(self, shape, dtype="float32", *, seed=None):
         import numpy as np
-        return self.from_numpy(np.random.default_rng(seed).standard_normal(shape).astype(dtype))
+
+        return self.from_numpy(
+            np.random.default_rng(seed).standard_normal(shape).astype(dtype)
+        )
 
     def arange(self, stop, dtype="float32"):
         import numpy as np
+
         return self.from_numpy(np.arange(stop, dtype=dtype))
 
     def load(self, artifact):
@@ -129,10 +152,14 @@ class Device(Session):
             function = getattr(library, manifest["entrypoint"])
         except AttributeError as exc:
             from _ctypes import dlclose
+
             dlclose(library._handle)
             path.unlink()
-            raise ArtifactError(f"CPU executable entrypoint unavailable: {manifest['entrypoint']}") from exc
+            raise ArtifactError(
+                f"CPU executable entrypoint unavailable: {manifest['entrypoint']}"
+            ) from exc
         from tensor.runtime.abi import CallDescriptor
+
         function.argtypes = [c.POINTER(CallDescriptor), c.POINTER(ErrorDescriptor)]
         function.restype = c.c_int32
         self._modules.append(library)
@@ -140,6 +167,7 @@ class Device(Session):
 
     def _unload_executable(self, executable):
         from _ctypes import dlclose
+
         dlclose(executable.module._handle)
         self._modules.remove(executable.module)
 
@@ -147,10 +175,13 @@ class Device(Session):
         error = ErrorDescriptor()
         status = executable.function(c.byref(call.descriptor), c.byref(error))
         if status:
-            raise self.error(f"CPU kernel: {error.message.decode(errors='replace')} ({status})")
+            raise self.error(
+                f"CPU kernel: {error.message.decode(errors='replace')} ({status})"
+            )
 
     def record_event(self):
-        from tensor.runtime import Event
+        from tensor.runtime.event import Event
+
         self._check()
         event = Event(self, None)
         self._events.add(event)

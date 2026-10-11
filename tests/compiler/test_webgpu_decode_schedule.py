@@ -1,7 +1,7 @@
 """Search grammar contracts independent of GPU and producer dependencies."""
 import pytest
 from tensor.compiler.search import ScheduleSearch
-from tensor.compiler.webgpu_lowering import streamed_gemv_schedule
+from tensor.compiler.webgpu.schedules.gemv import streamed_gemv_schedule
 
 
 def test_custom_search_space_does_not_enter_prefill_families():

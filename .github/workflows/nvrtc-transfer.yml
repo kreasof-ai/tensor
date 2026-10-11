@@ -1,0 +1,147 @@
+name: NVRTC runtime and module transfer
+
+on:
+  push:
+    paths: ["src/**", "packages/tensor-torch/**", "packages/tensor-nn/**", "benchmarks/**", "tests/**", "examples/**", "tools/bootstrap/bootstrap_nvrtc.py", "tools/validation/cuda_producer.py", "tools/validation/module_*.py", "pyproject.toml", "uv.lock", ".github/workflows/nvrtc-transfer.yml"]
+  pull_request:
+    paths: ["src/**", "packages/tensor-torch/**", "packages/tensor-nn/**", "benchmarks/**", "tests/**", "examples/**", "tools/bootstrap/bootstrap_nvrtc.py", "tools/validation/cuda_producer.py", "tools/validation/module_*.py", "pyproject.toml", "uv.lock", ".github/workflows/nvrtc-transfer.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  producer:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            python: build/consumer/bin/python
+          - os: windows-latest
+            python: build/consumer/Scripts/python.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      TENSOR_NVRTC_HOME: ${{ github.workspace }}/build/nvrtc-12.9
+      CUDA_HOME: ${{ github.workspace }}/build/no-system-toolkit
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: "0.12.9"
+      - name: Install the pinned producer and local NVRTC components
+        run: |
+          uv sync --locked
+          uv run --locked python tools/bootstrap/bootstrap_nvrtc.py --out build/nvrtc-12.9
+          uv run --locked tensor doctor --target sm_86 --compiler nvrtc --json
+      - name: Check shared descriptors, diagnostics, CPU provider and native C++ hosting
+        run: uv run --locked --extra publish python -m pytest -o addopts='' -q
+      - name: Compile the five CUDA profiles and audit cache recovery
+        run: uv run --locked python tools/validation/cuda_producer.py --out build/phase2-transfer --target sm_86
+      - name: Compile the FlashAttention demonstration with NVRTC
+        run: uv run --locked tensor build examples/flash_attention.py --target sm_86 --out build/flash-attention.tbin
+      - name: Package a deterministic module and its pinned dependency
+        run: uv run --locked python tools/validation/module_producer.py --artifacts build/phase2-transfer --out build/phase3-transfer
+      - name: Prepare the PyPI transport wheel without uploading
+        run: uv run --locked tensor publish build/phase3-transfer/ops.tpack --dry-run --out-dir build/phase3-registry
+      - name: Build the compiler-free consumer wheel
+        run: uv build --wheel
+      - name: Install and inspect with only Tensor and NumPy
+        shell: bash
+        run: |
+          uv venv --python 3.12 build/consumer
+          uv pip install --python "${{ matrix.python }}" dist/tensor_workspace-0.1.0-py3-none-any.whl
+          "${{ matrix.python }}" - <<'PY'
+          import importlib.abc
+          import importlib.metadata as metadata
+          import pathlib
+          import sys
+          class Guard(importlib.abc.MetaPathFinder):
+              def find_spec(self, fullname, path=None, target=None):
+                  if fullname.split('.')[0] in {'tilelang','tvm','tvm_ffi','torch'}:
+                      raise ImportError('compiler import prohibited: '+fullname)
+          sys.meta_path.insert(0,Guard())
+          import tensor
+          import importlib.util
+          assert callable(tensor.build)
+          for name in ('abi', 'cuda', 'build', 'modules', 'nn'):
+              assert importlib.util.find_spec('tensor.' + name) is None
+          from tensor.artifacts.format import read_artifact
+          from tensor.artifacts.modules import Project, add, install
+          for artifact in pathlib.Path('build/phase2-transfer').glob('*.tbin'):
+              manifest,_=read_artifact(artifact)
+              assert manifest['format_version']==3
+              assert manifest['runtime_abi']['major']==1
+              assert manifest['runtime_abi']['minor']==1
+              assert manifest['workspace']=={'bytes':0,'alignment':1}
+          project=pathlib.Path('build/module-consumer')
+          project.mkdir()
+          import json
+          (project/'tensor.json').write_text(json.dumps({'formatVersion':1,'name':'consumer','version':'0.1.0','tensorAbi':1,'exports':{}}))
+          cache=pathlib.Path('build/module-consumer-cache')
+          add('build/phase3-transfer/ops.tpack',project,cache_dir=cache)
+          install(project,cache_dir=cache,frozen=True)
+          installed=Project(project,cache_dir=cache)
+          for name in ('elementwise','gemm_relu','dynamic_affine','dynamic_gemm','scalar_offset'):
+              module=installed.module('tensor-base' if name=='elementwise' else 'tensor-ops')
+              assert module.resolve(name,target='sm_86')['selection']=='packaged'
+          assert {d.metadata['Name'].lower() for d in metadata.distributions()} == {'tensor-workspace','numpy'}
+          PY
+          "${{ matrix.python }}" tools/validation/registry_transfer.py build/phase3-registry/tensor_module_tensor_ops-0.1.0-py3-none-any.whl --out build/phase3-registry/consumer.json
+      - name: Compile actual FX adapter profiles without a GPU
+        run: |
+          uv pip install --no-deps -e packages/tensor-torch
+          uv run --locked --no-sync python benchmarks/adapters/torch/fx_producer.py --out build/phase4-transfer --target sm_86
+      - name: Build the separate PyTorch adapter wheel
+        run: uv build --wheel packages/tensor-torch --out-dir build/torch-wheel
+      - name: Build the C++ executor against the pinned PyTorch without a toolkit
+        env:
+          TENSOR_TORCH_BUILD_NATIVE: "1"
+        run: |
+          uv pip install "setuptools>=77" torch==2.14.0
+          uv build --wheel --no-build-isolation packages/tensor-torch --out-dir build/torch-native-wheel
+      - name: Check installed PyTorch backend without compiler packages or GPU
+        shell: bash
+        run: |
+          uv venv --python 3.12 build/torch-consumer
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            torch_python=build/torch-consumer/Scripts/python.exe
+          else
+            torch_python=build/torch-consumer/bin/python
+          fi
+          uv pip install --python "$torch_python" dist/tensor_workspace-0.1.0-py3-none-any.whl build/torch-wheel/tensor_torch-0.1.0-*.whl torch==2.14.0
+          "$torch_python" benchmarks/adapters/torch/fx_consumer.py build/phase2-transfer
+          uv pip install --python "$torch_python" --reinstall-package tensor-torch build/torch-native-wheel/tensor_torch-0.1.0-*.whl
+          "$torch_python" benchmarks/adapters/torch/fx_consumer.py build/phase2-transfer --require-native
+          TENSOR_TORCH_NATIVE=0 "$torch_python" benchmarks/adapters/torch/fx_consumer.py build/phase2-transfer
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-torch-native-${{ matrix.os }}
+          path: |
+            build/torch-native-wheel/*.whl
+            build/phase4-transfer/*.tbin
+            build/phase4-transfer/producer.json
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-torch-${{ matrix.os }}
+          path: |
+            build/torch-wheel/*.whl
+            build/phase4-transfer/*.tbin
+            build/phase4-transfer/producer.json
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: tensor-phase2-${{ matrix.os }}
+          path: |
+            build/phase2-transfer/*.tbin
+            build/phase2-transfer/nvrtc-producer.json
+            build/nvrtc-12.9/bootstrap.json
+            build/phase3-transfer/ops.tpack
+            build/phase3-transfer/phase3-producer.json
+            dist/*.whl
+          if-no-files-found: error
+          retention-days: 30

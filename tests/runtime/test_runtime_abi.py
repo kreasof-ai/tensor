@@ -12,11 +12,9 @@ import numpy as np
 import pytest
 
 import tensor as tx
-from tensor.runtime.abi import (Argument, BoundCall, BufferDescriptor, CallDescriptor, DTYPES,
-                        ErrorDescriptor, EventDescriptor, ExecutableDescriptor, StreamDescriptor,
-                        WorkspaceRequirements, check_requirement)
+from tensor.runtime.abi import Argument, BoundCall, BufferDescriptor, CallDescriptor, DTYPES, ErrorDescriptor, EventDescriptor, ExecutableDescriptor, StreamDescriptor, WorkspaceRequirements, check_requirement
 from tensor.artifacts.format import ArtifactError, read_artifact, validate_manifest
-from tensor.runtime import TensorRuntimeError
+from tensor.runtime.errors import TensorRuntimeError
 
 ROOT = Path(__file__).resolve().parents[2]
 

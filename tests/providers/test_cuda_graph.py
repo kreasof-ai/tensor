@@ -4,8 +4,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 import tensor as tx
-from tensor.providers.cuda_graph import CudaGraph
-from tensor.providers.cuda import CudaError
+from tensor.providers.cuda.graph import CudaGraph
+from tensor.providers.cuda.driver import CudaError
 
 pytestmark=pytest.mark.skipif(os.environ.get('TENSOR_P2_CUDA')!='1',reason='set TENSOR_P2_CUDA=1')
 

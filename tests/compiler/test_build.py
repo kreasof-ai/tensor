@@ -2,7 +2,8 @@
 
 import pytest
 
-from tensor.compiler.build import BuildError, _launch
+from tensor.compiler.errors import BuildError
+from tensor.compiler.frontend.signature import _launch
 
 
 def test_launch_rejects_noninteger_and_oversized_blocks():

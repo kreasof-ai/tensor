@@ -6,10 +6,10 @@ import os
 import torch
 from tensor.runtime.abi import BoundCall
 from tensor.runtime.signature import SCALAR_TYPES, buffer_argument, scalar_value
-from .session import session
+from tensor_torch.runtime.session import session
 
 try:
-    from .._launch import submit as _submit
+    from tensor_torch._launch import submit as _submit
 except ImportError:
     _submit = None
 
@@ -93,7 +93,7 @@ def _enqueue(executable, launch, stream, parameters):
             c.addressof(parameters),
         )
         if code:
-            from tensor.providers.cuda import CudaError
+            from tensor.providers.cuda.driver import CudaError
 
             raise CudaError(f"cuLaunchKernel failed with CUDA error {code}")
 

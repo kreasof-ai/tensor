@@ -1,6 +1,6 @@
 """Generic discovery has no device policy and rejects ambiguous profiles."""
 import pytest
-from tensor.compiler.search import ScheduleSearch,ScheduleProfile
+from tensor.compiler.search import ScheduleSearch, ScheduleProfile
 
 
 def test_retired_webgpu_search_has_no_compatibility_alias():

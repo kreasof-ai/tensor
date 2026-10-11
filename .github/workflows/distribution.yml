@@ -2,9 +2,9 @@ name: Distribution checks
 
 on:
   push:
-    paths: ["src/**", "packages/**", "examples/**", "scripts/validation/distribution_check.py", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
+    paths: ["src/**", "packages/**", "examples/**", "tools/validation/distribution_check.py", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
   pull_request:
-    paths: ["src/**", "packages/**", "examples/**", "scripts/validation/distribution_check.py", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
+    paths: ["src/**", "packages/**", "examples/**", "tools/validation/distribution_check.py", "pyproject.toml", "setup.py", "uv.lock", "LICENSE", "README.md", ".github/workflows/distribution.yml"]
   workflow_dispatch:
 
 permissions:
@@ -29,7 +29,7 @@ jobs:
           uv run --locked --no-default-groups tensor --version
           uv run --locked --no-default-groups tensor --help
       - name: Build and verify all distributions without a GPU or compiler stack
-        run: uv run --locked --no-default-groups python scripts/validation/distribution_check.py
+        run: uv run --locked --no-default-groups python tools/validation/distribution_check.py
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: tensor-distributions-${{ matrix.os }}

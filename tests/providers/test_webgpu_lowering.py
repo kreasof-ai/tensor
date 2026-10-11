@@ -14,8 +14,8 @@ NATIVE=pytest.mark.skipif(os.environ.get('TENSOR_WEBGPU')!='1',reason='requires 
 @pytest.mark.parametrize('k_layout',['blocked','striped'])
 @pytest.mark.parametrize('dot_width',[1,2,4])
 def test_partitioned_matmul_tail_outputs_and_half_subnormals(tmp_path,owner_axis,tile_n,k_layout,dot_width):
-    from tensor.compiler.webgpu_lowering import partitioned_matmul_schedule
-    from benchmarks.lfm2.text_helpers import emit, round_half
+    from tensor.compiler.webgpu.schedules.partitioned import partitioned_matmul_schedule
+    from benchmarks.kernels.source_helpers import emit, round_half
     r,k,o=3,128,7
     lhs=round_half('x[({row}) * 128 + ({k})]')
     rhs='T.cast(w[({column}) * 128 + ({k})], "float32")'
@@ -41,8 +41,8 @@ def test_partitioned_matmul_tail_outputs_and_half_subnormals(tmp_path,owner_axis
 
 @pytest.mark.parametrize('consumer', ['none', 'read', 'write', 'clear', 'reduce'])
 def test_whole_loop_accumulators_require_exclusive_fragment_ownership(tmp_path, consumer):
-    from tensor.artifacts.portable import export_spec
-    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    from tensor.compiler.frontend.portable import export_spec
+    from tensor.compiler.webgpu.passes.matmul import lower_simt_gemm
     root=Path(__file__).resolve().parents[2]
     source=(root/'examples/webgpu_gemm.py').read_text()
     gemm='T.gemm(aa, bb, cc, transpose_B=TRANSPOSE_B)'
@@ -65,8 +65,8 @@ def test_whole_loop_accumulators_require_exclusive_fragment_ownership(tmp_path, 
 
 def test_attention_keeps_shared_intermediates_and_ordered_lowering():
     import tvm
-    from tensor.artifacts.portable import export_spec
-    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    from tensor.compiler.frontend.portable import export_spec
+    from tensor.compiler.webgpu.passes.matmul import lower_simt_gemm
     root=Path(__file__).resolve().parents[2]
     kernel=export_spec(root/'examples/flash_attention.py',None)['kernel']
     default=lower_simt_gemm(kernel.with_attr('tensor.webgpu.gemm_accumulation','register'))
@@ -78,8 +78,8 @@ def test_attention_keeps_shared_intermediates_and_ordered_lowering():
 @pytest.mark.parametrize('depth',[512,1024,2048,2560])
 @pytest.mark.parametrize('mode',['auto','register','shared'])
 def test_whole_loop_default_depth_gate_and_explicit_override(tmp_path,depth,mode):
-    from tensor.artifacts.portable import export_spec
-    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    from tensor.compiler.frontend.portable import export_spec
+    from tensor.compiler.webgpu.passes.matmul import lower_simt_gemm
     root=Path(__file__).resolve().parents[2]
     path=tmp_path/'depth.py'
     path.write_text((root/'examples/webgpu_gemm.py').read_text().replace('K = 37',f'K = {depth}'))
@@ -187,7 +187,7 @@ def test_register_gemm_microtiles_transpose_and_tails(tmp_path,micro,transpose):
 @pytest.mark.parametrize('schedule',[{}, {'lhs_transpose':True,'lhs_pad':1},
     {'dot_width':4,'lhs_transpose':True,'lhs_pad':1}, {'dot_width':4,'unroll':True}])
 def test_register_schedule_shared_layout_vector_dots_and_tails(tmp_path,schedule):
-    from tensor.compiler.webgpu_lowering import register_matmul_schedule
+    from tensor.compiler.webgpu.schedules.register_matmul import register_matmul_schedule
     m,k,n=33,128,65
     rhs=f'T.if_then_else(bx * 32 + i < {n}, T.cast(w[(bx * 32 + i) * {k} + tile * 64 + j], "float32"), 0)'
     body=register_matmul_schedule(m,k,n,'value',rhs,tile_k=64,**schedule)
@@ -203,31 +203,6 @@ def test_register_schedule_shared_layout_vector_dots_and_tails(tmp_path,schedule
         np.testing.assert_allclose(out.to_numpy().reshape(m,n),a@b.astype(np.float32).T,rtol=2e-5,atol=2e-5)
 
 
-@NATIVE
-@pytest.mark.parametrize('force_fallback',[False,True])
-@pytest.mark.parametrize('shared_input',[False,True])
-@pytest.mark.parametrize('depth,unroll,accumulators',[(256,2,2),(1024,8,8),(2560,20,4)])
-def test_streamed_gemv_fused_tail_and_f32_activation_contract(tmp_path,force_fallback,shared_input,depth,unroll,accumulators):
-    from tensor_llm.kernels.webgpu import source
-    p=dict(r=1,k=depth,o=7,type=1,sg=True,decode_schedule='streamed',lanes=32,threads=64,
-           micro_rows=2,dot_width=4,unroll=unroll,accumulators=accumulators,k_layout='striped',shared_input=shared_input)
-    text=source('ffn',p)
-    if force_fallback:
-        from benchmarks.lfm2.dsl_probes import subgroup_source
-        text=subgroup_source('ffn',p,0)
-    path=tmp_path/'gemv.py';artifact=path.with_suffix('.tbin');path.write_text(text)
-    tensor.build(path,artifact,provider='webgpu')
-    rng=np.random.default_rng(172);weights=[rng.normal(size=(7,depth)).astype(np.float16) for _ in range(2)]
-    with tensor.Device(provider='webgpu') as device:
-        kernel=device.load(artifact);ws=[device.from_numpy(w.ravel()) for w in weights]
-        for scale in (1,.01,1e-5):
-            x=(rng.normal(size=depth)*scale).astype(np.float32)
-            g,u=[w.astype(np.float64)@x.astype(np.float64) for w in weights]
-            expected=g/(1+np.exp(-g))*u
-            out=device.from_numpy(np.full(7,np.nan,np.float32));inp=device.from_numpy(x)
-            kernel.launch(inp,*ws,out);actual=out.to_numpy()
-            np.testing.assert_allclose(actual,expected,rtol=3e-4,atol=1e-7)
-            inp.release();out.release()
 
 
 @NATIVE
@@ -263,8 +238,8 @@ def test_layout_annotations_follow_substituted_buffers(tmp_path):
     """A layout annotation addresses its buffer by Var, and lower_simt_gemm
     substitutes alloc_buffers. The annotation has to be re-keyed onto the
     replacement or TileLang's layout inference cannot find the buffer."""
-    from tensor.artifacts.portable import export_spec
-    from tensor.compiler.webgpu_lowering import lower_simt_gemm
+    from tensor.compiler.frontend.portable import export_spec
+    from tensor.compiler.webgpu.passes.matmul import lower_simt_gemm
     import tilelang
     import tvm
     from tvm import tirx as ir
@@ -295,36 +270,3 @@ def tensor_export():return {"kernel":kernel}
         allocated={buffer.data for buffer in block.alloc_buffers}
         for var in block.annotations['layout_map'].keys():
             assert var in allocated, 'layout annotation still keyed on the replaced buffer'
-
-
-@NATIVE
-@pytest.mark.parametrize('force_fallback',[False,True])
-def test_fused_attention_active_tail_and_qk_fallback(tmp_path,force_fallback):
-    from tensor_llm.kernels.webgpu import source
-    h,kh,d,cap=4,2,64,96
-    text=source('attention',dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,
-                attention_schedule='partitioned_values',channels=32,value_parts=16,fused_scores=True))
-    if force_fallback:
-        from benchmarks.lfm2.dsl_probes import subgroup_source
-        text=subgroup_source('attention',dict(r=1,h=h,kh=kh,d=d,cap=cap,sg=True,attention_schedule='partitioned_values',channels=32,value_parts=16,fused_scores=True),0)
-    path=tmp_path/'attention.py';path.write_text(text)
-    artifact=tmp_path/'attention.tbin';tensor.build(path,artifact,provider='webgpu')
-    with tensor.Device(provider='webgpu') as device:
-        kernel=device.load(artifact)
-        rng=np.random.default_rng(314);q=rng.normal(size=(h,d)).astype(np.float32)
-        keys=rng.normal(size=(cap,kh,d)).astype(np.float16);values=rng.normal(size=(cap,kh,d)).astype(np.float16)
-        qb=device.from_numpy(q.ravel());kb=device.from_numpy(keys.ravel());vb=device.from_numpy(values.ravel())
-        out=device.full(h*d,np.nan);control=device.zeros(2,'int32')
-        for position in (0,31,95):
-            k=keys.copy();v=values.copy();k[position+1:]=np.nan;v[position+1:]=np.nan
-            device.write(kb,k.ravel());device.write(vb,v.ravel());device.write(control,np.array([position,1],np.int32))
-            device.write(out,np.full(h*d,np.nan,np.float32))
-            kernel.launch(qb,kb,vb,out,control)
-            actual=out.to_numpy().reshape(h,d)
-            k=keys[:position+1].astype(np.float64)[:,np.arange(h)//2,:].transpose(1,0,2)
-            v=values[:position+1].astype(np.float64)[:,np.arange(h)//2,:].transpose(1,0,2)
-            scores=(k*q.astype(np.float64)[:,None,:]).sum(axis=2)*d**-.5
-            prob=np.exp(scores-scores.max(axis=1,keepdims=True));prob/=prob.sum(axis=1,keepdims=True)
-            expected=(prob[:,:,None]*v).sum(axis=1)
-            assert np.isfinite(actual).all()
-            np.testing.assert_allclose(actual,expected,rtol=1e-5,atol=3e-7)

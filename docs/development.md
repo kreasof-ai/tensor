@@ -1,196 +1,87 @@
-# Repository layout and development
+# Development
 
-[Documentation](README.md) · [Quickstart](guides/quickstart.md)
-
-New contributors should start with [Contributing](../CONTRIBUTING.md).
-Package verification and release preparation are covered in the
-[release guide](releases.md); tested hardware and upgrade rules are in
-[compatibility](guides/compatibility.md).
-
-The runtime wheel contains reusable execution, compilation entry points and
-artifact/module tooling. Optional framework adapters and training templates have
-separate distributions. Benchmark workloads and acceptance scripts stay in the
-repository rather than entering the runtime wheel.
-
-```text
-src/tensor/
-  runtime/       buffers, executables, ABI, signatures, DLPack, manual backward
-  providers/     CUDA, CPU and WebGPU execution; shared WebGPU metadata contract
-  compiler/      build/cache, NVRTC/nvcc, lowering, shared discovery and tuning
-  artifacts/     formats, portable IR, module packages, registry transport
-  cli/           argument handling, run/bench/inspect and diagnostics
-  include/       installed native ABI headers
-  native/        installed C++/Rust reference hosts
-
-packages/
-  tensor-torch/  PyTorch adapter, native submission code and adapter tests
-  tensor-nn/     manual training templates, nanoGPT plan and training tests
-  tensor-llm/    GGUF/tokenizer and standalone LFM2 inference templates
-
-benchmarks/
-  inference/    Torch/TileLang/Triton comparisons, attention and WebGPU scaling
-  nanogpt/      producer, independent reference, validation, consumer, benchmark
-  lfm2/         pinned GGUF download, producer, references, consumer, comparison
-
-scripts/
-  validation/   artifact transfer, registry and provider acceptance commands
-  plots/        standalone figures from retained benchmark data
-
-tools/           dependency bootstrap scripts
-tests/           runtime/compiler/artifact/provider/integration/legacy contracts
-examples/        small kernels and modules
-experiments/p0/  historical architecture experiments
-docs/research/   historical measurements and their original evidence
-```
-
-Documentation is organized by purpose: `docs/guides` for current usage,
-`docs/reference` for contracts, `docs/architecture` for the original proposal,
-`docs/adr` for numbered decisions, `docs/plan` for scope and validation plans,
-and `docs/research` for measurements and retained data. The
-[documentation index](README.md) is the entry point.
-
-Use the grouped implementation paths: `tensor.runtime.abi`,
-`tensor.providers.cuda`, `tensor.compiler.build` and `tensor.artifacts.modules`.
-Flat imports such as `tensor.abi`, `tensor.cuda`, `tensor.build` and
-`tensor.modules` have been removed. Import build internals from
-`tensor.compiler.build`; the public `tensor.build(...)` function remains callable.
-
-The public workbench remains `import tensor as tx`. Manual backward stays in
-core: `tx.ManualFunction` and `tx.BackwardContext`. Training uses the optional
-`from tensor_nn import GPTConfig, NanoGPT`; the `tensor.nn` namespace has been
-removed. The core wheel depends only on NumPy and can import and run the CLI
-without NN, Torch, wgpu or compiler packages.
-
-Schedule discovery lives in `tensor.compiler.search`: beam exploration,
-deterministic restarts, legality filtering and target-bound producer profiles.
-`cuda_schedules` and `webgpu_schedules` supply backend spaces and constraints.
-The [schedule discovery guide](guides/schedule-search.md) shows how to use these
-APIs with a small, correctness-gated factory search and reusable profiles.
-Benchmarks supply workloads, independent correctness gates and timing. The old
-`tensor.compiler.webgpu_search` module has been removed.
-
-Package kernels are ordinary Python TileLang DSL factories, with lazy compiler
-imports. Read the algorithms in
-[`tensor_llm/lfm2/kernels/baseline.py`](../packages/tensor-llm/src/tensor_llm/lfm2/kernels/baseline.py),
-[`cuda.py`](../packages/tensor-llm/src/tensor_llm/lfm2/kernels/cuda.py),
-[`webgpu.py`](../packages/tensor-llm/src/tensor_llm/lfm2/kernels/webgpu.py),
-[`tensor_nn/kernels.py`](../packages/tensor-nn/src/tensor_nn/kernels.py) and
-[`tensor_torch/kernels.py`](../packages/tensor-torch/src/tensor_torch/kernels.py).
-`@T.prim_func` defines kernels; `@T.macro` composes decoders, fused epilogues and
-schedules. WebGPU SIMT schedule macros live in `tensor.compiler.webgpu_templates`.
-Python expands register microtiles into separate scalar registers during
-specialization, preserving the chosen ownership, layouts and accumulation order.
-
-Producers write small export files that call these factories with specialization
-metadata, then compile through `tensor.build`. `tensor.compiler.entry` fingerprints
-the factory files and their dependencies in each export file, so changing a
-shared decoder or schedule invalidates the build cache. The `.tbin` still embeds
-portable TIRx and compiled device code; consumers execute it without importing
-factories or compiler dependencies. Rebuild package inference/training bundles
-after changing their implementation fingerprints.
-
-Small hardware operations are lowered in `tensor.compiler.cuda_lowering`;
-complete CUDA algorithms do not live there. Measured model settings live in
-`benchmarks/lfm2/profiles`, outside the runtime package. Bundles record selected
-schedules and their profile fingerprint. Historical source-text experiments use
-`benchmarks/lfm2/text_helpers`; production package factories do not use them.
-
-## Development environment
+## Environment
 
 ```sh
 uv sync --locked
 uv run --locked python -m pytest
 ```
 
-The uv workspace includes `packages/tensor-nn` and `packages/tensor-llm`, installed
-through the development group. Compiler packages retain the existing pinned
-versions. Torch/Triton and native wgpu are separately installed dependencies for their opt-in validation
-paths. Use `uv run --no-sync` when preserving those development additions.
-The Torch adapter remains independently installable:
+The default groups install the pinned compiler, pytest, and the workspace's
+`tensor-nn`. Install the optional PyTorch binding separately when needed:
 
 ```sh
 uv pip install --no-deps -e packages/tensor-torch
 ```
 
-Core tests mirror the core groups. Package tests live beside their implementation;
-the root pytest configuration includes all optional packages. Phase 0 contracts
-are grouped under `tests/legacy`, with the experiments themselves preserved.
+Torch/Triton and wgpu device checks are optional. Use `uv run --no-sync` to retain
+additional local dependencies. Hardware tests require their documented opt-in
+flags; skipped tests do not establish device support.
 
-## Wheels and standalone training
+## Source reading order
 
-```sh
-uv build --wheel --out-dir build/wheels
-uv build --wheel packages/tensor-nn --out-dir build/wheels
-uv venv --python 3.12 build/consumer
-uv pip install --python build/consumer/bin/python \
-  build/wheels/tensor_workspace-0.1.0-py3-none-any.whl \
-  build/wheels/tensor_nn-0.1.0-py3-none-any.whl
+Follow [Architecture](architecture.md) for a complete kernel path and ownership
+map. Core tests live beside corresponding responsibilities under `tests/`.
+Package tests live in `packages/tensor-nn/tests` and `packages/tensor-torch/tests`.
+Historical contracts live with their implementation under `research/phase0/tests`.
+
+```text
+src/tensor/       reusable runtime, providers, compiler, artifacts, modules, CLI
+packages/         PyTorch binding and native NN templates/examples
+examples/         small complete kernel demonstrations
+benchmarks/       kernels, framework adapters, nanoGPT training and references
+tools/bootstrap/  dependency setup
+tools/validation/ artifact/provider/registry/distribution acceptance commands
+research/         historical experiments, reports, evidence, plans and decisions
 ```
 
-Omit the second wheel for a core-only consumer. On Windows use
-`build/consumer/Scripts/python.exe`. A standalone training consumer has exactly
-three installed distributions: Tensor, Tensor NN and NumPy. Tensor NN adds no
-framework/compiler dependency. Existing inference consumers keep their previous
-dependency sets.
-
-With the producer/reference environment and NVRTC bundle prepared:
+A focused runtime check:
 
 ```sh
-uv run --no-sync python benchmarks/nanogpt/producer.py --out build/training --target sm_86 --tune
-uv run --no-sync python benchmarks/nanogpt/validate.py --bundle build/training --out build/reference.json
-build/consumer/bin/python benchmarks/nanogpt/consumer.py \
-  --bundle build/training --reference build/reference.json --out build/consumer.json
+uv run --locked python -m pytest tests/runtime tests/integration/test_layout.py
 ```
 
-Training manifest schema `tensor.manual-nanogpt.v2` hashes canonical implementation
-modules from both installed wheels. Consumers reject a mismatched core or NN
-implementation before kernel loading. This protects implementation changes as
-well as file moves. The reorganized runtime deliberately rejects v1 training
-bundles; run those with their original wheels or build a new v2 bundle. Generic
-`.tbin`/`.tpack` formats and native descriptor layouts have not changed.
+Bootstrap NVRTC as described in [Quickstart](quickstart.md). Build native WebGPU
+submission with `TENSOR_BUILD_WEBGPU_NATIVE=1`; ordinary core wheels remain
+Python-only. Optional binding native builds are documented in the package README.
 
-Relocated `tools/*.py` wrappers have been removed. Run benchmark commands from
-`benchmarks`, validation and plot commands from `scripts`, and dependency
-bootstrap commands from `tools`. The [path mapping](research/data/reorganization-paths.json)
-lists replacements for retired imports and commands.
-
-Historical reports retain the distribution counts and source hashes they
-actually measured. Their original wheels remain the reproducible consumer for
-fingerprint-bound artifacts; import cleanup does not rewrite past evidence.
-
-## Standalone GGUF inference
-
-The optional [Tensor LLM package](../packages/tensor-llm/README.md) runs the
-LFM2.5-2.6B hybrid convolution/attention architecture from packed GGUF weights
-and an NVRTC-produced kernel bundle. Its consumer has four distributions:
-Tensor, Tensor LLM, NumPy and regex. Workload recipes and the independent
-llama.cpp/Torch references stay under `benchmarks/lfm2`; neither enters core.
-See the [inference comparison](research/lfm2-inference.md) for the measured profile.
-
-## Retained Phase 0 experiments
-
-The initial architecture harness stays under `experiments/p0`. These commands
-exercise historical experiments; current product builds use the NVRTC
-[quickstart](guides/quickstart.md).
+## Distribution and consumer checks
 
 ```sh
-uv run --locked python -m experiments.p0.harness --list
-uv run --locked python -m experiments.p0.harness --only codegen
-uv run --locked python -m experiments.p0.validation --out experiments/p0/out/new-validation-run
+uv run --locked --no-default-groups python tools/validation/distribution_check.py
 ```
 
-Use a fresh output directory for each validation run. Reports record the Git
-revision, source and lock hashes, and installed package versions. The historical
-native CUDA probes require nvcc and a host compiler; the C++/Rust host probes
-also need their respective compilers. Follow the
-[original validation runbook](plan/opaque-artifact-validation.md) and
-[Phase 0 exit report](research/e16-phase0-exit.md) for the full setup and commands.
+This builds core, NN, and Torch distributions and verifies metadata, included
+sources, CLI entry points, and compiler-free installed consumers. It uploads
+nothing. See [Releases](releases.md).
 
-## Documentation changes
+Kernel factories use `tensor.compiler.frontend.source.export_source` to include
+implementation fingerprints in specialization files. Rebuild compiled bundles
+when those implementation inputs change. The NN bundle checks both the runtime
+and its templates; changing an import path also changes its fingerprint.
+Generic `.tbin`/`.tpack` formats and native ABI layouts remain separate contracts.
 
-Keep current setup and API instructions in the guides. Link benchmarks to their
-retained data and specify the hardware, precision, and timing protocol behind
-performance claims. When moving a document, update inbound links and relative
-links inside it. Update the relevant index when adding a report or decision.
-Preserve historical measurements and provenance rather than rewriting them to
-look like results for the current revision.
+## Benchmarks and historical experiments
+
+Current measurements live under `benchmarks/kernels`, `benchmarks/adapters`, and
+`benchmarks/training/nanogpt`. The NN example stays in
+`packages/tensor-nn/examples/nanogpt`; PyTorch supplies reference checks only.
+Model inference measurements and serving belong to [AKAS](https://github.com/kreasof-ai/akas).
+
+```sh
+uv run --locked python -m research.phase0.harness --list
+uv run --locked python -m pytest research/phase0/tests
+```
+
+Historical reports describe the revisions and environments measured there.
+Evidence files retain their original bytes and hashes. Read
+[Research](../research/README.md) for the archive organization.
+
+## Changes
+
+Keep library dependencies independent of CLI presentation. Initializers expose
+imports; implementations belong in named modules. Update the example or usage
+page when behavior changes and run checks appropriate to the affected contract.
+
+The [migration ledger](migration.md) records source ownership and verification.
+See [Contributing](../CONTRIBUTING.md) for the review process.

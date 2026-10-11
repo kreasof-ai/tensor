@@ -8,11 +8,16 @@ import numbers
 
 SCALAR_TYPES = {
     "bool": ctypes.c_bool,
-    "int8": ctypes.c_int8, "int16": ctypes.c_int16,
-    "int32": ctypes.c_int32, "int64": ctypes.c_int64,
-    "uint8": ctypes.c_uint8, "uint16": ctypes.c_uint16,
-    "uint32": ctypes.c_uint32, "uint64": ctypes.c_uint64,
-    "float32": ctypes.c_float, "float64": ctypes.c_double,
+    "int8": ctypes.c_int8,
+    "int16": ctypes.c_int16,
+    "int32": ctypes.c_int32,
+    "int64": ctypes.c_int64,
+    "uint8": ctypes.c_uint8,
+    "uint16": ctypes.c_uint16,
+    "uint32": ctypes.c_uint32,
+    "uint64": ctypes.c_uint64,
+    "float32": ctypes.c_float,
+    "float64": ctypes.c_double,
 }
 INTEGER_TYPES = set(SCALAR_TYPES) - {"bool", "float32", "float64"}
 OPERATIONS = {"add", "sub", "mul", "floordiv", "floormod", "min", "max"}
@@ -31,7 +36,11 @@ def scalar_value(value, dtype: str, name: str):
             raise ValueError(f"{name} needs an integer {dtype}")
         value = int(value)
         bits = ctypes.sizeof(SCALAR_TYPES[dtype]) * 8
-        low, high = (0, (1 << bits) - 1) if dtype.startswith("u") else (-(1 << (bits-1)), (1 << (bits-1))-1)
+        low, high = (
+            (0, (1 << bits) - 1)
+            if dtype.startswith("u")
+            else (-(1 << (bits - 1)), (1 << (bits - 1)) - 1)
+        )
         if not low <= value <= high:
             raise ValueError(f"{name} is outside the {dtype} range")
         return value
@@ -62,16 +71,23 @@ def validate_expression(expression, symbols: dict, *, depth: int = 0) -> set[str
         if not isinstance(name, str) or name not in symbols:
             raise ValueError(f"unknown dimension symbol {name}")
         return {name}
-    if (set(expression) == {"cast", "value"} and isinstance(expression["cast"], str)
-            and expression["cast"] in INTEGER_TYPES):
-        return validate_expression(expression["value"], symbols, depth=depth+1)
-    if (set(expression) != {"op", "args"} or not isinstance(expression["op"], str)
-            or expression["op"] not in OPERATIONS
-            or not isinstance(expression["args"], list) or len(expression["args"]) != 2):
+    if (
+        set(expression) == {"cast", "value"}
+        and isinstance(expression["cast"], str)
+        and expression["cast"] in INTEGER_TYPES
+    ):
+        return validate_expression(expression["value"], symbols, depth=depth + 1)
+    if (
+        set(expression) != {"op", "args"}
+        or not isinstance(expression["op"], str)
+        or expression["op"] not in OPERATIONS
+        or not isinstance(expression["args"], list)
+        or len(expression["args"]) != 2
+    ):
         raise ValueError("invalid integer expression operation")
     result = set()
     for argument in expression["args"]:
-        result.update(validate_expression(argument, symbols, depth=depth+1))
+        result.update(validate_expression(argument, symbols, depth=depth + 1))
     return result
 
 
@@ -81,10 +97,14 @@ def evaluate(expression, symbols: dict) -> int:
     if "var" in expression:
         name = expression["var"]
         if name not in symbols:
-            raise ValueError(f"cannot bind dimension {name}; supply a matching input or {name}=VALUE")
+            raise ValueError(
+                f"cannot bind dimension {name}; supply a matching input or {name}=VALUE"
+            )
         return symbols[name]
     if "cast" in expression:
-        return scalar_value(evaluate(expression["value"], symbols), expression["cast"], "dimension cast")
+        return scalar_value(
+            evaluate(expression["value"], symbols), expression["cast"], "dimension cast"
+        )
     left, right = (evaluate(value, symbols) for value in expression["args"])
     operation = expression["op"]
     if operation in ("floordiv", "floormod") and right == 0:
@@ -114,14 +134,19 @@ def buffer_argument(descriptor: dict) -> bool:
     return descriptor.get("kind", "buffer") == "buffer"
 
 
-def bind_shapes(manifest: dict, supplied: dict, dimensions: dict | None = None) -> tuple[dict, dict]:
+def bind_shapes(
+    manifest: dict, supplied: dict, dimensions: dict | None = None
+) -> tuple[dict, dict]:
     """Infer direct dimension variables, then check every supplied buffer shape."""
     definitions = manifest.get("symbols", {})
     dimensions = dimensions or {}
     unknown = dimensions.keys() - definitions.keys()
     if unknown:
         raise ValueError(f"unknown dimensions: {sorted(unknown)}")
-    bound = {name: scalar_value(value, definitions[name], name) for name, value in dimensions.items()}
+    bound = {
+        name: scalar_value(value, definitions[name], name)
+        for name, value in dimensions.items()
+    }
     values = dict(supplied)
     for descriptor in manifest["arguments"]:
         name = descriptor["name"]
@@ -137,21 +162,30 @@ def bind_shapes(manifest: dict, supplied: dict, dimensions: dict | None = None) 
             continue
         if not hasattr(value, "shape") or not hasattr(value, "dtype"):
             raise TypeError(f"{name} must be a buffer with shape and dtype")
-        if len(value.shape) != len(descriptor["shape"]) or str(value.dtype) != descriptor["dtype"]:
-            raise ValueError(f"{name} needs shape {descriptor['shape']} and dtype {descriptor['dtype']}")
+        if (
+            len(value.shape) != len(descriptor["shape"])
+            or str(value.dtype) != descriptor["dtype"]
+        ):
+            raise ValueError(
+                f"{name} needs shape {descriptor['shape']} and dtype {descriptor['dtype']}"
+            )
         for extent, actual in zip(descriptor["shape"], value.shape):
             if isinstance(extent, dict) and set(extent) == {"var"}:
                 symbol = extent["var"]
                 actual = scalar_value(actual, definitions[symbol], symbol)
                 if symbol in bound and bound[symbol] != actual:
-                    raise ValueError(f"{name}: dimension {symbol} mismatch; expected {bound[symbol]}, received {actual}")
+                    raise ValueError(
+                        f"{name}: dimension {symbol} mismatch; expected {bound[symbol]}, received {actual}"
+                    )
                 bound[symbol] = actual
     for descriptor in manifest["arguments"]:
         name = descriptor["name"]
         if name in values and buffer_argument(descriptor):
             expected = resolve_shape(descriptor["shape"], bound)
             if tuple(values[name].shape) != expected:
-                raise ValueError(f"{name} needs shape {list(expected)} and dtype {descriptor['dtype']}")
+                raise ValueError(
+                    f"{name} needs shape {list(expected)} and dtype {descriptor['dtype']}"
+                )
     return bound, values
 
 
@@ -163,13 +197,16 @@ def resolve_shape(shape: list, symbols: dict) -> tuple[int, ...]:
 
 
 def resolve_launch(launch: dict, symbols: dict) -> dict:
-    result = {name: [evaluate(value, symbols) for value in launch[name]] for name in ("grid", "block")}
+    result = {
+        name: [evaluate(value, symbols) for value in launch[name]]
+        for name in ("grid", "block")
+    }
     result["shared_memory_bytes"] = evaluate(launch["shared_memory_bytes"], symbols)
     for name in ("grid", "block"):
-        if any(value < 1 or value > (1 << 31)-1 for value in result[name]):
+        if any(value < 1 or value > (1 << 31) - 1 for value in result[name]):
             raise ValueError(f"launch {name} exceeds positive int32 dimensions")
     if math.prod(result["block"]) > 1024:
         raise ValueError("launch block exceeds 1024 threads")
-    if not 0 <= result["shared_memory_bytes"] <= (1 << 31)-1:
+    if not 0 <= result["shared_memory_bytes"] <= (1 << 31) - 1:
         raise ValueError("invalid shared memory size")
     return result

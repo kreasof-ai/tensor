@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 import torch
 from torch.fx import Node
-from .partition import kind, GEMM
+from tensor_torch.compile.partition import kind, GEMM
 
 
 def _dtype(tensor):
@@ -13,7 +13,7 @@ def _dtype(tensor):
 
 def emit(nodes, external, inputs):
     """Validate an FX region and emit metadata for an actual DSL factory."""
-    from tensor.compiler.entry import export_source
+    from tensor.compiler.frontend.source import export_source
 
     values = dict(zip(external, inputs))
     root = nodes[-1]
@@ -67,7 +67,7 @@ def emit(nodes, external, inputs):
             dependencies=(
                 module,
                 "tensor_torch.compile.lowering",
-                "tensor.compiler.entry",
+                'tensor.compiler.frontend.source',
             ),
             outputs=["out"],
         )
@@ -160,7 +160,7 @@ def emit(nodes, external, inputs):
         "tensor_torch.compile.kernels",
         "make_kernel",
         specification,
-        dependencies=("tensor_torch.compile.lowering", "tensor.compiler.entry"),
+        dependencies=("tensor_torch.compile.lowering", 'tensor.compiler.frontend.source'),
         outputs=["out"],
     )
     return source, tuple(range(len(inputs))), "gemm" if base else "pointwise"

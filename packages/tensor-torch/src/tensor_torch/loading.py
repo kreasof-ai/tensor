@@ -1,7 +1,7 @@
 """Resolve installed module references or load an existing Tensor artifact."""
 
 from pathlib import Path
-from .kernel import Kernel
+from tensor_torch.kernel import Kernel
 
 
 def load(
@@ -13,7 +13,7 @@ def load(
     source fallback; backend FX cache misses compile with NVRTC automatically.
     """
     if "::" in str(reference):
-        from tensor.artifacts.modules import resolve_reference
+        from tensor.modules.project import resolve_reference
 
         if target is None:
             import torch

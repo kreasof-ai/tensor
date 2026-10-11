@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from tensor.compiler import select_compiler
-from tensor.compiler.nvrtc import NvrtcCompiler, NvrtcError
+from tensor.compiler.cuda.toolchain import select_compiler
+from tensor.compiler.cuda.nvrtc import NvrtcCompiler, NvrtcError
 
 
 def test_missing_bundle_and_conflicting_compiler_selection(tmp_path):

@@ -2,7 +2,14 @@
 
 import subprocess
 
-from tensor.cli import doctor
+import pytest
+from tensor import diagnostics as doctor
+from tensor.compiler.cuda import toolchain
+
+
+@pytest.fixture(autouse=True)
+def installed_runtime(monkeypatch):
+    monkeypatch.setattr(doctor, "check_runtime_packages", lambda: {"status": "ok"})
 
 
 def test_explicit_target_allows_gpu_free_build_host(monkeypatch):
@@ -30,7 +37,7 @@ def test_no_target_skips_compilation_when_device_is_absent(monkeypatch):
 
 
 def test_nvcc_version_alone_does_not_pass_the_toolchain_check(monkeypatch):
-    monkeypatch.setattr(doctor, "_resolve_nvcc", lambda explicit: "/fake/nvcc")
+    monkeypatch.setattr(toolchain, "_resolve_nvcc", lambda explicit: "/fake/nvcc")
 
     def run(command, **kwargs):
         if "--version" in command:

@@ -3,6 +3,7 @@
 The architecture-specific Hopper target is deliberately explicit. Its cubins
 run only on compute capability 9.0; they do not inherit forward compatibility.
 """
+
 import re
 
 TARGET = re.compile(r"(?:sm_[0-9]{2,3}|sm_90a)\Z")

@@ -4,9 +4,10 @@
 
 Tensor is pre-1.0. Distribution checks prepare files for review; they do not
 upload to a registry or create a GitHub release. The package names remain
-`tensor-workspace`, `tensor-nn`, `tensor-llm`, and `tensor-torch`.
+`tensor-workspace`, `tensor-nn`, and `tensor-torch`.
+The independent [AKAS inference project](https://github.com/kreasof-ai/akas) has its own release.
 
-The proposed [path to 1.0](plan/v1.md) defines the stability and acceptance work
+The proposed [path to 1.0](../research/plans/v1.md) defines the stability and acceptance work
 before a stable release. The checks below prepare candidate files; passing them
 alone does not close the API, compatibility, hardware, or onboarding gates.
 
@@ -17,7 +18,7 @@ With Python 3.12 and uv, from a clean checkout:
 ```sh
 uv sync --locked
 uv run --locked python -m pytest
-uv run --locked python scripts/validation/distribution_check.py --out build/release-candidate
+uv run --locked python tools/validation/distribution_check.py --out build/release-candidate
 ```
 
 Use a fresh output directory for each candidate. The script builds all four
@@ -31,7 +32,7 @@ checked there; actual GPU execution is a separate validation step.
 To recheck existing files:
 
 ```sh
-uv run --locked python scripts/validation/distribution_check.py --out build/release-candidate --check-only
+uv run --locked python tools/validation/distribution_check.py --out build/release-candidate --check-only
 ```
 
 The [Distribution checks workflow](../.github/workflows/distribution.yml) runs
@@ -67,5 +68,5 @@ and describe the supported Python/hardware profiles in the release notes.
 
 `uv build` prepares Tensor's Python distributions. `tensor publish` packages a
 kernel module into a transport wheel; it is a different release operation. See
-the [module guide](guides/modules.md) and use `tensor publish --dry-run` to inspect
+the [module guide](modules.md) and use `tensor publish --dry-run` to inspect
 a module candidate before upload.

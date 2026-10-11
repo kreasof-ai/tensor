@@ -15,6 +15,7 @@ FORMAT_VERSION = 3
 MAX_UNCOMPRESSED = 128 * 1024 * 1024
 MAX_MANIFEST = 2 * 1024 * 1024
 from tensor.runtime.cuda_target import TARGET
+
 HASH = re.compile(r"[0-9a-f]{64}\Z")
 NAME = re.compile(r"[A-Za-z_]\w*\Z")
 
@@ -34,47 +35,77 @@ def validate_manifest(manifest: object) -> dict:
     if not isinstance(manifest, dict):
         raise ArtifactError("manifest must be an object")
     revision = manifest.get("format_version")
-    if (type(revision) is not int or revision not in (1, 2, FORMAT_VERSION)
-            or manifest.get("format") != (FORMAT if revision >= 3 else "tensor.cuda")):
+    if (
+        type(revision) is not int
+        or revision not in (1, 2, FORMAT_VERSION)
+        or manifest.get("format") != (FORMAT if revision >= 3 else "tensor.cuda")
+    ):
         raise ArtifactError("unsupported Tensor artifact format/version")
     provider = manifest.get("provider", "cuda") if revision >= 3 else "cuda"
     if provider not in ("cuda", "cpu", "webgpu"):
         raise ArtifactError("unsupported runtime provider")
-    if manifest.get("kind") != {"cuda": "cubin", "cpu": "native", "webgpu": "wgsl"}[provider]:
+    if (
+        manifest.get("kind")
+        != {"cuda": "cubin", "cpu": "native", "webgpu": "wgsl"}[provider]
+    ):
         raise ArtifactError("invalid executable kind for provider")
     target = manifest.get("target")
-    if (not isinstance(target, str) or
-            (not TARGET.fullmatch(target) if provider == "cuda" else target !=
-             {"cpu": "cpu-linux-x86_64", "webgpu": "webgpu-portable-v1"}[provider])):
+    if not isinstance(target, str) or (
+        not TARGET.fullmatch(target)
+        if provider == "cuda"
+        else target
+        != {"cpu": "cpu-linux-x86_64", "webgpu": "webgpu-portable-v1"}[provider]
+    ):
         raise ArtifactError("invalid provider target")
     if revision >= 3:
         from tensor.runtime.abi import check_requirement, check_workspace
+
         try:
             check_requirement(manifest.get("runtime_abi"))
             if manifest["runtime_abi"]["minor"] >= 1 or "workspace" in manifest:
                 check_workspace(manifest.get("workspace"))
-            if manifest["runtime_abi"]["minor"] >= 1 and not {"executable_descriptors", "no_external_workspace"} <= set(manifest["runtime_abi"]["required_capabilities"]):
-                raise ValueError("runtime ABI 1.1 requires executable and workspace capabilities")
+            if manifest["runtime_abi"]["minor"] >= 1 and not {
+                "executable_descriptors",
+                "no_external_workspace",
+            } <= set(manifest["runtime_abi"]["required_capabilities"]):
+                raise ValueError(
+                    "runtime ABI 1.1 requires executable and workspace capabilities"
+                )
         except ValueError as exc:
             raise ArtifactError(str(exc)) from exc
         if "provider" not in manifest:
             raise ArtifactError("missing runtime provider")
         compiler = manifest.get("compiler")
-        if not isinstance(compiler, dict) or not isinstance(compiler.get("name"), str) or not isinstance(compiler.get("version"), str):
+        if (
+            not isinstance(compiler, dict)
+            or not isinstance(compiler.get("name"), str)
+            or not isinstance(compiler.get("version"), str)
+        ):
             raise ArtifactError("missing compiler provenance")
     entrypoint = manifest.get("entrypoint")
     if not isinstance(entrypoint, str) or not NAME.fullmatch(entrypoint):
         raise ArtifactError("invalid executable entrypoint")
     symbols = manifest.get("symbols", {})
-    if (not isinstance(symbols, dict) or len(symbols) > 128
-            or any(not isinstance(name, str) or not NAME.fullmatch(name)
-                   or not isinstance(dtype, str) or dtype not in INTEGER_TYPES
-                   for name, dtype in symbols.items())):
+    if (
+        not isinstance(symbols, dict)
+        or len(symbols) > 128
+        or any(
+            not isinstance(name, str)
+            or not NAME.fullmatch(name)
+            or not isinstance(dtype, str)
+            or dtype not in INTEGER_TYPES
+            for name, dtype in symbols.items()
+        )
+    ):
         raise ArtifactError("invalid dimension symbols")
     if revision == 1 and symbols:
         raise ArtifactError("v1 artifacts cannot contain dimension symbols")
     launch = manifest.get("launch")
-    if not isinstance(launch, dict) or set(launch) != {"grid", "block", "shared_memory_bytes"}:
+    if not isinstance(launch, dict) or set(launch) != {
+        "grid",
+        "block",
+        "shared_memory_bytes",
+    }:
         raise ArtifactError("invalid launch description")
     for field in ("grid", "block"):
         dimensions = launch[field]
@@ -87,11 +118,16 @@ def validate_manifest(manifest: object) -> dict:
             if revision == 1 and type(extent) is not int:
                 raise ArtifactError("v1 launch dimensions must be static")
     block = launch["block"]
-    if all(type(value) is int for value in block) and block[0] * block[1] * block[2] > 1024:
+    if (
+        all(type(value) is int for value in block)
+        and block[0] * block[1] * block[2] > 1024
+    ):
         raise ArtifactError("launch block exceeds 1024 threads")
     shared = launch["shared_memory_bytes"]
     _expression(shared, symbols)
-    if (type(shared) is int and not 0 <= shared < (1 << 31)) or (revision == 1 and type(shared) is not int):
+    if (type(shared) is int and not 0 <= shared < (1 << 31)) or (
+        revision == 1 and type(shared) is not int
+    ):
         raise ArtifactError("invalid shared memory size")
     arguments = manifest.get("arguments")
     if not isinstance(arguments, list) or not arguments or len(arguments) > 256:
@@ -102,9 +138,20 @@ def validate_manifest(manifest: object) -> dict:
         if not isinstance(argument, dict):
             raise ArtifactError("invalid argument")
         kind = argument.get("kind", "buffer")
-        fields = {"name", "dtype", "shape"} if revision == 1 else (
-            {"kind", "name", "dtype", "shape", "alignment"} if kind == "buffer" else {"kind", "name", "dtype"})
-        if set(argument) != fields or kind not in ("buffer", "scalar") or (revision == 1 and kind != "buffer"):
+        fields = (
+            {"name", "dtype", "shape"}
+            if revision == 1
+            else (
+                {"kind", "name", "dtype", "shape", "alignment"}
+                if kind == "buffer"
+                else {"kind", "name", "dtype"}
+            )
+        )
+        if (
+            set(argument) != fields
+            or kind not in ("buffer", "scalar")
+            or (revision == 1 and kind != "buffer")
+        ):
             raise ArtifactError("invalid argument descriptor")
         name, dtype = argument["name"], argument["dtype"]
         if not isinstance(name, str) or not NAME.fullmatch(name):
@@ -113,12 +160,20 @@ def validate_manifest(manifest: object) -> dict:
             raise ArtifactError("invalid argument dtype")
         if dtype not in {*SCALAR_TYPES, "float16", "bfloat16"}:
             raise ArtifactError(f"unsupported argument dtype {dtype}")
-        if dtype == "bfloat16" and (revision < 3 or provider != "cuda"
-                or manifest["runtime_abi"]["minor"] < 3
-                or "bfloat16_storage" not in manifest["runtime_abi"]["required_capabilities"]):
-            raise ArtifactError("BF16 buffers require CUDA runtime ABI 1.3 and bfloat16_storage")
+        if dtype == "bfloat16" and (
+            revision < 3
+            or provider != "cuda"
+            or manifest["runtime_abi"]["minor"] < 3
+            or "bfloat16_storage"
+            not in manifest["runtime_abi"]["required_capabilities"]
+        ):
+            raise ArtifactError(
+                "BF16 buffers require CUDA runtime ABI 1.3 and bfloat16_storage"
+            )
         if kind == "scalar":
-            if dtype not in SCALAR_TYPES or (name in symbols and symbols[name] != dtype):
+            if dtype not in SCALAR_TYPES or (
+                name in symbols and symbols[name] != dtype
+            ):
                 raise ArtifactError("invalid scalar argument dtype")
         else:
             if name in symbols:
@@ -129,11 +184,17 @@ def validate_manifest(manifest: object) -> dict:
                 raise ArtifactError("invalid buffer shape")
             for extent in shape:
                 _expression(extent, symbols)
-                if (type(extent) is int and extent < 1) or (revision == 1 and type(extent) is not int):
+                if (type(extent) is int and extent < 1) or (
+                    revision == 1 and type(extent) is not int
+                ):
                     raise ArtifactError("invalid buffer shape")
             if revision >= 2:
                 alignment = argument["alignment"]
-                if type(alignment) is not int or not 1 <= alignment <= 4096 or alignment & (alignment-1):
+                if (
+                    type(alignment) is not int
+                    or not 1 <= alignment <= 4096
+                    or alignment & (alignment - 1)
+                ):
                     raise ArtifactError("invalid buffer alignment")
         names.append(name)
     if len(names) != len(set(names)):
@@ -141,8 +202,11 @@ def validate_manifest(manifest: object) -> dict:
     if not buffers:
         raise ArtifactError("artifact has no buffer arguments")
     outputs = manifest.get("outputs", [])
-    if (not isinstance(outputs, list) or any(not isinstance(name, str) or name not in buffers for name in outputs)
-            or len(outputs) != len(set(outputs))):
+    if (
+        not isinstance(outputs, list)
+        or any(not isinstance(name, str) or name not in buffers for name in outputs)
+        or len(outputs) != len(set(outputs))
+    ):
         raise ArtifactError("invalid output names")
     if revision >= 2:
         abi = manifest.get("abi")
@@ -154,7 +218,11 @@ def validate_manifest(manifest: object) -> dict:
             if not isinstance(item, dict) or set(item) != {"kind", "name", "dtype"}:
                 raise ArtifactError("invalid kernel ABI argument")
             name, kind, dtype = item["name"], item["kind"], item["dtype"]
-            if not isinstance(name, str) or kind not in ("scalar", "buffer") or not isinstance(dtype, str):
+            if (
+                not isinstance(name, str)
+                or kind not in ("scalar", "buffer")
+                or not isinstance(dtype, str)
+            ):
                 raise ArtifactError("invalid kernel ABI argument")
             original = frontend.get(name)
             if original is not None:
@@ -178,23 +246,34 @@ def validate_manifest(manifest: object) -> dict:
         raise ArtifactError("invalid frontend operator set")
     files = manifest.get("files")
     if provider == "webgpu":
-        from tensor.providers.webgpu_contract import validate_metadata
+        from tensor.artifacts.webgpu import validate_metadata
+
         try:
             validate_metadata(manifest.get("webgpu"), manifest["abi"])
-            if manifest["runtime_abi"]["minor"] < 2 or "opaque_buffer_handles" not in manifest["runtime_abi"]["required_capabilities"]:
+            if (
+                manifest["runtime_abi"]["minor"] < 2
+                or "opaque_buffer_handles"
+                not in manifest["runtime_abi"]["required_capabilities"]
+            ):
                 raise ValueError("WebGPU requires ABI 1.2 opaque buffer handles")
             if launch["grid"][2] != 1 or launch["shared_memory_bytes"] != 0:
-                raise ValueError("WebGPU uses a flattened z grid and static workgroup storage")
+                raise ValueError(
+                    "WebGPU uses a flattened z grid and static workgroup storage"
+                )
             if any(type(value) is not int for value in launch["block"]):
                 raise ValueError("WebGPU needs a static workgroup size")
         except (KeyError, ValueError) as exc:
             raise ArtifactError(str(exc)) from exc
-    image = {"cuda": "kernel.cubin", "cpu": "kernel.so", "webgpu": "kernel.wgsl"}[provider]
+    image = {"cuda": "kernel.cubin", "cpu": "kernel.so", "webgpu": "kernel.wgsl"}[
+        provider
+    ]
     if not isinstance(files, dict) or {image, "kernel.tirx.json"} - files.keys():
         raise ArtifactError("missing executable or frontend IR")
     for name, digest in files.items():
-        if (not isinstance(name, str) or not (name in (image, "kernel.tirx.json")
-            or re.fullmatch(r"licenses/[A-Za-z0-9_.-]+", name))):
+        if not isinstance(name, str) or not (
+            name in (image, "kernel.tirx.json")
+            or re.fullmatch(r"licenses/[A-Za-z0-9_.-]+", name)
+        ):
             raise ArtifactError(f"invalid payload name: {name}")
         if not isinstance(digest, str) or not HASH.fullmatch(digest):
             raise ArtifactError(f"invalid payload hash: {name}")
@@ -211,25 +290,43 @@ def read_artifact(path: str | Path) -> tuple[dict, dict[str, bytes]]:
                 raise ArtifactError("duplicate or excessive archive members")
             if sum(item.file_size for item in members) > MAX_UNCOMPRESSED:
                 raise ArtifactError("artifact exceeds the 128 MiB limit")
-            if "manifest.json" not in names or archive.getinfo("manifest.json").file_size > MAX_MANIFEST:
+            if (
+                "manifest.json" not in names
+                or archive.getinfo("manifest.json").file_size > MAX_MANIFEST
+            ):
                 raise ArtifactError("missing or oversized manifest")
             manifest = validate_manifest(json.loads(archive.read("manifest.json")))
             if set(names) != {"manifest.json", *manifest["files"]}:
                 raise ArtifactError("archive members do not match the manifest")
             files = {name: archive.read(name) for name in manifest["files"]}
-    except (zipfile.BadZipFile, KeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+    except (
+        zipfile.BadZipFile,
+        KeyError,
+        json.JSONDecodeError,
+        UnicodeDecodeError,
+    ) as exc:
         raise ArtifactError(f"invalid artifact: {exc}") from exc
     for name, content in files.items():
         if hashlib.sha256(content).hexdigest() != manifest["files"][name]:
             raise ArtifactError(f"payload hash mismatch: {name}")
     provider = manifest.get("provider", "cuda")
-    image = {"cuda": "kernel.cubin", "cpu": "kernel.so", "webgpu": "kernel.wgsl"}[provider]
+    image = {"cuda": "kernel.cubin", "cpu": "kernel.so", "webgpu": "kernel.wgsl"}[
+        provider
+    ]
     if provider == "webgpu":
-        from tensor.providers.webgpu_contract import reflect
+        from tensor.artifacts.webgpu import reflect
+
         try:
-            contract = reflect(files[image].decode("utf-8"), manifest["entrypoint"], manifest["abi"], manifest["launch"])
+            contract = reflect(
+                files[image].decode("utf-8"),
+                manifest["entrypoint"],
+                manifest["abi"],
+                manifest["launch"],
+            )
             if contract != manifest["webgpu"]:
-                raise ValueError("WGSL feature/binding/limit contract differs from manifest")
+                raise ValueError(
+                    "WGSL feature/binding/limit contract differs from manifest"
+                )
         except (UnicodeDecodeError, ValueError) as exc:
             raise ArtifactError(str(exc)) from exc
     elif not files[image].startswith(b"\x7fELF"):
