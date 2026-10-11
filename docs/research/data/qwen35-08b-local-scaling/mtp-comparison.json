@@ -1,0 +1,816 @@
+{
+  "model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+  "metric": "mean of two whole HTTP replay output token rates, including fill/drain",
+  "native_model_quality_qualified": false,
+  "baseline_serial_quality": [
+    {
+      "engine": "vllm",
+      "ar_profile": "vllm-ar-stream4",
+      "mtp_profile": "vllm-mtp-w2-stream4",
+      "requests": [
+        {
+          "id": "request-000000",
+          "matching_tokens": 9,
+          "tokens": 32,
+          "mismatch_positions": [
+            1,
+            2,
+            3,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "first_mismatch_position": 1,
+          "position_indexing": "zero-based",
+          "exact_match": false
+        },
+        {
+          "id": "request-000001",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000002",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000003",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000004",
+          "matching_tokens": 4,
+          "tokens": 32,
+          "mismatch_positions": [
+            3,
+            4,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "first_mismatch_position": 3,
+          "position_indexing": "zero-based",
+          "exact_match": false
+        },
+        {
+          "id": "request-000005",
+          "matching_tokens": 4,
+          "tokens": 32,
+          "mismatch_positions": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "first_mismatch_position": 4,
+          "position_indexing": "zero-based",
+          "exact_match": false
+        },
+        {
+          "id": "request-000006",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000007",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        }
+      ],
+      "matching_tokens": 177,
+      "total_tokens": 256,
+      "exact_requests": 5,
+      "total_requests": 8,
+      "qualification": "serial greedy own-engine AR/MTP comparison, 8 prompts x 32 tokens; not broad model qualification"
+    },
+    {
+      "engine": "sglang",
+      "ar_profile": "sglang-ar-stream4-mem50",
+      "mtp_profile": "sglang-mtp-w2-stream4",
+      "requests": [
+        {
+          "id": "request-000000",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000001",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000002",
+          "matching_tokens": 31,
+          "tokens": 32,
+          "mismatch_positions": [
+            19
+          ],
+          "first_mismatch_position": 19,
+          "position_indexing": "zero-based",
+          "exact_match": false
+        },
+        {
+          "id": "request-000003",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000004",
+          "matching_tokens": 19,
+          "tokens": 32,
+          "mismatch_positions": [
+            18,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "first_mismatch_position": 18,
+          "position_indexing": "zero-based",
+          "exact_match": false
+        },
+        {
+          "id": "request-000005",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000006",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        },
+        {
+          "id": "request-000007",
+          "matching_tokens": 32,
+          "tokens": 32,
+          "mismatch_positions": [],
+          "first_mismatch_position": null,
+          "position_indexing": "zero-based",
+          "exact_match": true
+        }
+      ],
+      "matching_tokens": 242,
+      "total_tokens": 256,
+      "exact_requests": 6,
+      "total_requests": 8,
+      "qualification": "serial greedy own-engine AR/MTP comparison, 8 prompts x 32 tokens; not broad model qualification"
+    }
+  ],
+  "points": [
+    {
+      "concurrency": 1,
+      "profiles": {
+        "native_mtp": {
+          "profile": "tensor-mtp-v2-w2",
+          "report": "results/tensor-mtp-v2-w2/c1/report.json",
+          "output_tokens_per_second": 426.2800154511989,
+          "repeat_output_tokens_per_second": [
+            426.1286350987327,
+            426.43139580366517
+          ],
+          "mean_ttft_ms": 14.726865280408674,
+          "failures": 0
+        },
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c1/report.json",
+          "output_tokens_per_second": 314.14076546499956,
+          "repeat_output_tokens_per_second": [
+            314.07192213477884,
+            314.2096087952203
+          ],
+          "mean_ttft_ms": 31.302524031318057,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c1/report.json",
+          "output_tokens_per_second": 272.87606831805147,
+          "repeat_output_tokens_per_second": [
+            272.66581454499084,
+            273.08632209111215
+          ],
+          "mean_ttft_ms": 35.01629799998085,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c1/report.json",
+          "output_tokens_per_second": 322.62209934669966,
+          "repeat_output_tokens_per_second": [
+            321.60338551218155,
+            323.64081318121777
+          ],
+          "mean_ttft_ms": 38.09126015623576,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c1/report.json",
+          "output_tokens_per_second": 202.6527825792013,
+          "repeat_output_tokens_per_second": [
+            202.17077844744875,
+            203.13478671095382
+          ],
+          "mean_ttft_ms": 36.75518284375556,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "551df5f1a0d8995c198db5a1bc5f65979db62f867564bb3cde487669fb1ea100",
+      "mtp_vs_ar": {
+        "vllm": 0.8686426542385641,
+        "sglang": 0.6281429046229855
+      }
+    },
+    {
+      "concurrency": 2,
+      "profiles": {
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c2/report.json",
+          "output_tokens_per_second": 523.7555522389633,
+          "repeat_output_tokens_per_second": [
+            524.0282702592124,
+            523.4828342187143
+          ],
+          "mean_ttft_ms": 56.43440250004517,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c2/report.json",
+          "output_tokens_per_second": 501.6119231801939,
+          "repeat_output_tokens_per_second": [
+            501.01232463579896,
+            502.21152172458886
+          ],
+          "mean_ttft_ms": 59.12468896876533,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c2/report.json",
+          "output_tokens_per_second": 517.2167170218681,
+          "repeat_output_tokens_per_second": [
+            517.1020766454094,
+            517.3313573983268
+          ],
+          "mean_ttft_ms": 65.78866962499319,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c2/report.json",
+          "output_tokens_per_second": 377.5951465131952,
+          "repeat_output_tokens_per_second": [
+            377.9644804771661,
+            377.22581254922426
+          ],
+          "mean_ttft_ms": 44.05365590625365,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "44c4c504736b6c7de76e838e7d6b012aaeffc16f35ba05796aaf663df66ac152",
+      "mtp_vs_ar": {
+        "vllm": 0.9577214428293709,
+        "sglang": 0.7300520924524376
+      }
+    },
+    {
+      "concurrency": 4,
+      "profiles": {
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c4/report.json",
+          "output_tokens_per_second": 1016.5098253501828,
+          "repeat_output_tokens_per_second": [
+            1015.9431129241746,
+            1017.0765377761912
+          ],
+          "mean_ttft_ms": 60.4441293750142,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c4/report.json",
+          "output_tokens_per_second": 927.9310421150369,
+          "repeat_output_tokens_per_second": [
+            929.4353800715389,
+            926.4267041585348
+          ],
+          "mean_ttft_ms": 65.61546225000825,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c4/report.json",
+          "output_tokens_per_second": 979.9414536442774,
+          "repeat_output_tokens_per_second": [
+            960.1352959649768,
+            999.7476113235781
+          ],
+          "mean_ttft_ms": 89.13138859379899,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c4/report.json",
+          "output_tokens_per_second": 697.5743214437982,
+          "repeat_output_tokens_per_second": [
+            697.6162826997557,
+            697.5323601878407
+          ],
+          "mean_ttft_ms": 50.229302312509105,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "3934983a6a38a4523a0026ad719fae087e923bb96b88599a9613ecb65bc4bce4",
+      "mtp_vs_ar": {
+        "vllm": 0.9128598848470245,
+        "sglang": 0.7118530590267492
+      }
+    },
+    {
+      "concurrency": 8,
+      "profiles": {
+        "native_mtp": {
+          "profile": "tensor-mtp-v2-w2",
+          "report": "results/tensor-mtp-v2-w2/c8/report.json",
+          "output_tokens_per_second": 2579.2110315323453,
+          "repeat_output_tokens_per_second": [
+            2581.7184328196367,
+            2576.703630245054
+          ],
+          "mean_ttft_ms": 34.017743920230714,
+          "failures": 0
+        },
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c8/report.json",
+          "output_tokens_per_second": 1915.7997561935583,
+          "repeat_output_tokens_per_second": [
+            1915.9271363135015,
+            1915.6723760736152
+          ],
+          "mean_ttft_ms": 60.17908260942306,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c8/report.json",
+          "output_tokens_per_second": 1631.3624613728564,
+          "repeat_output_tokens_per_second": [
+            1629.7860597943804,
+            1632.9388629513323
+          ],
+          "mean_ttft_ms": 77.26250060937545,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c8/report.json",
+          "output_tokens_per_second": 1810.8858158088979,
+          "repeat_output_tokens_per_second": [
+            1760.3516329204522,
+            1861.4199986973433
+          ],
+          "mean_ttft_ms": 103.38136539063925,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c8/report.json",
+          "output_tokens_per_second": 1164.5585617931374,
+          "repeat_output_tokens_per_second": [
+            1156.7575556363183,
+            1172.3595679499563
+          ],
+          "mean_ttft_ms": 54.18816442188046,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "a16ff83907bd692cd610b6d02fd824cb24d631dcd481c694442bc8a3b3b7faac",
+      "mtp_vs_ar": {
+        "vllm": 0.8515307803432226,
+        "sglang": 0.643087792519345
+      }
+    },
+    {
+      "concurrency": 16,
+      "profiles": {
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c16/report.json",
+          "output_tokens_per_second": 3328.196876444649,
+          "repeat_output_tokens_per_second": [
+            3327.1377367485384,
+            3329.2560161407596
+          ],
+          "mean_ttft_ms": 76.19896901565326,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c16/report.json",
+          "output_tokens_per_second": 2641.1907598862526,
+          "repeat_output_tokens_per_second": [
+            2644.522422432044,
+            2637.859097340461
+          ],
+          "mean_ttft_ms": 88.92775084375337,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c16/report.json",
+          "output_tokens_per_second": 3177.0434646476806,
+          "repeat_output_tokens_per_second": [
+            3098.7329713424615,
+            3255.3539579528992
+          ],
+          "mean_ttft_ms": 108.0685687343994,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c16/report.json",
+          "output_tokens_per_second": 1756.283358840621,
+          "repeat_output_tokens_per_second": [
+            1747.0524339188478,
+            1765.5142837623941
+          ],
+          "mean_ttft_ms": 71.67347446094396,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "ac95e44d99d884a965d51bfb1c17803b2a2b33662bab287f5c8d3ecaf9674f88",
+      "mtp_vs_ar": {
+        "vllm": 0.7935800849340704,
+        "sglang": 0.5528043221263845
+      }
+    },
+    {
+      "concurrency": 32,
+      "profiles": {
+        "native_mtp": {
+          "profile": "tensor-mtp-v2-w2",
+          "report": "results/tensor-mtp-v2-w2/c32/report.json",
+          "output_tokens_per_second": 6928.958916209244,
+          "repeat_output_tokens_per_second": [
+            6911.654742050747,
+            6946.263090367742
+          ],
+          "mean_ttft_ms": 56.25882783238012,
+          "failures": 0
+        },
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c32/report.json",
+          "output_tokens_per_second": 5558.419203391535,
+          "repeat_output_tokens_per_second": [
+            5564.698079654272,
+            5552.140327128797
+          ],
+          "mean_ttft_ms": 103.75019291797116,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c32/report.json",
+          "output_tokens_per_second": 4020.997084339623,
+          "repeat_output_tokens_per_second": [
+            4026.0958276689985,
+            4015.8983410102483
+          ],
+          "mean_ttft_ms": 109.20003418360037,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c32/report.json",
+          "output_tokens_per_second": 5380.6758175214145,
+          "repeat_output_tokens_per_second": [
+            5284.541966722154,
+            5476.809668320675
+          ],
+          "mean_ttft_ms": 123.91590737891711,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c32/report.json",
+          "output_tokens_per_second": 2524.815657459323,
+          "repeat_output_tokens_per_second": [
+            2484.3321176455684,
+            2565.2991972730783
+          ],
+          "mean_ttft_ms": 75.76155575389443,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "d4bcd8c8a1677454fdca5a206575b04f4ad6e8701b43eb4fbb7b280be7d08acd",
+      "mtp_vs_ar": {
+        "vllm": 0.7234065904720113,
+        "sglang": 0.4692376465494568
+      }
+    },
+    {
+      "concurrency": 64,
+      "profiles": {
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c64/report.json",
+          "output_tokens_per_second": 7971.2236119203735,
+          "repeat_output_tokens_per_second": [
+            7999.035243311665,
+            7943.411980529083
+          ],
+          "mean_ttft_ms": 147.40913009375055,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c64/report.json",
+          "output_tokens_per_second": 5860.598850168062,
+          "repeat_output_tokens_per_second": [
+            5828.956119874175,
+            5892.24158046195
+          ],
+          "mean_ttft_ms": 138.52230886718164,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c64/report.json",
+          "output_tokens_per_second": 7129.070586531547,
+          "repeat_output_tokens_per_second": [
+            7232.056732836695,
+            7026.084440226398
+          ],
+          "mean_ttft_ms": 324.884006318352,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c64/report.json",
+          "output_tokens_per_second": 3236.8357783721785,
+          "repeat_output_tokens_per_second": [
+            3228.5248882062447,
+            3245.1466685381124
+          ],
+          "mean_ttft_ms": 120.24973743163426,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "27723df762ebf6093d6008db12a7e44a027128be59ab2b1ca05131b32bd005a6",
+      "mtp_vs_ar": {
+        "vllm": 0.7352194763930561,
+        "sglang": 0.45403334685552216
+      }
+    },
+    {
+      "concurrency": 128,
+      "profiles": {
+        "native_mtp": {
+          "profile": "tensor-mtp-v2-w2",
+          "report": "results/tensor-mtp-v2-w2/c128/report.json",
+          "output_tokens_per_second": 11147.508829046714,
+          "repeat_output_tokens_per_second": [
+            11144.322821440734,
+            11150.694836652696
+          ],
+          "mean_ttft_ms": 148.11551688586633,
+          "failures": 0
+        },
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c128/report.json",
+          "output_tokens_per_second": 9485.024987003297,
+          "repeat_output_tokens_per_second": [
+            9396.14237571049,
+            9573.907598296104
+          ],
+          "mean_ttft_ms": 282.31259633397923,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c128/report.json",
+          "output_tokens_per_second": 7434.879834543593,
+          "repeat_output_tokens_per_second": [
+            7440.5417071675465,
+            7429.217961919639
+          ],
+          "mean_ttft_ms": 218.03283066601352,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c128/report.json",
+          "output_tokens_per_second": 8894.823075475299,
+          "repeat_output_tokens_per_second": [
+            8981.084801574518,
+            8808.56134937608
+          ],
+          "mean_ttft_ms": 458.0091084570199,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c128/report.json",
+          "output_tokens_per_second": 3964.853297586563,
+          "repeat_output_tokens_per_second": [
+            3905.802748856235,
+            4023.9038463168904
+          ],
+          "mean_ttft_ms": 184.18088228416997,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "fb1d458e158d015aa1c166e8a93f991a7b273b8a27045183c3a062d429096e7b",
+      "mtp_vs_ar": {
+        "vllm": 0.7838545333018223,
+        "sglang": 0.44574841612290295
+      }
+    },
+    {
+      "concurrency": 256,
+      "profiles": {
+        "native_mtp": {
+          "profile": "tensor-mtp-v2-w2",
+          "report": "results/tensor-mtp-v2-w2/c256/report.json",
+          "output_tokens_per_second": 11762.747695760292,
+          "repeat_output_tokens_per_second": [
+            11694.87278224575,
+            11830.622609274837
+          ],
+          "mean_ttft_ms": 287.69126618147567,
+          "failures": 0
+        },
+        "vllm_ar": {
+          "profile": "vllm-ar-stream4",
+          "report": "results/vllm-ar-stream4/c256/report.json",
+          "output_tokens_per_second": 10753.78853527776,
+          "repeat_output_tokens_per_second": [
+            10780.852439024975,
+            10726.724631530546
+          ],
+          "mean_ttft_ms": 384.42552180859366,
+          "failures": 0
+        },
+        "vllm_mtp": {
+          "profile": "vllm-mtp-w2-stream4",
+          "report": "results/vllm-mtp-w2-stream4/c256/report.json",
+          "output_tokens_per_second": 8947.743107564049,
+          "repeat_output_tokens_per_second": [
+            8958.650443832179,
+            8936.83577129592
+          ],
+          "mean_ttft_ms": 298.1101150595673,
+          "failures": 0
+        },
+        "sglang_ar": {
+          "profile": "sglang-ar-stream4-mem50",
+          "report": "results/sglang-ar-stream4-mem50/c256/report.json",
+          "output_tokens_per_second": 10125.664962031067,
+          "repeat_output_tokens_per_second": [
+            10160.307607436605,
+            10091.022316625527
+          ],
+          "mean_ttft_ms": 662.8831925610364,
+          "failures": 0
+        },
+        "sglang_mtp": {
+          "profile": "sglang-mtp-w2-stream4",
+          "report": "results/sglang-mtp-w2-stream4/c256/report.json",
+          "output_tokens_per_second": 4388.730457231732,
+          "repeat_output_tokens_per_second": [
+            4336.570127485333,
+            4440.890786978131
+          ],
+          "mean_ttft_ms": 290.28756030810786,
+          "failures": 0
+        }
+      },
+      "workload_sha256": "2a43dd00731093be48e4c20a0355f1d69f0b46ee52d9880e02aaeb37371dea53",
+      "mtp_vs_ar": {
+        "vllm": 0.8320549616733688,
+        "sglang": 0.4334263945813405
+      }
+    }
+  ]
+}
