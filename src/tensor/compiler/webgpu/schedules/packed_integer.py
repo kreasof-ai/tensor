@@ -1,7 +1,5 @@
 """Packed integer implementation for WebGPU kernels."""
 
-from __future__ import annotations
-
 from itertools import product
 
 from tensor.compiler.webgpu.schedules.registers import registers
