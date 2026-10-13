@@ -97,7 +97,6 @@ def validate_metadata(metadata, abi):
     if (
         not isinstance(bindings, list)
         or len(bindings) != len(buffers)
-        or len(buffers) > 8
     ):
         raise ValueError("invalid WebGPU binding count")
     for index, (item, arg) in enumerate(zip(bindings, buffers)):

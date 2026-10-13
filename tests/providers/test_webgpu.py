@@ -1,16 +1,16 @@
 """WGSL envelope, producer boundaries and native opaque-buffer execution."""
 import json
 import os
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 import numpy as np
 import pytest
 
 import tensor as tx
-from tensor.runtime.abi import BoundCall, check_requirement
 from tensor.artifacts.format import ArtifactError, read_artifact, validate_manifest
 from tensor.compiler.errors import BuildError
+from tensor.runtime.abi import BoundCall, check_requirement
 
 ROOT = Path(__file__).resolve().parents[2]
 NATIVE = pytest.mark.skipif(os.environ.get("TENSOR_WEBGPU") != "1", reason="set TENSOR_WEBGPU=1 for native adapter tests")
@@ -88,8 +88,8 @@ def test_buffer_limit_option_is_provider_specific():
 
 @NATIVE
 def test_native_buffer_limit_opt_in():
-    from tensor.runtime.errors import TensorRuntimeError
     from tensor.providers.webgpu.adapter import probe
+    from tensor.runtime.errors import TensorRuntimeError
     default = 134217728
     info = probe()
     maximum = min(info['limits']['max-buffer-size'], info['limits']['max-storage-buffer-binding-size'])
@@ -184,6 +184,7 @@ def test_rejects_vendor_compiler_and_unsupported_integer_profile(tmp_path):
 def test_nonuniform_barriers_fail_before_native_execution():
     import tilelang
     from tilelang import tvm
+
     from tensor.compiler.webgpu.passes.barriers import verify_uniform_barriers
     ir = tvm.tirx
     lane = ir.Var("lane", "int32")
@@ -239,6 +240,7 @@ def test_native_symbolic_dispatch_and_session_handles(artifacts):
 @NATIVE
 def test_native_fp16_tail_and_adapter_feature_gate(artifacts):
     from types import SimpleNamespace
+
     from tensor.providers.webgpu.device import Device
     with tx.Device(provider="webgpu") as device:
         if "shader-f16" not in device.info["features"]:
@@ -274,7 +276,9 @@ def test_cached_readback_reuses_staging_and_returns_owned_arrays():
 
 @NATIVE
 def test_native_prepared_encoder_captures_validation_errors(artifacts):
-    import struct,wgpu
+    import struct
+
+    import wgpu
     pytest.importorskip('tensor.providers._webgpu_native')
     with tx.Device(provider='webgpu') as device:
         kernel=device.load(artifacts['dynamic_affine'])
@@ -338,6 +342,7 @@ def test_packed_x_dispatch_masks_last_workgroup_plane(artifacts):
 ])
 def test_barrier_loop_readonly_uniform_control(index_kind, noalias, written, scope, accepted):
     from tilelang import tvm
+
     from tensor.compiler.webgpu.passes.barriers import verify_uniform_barriers
 
     ir = tvm.tirx
@@ -361,6 +366,7 @@ def test_barrier_loop_readonly_uniform_control(index_kind, noalias, written, sco
 
 def test_barrier_uniformity_rejects_control_with_exposed_address():
     from tilelang import tvm
+
     from tensor.compiler.webgpu.passes.barriers import verify_uniform_barriers
 
     ir = tvm.tirx
@@ -372,3 +378,46 @@ def test_barrier_uniformity_rejects_control_with_exposed_address():
     kernel = ir.PrimFunc([], ir.SeqStmt([expose, loop])).with_attr("tirx.noalias", True)
     with pytest.raises(ValueError, match="nonuniform"):
         verify_uniform_barriers(kernel)
+
+
+@NATIVE
+def test_storage_binding_count_uses_adapter_capability(tmp_path):
+    """Mapped state can add a ninth storage buffer; eight is not a format limit."""
+    from types import SimpleNamespace
+
+    from tensor.compiler.tuning import measure
+
+    names = [f"x{i}" for i in range(8)]
+    parameters = ", ".join(f'{name}: T.Tensor((4,), "float32")' for name in names+["out"])
+    source = tmp_path / "nine_buffers.py"
+    source.write_text(
+        "import tilelang.language as T\n@T.prim_func\n"
+        f"def kernel({parameters}):\n"
+        "    with T.Kernel(1, threads=32):\n"
+        "        for i in T.Parallel(32):\n"
+        "            if i < 4:\n"
+        f"                out[i] = {' + '.join(name+'[i]' for name in names)}\n"
+        'def tensor_export(): return {"kernel": kernel}\n'
+    )
+    artifact = tmp_path / "nine_buffers.tbin"
+    tx.build(source, artifact, provider="webgpu")
+    manifest, _ = read_artifact(artifact)
+    assert len(manifest["webgpu"]["bindings"]) == 9
+    with tx.Device(provider="webgpu") as device:
+        if device._gpu.limits["max-storage-buffers-per-shader-stage"] < 9:
+            pytest.skip("adapter exposes fewer than nine storage bindings")
+        kernel = device.load(artifact)
+        inputs = [device.from_numpy(np.arange(4,dtype="float32")+i) for i in range(8)]
+        out = device.zeros(4)
+        kernel.launch(*inputs, out)
+        np.testing.assert_array_equal(out.to_numpy(), np.arange(4)*8+28)
+        timing = measure(device, lambda: kernel.launch(*inputs,out), warmup=1, samples=2, repeats=2)
+        assert timing["metric"] == "completed_seconds" and timing["median_seconds"] > 0
+        original = device._gpu
+        device._gpu = SimpleNamespace(features=original.features,
+                                      limits={**original.limits, "max-storage-buffers-per-shader-stage": 8})
+        try:
+            with pytest.raises(ArtifactError, match="storage binding limit"):
+                device.load(artifact)
+        finally:
+            device._gpu = original

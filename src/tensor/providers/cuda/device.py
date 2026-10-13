@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import ctypes as c
 from pathlib import Path
+
 from tensor.artifacts.format import ArtifactError, read_artifact
+from tensor.providers.cuda.driver import CudaError, _Driver
+from tensor.runtime.abi import CAPABILITIES, StreamDescriptor, check_requirement
 from tensor.runtime.buffer import Buffer
 from tensor.runtime.executable import Executable
 from tensor.runtime.session import Session
-from tensor.runtime.abi import CAPABILITIES, StreamDescriptor, check_requirement
-from tensor.providers.cuda.driver import CudaError
-from tensor.providers.cuda.driver import _Driver
 
 
 class Device(Session):
@@ -158,8 +158,14 @@ class Device(Session):
         result = self._download_storage(buffer)
         return decode_bfloat16(result) if str(buffer.dtype) == "bfloat16" else result
 
+    def _copy(self, destination, source):
+        if destination.pointer != source.pointer:
+            self.driver.call("cuMemcpyDtoDAsync_v2", destination.pointer,
+                             source.pointer, source.nbytes, self.stream)
+
     def _download_storage(self, buffer):
         import numpy as np
+
         from tensor.runtime.dtypes import storage_dtype
 
         result = np.empty(buffer.shape, dtype=storage_dtype(buffer.dtype))
@@ -222,6 +228,7 @@ class Device(Session):
 
     def from_numpy(self, array, dtype=None) -> Buffer:
         import numpy as np
+
         from tensor.runtime.dtypes import encode_bfloat16
 
         host = (
@@ -299,7 +306,13 @@ class Device(Session):
         )
 
     def zeros(self, shape, dtype="float32") -> Buffer:
-        return self.full(shape, 0, dtype)
+        buffer = self.empty(shape, dtype)
+        try:
+            self.driver.call("cuMemsetD8Async", buffer.pointer, 0, buffer.nbytes, self.stream)
+            return buffer
+        except BaseException:
+            buffer.release()
+            raise
 
     def ones(self, shape, dtype="float32") -> Buffer:
         return self.full(shape, 1, dtype)

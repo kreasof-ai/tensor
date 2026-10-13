@@ -1,6 +1,7 @@
 """A faster invalid schedule must never win the kernel search."""
 import numpy as np
 import pytest
+
 from tensor.compiler.tuning import tune
 
 
@@ -17,7 +18,7 @@ class Candidate:
 
 
 def test_tuning_rejects_fast_wrong_results_and_wrong_saved_intermediates(monkeypatch):
-    monkeypatch.setattr('tensor.compiler.tuning.measure_cuda',lambda device,callback:{'median_gpu_seconds':device})
+    monkeypatch.setattr('tensor.compiler.tuning.measure',lambda device,callback,**kw:{'median_seconds':device})
     output,saved=Output(),Output()
     candidates={'wrong_output':Candidate([9,9],0.01,saved=[1,2]),
                 'wrong_saved':Candidate([1,2],0.02,saved=[9,9]),
@@ -29,6 +30,38 @@ def test_tuning_rejects_fast_wrong_results_and_wrong_saved_intermediates(monkeyp
 
 
 def test_tuning_requires_finite_reference_and_correct_candidates(monkeypatch):
-    monkeypatch.setattr('tensor.compiler.tuning.measure_cuda',lambda device,callback:{'median_gpu_seconds':device})
+    monkeypatch.setattr('tensor.compiler.tuning.measure',lambda device,callback,**kw:{'median_seconds':device})
     with pytest.raises(ValueError,match='finite'):tune({'bad':Candidate([0],1)},[],Output(),[np.nan])
     with pytest.raises(ValueError,match='all tuning'):tune({'bad':Candidate([0],1)},[],Output(),[10])
+
+
+def test_webgpu_measurement_resets_every_invocation_outside_timing(monkeypatch):
+    from types import SimpleNamespace
+
+    from tensor.compiler.tuning import measure
+    events = []
+    clock = [0.0]
+    def reset():
+        events.append("reset")
+        clock[0] += 100.0
+    def callback():
+        events.append("launch")
+        clock[0] += 2.0
+    device = SimpleNamespace(info={"provider": "webgpu"}, synchronize=lambda: events.append("sync"))
+    monkeypatch.setattr("tensor.compiler.tuning.time.perf_counter", lambda: clock[0])
+    result = measure(device, callback, warmup=1, samples=2, repeats=3, reset=reset)
+    assert result["median_seconds"] == 2.0
+    assert result["metric"] == "completed_seconds"
+    assert "gpu_seconds" not in result
+    assert events.count("reset") == events.count("launch") == 7
+    assert all(events[i-1] in ("reset", "sync") for i,x in enumerate(events) if x == "launch")
+
+
+def test_measurement_rejects_unsupported_provider_and_invalid_budget():
+    from types import SimpleNamespace
+
+    from tensor.compiler.tuning import measure
+    with pytest.raises(ValueError, match="CUDA or WebGPU"):
+        measure(SimpleNamespace(info={"provider": "cpu"}), lambda: None)
+    with pytest.raises(ValueError, match="measurement counts"):
+        measure(SimpleNamespace(info={"provider": "webgpu"}), lambda: None, samples=0)

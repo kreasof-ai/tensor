@@ -5,6 +5,12 @@ from __future__ import annotations
 import ctypes as c
 import math
 import struct
+
+from tensor.artifacts.format import ArtifactError, read_artifact
+from tensor.artifacts.webgpu import TARGET
+from tensor.providers.webgpu.adapter import _adapters
+from tensor.providers.webgpu.buffer import OpaqueBuffer, _handles
+from tensor.providers.webgpu.plan import PreparedPlan
 from tensor.runtime.abi import (
     CAPABILITIES,
     DTYPES,
@@ -12,17 +18,11 @@ from tensor.runtime.abi import (
     StreamDescriptor,
     check_requirement,
 )
-from tensor.artifacts.format import ArtifactError, read_artifact
+from tensor.runtime.errors import TensorRuntimeError
 from tensor.runtime.event import Event
 from tensor.runtime.executable import Executable
 from tensor.runtime.session import Session
-from tensor.runtime.errors import TensorRuntimeError
 from tensor.runtime.signature import bind_shapes, resolve_launch, scalar_value
-from tensor.artifacts.webgpu import TARGET
-from tensor.providers.webgpu.adapter import _adapters
-from tensor.providers.webgpu.buffer import OpaqueBuffer
-from tensor.providers.webgpu.buffer import _handles
-from tensor.providers.webgpu.plan import PreparedPlan
 
 
 class Device(Session):
@@ -76,6 +76,7 @@ class Device(Session):
             ),
             "max-storage-buffer-binding-size": buffer_size,
             "max-buffer-size": buffer_size,
+            "max-storage-buffers-per-shader-stage": limits["max-storage-buffers-per-shader-stage"],
         }
         features = ["shader-f16"] if "shader-f16" in self._adapter.features else []
         if "subgroup" in self._adapter.features:
@@ -231,7 +232,15 @@ class Device(Session):
         return self.from_numpy(np.full(shape, fill_value, dtype=dtype))
 
     def zeros(self, shape, dtype="float32"):
-        return self.full(shape, 0, dtype)
+        buffer = self.empty(shape, dtype)
+        try:
+            encoder = self._gpu.create_command_encoder()
+            encoder.clear_buffer(buffer._storage)
+            self._gpu.queue.submit([encoder.finish()])
+            return buffer
+        except BaseException:
+            buffer.release()
+            raise
 
     def ones(self, shape, dtype="float32"):
         return self.full(shape, 1, dtype)
@@ -270,6 +279,9 @@ class Device(Session):
             or any(size > limit for size, limit in zip(block, self.limits["block"]))
         ):
             raise ArtifactError("WebGPU shader exceeds adapter workgroup limits")
+        storage_bindings = len(manifest["webgpu"]["bindings"])
+        if storage_bindings > self._gpu.limits["max-storage-buffers-per-shader-stage"]:
+            raise ArtifactError("WebGPU artifact exceeds adapter storage binding limit")
         for arg in manifest["arguments"]:
             if arg["kind"] == "buffer" and all(type(x) is int for x in arg["shape"]):
                 import numpy as np
@@ -405,7 +417,6 @@ class Device(Session):
             or list(descriptor.block) != launch["block"]
         ):
             raise self.error("WebGPU call launch metadata mismatch")
-        dimension = self._gpu.limits["max-compute-workgroups-per-dimension"]
         grid = launch["grid"]
         if any(size > limit for size, limit in zip(grid, self.limits["grid"])):
             raise self.error("WebGPU launch exceeds adapter dispatch limits")
@@ -431,6 +442,14 @@ class Device(Session):
             0,
             array.tobytes() + b"\0" * (buffer._allocated - buffer.nbytes),
         )
+
+    def _copy(self, destination, source):
+        if destination._storage is source._storage:
+            return
+        encoder = self._gpu.create_command_encoder()
+        encoder.copy_buffer_to_buffer(source._storage, 0, destination._storage, 0,
+                                      source._allocated)
+        self._gpu.queue.submit([encoder.finish()])
 
     def record_event(self):
         self._check()

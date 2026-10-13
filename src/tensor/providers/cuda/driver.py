@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from tensor.runtime.errors import TensorRuntimeError
 import ctypes as c
 import os
+
+from tensor.runtime.errors import TensorRuntimeError
 
 
 class CudaError(TensorRuntimeError):
@@ -58,6 +59,8 @@ class _Driver:
             "cuMemcpyHtoD_v2": [address, ptr, size],
             "cuMemcpyDtoH_v2": [ptr, address, size],
             "cuMemcpyDtoD_v2": [address, address, size],
+            "cuMemcpyDtoDAsync_v2": [address, address, size, ptr],
+            "cuMemsetD8Async": [address, c.c_ubyte, size, ptr],
             "cuModuleLoadData": [c.POINTER(ptr), ptr],
             "cuModuleUnload": [ptr],
             "cuModuleGetFunction": [c.POINTER(ptr), ptr, c.c_char_p],

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import ctypes as c
-from tensor.runtime.abi import BufferDescriptor, DTYPES
+
+from tensor.runtime.abi import DTYPES, BufferDescriptor
 from tensor.runtime.errors import TensorRuntimeError
 
 
@@ -51,6 +52,21 @@ class Buffer:
     dtype = property(lambda self: self._dtype)
     nbytes = property(lambda self: self._nbytes)
     strides = property(lambda self: self._strides)
+
+    def view(self, shape):
+        """Borrow this allocation with another contiguous shape; never copy it."""
+        return BufferView(self, shape)
+
+    def copy_from(self, source):
+        """Copy equal-sized storage on the device's ordered submission stream."""
+        self._check()
+        source._check()
+        if source.device is not self.device:
+            raise ValueError("buffer copy requires the same device")
+        if source.dtype != self.dtype or source.nbytes != self.nbytes:
+            raise ValueError("buffer copy requires the same dtype and storage size")
+        self.device._copy(self, source)
+        return self
 
     def _check(self) -> None:
         self.device._check()
@@ -110,3 +126,39 @@ class Buffer:
         from tensor.runtime.dlpack import export
 
         return export(self, versioned=max_version is not None and max_version >= (1, 0))
+
+
+class BufferView(Buffer):
+    """A reshape descriptor borrowing storage and lifetime from another buffer."""
+
+    def __init__(self, base, shape):
+        import math
+
+        base._check()
+        shape = (shape,) if type(shape) is int else tuple(shape)
+        if not shape or any(type(n) is not int or n < 1 for n in shape):
+            raise ValueError("view shape must contain positive integers")
+        if math.prod(shape) * base.dtype.itemsize != base.nbytes:
+            raise ValueError("reshape view must preserve buffer storage size")
+        super().__init__(base.device, base._pointer, shape, base.dtype, owner=base)
+        self._base = base
+        self.device._buffers.add(self)
+
+    def _check(self):
+        super()._check()
+        self._base._check()
+
+    def release(self):
+        # Releasing a descriptor is safe even after its base was explicitly freed.
+        if not self._released:
+            self.device._check()
+            self.device.synchronize()
+            self._dispose()
+
+    def _dispose(self):
+        if self._released:
+            return
+        if self._dlpack_exports:
+            raise TensorRuntimeError("release DLPack consumers before releasing this buffer")
+        self._released = True
+        self.device._buffers.discard(self)
