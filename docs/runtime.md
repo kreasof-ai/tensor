@@ -36,6 +36,28 @@ Device helpers include `empty`, `zeros`, `ones`, `full`, `randn`, `arange`, and
 NumPy upload/download. `tx.assert_close` checks results against a host reference.
 Copies and kernel launches use the session's execution ordering.
 
+## Reuse device storage
+
+`buffer.view(shape)` borrows the same contiguous allocation with another shape.
+Releasing the view leaves its base allocation alive. `destination.copy_from(source)`
+copies equal-sized storage on the session's execution stream or queue.
+
+For feature concatenation, use a column copy between two matrices:
+
+```python
+features = device.empty((rows, 5 * width), "float32")
+for index, source in enumerate(layer_outputs):
+    features.copy_columns_from(source.view((rows, width)), index * width)
+```
+
+The source and destination must have the same dtype and row count; the source
+must fit at the destination column offset. Other columns remain unchanged.
+Copies stay on the device and retain submission order. CUDA uses a pitched copy;
+WebGPU encodes ordered row copies and requires four-byte-aligned row sizes and
+column offsets. An identical-storage copy is a no-op; overlapping regions with
+different layouts are rejected. Keep borrowed views alive while reusing them,
+and release them before their bases.
+
 ## Symbolic dimensions and scalars
 
 Build [dynamic_affine.py](../examples/dynamic_affine.py) using the quickstart

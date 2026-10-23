@@ -6,7 +6,7 @@ import ctypes as c
 from pathlib import Path
 
 from tensor.artifacts.format import ArtifactError, read_artifact
-from tensor.providers.cuda.driver import CudaError, _Driver
+from tensor.providers.cuda.driver import CudaError, Memcpy3D, _Driver
 from tensor.runtime.abi import CAPABILITIES, StreamDescriptor, check_requirement
 from tensor.runtime.buffer import Buffer
 from tensor.runtime.executable import Executable
@@ -162,6 +162,23 @@ class Device(Session):
         if destination.pointer != source.pointer:
             self.driver.call("cuMemcpyDtoDAsync_v2", destination.pointer,
                              source.pointer, source.nbytes, self.stream)
+
+    def _copy_columns(self, destination, source, offset):
+        if (source.pointer < destination.pointer + destination.nbytes
+                and destination.pointer < source.pointer + source.nbytes):
+            if source.pointer == destination.pointer and source.shape == destination.shape and offset == 0:
+                return
+            raise ValueError("overlapping column copies are unsupported")
+        width = source.dtype.itemsize
+        region = Memcpy3D(
+            srcMemoryType=2, srcDevice=source.pointer,
+            srcPitch=source.shape[1] * width, srcHeight=source.shape[0],
+            dstMemoryType=2, dstDevice=destination.pointer,
+            dstXInBytes=offset * width,
+            dstPitch=destination.shape[1] * width, dstHeight=destination.shape[0],
+            WidthInBytes=source.shape[1] * width, Height=source.shape[0], Depth=1,
+        )
+        self.driver.call("cuMemcpy3DAsync_v2", c.byref(region), self.stream)
 
     def _download_storage(self, buffer):
         import numpy as np

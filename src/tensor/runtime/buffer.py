@@ -68,6 +68,24 @@ class Buffer:
         self.device._copy(self, source)
         return self
 
+    def copy_columns_from(self, source, offset=0):
+        """Copy a matrix into selected columns, preserving the other columns.
+
+        Equivalent to ``self[:, offset:offset + source.shape[1]] = source``.
+        Storage stays on the device and follows the session's submission order.
+        """
+        self._check()
+        source._check()
+        if source.device is not self.device:
+            raise ValueError("buffer copy requires the same device")
+        if self.dtype != source.dtype or len(self.shape) != 2 or len(source.shape) != 2:
+            raise ValueError("column copy requires two matrices with the same dtype")
+        if (self.shape[0] != source.shape[0] or type(offset) is not int
+                or offset < 0 or offset + source.shape[1] > self.shape[1]):
+            raise ValueError("column copy exceeds matrix rows or columns")
+        self.device._copy_columns(self, source, offset)
+        return self
+
     def _check(self) -> None:
         self.device._check()
         if self._generation != self.device._generation:

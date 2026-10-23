@@ -6,6 +6,10 @@ contains the detailed experimental record. The package version is currently
 
 ## Unreleased
 
+- Add device column copies for packing model features without host readback.
+  CUDA uses pitched asynchronous copies; WebGPU retains its four-byte alignment
+  requirements. Preserve borrowed views and add CPU copy/view coverage.
+
 - Add opt-in GPU compaction of Qwen prefill expert tiles and bounded H200
   profiling/qualification. Preserve projection rounding and retain exact
   prefill-control comparisons; the completed C8 replay measures 924.9 tok/s,

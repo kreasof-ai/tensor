@@ -451,6 +451,23 @@ class Device(Session):
                                       source._allocated)
         self._gpu.queue.submit([encoder.finish()])
 
+    def _copy_columns(self, destination, source, offset):
+        if source._storage is destination._storage:
+            if source.shape == destination.shape and offset == 0:
+                return
+            raise ValueError("overlapping column copies are unsupported")
+        width = source.dtype.itemsize
+        source_pitch = source.shape[1] * width
+        destination_pitch = destination.shape[1] * width
+        start = offset * width
+        if any(value % 4 for value in (source_pitch, destination_pitch, start)):
+            raise ValueError("WebGPU column copies require four-byte-aligned rows and columns")
+        encoder = self._gpu.create_command_encoder()
+        for row in range(source.shape[0]):
+            encoder.copy_buffer_to_buffer(source._storage, row * source_pitch,
+                destination._storage, row * destination_pitch + start, source_pitch)
+        self._gpu.queue.submit([encoder.finish()])
+
     def record_event(self):
         self._check()
         event = Event(self, None)

@@ -16,6 +16,27 @@ class CudaUnavailable(CudaError):
     pass
 
 
+class Memcpy3D(c.Structure):
+    """CUDA_MEMCPY3D_v2; depth one also supports arbitrary linear row pitches."""
+
+    _fields_ = [
+        ("srcXInBytes", c.c_size_t), ("srcY", c.c_size_t),
+        ("srcZ", c.c_size_t), ("srcLOD", c.c_size_t),
+        ("srcMemoryType", c.c_int), ("srcHost", c.c_void_p),
+        ("srcDevice", c.c_uint64), ("srcArray", c.c_void_p),
+        ("reserved0", c.c_void_p), ("srcPitch", c.c_size_t),
+        ("srcHeight", c.c_size_t),
+        ("dstXInBytes", c.c_size_t), ("dstY", c.c_size_t),
+        ("dstZ", c.c_size_t), ("dstLOD", c.c_size_t),
+        ("dstMemoryType", c.c_int), ("dstHost", c.c_void_p),
+        ("dstDevice", c.c_uint64), ("dstArray", c.c_void_p),
+        ("reserved1", c.c_void_p), ("dstPitch", c.c_size_t),
+        ("dstHeight", c.c_size_t),
+        ("WidthInBytes", c.c_size_t), ("Height", c.c_size_t),
+        ("Depth", c.c_size_t),
+    ]
+
+
 class _Driver:
     def __init__(self) -> None:
         if c.sizeof(c.c_void_p) != 8:
@@ -60,6 +81,7 @@ class _Driver:
             "cuMemcpyDtoH_v2": [ptr, address, size],
             "cuMemcpyDtoD_v2": [address, address, size],
             "cuMemcpyDtoDAsync_v2": [address, address, size, ptr],
+            "cuMemcpy3DAsync_v2": [c.POINTER(Memcpy3D), ptr],
             "cuMemsetD8Async": [address, c.c_ubyte, size, ptr],
             "cuModuleLoadData": [c.POINTER(ptr), ptr],
             "cuModuleUnload": [ptr],

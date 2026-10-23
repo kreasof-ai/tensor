@@ -105,7 +105,24 @@ class Device(Session):
         return self.from_numpy(np.from_dlpack(source))
 
     def _download(self, buffer):
-        return buffer._storage.copy()
+        base = buffer
+        while hasattr(base, "_base"):
+            base = base._base
+        return base._storage.reshape(buffer.shape).copy()
+
+    def _copy(self, destination, source):
+        c.memmove(destination.pointer, source.pointer, source.nbytes)
+
+    def _copy_columns(self, destination, source, offset):
+        if (source.pointer < destination.pointer + destination.nbytes
+                and destination.pointer < source.pointer + source.nbytes):
+            if source.pointer == destination.pointer and source.shape == destination.shape and offset == 0:
+                return
+            raise ValueError("overlapping column copies are unsupported")
+        width = source.dtype.itemsize
+        for row in range(source.shape[0]):
+            c.memmove(destination.pointer + (row * destination.shape[1] + offset) * width,
+                      source.pointer + row * source.shape[1] * width, source.shape[1] * width)
 
     def _dispose_buffer(self, buffer):
         buffer._storage = None
