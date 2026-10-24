@@ -11,6 +11,29 @@ hardware driver, without TileLang, TVM, or PyTorch. CUDA, WebGPU, and a scoped C
 provider share buffer and executable contracts. Tensor is pre-1.0 (`0.1.0`);
 see [compatibility](docs/compatibility.md) before transferring artifacts.
 
+## CUDA benchmark showcase
+
+Measured on **NVIDIA L4 (SM89), 24 October 2026**. All **17 cases** passed
+final numerical checks, with 260 Tensor and 142 Triton schedule candidates measured.
+
+![CUDA kernel latency comparison on NVIDIA L4](research/studies/cuda-showcase/evidence/l4-20261024/showcase.png)
+
+| Workload | Tensor speedup over fixed TileLang | Result |
+|---|---:|---|
+| FP16 matmul | 0.99–1.34× | Larger shapes benefit from search; tuned Triton and PyTorch CUDA BLAS remain faster. |
+| Flash Attention | 0.97–1.12× | Causal S=129 beats upstream FA2 by 2.20×; larger cases favor FA2 or Triton. |
+| Dense MLA decode | 1.13–1.76× | Search improves split geometry; Triton remains 10–17% faster than Tensor. |
+| GGUF prefill | 1.59–1.96× | Reused AKAS fused kernels beat measured Triton implementations; GGML wins Q4_K/Q6_K. |
+| GGUF single-row decode | About parity | Existing AKAS GEMV is already strong; Tensor beats GGML by 1.18–1.31×. |
+
+These are resident kernel timings using CUDA graphs, excluding compilation,
+tuning, allocation, transfers and host submission. Gains primarily reflect
+schedule selection; they do not establish a general advantage over equally
+scheduled native TileLang or measure full-model or serving performance.
+
+See the [full benchmark study](research/studies/cuda-showcase/README.md) for
+per-case timings, matched controls, raw evidence, limitations and reproduction.
+
 ## Install the CLI
 
 Linux/macOS:
@@ -66,10 +89,6 @@ uv run --locked --no-default-groups tensor --help
 | Bind kernels to PyTorch | [Tensor Torch](packages/tensor-torch/README.md) |
 | Compose native NN modules and train nanoGPT | [Tensor NN](packages/tensor-nn/README.md) |
 | Develop and validate Tensor | [Development](docs/development.md) |
-
-[CUDA showcase measurements](research/studies/cuda-showcase/README.md) compare
-Flash Attention, dense MLA, matmul and GGUF kernels against native TileLang,
-Triton and upstream implementations, with schedule search and matched controls.
 
 [AKAS](https://github.com/kreasof-ai/akas) owns model inference, generation,
 scheduling, and serving. [Loop Latent Transformer](https://github.com/kreasof-ai/loop-latent-transformer)

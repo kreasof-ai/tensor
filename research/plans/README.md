@@ -5,6 +5,20 @@
 The [path to 1.0](v1.md) proposes the next development milestones, stability
 boundary, and release acceptance criteria. Start there for future work.
 
+The [dynamic shapes and batch invariance plan](dynamic-shapes-and-batch-invariance.md)
+extends existing symbolic dimensions into performance-oriented AOT batch/token
+execution for AKAS, with compiler-visible shape ranges, tuned region portfolios,
+packed prefill and an optional qualified numerical policy. It separates Tensor
+contracts from engine changes and includes performance gates from dynamic decode.
+
+The [compilation latency and benchmark turnaround plan](compilation-latency.md)
+treats cold builds, warm/incremental reuse, validation memory and time to the first
+benchmark sample as product acceptance criteria, with profiling before attribution.
+
+The [compiler design literature review](../studies/compiler-design/reports/literature-review.md)
+maps foundational and dynamic-compiler research to these plans, with experiments
+for shared search, shape assumptions, ragged metadata and incremental builds.
+
 The [LLT readiness plan](llt-readiness.md) lists the CUDA kernel, BF16,
 interoperability, and training gates required before the LLT study resumes.
 

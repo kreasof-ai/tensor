@@ -6,6 +6,10 @@ Use [current documentation](../docs/README.md) for installation and APIs.
 
 ## Tensor studies
 
+### Compiler design
+
+- [Literature review and experiments for bounded dynamic AOT execution](studies/compiler-design/reports/literature-review.md): shared shape search, ragged layouts, incremental builds and numerical contracts.
+
 ### Clblast rx6700xt
 
 - [CLBlast versus generated WebGPU GEMM on RX 6700 XT](studies/clblast-rx6700xt/reports/clblast-rx6700xt.md)
