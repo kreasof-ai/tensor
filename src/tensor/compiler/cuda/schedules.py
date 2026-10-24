@@ -134,6 +134,10 @@ def hopper_legal(config, *, target, depth, paired=False, outputs=None):
         not paired or not config.get("register_epilogue", False)
     ):
         return False
+    if config.get("manual_sync", False) and (
+        clustered or not config.get("register_epilogue", False)
+    ):
+        return False
     if clustered:
         if splits not in (2, 4, 8):
             return False
@@ -165,6 +169,7 @@ def hopper_register_space(rows, *, paired=False):
     axes = dict(hopper_space(rows, paired=paired)["hopper_pipeline"])
     axes.update(
         register_epilogue=(False, True),
+        manual_sync=(False, True),
         coalesced_epilogue=(False, True) if paired else (False,),
         block_n=(32 if paired else 64,),
     )

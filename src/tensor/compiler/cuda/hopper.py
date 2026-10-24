@@ -23,6 +23,7 @@ def staged_matmul(
     cluster_reduce=False,
     register_epilogue=False,
     coalesced_epilogue=False,
+    manual_sync=False,
 ):
     """Generate a weight-major matmul with explicit bounded async ownership.
 
@@ -62,6 +63,10 @@ def staged_matmul(
         )
     if coalesced_epilogue and (not register_epilogue or not paired):
         raise ValueError("coalesced epilogue requires the paired register epilogue")
+    if manual_sync and (not native_async or cluster_reduce or not register_epilogue):
+        raise ValueError(
+            "manual synchronization needs native non-clustered register output"
+        )
     shared = stages * (tile_rows + block_m) * block_k * 2 + tile_rows * block_m * 4
     if cluster_reduce:
         shared += (splits + 1) * block_m * block_n * 4
@@ -188,6 +193,11 @@ __device__ __forceinline__ float tensor_warp_gather(float value, int lane) {
             x_view = T.reshape(x, (1, m, k))
             weight_view = T.reshape(weights, (1, *weight_shape))
             T.clear(acc)
+            if manual_sync:
+                # Publish initialized barriers before any producer/consumer
+                # uses them. Subsequent ownership is protected by ready waits
+                # and WGMMA completion rather than automatic CTA barriers.
+                T.sync_threads()
             if native_async:
                 for warm in T.serial(min(stages, tiles)):
                     if transposed_weights:

@@ -7,6 +7,73 @@ import pytest
 from tensor.compiler.cuda.hopper import ring_events, staged_matmul
 
 
+@pytest.mark.parametrize("bm,queue", [(8, 0), (32, 1), (64, 1), (128, 2)])
+def test_manual_sync_keeps_entry_and_async_ownership_without_loop_cta_barriers(
+    bm, queue
+):
+    import tilelang
+    from tvm.target import Target
+
+    target = Target({"kind": "cuda", "arch": "sm_90a"})
+    with (
+        target,
+        tilelang.transform.PassContext(
+            opt_level=3,
+            config={
+                "tl.disable_tma_lower": False,
+                "tl.disable_warp_specialized": True,
+                "tl.disable_thread_storage_sync": True,
+            },
+        ),
+    ):
+        lowered = tilelang.lower(
+            staged_matmul(
+                128,
+                4096,
+                8192,
+                block_m=bm,
+                block_n=64,
+                block_k=128,
+                stages=max(2, queue + 1),
+                queue_depth=queue,
+                splits=4,
+                register_epilogue=True,
+                manual_sync=True,
+            ),
+            target=target,
+            enable_device_compile=False,
+        )
+    source = str(lowered.kernel_source)
+    warm, steady, drain = (
+        source.index("for (int warm"),
+        source.index("for (int tile"),
+        source.rindex("tl::wait_wgmma<0>"),
+    )
+    assert source.index(".init(128)") < source.index("__syncthreads()") < warm
+    assert "__syncthreads()" not in source[steady:]
+    assert ".wait(" in source[steady:drain] and ".arrive();" in source[steady:drain]
+    assert f"tl::wait_wgmma<{queue}>" in source[steady:drain]
+    assert "warpgroup_fence_operand" in source[drain:]
+
+
+def test_manual_sync_rejects_kernels_without_the_async_ownership_contract():
+    for opts in (
+        {"native_async": False},
+        {"register_epilogue": False},
+        {"cluster_reduce": True},
+    ):
+        with pytest.raises(ValueError):
+            staged_matmul(
+                128,
+                256,
+                8192,
+                block_n=64,
+                splits=4,
+                **({"register_epilogue": True} | opts),
+                manual_sync=True,
+            )
+
+
 def test_search_exposes_pipeline_and_weight_layout_and_filters_unsafe_choices():
     from tensor.compiler.cuda.schedules import hopper_legal, hopper_space
     from tensor.compiler.search import ScheduleSearch

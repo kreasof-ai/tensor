@@ -139,20 +139,30 @@ def streamk_reduce(
             first_worker = ((tile * k_tiles + 1) * workers - 1) // total
             last_worker = ((tile + 1) * k_tiles * workers - 1) // total
             if first_worker != last_worker:
+                acc = T.alloc_fragment((block_m, block_n), "float32")
+                T.clear(acc)
+                # Resolve the contributor once, then read its contiguous tile.
+                # Keeping the worker loop outside Parallel prevents duplicating
+                # dynamic division/slot lookup for every output element.
+                # Preserve the separate floor-divided endpoint. Converting
+                # it to a start+extent loop can incorrectly widen the interval
+                # by one contributor when workers outnumber output tiles.
+                worker = T.alloc_var("int32")
+                worker = first_worker
+                while worker <= last_worker:
+                    slot = T.if_then_else(
+                        tile == worker * total // workers // k_tiles, 0, 1
+                    )
+                    for i, j in T.Parallel(block_m, block_n):
+                        acc[i, j] += parts[worker, slot, i, j]
+                    worker += 1
                 for i, j in T.Parallel(block_m, block_n):
                     if (
                         tile // tiles_n * block_m + i < m
                         and tile % tiles_n * block_n + j < n
                     ):
-                        value = T.alloc_var("float32")
-                        value = 0
-                        for worker in T.serial(first_worker, last_worker + 1):
-                            slot = T.if_then_else(
-                                tile == worker * total // workers // k_tiles, 0, 1
-                            )
-                            value += parts[worker, slot, i, j]
                         out[
                             tile // tiles_n * block_m + i, tile % tiles_n * block_n + j
-                        ] = value
+                        ] = acc[i, j]
 
     return reduce

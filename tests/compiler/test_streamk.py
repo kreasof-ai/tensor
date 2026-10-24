@@ -11,12 +11,54 @@ from tensor.compiler.cuda.streamk import (
 )
 
 
-@pytest.mark.parametrize("tiles", [1, 3, 8, 31, 256])
+@pytest.mark.skipif(
+    os.environ.get("TENSOR_NVRTC") != "1", reason="NVRTC instruction inspection"
+)
+def test_fixup_instruction_budget_does_not_expand_lookup_per_output(tmp_path):
+    import re
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    import tilelang
+    from tvm.target import Target
+
+    from tensor.compiler.cuda.lowering import lower_cuda_intrinsics
+    from tensor.compiler.cuda.nvrtc import NvrtcCompiler
+
+    cuobjdump = shutil.which("cuobjdump")
+    if cuobjdump is None:
+        pytest.skip("cuobjdump unavailable")
+    target = Target({"kind": "cuda", "arch": "sm_90a"})
+    with target, tilelang.transform.PassContext(opt_level=3):
+        lowered = tilelang.lower(
+            streamk_reduce(128, 2304, 8192, 132, block_m=64),
+            target=target,
+            enable_device_compile=False,
+        )
+    includes = (
+        Path(tilelang.__file__).parent / "src",
+        Path(tilelang.__file__).parent / "3rdparty/cutlass/include",
+    )
+    cubin = tmp_path / "fixup.cubin"
+    cubin.write_bytes(
+        NvrtcCompiler().compile(
+            lower_cuda_intrinsics(str(lowered.kernel_source)), "sm_90a", includes
+        )
+    )
+    sass = subprocess.check_output([cuobjdump, "--dump-sass", str(cubin)], text=True)
+    instructions = re.findall(
+        r"/\*[0-9a-f]+\*/\s+(?:@!?P\d+\s+)?[A-Z][A-Z0-9_.]+", sass
+    )
+    assert len(instructions) < 500
+
+
+@pytest.mark.parametrize("tiles", [1, 3, 8, 9, 31, 256])
 @pytest.mark.parametrize("k_tiles", [1, 7, 64])
 def test_partition_covers_every_iteration_once_and_reduction_reads_written_slots(
     tiles, k_tiles
 ):
-    for workers in (1, 2, 7, 17, 128, 132, 264):
+    for workers in (1, 2, 7, 17, 128, 132, 264, 528):
         if workers > tiles * k_tiles:
             continue
         coverage = [0] * (tiles * k_tiles)
@@ -52,7 +94,14 @@ def test_partition_covers_every_iteration_once_and_reduction_reads_written_slots
 @pytest.mark.skipif(os.environ.get("TENSOR_P1_CUDA") != "1", reason="CUDA execution")
 @pytest.mark.parametrize(
     "workers,out_dtype",
-    [(1, "bfloat16"), (7, "bfloat16"), (18, "float32"), (33, "bfloat16")],
+    [
+        (1, "bfloat16"),
+        (7, "bfloat16"),
+        (18, "float32"),
+        (33, "bfloat16"),
+        (264, "bfloat16"),
+        (528, "bfloat16"),
+    ],
 )
 def test_full_and_boundary_tiles_ignore_stale_scratch_and_read_fresh_graph_values(
     workers, out_dtype
@@ -60,7 +109,7 @@ def test_full_and_boundary_tiles_ignore_stale_scratch_and_read_fresh_graph_value
     import tilelang
     import torch
 
-    m, n, k, bm, bn, bk = 35, 65, 512, 16, 32, 64
+    m, n, k, bm, bn, bk = 35, 65, 4096 if workers >= 264 else 512, 16, 32, 64
     major, minor = torch.cuda.get_device_capability()
     target = {"kind": "cuda", "arch": f"sm_{major}{minor}"}
     opts = {"block_m": bm, "block_n": bn, "block_k": bk, "out_dtype": out_dtype}

@@ -100,6 +100,7 @@ def test_register_epilogue_rejects_incompatible_cluster_and_tiles():
         (True, 64, 32, False, "float32", False),
         (False, 8, 64, False, "bfloat16", False),
         (False, 32, 64, True, "float32", False),
+        (False, 128, 64, True, "float32", False),
         (True, 8, 32, True, "float32", True),
         (True, 16, 32, False, "float32", True),
         (True, 32, 32, True, "float32", True),

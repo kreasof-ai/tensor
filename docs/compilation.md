@@ -97,6 +97,16 @@ This halves the output-store instruction count for the 64×32 accumulator tile
 while adding an indexed shuffle. Search it against the uncoalesced register path
 with the same main computation; the instruction tradeoff needs target timings.
 
+For native register epilogues, `manual_sync=True` can remove automatic CTA
+barriers from the K loop. Pair it with
+`"tl.disable_thread_storage_sync": True` in the compilation pass configuration.
+This opt-in path publishes initialized barriers at entry, waits for each TMA
+transaction through its mbarrier, waits for WGMMA reads before refilling a ring
+slot, and drains/fences accumulators before output. It rejects cluster reduction
+and synchronous mirrors. Keep automatic synchronization enabled for other
+factories. Compare otherwise identical complete operations on Hopper before
+selecting this path; fewer barriers alone do not establish a speedup.
+
 ## Work-centric CUDA GEMM
 
 `tensor.compiler.cuda.streamk.streamk_matmul` partitions the flattened output-tile
@@ -109,7 +119,10 @@ The decomposition follows the work-centric principle in
 Each worker writes complete owned tiles directly to output. A worker can have at
 most two incomplete boundary tiles; these use its two scratch slots.
 `streamk_reduce` computes the contributing worker range for each boundary tile
-and sums those slots in a deterministic second launch. Every slot consumed by the
+and sums those slots in a deterministic second launch. The contributor loop
+surrounds a contiguous output fragment, resolving the worker and scratch slot
+once per contributor. An explicit endpoint prevents floor-divided worker bounds
+from being widened during loop-extent simplification. Every slot consumed by the
 reducer is overwritten in the same invocation. Fresh graph inputs and weights
 require no scratch clearing or persistent output state.
 
@@ -117,7 +130,8 @@ Use the same shape, worker count and tile parameters for both factories. With
 `tiles = ceil(M/block_m) * ceil(N/block_n)`, a worker count dividing `tiles` assigns
 only complete tiles, so the caller may omit the reduction launch. Worker count is
 a search choice: an SM-sized grid can balance work, while a nearby aligned count
-can eliminate boundary reductions. Uniform K partitions provide a control by
+can eliminate boundary reductions. Two or four workers per SM can improve
+residency; extra partials and fixup cost can also erase that gain. Uniform K partitions provide a control by
 choosing `workers = tiles * splits` when K tiles divide evenly by `splits`.
 
 This implementation uses ordinary pointer arguments and a separate deterministic
