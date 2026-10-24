@@ -90,6 +90,42 @@ and complete graph replays on the target device. The synchronous numerical mirro
 uses MMA with an explicit row warp policy to reproduce the WGMMA register map;
 its timings do not predict native Hopper performance.
 
+For paired register outputs, `coalesced_epilogue=True` exchanges row groups
+within each warp before storing them. Eight adjacent FP32 output channels fill
+one 32-byte sector. All lanes participate in the shuffles before the tail guards.
+This halves the output-store instruction count for the 64×32 accumulator tile
+while adding an indexed shuffle. Search it against the uncoalesced register path
+with the same main computation; the instruction tradeoff needs target timings.
+
+## Work-centric CUDA GEMM
+
+`tensor.compiler.cuda.streamk.streamk_matmul` partitions the flattened output-tile
+and K-tile iteration space into balanced contiguous worker ranges. It accepts
+BF16 `x[M,K]`, weights `[N,K]`, FP32 scratch `[workers,2,block_m,block_n]` and a
+final BF16 or FP32 output `[M,N]`. Accumulation and partial reductions use FP32.
+The decomposition follows the work-centric principle in
+[Stream-K](https://arxiv.org/abs/2301.03598).
+
+Each worker writes complete owned tiles directly to output. A worker can have at
+most two incomplete boundary tiles; these use its two scratch slots.
+`streamk_reduce` computes the contributing worker range for each boundary tile
+and sums those slots in a deterministic second launch. Every slot consumed by the
+reducer is overwritten in the same invocation. Fresh graph inputs and weights
+require no scratch clearing or persistent output state.
+
+Use the same shape, worker count and tile parameters for both factories. With
+`tiles = ceil(M/block_m) * ceil(N/block_n)`, a worker count dividing `tiles` assigns
+only complete tiles, so the caller may omit the reduction launch. Worker count is
+a search choice: an SM-sized grid can balance work, while a nearby aligned count
+can eliminate boundary reductions. Uniform K partitions provide a control by
+choosing `workers = tiles * splits` when K tiles divide evenly by `splits`.
+
+This implementation uses ordinary pointer arguments and a separate deterministic
+fixup kernel. Native Hopper compilation can use WGMMA with asynchronous shared
+copies; older CUDA GPUs provide an MMA numerical comparison. Benchmark complete
+operations against the incumbent, and use matched producer/full graph timings to
+understand scheduling costs. These graph ratios include replay overhead.
+
 ## Export an existing kernel
 
 A source file supplies a zero-argument `tensor_export()` function:

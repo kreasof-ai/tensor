@@ -92,18 +92,22 @@ def test_register_epilogue_rejects_incompatible_cluster_and_tiles():
 
 @pytest.mark.skipif(os.environ.get("TENSOR_P1_CUDA") != "1", reason="CUDA execution")
 @pytest.mark.parametrize(
-    "paired,bm,bn,transposed,out_dtype",
+    "paired,bm,bn,transposed,out_dtype,coalesced",
     [
-        (True, 8, 32, True, "float32"),
-        (True, 16, 32, False, "float32"),
-        (True, 32, 32, True, "float32"),
-        (True, 64, 32, False, "float32"),
-        (False, 8, 64, False, "bfloat16"),
-        (False, 32, 64, True, "float32"),
+        (True, 8, 32, True, "float32", False),
+        (True, 16, 32, False, "float32", False),
+        (True, 32, 32, True, "float32", False),
+        (True, 64, 32, False, "float32", False),
+        (False, 8, 64, False, "bfloat16", False),
+        (False, 32, 64, True, "float32", False),
+        (True, 8, 32, True, "float32", True),
+        (True, 16, 32, False, "float32", True),
+        (True, 32, 32, True, "float32", True),
+        (True, 64, 32, True, "float32", True),
     ],
 )
 def test_register_mapping_with_tails_outliers_and_fresh_graph_values(
-    paired, bm, bn, transposed, out_dtype
+    paired, bm, bn, transposed, out_dtype, coalesced
 ):
     import tilelang
     import torch
@@ -123,6 +127,7 @@ def test_register_mapping_with_tails_outliers_and_fresh_graph_values(
             transposed_weights=transposed,
             native_async=False,
             register_epilogue=True,
+            coalesced_epilogue=coalesced,
         ),
         target={"kind": "cuda", "arch": f"sm_{major}{minor}"},
         pass_configs={

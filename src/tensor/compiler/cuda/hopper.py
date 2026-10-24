@@ -22,6 +22,7 @@ def staged_matmul(
     native_async=True,
     cluster_reduce=False,
     register_epilogue=False,
+    coalesced_epilogue=False,
 ):
     """Generate a weight-major matmul with explicit bounded async ownership.
 
@@ -59,6 +60,8 @@ def staged_matmul(
         raise ValueError(
             "register epilogue needs 64 weight rows, whole 8-column tiles and no cluster reduction"
         )
+    if coalesced_epilogue and (not register_epilogue or not paired):
+        raise ValueError("coalesced epilogue requires the paired register epilogue")
     shared = stages * (tile_rows + block_m) * block_k * 2 + tile_rows * block_m * 4
     if cluster_reduce:
         shared += (splits + 1) * block_m * block_n * 4
@@ -84,6 +87,12 @@ __device__ __forceinline__ float tensor_pair_sum_xor4(float value) {
     asm volatile("shfl.sync.bfly.b32 %0, %1, 4, 31, 0xffffffff;"
                  : "=f"(peer) : "f"(value));
     return value + peer;
+}
+__device__ __forceinline__ float tensor_warp_gather(float value, int lane) {
+    float result;
+    asm volatile("shfl.sync.idx.b32 %0, %1, %2, 31, 0xffffffff;"
+                 : "=f"(result) : "f"(value), "r"(lane));
+    return result;
 }
 """
 
@@ -129,6 +138,45 @@ __device__ __forceinline__ float tensor_pair_sum_xor4(float value) {
                 )
                 if paired:
                     T.import_source(pair_source)
+                if coalesced_epilogue:
+                    shuffled = T.alloc_fragment((32, block_m), "float32")
+                    low_pairs = T.alloc_fragment((32, block_m), "float32")
+                    high_pairs = T.alloc_fragment((32, block_m), "float32")
+                    T.annotate_layout(
+                        {
+                            shuffled: T.Fragment(
+                                (32, block_m),
+                                forward_thread_fn=lambda row, col: (
+                                    row // 8 * 32 + row % 8 * 4 + col % 8 // 2
+                                ),
+                                forward_index_fn=lambda row, col: (
+                                    col // 8 * 2 + col % 2
+                                ),
+                            )
+                        }
+                    )
+                    T.annotate_layout(
+                        {
+                            low_pairs: T.Fragment(
+                                (32, block_m),
+                                forward_thread_fn=lambda row, col: (
+                                    row // 8 * 32 + row % 8 * 4 + col % 8 // 2
+                                ),
+                                forward_index_fn=lambda row, col: (
+                                    col // 8 * 2 + col % 2
+                                ),
+                            ),
+                            high_pairs: T.Fragment(
+                                (32, block_m),
+                                forward_thread_fn=lambda row, col: (
+                                    row // 8 * 32 + row % 8 * 4 + col % 8 // 2
+                                ),
+                                forward_index_fn=lambda row, col: (
+                                    col // 8 * 2 + col % 2
+                                ),
+                            ),
+                        }
+                    )
             else:
                 epilogue = T.alloc_shared((tile_rows, block_m), "float32")
             if cluster_reduce:
@@ -241,7 +289,34 @@ __device__ __forceinline__ float tensor_pair_sum_xor4(float value) {
                         if register_epilogue
                         else T.GemmWarpPolicy.Square,
                     )
-            if register_epilogue:
+            if coalesced_epilogue:
+                tid = T.get_thread_binding()
+                for row, col in T.Parallel(32, block_m):
+                    low_pairs[row, col] = T.call_extern(
+                        "float32",
+                        "tensor_pair_sum_xor4",
+                        acc[row // 8 * 16 + row % 8, col],
+                    )
+                for row, col in T.Parallel(32, block_m):
+                    high_pairs[row, col] = T.call_extern(
+                        "float32",
+                        "tensor_pair_sum_xor4",
+                        acc[row // 8 * 16 + row % 8 + 8, col],
+                    )
+                for row, col in T.Parallel(32, block_m):
+                    shuffled[row, col] = T.call_extern(
+                        "float32",
+                        "tensor_warp_gather",
+                        T.if_then_else(
+                            row % 2 == 0, low_pairs[row, col], high_pairs[row, col]
+                        ),
+                        tid % 4 * 8 + tid % 32 // 8 + tid % 8 // 4 * 4,
+                    )
+                    out_row = by * block_m + col // 8 * 8 + tid % 32 // 8 * 2 + col % 2
+                    out_col = bx * block_n + tid // 32 * 8 + tid % 8
+                    if out_row < m and out_col < n:
+                        out[part, out_row, out_col] = shuffled[row, col]
+            elif register_epilogue:
                 for row, col in T.Parallel(tile_rows, block_m):
                     value = T.alloc_var("float32")
                     if paired:
