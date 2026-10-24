@@ -16,8 +16,10 @@ CLI ──calls──→ the relevant library
 
 1. [The kernel](../examples/elementwise.py) exports a TileLang PrimFunc.
 2. [Build dispatch](../src/tensor/compiler/build.py) selects a compiler backend.
-3. [CUDA construction](../src/tensor/compiler/cuda/build.py) lowers the frontend,
-   compiles source, and writes a verified artifact.
+3. [CUDA construction](../src/tensor/compiler/cuda/build.py) selects implementations
+   for opted-in logical operations through
+   [prelowering](../src/tensor/compiler/cuda/prelower.py), lowers the kernel,
+   compiles source, and writes a verified artifact. Explicit kernels retain their schedule.
 4. [Artifact validation](../src/tensor/artifacts/format.py) checks metadata and
    payload integrity.
 5. [CUDA Device](../src/tensor/providers/cuda/device.py) owns allocation, streams,
@@ -50,6 +52,15 @@ WebGPU algorithms live in `compiler/webgpu/schedules/`. Each file contains one
 schedule family and its DSL implementation. `passes/` contains transformations
 and barrier validation. Provider-specific prepared submission lives in
 `providers/webgpu/plan.py`.
+
+CUDA's explicit Hopper ring pipeline lives in `compiler/cuda/hopper.py`.
+`compiler/cuda/schedules.py` supplies the pipeline, storage and geometry search
+space with legality checks. Native TMA signatures use TileLang's launch adapter;
+the ordinary artifact ABI continues to accept pointer/scalar launches only.
+The Hopper producer can fuse K-partition reduction through cluster shared memory.
+`compiler/cuda/sliced.py` instead splits K across warps and reduces within a block,
+using ordinary MMA on SM80 and newer. Both retain FP32 accumulation and make their
+parallelism and reduction strategy explicit search choices.
 
 ## Collections of kernels
 

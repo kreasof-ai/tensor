@@ -8,18 +8,16 @@ import time
 import zipfile
 from importlib.metadata import version
 from pathlib import Path
+
 from tensor.artifacts.format import FORMAT_VERSION, validate_manifest
-from tensor.diagnostics import TARGET, check_device, check_packages, check_provider
+from tensor.compiler.cache import _cache_root, _cached_image, _header_hash, _write_cache
 from tensor.compiler.cuda.toolchain import select_compiler
-from tensor.runtime.abi import runtime_requirement, workspace_requirement
-from tensor.compiler.cache import _cache_root
-from tensor.compiler.cache import _cached_image
-from tensor.compiler.cache import _header_hash
-from tensor.compiler.cache import _write_cache
 from tensor.compiler.errors import BuildError
 from tensor.compiler.frontend.ir import _op_set
 from tensor.compiler.frontend.signature import _launch
 from tensor.compiler.licenses import _notices
+from tensor.diagnostics import TARGET, check_device, check_packages, check_provider
+from tensor.runtime.abi import runtime_requirement, workspace_requirement
 
 
 def build_cuda(
@@ -36,8 +34,8 @@ def build_cuda(
     source_path, output_path = Path(source_path), Path(output_path)
     if not source_path.is_file() or source_path.suffix not in (".py", ".tbin"):
         raise BuildError("source must be an existing Python file or portable .tbin")
-    from tensor.compiler.frontend.portable import export_spec
     from tensor.artifacts.portable import preflight
+    from tensor.compiler.frontend.portable import export_spec
 
     checked = preflight(source_path) if source_path.suffix == ".tbin" else None
     if output_path.exists():
@@ -109,6 +107,13 @@ def build_cuda(
     try:
         symbol = str(kernel.attrs["global_symbol"])
         ir = tvm.ir.save_json(tvm.IRModule({symbol: kernel}))
+        from tensor.compiler.cuda.prelower import (
+            lower_cuda_operations,
+            lowering_identity,
+        )
+
+        kernel, prelowering = lower_cuda_operations(kernel, target)
+        lowered_ir = tvm.ir.save_json(tvm.IRModule({symbol: kernel}))
         resolved = Target({"kind": "cuda", "arch": target})
         # ABI 1.3 passes ordinary pointers/scalars and launches one grid. Hopper
         # auto-TMA introduces CUtensorMap parameters, while WGMMA requires an
@@ -152,6 +157,7 @@ def build_cuda(
             raise BuildError(f"required TileLang headers missing: {path}")
     compiler_identity = backend.identity(target, includes)
     compiler_identity["pass_config"] = pass_config
+    compiler_identity["prelowering_sha256"] = lowering_identity()
     compiler_identity["lowering_sha256"] = hashlib.sha256(
         Path(__file__).with_name("lowering.py").read_bytes()
     ).hexdigest()
@@ -165,6 +171,7 @@ def build_cuda(
         if checked
         else hashlib.sha256(source_path.read_bytes()).hexdigest(),
         "frontend_sha256": hashlib.sha256(ir.encode()).hexdigest(),
+        "prelowered_sha256": hashlib.sha256(lowered_ir.encode()).hexdigest(),
         "headers_sha256": _header_hash(hashed_includes),
         "target": target,
         "compiler": compiler_identity,
@@ -218,6 +225,8 @@ def build_cuda(
             name: hashlib.sha256(data).hexdigest() for name, data in files.items()
         },
     }
+    if prelowering is not None:
+        manifest["cuda_prelowering"] = prelowering
     if checked:
         manifest["frontend_artifact_sha256"] = hashlib.sha256(
             source_path.read_bytes()

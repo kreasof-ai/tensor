@@ -4,6 +4,92 @@ The compiler converts an exported TileLang PrimFunc into a verified `.tbin`.
 Consumers load the artifact without importing the compiler. Set up the producer
 with [Quickstart](quickstart.md).
 
+## Native Hopper pipeline schedules
+
+`tensor.compiler.cuda.hopper.staged_matmul` generates an explicit SM90a
+TMA/WGMMA pipeline. Its knobs include shared-memory ring depth, the number of
+outstanding WGMMA groups, weight orientation and K partitions. The producer
+prefills the ring, waits for the oldest required MMA group, then refills only
+the buffer whose reads have completed. A final drain precedes the epilogue.
+
+```python
+import tilelang
+from tensor.compiler.cuda.hopper import staged_matmul
+
+operation = staged_matmul(
+    256, 4096, 8192,
+    block_m=128, block_n=64, block_k=128,
+    stages=2, queue_depth=1,
+    transposed_weights=True, out_dtype="bfloat16",
+)
+kernel = tilelang.compile(
+    operation,
+    target={"kind": "cuda", "arch": "sm_90a"},
+    pass_configs={
+        "tl.disable_tma_lower": False,
+        "tl.disable_warp_specialized": True,
+        "tl.disable_wgmma": False,
+    },
+)
+```
+
+Inputs are BF16 `x[M,K]` and weights `[K,N]` when transposed, or `[N,K]`
+otherwise. By default outputs are `[splits,M,N]`; multiple partitions require
+FP32 output and an explicit reduction. `paired=True` accepts interleaved hi/lo BF16 weight rows,
+retains separate FP32 accumulators and sums each adjacent pair in the epilogue.
+The caller owns any required precision-preserving weight preparation.
+
+These kernels use TileLang's native launch adapter because their signature
+contains tensor-map descriptors. The ordinary `.tbin` pointer/scalar launch ABI
+is unchanged. Disabling automatic warp specialization here is intentional: the
+kernel already manages its asynchronous buffer ownership explicitly.
+
+`hopper_space` and `hopper_legal` in `compiler.cuda.schedules` expose these
+choices to `ScheduleSearch`. Legality checks reject premature buffer reuse,
+unsupported tile shapes, misaligned partitions and excessive shared memory.
+Compile, check numerical correctness, time graph replays and retain the winning
+schedule on the target GPU. `native_async=False` provides a synchronous mirror
+for numerical checks on older CUDA GPUs; it does not validate Hopper execution.
+
+Set `cluster_reduce=True` with 2, 4 or 8 K partitions to combine their FP32
+contributions in distributed shared memory. This emits one clustered launch and
+an output of shape `[1,M,N]`, allowing either BF16 or FP32 final output without a
+global partial buffer or a second reduction kernel. `hopper_cluster_space`
+exposes this choice to search. Cluster reduction requires native Hopper execution;
+its communication and scheduling costs must be measured against the two-launch
+alternative.
+
+Each cluster initializes its barriers before use, completes all MMA reads before
+exchanging partials, then waits again before any block exits. The middle barrier
+also protects operand buffers that the memory planner may reuse for the exchange.
+Rank zero waits for all bulk shared-memory transfers and sums FP32 contributions.
+The caller must use TileLang's cluster-aware native launch adapter.
+
+`tensor.compiler.cuda.sliced.sliced_matmul` provides another single-launch
+alternative for SM80 and newer. Warps compute different K slices using Tensor
+Core MMA, store FP32 partials in block-local shared memory and reduce them before
+the final write. Its knobs are output tile size, warp count, K chunk size and
+pipeline stages. It accepts weights `[N,K]`, or interleaved hi/lo rows when paired,
+and writes `[M,N]`. This trades extra padded MMA work for greater parallelism on
+small output tiles. Numerical checks cover tails, sparse rows, outliers and fresh
+graph inputs; target-device measurements determine whether the tradeoff wins.
+
+`register_epilogue=True` replaces the shared-memory epilogue with direct
+accumulator stores. It currently supports 64 physical weight rows per tile
+(`block_n=32` for paired routers, 64 otherwise), whole 8-column token tiles and
+the separate K-partition reduction. Paired outputs use an inline PTX XOR-4 warp
+shuffle to combine adjacent hi/lo rows in FP32. Every lane executes the exchange
+before output-tail guards. The WGMMA queue is drained and accumulator ownership
+is fenced before any register is read.
+
+`hopper_register_space` exposes shared and register epilogues as matched search
+choices. The main TMA/WGMMA computation and K reduction stay identical within a
+geometry pair. Direct stores remove shared staging and two epilogue barriers,
+but their different store pattern can offset that saving. Compare producer-only
+and complete graph replays on the target device. The synchronous numerical mirror
+uses MMA with an explicit row warp policy to reproduce the WGMMA register map;
+its timings do not predict native Hopper performance.
+
 ## Export an existing kernel
 
 A source file supplies a zero-argument `tensor_export()` function:
@@ -79,6 +165,63 @@ uv run --locked tensor cache
 
 Use `tensor inspect --help` for target source and pass tracing. Use new output
 paths. Cache hits reuse checked compiled images, not outputs or device buffers.
+
+## CUDA operation prelowering
+
+For a standalone projection, describe the operation and let the CUDA producer
+build its Tensor Core implementation:
+
+```python
+from tensor.compiler.cuda.matmul import matmul
+
+def tensor_export():
+    kernel = matmul(
+        256, 4096, 8192, dtype="bfloat16",
+        schedule={
+            "block_m": 256, "block_n": 32, "block_k": 64,
+            "stages": 2, "threads": 128, "orientation": "weight",
+        },
+    )
+    return {"kernel": kernel, "outputs": ["out"]}
+```
+
+The signature is `x[M,K], w[N,K] -> out[M,N]`, computing `x @ w.T`.
+Inputs are FP16 or BF16; accumulation is FP32, with matching input/output dtype
+or an explicit `out_dtype="float32"`. Dimensions are positive static integers.
+
+`block_m` always counts tokens and `block_n` counts output features.
+`orientation="activation"` gives the hardware GEMM its usual token-major
+orientation. `orientation="weight"` computes `w @ x.T` inside each tile and
+stores the transposed result. Wider token tiles can reuse weights across more
+tokens; their register, storage and occupancy costs must be measured.
+
+The producer verifies the complete logical computation before substituting an
+implementation. An operation annotation on different computation is rejected.
+Existing explicit kernels pass through unchanged. This stage does not retile
+arbitrary fused kernels, insert extra kernel launches or change precision.
+Floating-point reduction order can differ between schedules; applications must
+validate their numerical tolerance when selecting a schedule.
+
+The artifact retains the original logical IR and records the selected geometry
+under `cuda_prelowering`. Its cache identity includes the transformed IR and
+prelowering implementation. CUDA artifacts retain their pointer/scalar launch
+contract; Hopper tensor-map and cooperative launch support remain separate
+runtime capabilities.
+
+For more parallelism without rereading weights for another token tile,
+`matmul_partials(M, N, K, splits, ...)` explicitly produces FP32
+`[splits, M, N]` partial sums. `matmul_reduce(M, N, splits, out_dtype)` combines
+them into the final output. Export these as two kernels, allocate the partial
+buffer, and submit both in one graph. Each K partition must align to `block_k`.
+Both accumulation and reduction stay FP32; no atomics or persistent output
+values are required. The additional launch and scratch traffic belong in
+candidate timing.
+
+`matmul_space` and `matmul_legal` in `compiler/cuda/schedules.py` expose orientation,
+tile sizes, pipeline depth and thread count to the search API below. A default
+schedule is a legal starting point, not a measured performance guarantee.
+Use `matmul_space(..., partitioned=True)` to explore partition counts and supply
+`depth=K` to `matmul_legal` when checking those candidates.
 
 ## Schedule discovery
 
