@@ -7,3 +7,8 @@ docs/research/data/reorganization-*.xml -text
 
 # Keep this recovered historical snapshot identical to its original Git blob.
 docs/research/data/lfm2-2.6b-q4_0-initial-vulkan.json -text
+
+# Preserve measured evidence and generated plots without changing their hashes.
+research/studies/cuda-showcase/evidence/** -text
+research/studies/cuda-showcase/evidence/**/*.csv whitespace=cr-at-eol
+research/studies/cuda-showcase/evidence/**/*.svg whitespace=-blank-at-eol

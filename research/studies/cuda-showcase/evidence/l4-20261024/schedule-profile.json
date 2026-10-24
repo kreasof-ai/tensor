@@ -1,0 +1,337 @@
+{
+  "schema": "tensor.schedule-profile.v1",
+  "provider": "cuda",
+  "target": "sm_89",
+  "entries": [
+    {
+      "operation": "matmul",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          128,
+          1024,
+          1024
+        ]
+      },
+      "schedule": {
+        "block_m": 128,
+        "block_n": 32,
+        "block_k": 64,
+        "stages": 3,
+        "threads": 128,
+        "orientation": "weight"
+      }
+    },
+    {
+      "operation": "matmul",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          512,
+          2048,
+          2048
+        ]
+      },
+      "schedule": {
+        "block_m": 128,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "orientation": "weight"
+      }
+    },
+    {
+      "operation": "matmul",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1024,
+          1024,
+          1024
+        ]
+      },
+      "schedule": {
+        "block_m": 128,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "orientation": "weight"
+      }
+    },
+    {
+      "operation": "matmul",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          129,
+          1000,
+          1024
+        ]
+      },
+      "schedule": {
+        "block_m": 64,
+        "block_n": 64,
+        "block_k": 64,
+        "stages": 3,
+        "threads": 128,
+        "orientation": "weight"
+      }
+    },
+    {
+      "operation": "flash_attention",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1,
+          8,
+          512,
+          64
+        ],
+        "causal": false
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "flash_attention",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1,
+          8,
+          1024,
+          64
+        ],
+        "causal": true
+      },
+      "schedule": {
+        "block_m": 64,
+        "block_n": 64,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "flash_attention",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1,
+          8,
+          1024,
+          128
+        ],
+        "causal": false
+      },
+      "schedule": {
+        "block_m": 64,
+        "block_n": 128,
+        "threads": 256
+      }
+    },
+    {
+      "operation": "flash_attention",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1,
+          8,
+          129,
+          64
+        ],
+        "causal": true
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 64,
+        "threads": 128
+      }
+    },
+    {
+      "operation": "mla_decode",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1,
+          16,
+          1024
+        ],
+        "qk_dim": 576,
+        "v_dim": 512
+      },
+      "schedule": {
+        "splits": 32,
+        "block_n": 32,
+        "threads": 128,
+        "value_dim": 512
+      }
+    },
+    {
+      "operation": "mla_decode",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          4,
+          16,
+          1024
+        ],
+        "qk_dim": 576,
+        "v_dim": 512
+      },
+      "schedule": {
+        "splits": 8,
+        "block_n": 64,
+        "threads": 128,
+        "value_dim": 576
+      }
+    },
+    {
+      "operation": "mla_decode",
+      "parameters": {
+        "dtype": "float16",
+        "out_dtype": "float16",
+        "shape": [
+          1,
+          32,
+          4096
+        ],
+        "qk_dim": 576,
+        "v_dim": 512
+      },
+      "schedule": {
+        "splits": 32,
+        "block_n": 16,
+        "threads": 64,
+        "value_dim": 512
+      }
+    },
+    {
+      "operation": "gguf",
+      "parameters": {
+        "dtype": "float32",
+        "out_dtype": "float32",
+        "shape": [
+          1,
+          1024,
+          1024
+        ],
+        "encoding": 2
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 2
+      }
+    },
+    {
+      "operation": "gguf",
+      "parameters": {
+        "dtype": "float32",
+        "out_dtype": "float32",
+        "shape": [
+          32,
+          1024,
+          1024
+        ],
+        "encoding": 2
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 32,
+        "block_k": 64,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "gguf",
+      "parameters": {
+        "dtype": "float32",
+        "out_dtype": "float32",
+        "shape": [
+          1,
+          1024,
+          1024
+        ],
+        "encoding": 12
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "gguf",
+      "parameters": {
+        "dtype": "float32",
+        "out_dtype": "float32",
+        "shape": [
+          32,
+          1024,
+          1024
+        ],
+        "encoding": 12
+      },
+      "schedule": {
+        "block_m": 64,
+        "block_n": 32,
+        "block_k": 32,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": false
+      }
+    },
+    {
+      "operation": "gguf",
+      "parameters": {
+        "dtype": "float32",
+        "out_dtype": "float32",
+        "shape": [
+          1,
+          1024,
+          1024
+        ],
+        "encoding": 14
+      },
+      "schedule": {
+        "threads": 128,
+        "unroll": 8
+      }
+    },
+    {
+      "operation": "gguf",
+      "parameters": {
+        "dtype": "float32",
+        "out_dtype": "float32",
+        "shape": [
+          32,
+          1024,
+          1024
+        ],
+        "encoding": 14
+      },
+      "schedule": {
+        "block_m": 32,
+        "block_n": 32,
+        "block_k": 32,
+        "stages": 2,
+        "threads": 128,
+        "packed_pairs": true
+      }
+    }
+  ]
+}

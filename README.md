@@ -67,6 +67,10 @@ uv run --locked --no-default-groups tensor --help
 | Compose native NN modules and train nanoGPT | [Tensor NN](packages/tensor-nn/README.md) |
 | Develop and validate Tensor | [Development](docs/development.md) |
 
+[CUDA showcase measurements](research/studies/cuda-showcase/README.md) compare
+Flash Attention, dense MLA, matmul and GGUF kernels against native TileLang,
+Triton and upstream implementations, with schedule search and matched controls.
+
 [AKAS](https://github.com/kreasof-ai/akas) owns model inference, generation,
 scheduling, and serving. [Loop Latent Transformer](https://github.com/kreasof-ai/loop-latent-transformer)
 owns LLT workloads. Tensor supplies their compilation and execution primitives.

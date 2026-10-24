@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "audit_source_sha256": "a8fe37be44627a9611dea029fa11b9e68adb713abb5ddeb16cfccf7590f8c601",
+  "cases": 17,
+  "checked_artifacts": 308,
+  "checked_provider_measurements": 112,
+  "failed_search_candidates": 0,
+  "identical_cubin_controls": [
+    {
+      "case": "matmul-128x1024x1024",
+      "selected_over_default_latency": 1.0
+    },
+    {
+      "case": "flash_attention-1x8x512x64",
+      "selected_over_default_latency": 0.9969822815240138
+    }
+  ],
+  "issues": []
+}
