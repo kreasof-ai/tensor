@@ -1,8 +1,6 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="logo/tensor-wordmark-on-dark.svg">
-    <img src="logo/tensor-wordmark-on-light.svg" alt="Tensor" width="420">
-  </picture>
+  <img src="logo/tensor-wordmark-on-light.svg#gh-light-mode-only" alt="Tensor" width="420">
+  <img src="logo/tensor-wordmark-on-dark.svg#gh-dark-mode-only" alt="Tensor" width="420">
 </p>
 
 <h1 align="center">Portable kernels. Small runtime.</h1>
