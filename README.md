@@ -1,10 +1,29 @@
-# Tensor
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo/tensor-wordmark-on-dark.svg">
+    <img src="logo/tensor-wordmark-on-light.svg" alt="Tensor" width="420">
+  </picture>
+</p>
 
-Build TileLang kernels into portable artifacts. Execute them with a small runtime.
+<h1 align="center">Portable kernels. Small runtime.</h1>
 
-```text
-TileLang kernel → Tensor compiler → .tbin → Tensor runtime → device
-```
+<p align="center">
+  Build TileLang kernels into portable artifacts.<br>
+  Execute them with a small runtime and your hardware driver.
+</p>
+
+<p align="center">
+  <a href="docs/quickstart.md"><strong>Quickstart</strong></a> &nbsp;·&nbsp;
+  <a href="docs/README.md">Documentation</a> &nbsp;·&nbsp;
+  <a href="research/studies/cuda-showcase/README.md">Benchmarks</a> &nbsp;·&nbsp;
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+<p align="center">
+  <code>TileLang kernel</code> → <code>Tensor compiler</code> → <code>.tbin</code> → <code>Tensor runtime</code> → <code>device</code>
+</p>
+
+---
 
 Compilation and execution are separate: consumers need the runtime and their
 hardware driver, without TileLang, TVM, or PyTorch. CUDA, WebGPU, and a scoped CPU
