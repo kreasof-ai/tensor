@@ -140,6 +140,45 @@ copies; older CUDA GPUs provide an MMA numerical comparison. Benchmark complete
 operations against the incumbent, and use matched producer/full graph timings to
 understand scheduling costs. These graph ratios include replay overhead.
 
+## Routed NVFP4 GEMM
+
+`compiler.cuda.nvfp4.grouped_matmul` consumes packed E2M1 weights, one E4M3
+scale per sixteen K values and one FP32 scale per expert. BF16 input activations
+and transient unpacked weight tiles feed Tensor Core GEMM with FP32 accumulation.
+The output is BF16. Persistent weight storage stays packed.
+
+Callers supply compact route lists `[local_experts,M]`, per-expert counts and a
+list of nonempty M tiles. Each list entry identifies an expert and its first
+route row. A small persistent grid walks this list across output columns, avoiding
+large grids of empty expert/token combinations. Output rows use original flattened
+route indices, so activation and normalization kernels can combine them later.
+`routed_input=True` reads a separate activation per route for the second expert
+projection; otherwise all routes of a token read the same input row.
+
+Tile geometry, pipeline depth and persistent worker count are search parameters.
+Unpacking occurs inside the K loop and applies both scales before rounding the
+Tensor Core operand. This first producer uses pointer arguments and ordinary
+TileLang launch adapters. Validate whole routed operations, including per-expert
+normalization and weighted combination; a fast projection alone does not establish
+an MoE speedup.
+
+## Paged GQA decode and verify
+
+`compiler.cuda.paged_gqa` supplies three factories for head dimension 64, eight
+query heads per KV head, and query lengths one or eight. `make_prepare` fuses QK
+normalization, optional interleaved RoPE and FP8 KV writes. `make_partial` stages
+paged KV entries for grouped BF16 MMA and FP32 online softmax, using a two-stage
+pipeline. `make_merge` combines split-context statistics and fuses output norm
+and gating. Every visible key/value contributes, including long-context tails.
+
+Consumers choose the context partition count from shape metadata, allocate
+partials/statistics and invoke the three kernels in order. Runtime page tables,
+request lengths, positions, cache locations and per-tensor scales remain input
+arguments. Compile with automatic thread synchronization, disabled TMA lowering
+and ordinary MMA. The standalone challenge validations cover scattered pages,
+window edges, unequal lengths, FP8 scales, fresh graph metadata and million-token
+contexts. Offline SM90a compilation remains separate from H200 measurement.
+
 ## Export an existing kernel
 
 A source file supplies a zero-argument `tensor_export()` function:
