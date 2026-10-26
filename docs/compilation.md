@@ -156,8 +156,11 @@ route indices, so activation and normalization kernels can combine them later.
 projection; otherwise all routes of a token read the same input row.
 
 Tile geometry, pipeline depth and persistent worker count are search parameters.
-Unpacking occurs inside the K loop and applies both scales before rounding the
-Tensor Core operand. This first producer uses pointer arguments and ordinary
+Packed bytes and scales use bulk asynchronous shared-memory copies. A warp
+expands four adjacent coefficients per lane using exact E2M1 float bits, with
+four output rows live at a time. This avoids scalar byte loads, branch trees and
+a full decoded tile in registers. Unpacking applies both scales before rounding
+the transient Tensor Core operand. K tiles must be multiples of 128. This first producer uses pointer arguments and ordinary
 TileLang launch adapters. Validate whole routed operations, including per-expert
 normalization and weighted combination; a fast projection alone does not establish
 an MoE speedup.
@@ -169,7 +172,14 @@ query heads per KV head, and query lengths one or eight. `make_prepare` fuses QK
 normalization, optional interleaved RoPE and FP8 KV writes. `make_partial` stages
 paged KV entries for grouped BF16 MMA and FP32 online softmax, using a two-stage
 pipeline. `make_merge` combines split-context statistics and fuses output norm
-and gating. Every visible key/value contributes, including long-context tails.
+and gating. These partial/merge factories provide a complete numerical path.
+
+For a supplied FA3 attention core, `make_prepare(..., query_dtype="float8_e4m3")`
+with `qfactor=1` emits normalized FP8 queries and cache entries in one launch.
+Fold the model's query factor into FA3's softmax scale. `make_gate` accepts its
+BF16 attention output and fuses per-head RMSNorm with sigmoid gating, using four
+heads per CTA and warp-local reductions. Preserve the caller's page tables,
+lengths, scales, causal window and scheduler metadata when invoking FA3. Every visible key/value contributes, including long-context tails.
 
 Consumers choose the context partition count from shape metadata, allocate
 partials/statistics and invoke the three kernels in order. Runtime page tables,

@@ -8,13 +8,13 @@ policy, scratch tensors and the final merge launch.
 """
 
 
-def make_prepare(tokens, hq, hkv, rows, theta, qfactor):
+def make_prepare(tokens, hq, hkv, rows, theta, qfactor, query_dtype="bfloat16"):
     import tilelang.language as T
 
     width = (2 * hq + 2 * hkv) * 64
 
     @T.prim_func
-    def compute(
+    def gqa_prepare(
         fused: T.Tensor((tokens, width), "bfloat16"),
         positions: T.Tensor((tokens,), "int64"),
         locations: T.Tensor((tokens,), "int64"),
@@ -22,7 +22,7 @@ def make_prepare(tokens, hq, hkv, rows, theta, qfactor):
         vs: T.Tensor((1,), "float32"),
         kc: T.Tensor((rows, hkv, 64), "float8_e4m3"),
         vc: T.Tensor((rows, hkv, 64), "float8_e4m3"),
-        query: T.Tensor((tokens, hq, 64), "bfloat16"),
+        query: T.Tensor((tokens, hq, 64), query_dtype),
     ):
         with T.Kernel(tokens, hq, threads=128) as (token, head):
             q = T.alloc_fragment((64,), "float32")
@@ -76,17 +76,17 @@ def make_prepare(tokens, hq, hkv, rows, theta, qfactor):
                         T.cast(fused[token, (hq + hkv) * 64 + head * 64 + d], "float32") / vs[0]
                     )
 
-    return compute
+    return gqa_prepare
 
 
-def make_partial(batch, length, hq, hkv, pages, rows, page, window, splits, bk=128):
+def make_partial(batch, length, hq, hkv, pages, rows, page, window, splits, bk=128, threads=128):
     import tilelang.language as T
 
     group = hq // hkv
     qm = max(16, length * group)
 
     @T.prim_func
-    def compute(
+    def gqa_partial(
         query: T.Tensor((batch * length, hq, 64), "bfloat16"),
         kc: T.Tensor((rows, hkv, 64), "float8_e4m3"),
         vc: T.Tensor((rows, hkv, 64), "float8_e4m3"),
@@ -97,7 +97,7 @@ def make_partial(batch, length, hq, hkv, pages, rows, page, window, splits, bk=1
         out: T.Tensor((batch, hkv, splits, qm, 64), "float32"),
         stats: T.Tensor((batch, hkv, splits, qm, 2), "float32"),
     ):
-        with T.Kernel(batch * hkv, splits, threads=128) as (index, part):
+        with T.Kernel(batch * hkv, splits, threads=threads) as (index, part):
             request, head = index // hkv, index % hkv
             seq = lengths[request]
             start = T.max(seq - window + 1, 0) if window else 0
@@ -145,7 +145,14 @@ def make_partial(batch, length, hq, hkv, pages, rows, page, window, splits, bk=1
                         T.cast(vc[T.max(physical, 0), head, d], "float32") * vs[0],
                         0,
                     )
-                T.gemm(q, key, score, transpose_B=True, clear_accum=True)
+                T.gemm(
+                    q,
+                    key,
+                    score,
+                    transpose_B=True,
+                    clear_accum=True,
+                    policy=T.GemmWarpPolicy.FullRow,
+                )
                 T.copy(maximum, previous)
                 for i, j in T.Parallel(qm, bk):
                     position = first + tile * bk + j
@@ -155,16 +162,16 @@ def make_partial(batch, length, hq, hkv, pages, rows, page, window, splits, bk=1
                         and (position > seq + i // group - window if window else True)
                     )
                     score[i, j] = T.if_then_else(
-                        visible, score[i, j] * 0.125, -T.infinity("float32")
+                        visible, score[i, j] * (0.125 * 1.4426950408889634), -T.infinity("float32")
                     )
                 T.reduce_max(score, maximum, dim=1, clear=False)
                 for i in T.Parallel(qm):
                     alpha[i] = T.if_then_else(
-                        T.isfinite(previous[i]), T.exp(previous[i] - maximum[i]), 0
+                        T.isfinite(previous[i]), T.exp2(previous[i] - maximum[i]), 0
                     )
                 for i, j in T.Parallel(qm, bk):
                     score[i, j] = T.if_then_else(
-                        T.isfinite(score[i, j]), T.exp(score[i, j] - maximum[i]), 0
+                        T.isfinite(score[i, j]), T.exp2(score[i, j] - maximum[i]), 0
                     )
                 T.reduce_sum(score, added, dim=1)
                 for i in T.Parallel(qm):
@@ -172,14 +179,14 @@ def make_partial(batch, length, hq, hkv, pages, rows, page, window, splits, bk=1
                 for i, d in T.Parallel(qm, 64):
                     acc[i, d] *= alpha[i]
                 T.copy(score, prob)
-                T.gemm(prob, value, acc)
+                T.gemm(prob, value, acc, policy=T.GemmWarpPolicy.FullRow)
             for i, d in T.Parallel(qm, 64):
                 out[request, head, part, i, d] = acc[i, d]
             for i in T.Parallel(qm):
                 stats[request, head, part, i, 0] = maximum[i]
                 stats[request, head, part, i, 1] = denom[i]
 
-    return compute
+    return gqa_partial
 
 
 def make_merge(batch, length, hq, hkv, splits):
@@ -189,7 +196,7 @@ def make_merge(batch, length, hq, hkv, splits):
     qm = max(16, length * group)
 
     @T.prim_func
-    def compute(
+    def gqa_merge(
         parts: T.Tensor((batch, hkv, splits, qm, 64), "float32"),
         stats: T.Tensor((batch, hkv, splits, qm, 2), "float32"),
         fused: T.Tensor((batch * length, width), "bfloat16"),
@@ -211,7 +218,7 @@ def make_merge(batch, length, hq, hkv, splits):
             for s in T.Parallel(splits):
                 weights[s] = T.if_then_else(
                     T.isfinite(maximum[s]),
-                    T.exp(maximum[s] - largest[0]) * stats[request, kv, s, row, 1],
+                    T.exp2(maximum[s] - largest[0]) * stats[request, kv, s, row, 1],
                     0,
                 )
             T.reduce_sum(weights, den, dim=0)
@@ -221,7 +228,7 @@ def make_merge(batch, length, hq, hkv, splits):
                     acc[d] += (
                         T.if_then_else(
                             T.isfinite(stats[request, kv, s, row, 0]),
-                            T.exp(stats[request, kv, s, row, 0] - largest[0]),
+                            T.exp2(stats[request, kv, s, row, 0] - largest[0]),
                             0,
                         )
                         * parts[request, kv, s, row, d]
@@ -236,4 +243,54 @@ def make_merge(batch, length, hq, hkv, splits):
                     acc[d] * T.rsqrt(norm[0] / 64 + 1e-5) / (1 + T.exp(-gate))
                 )
 
-    return compute
+    return gqa_merge
+
+
+def make_gate(tokens, hq, hkv):
+    """Normalize and gate four heads per CTA, with warp-local reductions."""
+    import tilelang.language as T
+
+    width = (2 * hq + 2 * hkv) * 64
+
+    @T.prim_func
+    def gqa_gate(
+        attention: T.Tensor((tokens, hq, 64), "bfloat16"),
+        fused: T.Tensor((tokens, width), "bfloat16"),
+        out: T.Tensor((tokens, hq * 64), "bfloat16"),
+    ):
+        with T.Kernel(tokens, T.ceildiv(hq, 4), threads=128) as (token, block):
+            values = T.alloc_fragment((4, 64), "float32")
+            squares = T.alloc_fragment((4, 64), "float32")
+            norm = T.alloc_fragment((4,), "float32")
+            T.annotate_layout(
+                {
+                    values: T.Fragment(
+                        (4, 64),
+                        forward_thread_fn=lambda i, j: i * 32 + j % 32,
+                        forward_index_fn=lambda i, j: j // 32,
+                    ),
+                    squares: T.Fragment(
+                        (4, 64),
+                        forward_thread_fn=lambda i, j: i * 32 + j % 32,
+                        forward_index_fn=lambda i, j: j // 32,
+                    ),
+                }
+            )
+            for i, d in T.Parallel(4, 64):
+                values[i, d] = T.if_then_else(
+                    block * 4 + i < hq,
+                    T.cast(attention[token, T.min(block * 4 + i, hq - 1), d], "float32"),
+                    0,
+                )
+                squares[i, d] = values[i, d] * values[i, d]
+            T.reduce_sum(squares, norm, dim=1)
+            for i, d in T.Parallel(4, 64):
+                if block * 4 + i < hq:
+                    gate = T.cast(
+                        fused[token, (hq + 2 * hkv) * 64 + (block * 4 + i) * 64 + d], "float32"
+                    )
+                    out[token, (block * 4 + i) * 64 + d] = (
+                        values[i, d] * T.rsqrt(norm[i] / 64 + 1e-5) / (1 + T.exp(-gate))
+                    )
+
+    return gqa_gate
