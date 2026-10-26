@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from tensor.compiler.cuda.nvfp4 import grouped_matmul
+from tensor.compiler.cuda.nvfp4 import grouped_matmul, pipelined_grouped_matmul
 
 
 def test_grouped_nvfp4_rejects_unaligned_tiles():
@@ -14,12 +14,13 @@ def test_grouped_nvfp4_rejects_unaligned_tiles():
 
 
 @pytest.mark.skipif(os.environ.get("TENSOR_P1_CUDA") != "1", reason="CUDA execution")
-@pytest.mark.parametrize("m,bm,routed", [(3, 8, False), (17, 16, True), (35, 8, False)])
-def test_routed_fp4_tails_scales_and_fresh_graph_values(m, bm, routed):
+@pytest.mark.parametrize("m,bm,routed,k", [(3, 8, False, 512), (17, 16, True, 512), (35, 8, False, 512), (8, 8, False, 4096)])
+@pytest.mark.parametrize("pipeline", [False, True])
+def test_routed_fp4_tails_scales_and_fresh_graph_values(m, bm, routed, k, pipeline):
     import tilelang
     import torch
 
-    n, k, experts, top, workers = 96, 256, 3, 2, 7
+    n, experts, top, workers = 96, 3, 2, 7
     route_lists = [
         [r for r in range(m * top) if r % experts == e] for e in range(experts)
     ]
@@ -55,7 +56,7 @@ def test_routed_fp4_tails_scales_and_fresh_graph_values(m, bm, routed):
     out = torch.empty((m * top, n), device="cuda", dtype=torch.bfloat16)
     major, minor = torch.cuda.get_device_capability()
     kernel = tilelang.compile(
-        grouped_matmul(
+        (pipelined_grouped_matmul if pipeline else grouped_matmul)(
             m,
             n,
             k,
@@ -65,12 +66,14 @@ def test_routed_fp4_tails_scales_and_fresh_graph_values(m, bm, routed):
             block_m=bm,
             workers=workers,
             routed_input=routed,
+            **({"native_async": False} if pipeline else {}),
         ),
         target={"kind": "cuda", "arch": f"sm_{major}{minor}"},
         pass_configs={
             "tl.disable_tma_lower": True,
             "tl.disable_warp_specialized": True,
             "tl.disable_wgmma": True,
+            **({"tl.disable_thread_storage_sync": True} if pipeline else {}),
         },
     )
     kernel(x, packed, scales, gs, routes, counts, ebuf, rbuf, total, out)

@@ -156,14 +156,23 @@ route indices, so activation and normalization kernels can combine them later.
 projection; otherwise all routes of a token read the same input row.
 
 Tile geometry, pipeline depth and persistent worker count are search parameters.
-Packed bytes and scales use bulk asynchronous shared-memory copies. A warp
-expands four adjacent coefficients per lane using exact E2M1 float bits, with
-four output rows live at a time. This avoids scalar byte loads, branch trees and
-a full decoded tile in registers. Unpacking applies both scales before rounding
-the transient Tensor Core operand. K tiles must be multiples of 128. This first producer uses pointer arguments and ordinary
-TileLang launch adapters. Validate whole routed operations, including per-expert
+Packed bytes and scales use bulk asynchronous shared-memory copies. Sixteen
+weight rows are decoded in parallel, with adjacent coefficients stored together.
+On Hopper, packed BF16 multiplication forms the exact E2M1/E4M3 product. The
+common FP32 expert scale enters the accumulator epilogue before its BF16 output
+boundary. Persistent scales keep their supplied precision. K tiles must be
+multiples of 128. The factory uses pointer arguments and the ordinary TileLang
+launch adapter. Validate whole routed operations, including per-expert
 normalization and weighted combination; a fast projection alone does not establish
 an MoE speedup.
+
+`pipelined_grouped_matmul` separates weight loading/dequantization from WGMMA
+with two 128-thread warp groups. Two shared-memory operand slots use ready/free
+barriers, so the producer can prepare the next tile while its consumer computes.
+The K partition must contain complete barrier phases. Its SM89 mirror uses named
+barriers and exact scalar arithmetic for the packed BF16 product. Inline helpers
+receive write-qualified `T.access_ptr` arguments so scheduling and synchronization
+analysis can see their shared-memory writes.
 
 ## Paged GQA decode and verify
 
@@ -188,6 +197,24 @@ arguments. Compile with automatic thread synchronization, disabled TMA lowering
 and ordinary MMA. The standalone challenge validations cover scattered pages,
 window edges, unequal lengths, FP8 scales, fresh graph metadata and million-token
 contexts. Offline SM90a compilation remains separate from H200 measurement.
+
+`compiler.cuda.paged_gqa_hopper.make_hopper_partial` provides a compiler-owned
+Hopper core. A producer warp group gathers 16-byte pieces of scattered FP8 keys
+using `cp.async`, and converts values to BF16 shared tiles. A bounded ready/free
+ring prevents overwriting operands still read by WGMMA. The consumer uses native
+FP8 QK, FP32 online softmax, BF16 probabilities and BF16 PV with FP32 accumulators.
+It issues the next QK before the current PV and waits for QK alone, allowing its
+softmax to overlap the outstanding PV. No attention tail is discarded.
+
+Compile this factory with automatic TMA/warp specialization disabled and
+`tl.disable_thread_storage_sync=True`: its entry barrier, consumer named barrier,
+async-proxy fences, WGMMA waits and ready/free handoffs own synchronization.
+`make_hopper_merge` combines its 64-row partial tiles and fuses norm/gating.
+The mirror uses ordinary MMA and named barriers on SM89; it cannot establish
+native WGMMA correctness or performance. Search can vary the key tile, context
+partitions and ring depth, subject to shared-memory and register limits. Include
+the merge in complete-operation timings and inspect generated local-memory
+loads/stores before promoting a geometry.
 
 ## Export an existing kernel
 
