@@ -74,9 +74,9 @@ def inspect_source(
                 for function in lowered.device_mod.functions.values():
                     verify_uniform_barriers(function)
                 return str(lowered.kernel_source)
-        return compile_kernel_source(kernel, {"kind": "cuda", "arch": target})
+        from tensor.compiler.cuda.lowering import lower_kernel
 
-    from tilelang.tools.compile_only import compile_kernel_source
+        return lower_kernel(kernel, target, shape_domain=specification.get("shape_domain"))[3]
 
     if stage == "target":
         return compile_source()

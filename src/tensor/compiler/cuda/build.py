@@ -9,7 +9,7 @@ import zipfile
 from importlib.metadata import version
 from pathlib import Path
 
-from tensor.artifacts.format import FORMAT_VERSION, validate_manifest
+from tensor.artifacts.format import FORMAT_VERSION, DOMAIN_FORMAT_VERSION, validate_manifest
 from tensor.compiler.cache import _cache_root, _cached_image, _header_hash, _write_cache
 from tensor.compiler.cuda.toolchain import select_compiler
 from tensor.compiler.errors import BuildError
@@ -70,7 +70,7 @@ def build_cuda(
     if (
         not isinstance(spec, dict)
         or "kernel" not in spec
-        or set(spec) - {"kernel", "launch", "outputs"}
+        or set(spec) - {"kernel", "launch", "outputs", "shape_domain"}
     ):
         raise BuildError(
             "tensor_export() needs 'kernel'; optional 'outputs' names the result buffers"
@@ -80,7 +80,6 @@ def build_cuda(
     # can enter without importing TileLang or PyTorch.
     import tilelang
     import tvm
-    from tvm.target import Target
 
     kernel = spec["kernel"]
     if not isinstance(kernel, tvm.tirx.PrimFunc):
@@ -89,7 +88,11 @@ def build_cuda(
 
     symbols = {}
     try:
-        arguments = frontend_arguments(kernel, symbols)
+        arguments = frontend_arguments(kernel, symbols, shape_domain=spec.get("shape_domain"))
+        if "shape_domain" in spec:
+            from tensor.runtime.domain import validate_domain
+
+            validate_domain(spec["shape_domain"], symbols)
     except (ValueError, TypeError, AttributeError) as exc:
         raise BuildError(f"unsupported frontend signature: {exc}") from exc
     outputs = spec.get("outputs", [])
@@ -107,34 +110,15 @@ def build_cuda(
     try:
         symbol = str(kernel.attrs["global_symbol"])
         ir = tvm.ir.save_json(tvm.IRModule({symbol: kernel}))
-        from tensor.compiler.cuda.prelower import (
-            lower_cuda_operations,
-            lowering_identity,
-        )
+        from tensor.compiler.cuda.prelower import lowering_identity
+        from tensor.compiler.cuda.lowering import lower_kernel, lowering_options
 
-        kernel, prelowering = lower_cuda_operations(kernel, target)
+        domain = spec.get("shape_domain")
+        kernel, prelowering, lowered, cuda = lower_kernel(
+            kernel, target, shape_domain=domain, symbols=symbols)
         lowered_ir = tvm.ir.save_json(tvm.IRModule({symbol: kernel}))
-        resolved = Target({"kind": "cuda", "arch": target})
-        # ABI 1.3 passes ordinary pointers/scalars and launches one grid. Hopper
-        # auto-TMA introduces CUtensorMap parameters, while WGMMA requires an
-        # architecture-specific sm_90a target. Both Hopper paths retain the
-        # pointer/scalar ABI; only sm_90a enables warp-group matrix instructions.
-        pass_config = (
-            {
-                "tl.disable_tma_lower": True,
-                "tl.disable_wgmma": target == "sm_90",
-                "tl.disable_warp_specialized": True,
-            }
-            if target in ("sm_90", "sm_90a")
-            else {}
-        )
-        with tilelang.transform.PassContext(opt_level=3, config=pass_config), resolved:
-            lowered = tilelang.lower(
-                kernel, target=resolved, enable_device_compile=False
-            )
-        from tensor.compiler.cuda.lowering import lower_cuda_intrinsics
-
-        cuda = lower_cuda_intrinsics(str(lowered.kernel_source))
+        # Retain pass settings in compiler/cache provenance.
+        pass_config = lowering_options(target)
     except Exception as exc:
         raise BuildError(
             f"TileLang lowering failed: {type(exc).__name__}: {exc}"
@@ -161,6 +145,10 @@ def build_cuda(
     compiler_identity["lowering_sha256"] = hashlib.sha256(
         Path(__file__).with_name("lowering.py").read_bytes()
     ).hexdigest()
+    if domain is not None:
+        compiler_identity["shape_domain_lowering_sha256"] = hashlib.sha256(
+            Path(__file__).parent.parent.joinpath("frontend/domain.py").read_bytes()
+        ).hexdigest()
     hashed_includes = (
         (*includes, backend.root / "include")
         if compiler_identity["name"] == "nvrtc"
@@ -178,6 +166,10 @@ def build_cuda(
         "tilelang_version": version("tilelang"),
         "tvm_ffi_version": version("apache-tvm-ffi"),
         "cuda_sha256": hashlib.sha256(cuda.encode()).hexdigest(),
+        "shape_domain": domain,
+        "domain_lowering_sha256": hashlib.sha256(
+            Path(__file__).parent.parent.joinpath("frontend/domain.py").read_bytes()
+        ).hexdigest(),
     }
     key = hashlib.sha256(
         json.dumps(cache_identity, sort_keys=True).encode()
@@ -204,7 +196,7 @@ def build_cuda(
     }
     manifest = {
         "format": "tensor.module",
-        "format_version": FORMAT_VERSION,
+        "format_version": DOMAIN_FORMAT_VERSION if domain is not None else FORMAT_VERSION,
         "kind": "cubin",
         "target": target,
         "entrypoint": entrypoint,
@@ -227,6 +219,8 @@ def build_cuda(
     }
     if prelowering is not None:
         manifest["cuda_prelowering"] = prelowering
+    if domain is not None:
+        manifest["shape_domain"] = domain
     if checked:
         manifest["frontend_artifact_sha256"] = hashlib.sha256(
             source_path.read_bytes()

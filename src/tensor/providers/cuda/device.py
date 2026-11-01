@@ -46,6 +46,12 @@ class Device(Session):
                     "cuDeviceGetAttribute", c.byref(limit), attribute, self.device
                 )
                 self.limits[field].append(limit.value)
+        for field, attribute in (("threads", 1), ("shared_memory_bytes", 97)):
+            limit = c.c_int()
+            self.driver.call(
+                "cuDeviceGetAttribute", c.byref(limit), attribute, self.device
+            )
+            self.limits[field] = limit.value
         self.context, self.previous, self.stream = (
             c.c_void_p(),
             c.c_void_p(),

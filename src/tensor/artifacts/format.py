@@ -12,6 +12,7 @@ from tensor.runtime.signature import INTEGER_TYPES, SCALAR_TYPES, validate_expre
 
 FORMAT = "tensor.module"
 FORMAT_VERSION = 3
+DOMAIN_FORMAT_VERSION = 4
 MAX_UNCOMPRESSED = 128 * 1024 * 1024
 MAX_MANIFEST = 2 * 1024 * 1024
 from tensor.runtime.cuda_target import TARGET
@@ -37,7 +38,7 @@ def validate_manifest(manifest: object) -> dict:
     revision = manifest.get("format_version")
     if (
         type(revision) is not int
-        or revision not in (1, 2, FORMAT_VERSION)
+        or revision not in (1, 2, FORMAT_VERSION, DOMAIN_FORMAT_VERSION)
         or manifest.get("format") != (FORMAT if revision >= 3 else "tensor.cuda")
     ):
         raise ArtifactError("unsupported Tensor artifact format/version")
@@ -100,6 +101,17 @@ def validate_manifest(manifest: object) -> dict:
         raise ArtifactError("invalid dimension symbols")
     if revision == 1 and symbols:
         raise ArtifactError("v1 artifacts cannot contain dimension symbols")
+    if revision == DOMAIN_FORMAT_VERSION:
+        from tensor.runtime.domain import validate_domain
+
+        try:
+            if provider != "cuda":
+                raise ValueError("bounded shape artifacts currently require CUDA")
+            validate_domain(manifest.get("shape_domain"), symbols)
+        except (ValueError, TypeError) as exc:
+            raise ArtifactError(str(exc)) from exc
+    elif "shape_domain" in manifest:
+        raise ArtifactError("shape domains require artifact format 4")
     launch = manifest.get("launch")
     if not isinstance(launch, dict) or set(launch) != {
         "grid",

@@ -32,18 +32,21 @@ def lower_cuda_operations(kernel, target):
     x, w, out = (kernel.buffer_map[p] for p in kernel.params)
     if [str(b.name) for b in (x, w, out)] != ["x", "w", "out"]:
         raise ValueError("CUDA matmul buffer names must be x, w and out")
-    if any(
-        len(b.shape) != 2 or any(not isinstance(v, tvm.tirx.IntImm) for v in b.shape)
-        for b in (x, w)
-    ):
-        raise ValueError("CUDA matmul requires static rank-two buffers")
-    m, k = map(int, x.shape)
+    if (any(len(b.shape) != 2 for b in (x, w))
+            or not isinstance(x.shape[0], (tvm.tirx.IntImm, tvm.tirx.Var))
+            or any(not isinstance(v, tvm.tirx.IntImm) for v in (*w.shape, *x.shape[1:]))):
+        raise ValueError("CUDA matmul requires rank-two buffers and static N/K")
+    m = int(x.shape[0]) if isinstance(x.shape[0], tvm.tirx.IntImm) else x.shape[0]
+    k = int(x.shape[1])
     n, wk = map(int, w.shape)
     splits = int(kernel.attrs.get("tensor.cuda.splits", 1))
     if operation == "matmul_partials" and (splits < 2 or k % splits):
         raise ValueError("invalid CUDA matmul partitions")
     shape = (m, n) if operation == "matmul" else (splits, m, n)
-    if wk != k or tuple(map(int, out.shape)) != shape or str(x.dtype) != str(w.dtype):
+    analyzer = tvm.arith.Analyzer()
+    if (wk != k or len(out.shape) != len(shape)
+            or any(not analyzer.can_prove_equal(a, b) for a, b in zip(out.shape, shape))
+            or str(x.dtype) != str(w.dtype)):
         raise ValueError("inconsistent CUDA matmul shapes or dtypes")
     if operation == "matmul_partials":
         if str(out.dtype) != "float32":
@@ -64,13 +67,16 @@ def lower_cuda_operations(kernel, target):
     ):
         raise ValueError("CUDA matmul annotation does not match its computation")
     hopper = target in ("sm_90", "sm_90a")
+    simt = str(x.dtype) == "float32"
+    lanes = int(kernel.attrs.get("tensor.cuda.reduction_lanes", 1))
     defaults = {
-        "block_m": 128 if m >= 128 else 32,
-        "block_n": 32,
-        "block_k": 64,
-        "stages": 3,
+        "block_m": (8 if lanes > 1 else 16) if simt else 128 if type(m) is int and m >= 128 else 32,
+        "block_n": 8 if simt and lanes > 1 else 32,
+        "block_k": (128 if lanes > 1 else 32) if simt else 64,
+        "stages": 2 if simt else 3,
         "threads": 128,
-        "orientation": "weight",
+        "orientation": "activation" if simt else "weight",
+        "reduction_lanes": 1,
     }
     schedule = {}
     for key, default in defaults.items():
@@ -85,17 +91,19 @@ def lower_cuda_operations(kernel, target):
         or schedule["orientation"] not in ("weight", "activation")
     ):
         raise ValueError("invalid CUDA matmul geometry")
-    if bm % 16 or bn % 8 or bk % 16 or st > 4:
+    if (not simt and (bm % 16 or bn % 8 or bk % 16)) or st > 4:
         raise ValueError("unsupported CUDA Tensor Core tile dimensions")
+    if lanes not in (1, 2, 4, 8, 16, 32) or bk % lanes or (not simt and lanes != 1):
+        raise ValueError("invalid CUDA matmul reduction lanes")
     if splits > 1 and (k // splits) % bk:
         raise ValueError("matmul K partitions must align to the K tile")
-    shared = (bm + bn) * bk * 2 * st
+    from tensor.compiler.cuda.schedules import matmul_legal, matmul_shared
+
+    shared = matmul_shared(schedule, dtype=str(x.dtype))
     limit = 227328 if hopper else 99 * 1024
     if shared > limit:
         raise ValueError("CUDA matmul schedule exceeds shared-memory limit")
-    from tensor.compiler.cuda.schedules import matmul_legal
-
-    if not matmul_legal(schedule, target=target):
+    if not matmul_legal(schedule, target=target, dtype=str(x.dtype)):
         raise ValueError(
             "CUDA matmul tile cannot be distributed across the requested warps"
         )
@@ -106,8 +114,9 @@ def lower_cuda_operations(kernel, target):
     lowered = lowered.with_attr("tensor.cuda.prelowered", 1)
     return lowered, {
         "operation": operation,
+        "algorithm": "simt_fma" if simt else "tensor_core",
         "parameters": {
-            "m": m,
+            "m": m if type(m) is int else {"var": str(m.name)},
             "n": n,
             "k": k,
             "dtype": str(x.dtype),

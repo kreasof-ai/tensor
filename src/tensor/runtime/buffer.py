@@ -57,6 +57,12 @@ class Buffer:
         """Borrow this allocation with another contiguous shape; never copy it."""
         return BufferView(self, shape)
 
+    def prefix(self, shape):
+        """Borrow a contiguous logical prefix without exposing unused capacity."""
+        if "opaque_buffer_handles" in self.device.capabilities:
+            raise BufferError("capacity prefix views are not yet supported by this provider")
+        return BufferView(self, shape, prefix=True)
+
     def copy_from(self, source):
         """Copy equal-sized storage on the device's ordered submission stream."""
         self._check()
@@ -149,14 +155,17 @@ class Buffer:
 class BufferView(Buffer):
     """A reshape descriptor borrowing storage and lifetime from another buffer."""
 
-    def __init__(self, base, shape):
+    def __init__(self, base, shape, *, prefix=False):
         import math
 
         base._check()
         shape = (shape,) if type(shape) is int else tuple(shape)
         if not shape or any(type(n) is not int or n < 1 for n in shape):
             raise ValueError("view shape must contain positive integers")
-        if math.prod(shape) * base.dtype.itemsize != base.nbytes:
+        size = math.prod(shape) * base.dtype.itemsize
+        if prefix and size > base.nbytes:
+            raise ValueError("logical prefix exceeds buffer capacity")
+        if not prefix and size != base.nbytes:
             raise ValueError("reshape view must preserve buffer storage size")
         super().__init__(base.device, base._pointer, shape, base.dtype, owner=base)
         self._base = base

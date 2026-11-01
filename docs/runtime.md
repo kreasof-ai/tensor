@@ -42,6 +42,13 @@ Copies and kernel launches use the session's execution ordering.
 Releasing the view leaves its base allocation alive. `destination.copy_from(source)`
 copies equal-sized storage on the session's execution stream or queue.
 
+CUDA and CPU buffers also expose `buffer.prefix(shape)` for a smaller contiguous
+logical prefix of a reserved allocation. The logical byte count must fit the
+immediate parent, including nested views. Shape, descriptors, copies and readback
+cover only that prefix. Reshape views still require equal-sized storage. Keep
+views and their bases live until submitted work completes; DLPack exports retain
+all ancestors against release. WebGPU capacity prefixes are not yet supported.
+
 For feature concatenation, use a column copy between two matrices:
 
 ```python
@@ -79,6 +86,16 @@ and, when needed, `--scalar size=1025`.
 Typed scalar arguments support bool, signed/unsigned integers from 8 to 64 bits,
 and FP32/FP64. Binding checks overflow, finite floating-point values, and shape
 consistency before launch.
+
+Use `call = kernel.bind(*arguments, **bindings)` to validate a call once, including
+explicit output buffers, and retain its resolved descriptors. `call.launch()`
+reuses that binding while checking executable/buffer lifetimes. Call `bind` again
+when storage, scalar arguments or logical shapes change. Each binding owns
+independent descriptors; rebinding does not update an existing CUDA graph or
+WebGPU prepared plan. A format-4 CUDA artifact's shape domain is checked during
+binding before allocation or launch. Do not mutate bound ABI descriptors.
+CUDA binding also checks the resolved grid and block dimensions, total threads
+per block and dynamic shared-memory bytes against the selected device's limits.
 
 ## Timing
 

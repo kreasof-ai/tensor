@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ctypes as c
+from math import prod
 from tensor.runtime.abi import (
     ABI_MAJOR,
     BoundCall,
@@ -117,8 +118,11 @@ class Executable:
                     raise ValueError(
                         f"{descriptor['name']} belongs to a different device session"
                     )
-                if value._released or value._generation != self._generation:
-                    raise self.device.error("buffer has been released")
+                owner = value
+                while owner is not None:
+                    if owner._released or owner._generation != self._generation:
+                        raise self.device.error("buffer has been released")
+                    owner = getattr(owner, "_base", None)
                 # V1 omitted alignment metadata; retain CUDA allocation alignment there.
                 alignment = descriptor.get("alignment", 256)
                 if (
@@ -136,16 +140,32 @@ class Executable:
                 for value, limit in zip(launch[field], self.device.limits[field])
             ):
                 raise ValueError(f"launch {field} exceeds this device's limits")
+        threads = self.device.limits.get("threads")
+        if threads is not None and prod(launch["block"]) > threads:
+            raise ValueError("launch thread count exceeds this device's limit")
+        shared = self.device.limits.get("shared_memory_bytes")
+        if shared is not None and launch["shared_memory_bytes"] > shared:
+            raise ValueError("launch shared memory exceeds this device's limit")
         return values, symbols, launch
 
     def launch(self, *arguments, **bindings) -> None:
         """Launch with all frontend arguments; symbolic dimensions are inferred."""
+        call = self.bind(*arguments, **bindings)
+        self.device._launch(self, call)
+
+    def bind(self, *arguments, **bindings):
+        """Validate and retain a fixed call for repeated allocation-free submission.
+
+        Bind again when shapes, scalar values or storage change. Bindings are
+        independent: rebinding never mutates descriptors retained by a capture.
+        """
         self._check()
         values, symbols, launch = self._bind(arguments, bindings, include_outputs=True)
         call = BoundCall(
-            self.device, self.manifest, values, symbols, launch, validated=True
+            self.device, self.manifest, values, symbols, launch, validated=True,
+            executable=self,
         )
-        self.device._launch(self, call)
+        return call
 
     def prepare(self, *inputs, **bindings):
         """Allocate declared outputs without launching, for repeated benchmarks."""

@@ -59,7 +59,11 @@ def export_spec(path, checked=None):
         kernel = next(iter(module.functions.values()))
         if not isinstance(kernel, tvm.tirx.PrimFunc):
             raise BuildError("portable export must be a TIRx PrimFunc")
-        return {"kernel": kernel, "outputs": manifest.get("outputs", [])}
+        return {
+            "kernel": kernel,
+            "outputs": manifest.get("outputs", []),
+            **({"shape_domain": manifest["shape_domain"]} if "shape_domain" in manifest else {}),
+        }
     except BuildError:
         raise
     except Exception as exc:

@@ -196,13 +196,15 @@ def check_requirement(requirement: dict, capabilities=KNOWN_CAPABILITIES) -> Non
 class BoundCall:
     """Own descriptor backing storage while providers consume a borrowed call."""
 
-    def __init__(self, device, manifest, values, symbols, launch, *, validated=False):
+    def __init__(self, device, manifest, values, symbols, launch, *, validated=False,
+                 executable=None):
         if c.sizeof(c.c_void_p) != 8 or sys.byteorder != "little":
             raise ValueError("Tensor ABI 1 requires a 64-bit little-endian host")
         abi = manifest.get(
             "abi", [dict(item, kind="buffer") for item in manifest["arguments"]]
         )
         self.storage = []
+        self.executable = executable
         self.arguments = (Argument * len(abi))()
         for argument, descriptor in zip(self.arguments, abi):
             name, dtype = descriptor["name"], descriptor["dtype"]
@@ -239,6 +241,17 @@ class BoundCall:
             launch["shared_memory_bytes"],
             device.stream_descriptor(),
         )
+
+    def launch(self):
+        """Submit a public executable binding, retaining its original descriptors."""
+        if self.executable is None:
+            raise ValueError("bind this call through Executable.bind before submission")
+        self.executable._check()
+        for buffer in self.storage:
+            buffer._check()
+        self.executable.device._launch(self.executable, self)
+
+    __call__ = launch
 
     def cuda_parameters(self):
         return (c.c_void_p * len(self.arguments))(

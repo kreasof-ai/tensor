@@ -85,7 +85,7 @@ def integer_expression(value, symbols: dict):
     raise ValueError(f"unsupported integer expression: {type(value).__name__}: {value}")
 
 
-def frontend_arguments(kernel, symbols: dict) -> list[dict]:
+def frontend_arguments(kernel, symbols: dict, *, shape_domain=None) -> list[dict]:
     import tvm
 
     arguments = []
@@ -132,6 +132,11 @@ def frontend_arguments(kernel, symbols: dict) -> list[dict]:
             arguments.append(
                 {"kind": "scalar", "name": str(parameter.name), "dtype": dtype}
             )
+            bounds = shape_domain.get("bounds", {}) if isinstance(shape_domain, dict) else {}
+            if isinstance(bounds, dict) and str(parameter.name) in bounds:
+                if dtype not in INTEGER_TYPES:
+                    raise ValueError("bounded extent scalars must have integer dtypes")
+                symbols[str(parameter.name)] = dtype
     if not any(item["kind"] == "buffer" for item in arguments):
         raise ValueError("the kernel has no buffer arguments")
     return arguments

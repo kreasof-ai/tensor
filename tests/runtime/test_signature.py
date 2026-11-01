@@ -85,3 +85,26 @@ def test_geometry_rejects_bad_division_and_overflow_before_driver_launch():
         resolve_launch(invalid, {"n": 129})
     with pytest.raises(ValueError, match="overflow"):
         resolve_launch(launch, {"n": 1 << 63})
+
+
+@pytest.mark.parametrize("field,expression,limit,boundary,message", [
+    ("block", [{"var": "n"}, 2, 1], 512, 256, "thread count"),
+    ("shared_memory_bytes", {"op": "mul", "args": [{"var": "n"}, 128]},
+     65536, 512, "shared memory"),
+])
+def test_resolved_device_resources_are_checked_when_binding(field, expression, limit, boundary, message):
+    from types import SimpleNamespace
+    from tensor.runtime.executable import Executable
+
+    executable = object.__new__(Executable)
+    executable.manifest = {
+        "arguments": [], "symbols": {"n": "int32"},
+        "launch": {"grid": [1, 1, 1], "block": [1, 1, 1], "shared_memory_bytes": 0},
+    }
+    executable.manifest["launch"][field] = expression
+    resource = "threads" if field == "block" else "shared_memory_bytes"
+    executable.device = SimpleNamespace(limits={"grid": [65535] * 3,
+        "block": [1024] * 3, resource: limit})
+    executable._bind((), {"n": boundary}, include_outputs=False)
+    with pytest.raises(ValueError, match=message):
+        executable._bind((), {"n": boundary + 1}, include_outputs=False)

@@ -54,6 +54,63 @@ def test_annotation_cannot_replace_different_computation():
         lower_cuda_operations(matmul(32, 32, 64, block_m=16, block_n=16), "sm_89")
 
 
+@pytest.mark.parametrize("orientation", ["activation", "weight"])
+def test_float32_matmul_retains_precision_and_accounts_for_padded_shared_storage(orientation):
+    from tensor.compiler.cuda.matmul import matmul
+    from tensor.compiler.cuda.prelower import lower_cuda_operations
+    from tensor.compiler.cuda.schedules import matmul_legal, matmul_shared
+    from tensor.compiler.frontend.signature import frontend_arguments
+
+    original = matmul(37, 19, 65, dtype="float32", orientation=orientation)
+    lowered, metadata = lower_cuda_operations(original, "sm_89")
+    assert frontend_arguments(original, {}) == frontend_arguments(lowered, {})
+    assert metadata["algorithm"] == "simt_fma"
+    assert "T.gemm" not in lowered.script()
+    assert all(str(buffer.dtype) == "float32" for buffer in lowered.buffer_map.values())
+    assert metadata["estimated_shared_memory_bytes"] == matmul_shared(metadata["schedule"], dtype="float32")
+    assert matmul_legal(metadata["schedule"], target="sm_89", dtype="float32")
+    assert not matmul_legal({**metadata["schedule"], "block_m": 3}, target="sm_89", dtype="float32")
+
+
+@pytest.mark.skipif(os.environ.get("TENSOR_P1_CUDA") != "1", reason="native CUDA execution")
+@pytest.mark.parametrize("orientation", ["activation", "weight"])
+@pytest.mark.parametrize("lanes", [1, 32])
+def test_float32_dynamic_matmul_reuses_one_image_and_preserves_capacity_tail(tmp_path, orientation, lanes):
+    import numpy as np
+    import tensor
+
+    entry = tmp_path / "matmul.py"
+    entry.write_text(f'''
+import tilelang.language as T
+from tensor.compiler.cuda.matmul import matmul
+def tensor_export():
+    return {{"kernel": matmul(T.dynamic("rows"),19,65,dtype="float32",orientation={orientation!r},reduction_lanes={lanes}), "outputs":["out"],
+             "shape_domain": {{"version":1,"bounds":{{"rows":{{"min":1,"max":37}}}},"relations":[]}}}}
+''')
+    artifact = tmp_path / "matmul.tbin"
+    tensor.build(entry, artifact, target="sm_89")
+    rng = np.random.default_rng(171)
+    x = rng.normal(size=(37, 65)).astype("float32")
+    w = rng.normal(size=(19, 65)).astype("float32")
+    with tensor.Device() as device:
+        executable = device.load(artifact)
+        image = artifact.read_bytes()
+        bx, bw = device.from_numpy(x), device.from_numpy(w)
+        for rows in (1, 7, 16, 33, 37):
+            initial = np.full((37, 19), 12345, dtype="float32")
+            out = device.from_numpy(initial)
+            px, po = bx.prefix((rows, 65)), out.prefix((rows, 19))
+            executable.launch(px, bw, po)
+            actual = out.to_numpy()
+            reference = (x[:rows].astype("float64") @ w.astype("float64").T).astype("float32")
+            np.testing.assert_allclose(actual[:rows], reference, rtol=2e-5, atol=2e-5)
+            np.testing.assert_array_equal(actual[rows:], initial[rows:])
+            px.release()
+            po.release()
+            out.release()
+        assert artifact.read_bytes() == image
+
+
 def test_partition_boundaries_and_accumulation_are_explicit():
     from tensor.compiler.cuda.matmul import matmul_partials
     from tensor.compiler.cuda.prelower import lower_cuda_operations

@@ -6,6 +6,34 @@ warp shuffles, vectorized loads and IEEE FP32 FMA lowering.
 """
 
 
+def lowering_options(target):
+    # The pointer/scalar ABI excludes auto-TMA tensor-map parameters. Only
+    # sm_90a enables WGMMA; both Hopper paths retain ordinary launch arguments.
+    return ({"tl.disable_tma_lower": True, "tl.disable_wgmma": target == "sm_90",
+             "tl.disable_warp_specialized": True} if target in ("sm_90", "sm_90a") else {})
+
+
+def lower_kernel(kernel, target, *, shape_domain=None, symbols=None):
+    """Canonical CUDA lowering shared by artifact production and inspection."""
+    import tilelang
+    from tvm.target import Target
+    from tensor.compiler.cuda.prelower import lower_cuda_operations
+    from tensor.compiler.frontend.domain import constrain
+    from tensor.compiler.frontend.signature import frontend_arguments
+
+    if symbols is None:
+        symbols = {}
+        frontend_arguments(kernel, symbols, shape_domain=shape_domain)
+    kernel, prelowering = lower_cuda_operations(kernel, target)
+    kernel = constrain(kernel, shape_domain, symbols)
+    resolved = Target({"kind": "cuda", "arch": target})
+    config = lowering_options(target)
+    with tilelang.transform.PassContext(opt_level=3, config=config), resolved:
+        lowered = tilelang.lower(kernel, target=resolved, enable_device_compile=False)
+    cuda = lower_cuda_intrinsics(str(lowered.kernel_source))
+    return kernel, prelowering, lowered, cuda
+
+
 def lower_cuda_intrinsics(source):
     helpers = {
         "tensor_load_u16": """__device__ __forceinline__ unsigned int tensor_load_u16(const void* ptr) {

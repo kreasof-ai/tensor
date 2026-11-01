@@ -14,6 +14,7 @@ from tensor.modules.errors import ModuleError
 from tensor.modules.manifest import MAX_FILES
 from tensor.modules.manifest import MAX_BYTES
 from tensor.modules.manifest import _manifest
+from tensor.modules.manifest import _variants
 
 
 def _canonical(value):
@@ -43,8 +44,11 @@ def _members(manifest):
 
     paths = {"tensor.json", *manifest["files"]}
     for export in manifest["exports"].values():
-        paths.update(export.get("artifacts", []))
-        paths.update(export[k] for k in ("source", "portable") if k in export)
+        for variant in _variants(export):
+            paths.update(variant.get("artifacts", []))
+            paths.update(variant[k] for k in ("source", "portable") if k in variant)
+        if "evidence" in export.get("portfolio", {}):
+            paths.add(export["portfolio"]["evidence"])
     prefixes = {}
     for path in paths:
         for index in range(1, len(PurePosixPath(path).parts) + 1):
@@ -65,7 +69,7 @@ class _Data:
     origin: Path | None = None
 
 
-def _logical(manifest):
+def _logical(manifest, *, domain=True):
     return {
         "arguments": [
             {
@@ -76,6 +80,7 @@ def _logical(manifest):
         ],
         "outputs": manifest.get("outputs", []),
         "symbols": manifest.get("symbols", {}),
+        **({"shape_domain": manifest["shape_domain"]} if domain and "shape_domain" in manifest else {}),
     }
 
 
@@ -85,28 +90,29 @@ def _data(manifest, files, origin=None):
     files = {**files, "tensor.json": _canonical(manifest)}
     if set(files) != _members(manifest) or sum(map(len, files.values())) > MAX_BYTES:
         raise ModuleError("module file set or size does not match its manifest")
-    for spec in manifest["exports"].values():
-        signatures, targets = set(), set()
-        for name in dict.fromkeys(
-            [
-                *spec.get("artifacts", []),
-                *([spec["portable"]] if "portable" in spec else []),
-            ]
-        ):
-            artifact, _ = read_artifact(io.BytesIO(files[name]))
-            logical = _logical(artifact)
-            signatures.add(_canonical(logical))
-            if (
-                "source" in spec
-                and artifact["source_sha256"]
-                != hashlib.sha256(files[spec["source"]]).hexdigest()
+    for export in manifest["exports"].values():
+        signatures = set()
+        portfolio = export.get("portfolio")
+        for spec in _variants(export):
+            targets = set()
+            for name in dict.fromkeys(
+                [*spec.get("artifacts", []), *([spec["portable"]] if "portable" in spec else [])]
             ):
-                raise ModuleError("export artifact does not match its packaged source")
-            if name in spec.get("artifacts", []):
-                target = (artifact.get("provider", "cuda"), artifact["target"])
-                if target in targets:
-                    raise ModuleError("ambiguous exact-target export artifacts")
-                targets.add(target)
+                artifact, _ = read_artifact(io.BytesIO(files[name]))
+                if portfolio:
+                    from tensor.modules.portfolio import check_artifact
+
+                    check_artifact(portfolio, spec, artifact)
+                logical = _logical(artifact, domain=not portfolio)
+                signatures.add(_canonical(logical))
+                if ("source" in spec and artifact["source_sha256"]
+                        != hashlib.sha256(files[spec["source"]]).hexdigest()):
+                    raise ModuleError("export artifact does not match its packaged source")
+                if name in spec.get("artifacts", []):
+                    target = (artifact.get("provider", "cuda"), artifact["target"])
+                    if target in targets:
+                        raise ModuleError("ambiguous exact-target export artifacts")
+                    targets.add(target)
         if len(signatures) > 1:
             raise ModuleError("export artifact signatures disagree")
     hashes = {

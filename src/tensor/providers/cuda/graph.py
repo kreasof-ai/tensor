@@ -69,12 +69,14 @@ class CudaGraph:
         if self._closed or self._generation != self.device._generation:
             raise CudaError("CUDA graph is released or belongs to an old session")
         for resource in self.resources:
-            if (
-                getattr(resource, "_released", False)
-                or getattr(resource, "_generation", self._generation)
-                != self._generation
-            ):
-                raise CudaError("CUDA graph references a released resource")
+            while resource is not None:
+                if (
+                    getattr(resource, "_released", False)
+                    or getattr(resource, "_generation", self._generation)
+                    != self._generation
+                ):
+                    raise CudaError("CUDA graph references a released resource")
+                resource = getattr(resource, "_base", None)
         self.device.driver.call("cuGraphLaunch", self.executable, self.device.stream)
 
     def close(self):

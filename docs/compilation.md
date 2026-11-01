@@ -116,6 +116,13 @@ arbitrary fused kernels, insert extra kernel launches or change precision.
 Floating-point reduction order can differ between schedules; applications must
 validate their numerical tolerance when selecting a schedule.
 
+FP32 inputs use tiled SIMT FMA with FP32 shared storage and accumulation.
+FP16 and BF16 inputs use Tensor Cores. FP32 matmul does not cast operands to
+TF32 or FP16. Pass `dtype="float32"` to `matmul_space` and `matmul_legal` when
+exploring its schedule family; shared-memory estimates include its padded tile.
+`reduction_lanes` selects 1/2/4/8/16/32 strided FMA chains before their reduction.
+Keep it fixed when qualifying schedules that must preserve a reduction order.
+
 The artifact retains the original logical IR and records the selected geometry
 under `cuda_prelowering`. Its cache identity includes the transformed IR and
 prelowering implementation. CUDA artifacts retain their pointer/scalar launch
@@ -137,7 +144,90 @@ schedule is a legal starting point, not a measured performance guarantee.
 Use `matmul_space(..., partitioned=True)` to explore partition counts and supply
 `depth=K` to `matmul_legal` when checking those candidates.
 
+## Bounded dynamic CUDA shapes
+
+An export can attach a checked domain to its symbolic dimensions:
+
+```python
+import tilelang.language as T
+from tensor.compiler.cuda.matmul import matmul
+
+def tensor_export():
+    return {
+        "kernel": matmul(T.dynamic("rows"), 1536, 2048, dtype="float16"),
+        "outputs": ["out"],
+        "shape_domain": {
+            "version": 1,
+            "bounds": {"rows": {"min": 1, "max": 256}},
+            "relations": [],
+        },
+    }
+```
+
+The existing CUDA matmul prelowering handles dynamic M with static N/K and
+static hardware tiles. It keeps live row counts in signatures and launch grids.
+The compiler inserts guarded TIR assumptions before TileLang lowering; the
+executable validates the same domain before output allocation or submission.
+Each symbol needs finite positive bounds. Optional `multiple_of` is a real
+admission constraint, not a request to pad. Relations contain `left`, `op`
+(`eq` or `le`) and `right`, using the signature's checked integer expressions.
+They validate explicit/inferred bindings without solving ambiguous products.
+
+Bounded CUDA exports use artifact format 4 so older consumers reject mandatory
+guards. Static and unrestricted symbolic exports retain their existing formats.
+Portable rebuilding preserves bounds. Module variants must agree on the domain
+as well as their logical signature. CPU/WebGPU bounded producers are not yet
+implemented; their existing execution paths are unchanged.
+
+`tensor.compiler.tuning.tune_shapes` accepts an existing `ScheduleSearch`, shape
+points, a resource-owning build context and an independent qualification/timing
+callback. It builds each candidate once, visits shapes sequentially and rejects
+the candidate if any shape fails. Results retain per-shape measurements and
+winners. `select_regions(report, symbol="rows", bounds=(1, 256), max_regions=4)`
+selects contiguous dispatch regions from that shared bank, using dynamic
+programming and a per-measured-point slowdown limit. It does not build new
+images. Region boundaries lie between measured points; unmeasured integers
+have dispatch coverage but carry no measured performance claim.
+
+For a streaming workload, `cuda_working_set(device, weight_bytes, out=path)`
+from `tensor.compiler.tuning` supplies an independent canonical matrix product
+and a serializable description. Use its launch callback in measurement's
+`reset` callback to touch that working set outside timing. Select a footprint
+appropriate to the device cache and retain the description with the result;
+this controls workload residency without promising hardware cache invalidation.
+
+Version-2 module exports package these regions under `portfolio`, with
+`symbols`, `shape_domain`, ordered `regions` and optional `evidence` file.
+Each region has `bounds` (inclusive min/max for every symbol) and the existing
+`artifacts`, `portable` or `source` fields. Several regions may share an image.
+Installation checks complete coverage over the bounded integer box, accounting
+for divisibility, and verifies that every packaged image guards assumptions
+compatible with its region. Relations are checked at selection and binding;
+coverage conservatively includes cells excluded by relations. Overlaps select
+the first declared region. Validation is bounded to 64 regions and 4096
+uncovered cells and rejects contracts exceeding that budget.
+
+`module.resolve("matmul", target="sm_89", dimensions={"rows": 7})` selects an
+AOT image without importing a compiler. Use `module.load` with the same
+`dimensions` to load it. Engines own loaded-image reuse and call rebinding;
+module resolution performs no JIT or implicit capture. The artifact retains
+its own mandatory guards. The evidence file and region map participate in the
+package identity. Version-1 exports retain their existing resolution behavior.
+
+Run the generic projection study with:
+
+```sh
+python -m benchmarks.kernels.comparison.dynamic_shapes \
+  --out build/dynamic-shapes --columns 1536 --depth 2048
+```
+
+It retains exact/dynamic artifacts, independent NumPy checks, timing samples
+and producer costs. Exact controls use the selected dynamic schedule at each
+point; this does not establish an advantage over separately tuned static code.
+
 ## Schedule discovery
+
+### Explore schedules
 
 Schedule search proposes settings. The caller owns compilation, correctness,
 timing, budgets and result persistence. Search does not choose a configuration

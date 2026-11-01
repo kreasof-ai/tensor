@@ -180,7 +180,8 @@ _raw_pointer = c.PYFUNCTYPE(c.c_void_p, c.c_void_p, c.c_char_p)(
 def _delete_export(address):
     owner = _exports.pop(address, None)
     if owner is not None:
-        owner[0]._dlpack_exports -= 1
+        for buffer in owner[3]:
+            buffer._dlpack_exports -= 1
 
 
 @c.CFUNCTYPE(None, c.c_void_p)
@@ -220,8 +221,12 @@ def export(buffer, *, versioned):
         else DLManagedTensor(tensor, None, deleter)
     )
     address = c.addressof(managed)
-    buffer._dlpack_exports = getattr(buffer, "_dlpack_exports", 0) + 1
-    _exports[address] = (buffer, managed, shape)
+    owners = [buffer]
+    while hasattr(owners[-1], "_base"):
+        owners.append(owners[-1]._base)
+    for owner in owners:
+        owner._dlpack_exports += 1
+    _exports[address] = (buffer, managed, shape, owners)
     create = c.pythonapi.PyCapsule_New
     create.argtypes, create.restype = [c.c_void_p, c.c_char_p, c.c_void_p], c.py_object
     try:

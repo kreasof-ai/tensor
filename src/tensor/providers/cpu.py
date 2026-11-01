@@ -108,7 +108,7 @@ class Device(Session):
         base = buffer
         while hasattr(base, "_base"):
             base = base._base
-        return base._storage.reshape(buffer.shape).copy()
+        return base._storage.reshape(-1)[:buffer.nbytes // buffer.dtype.itemsize].reshape(buffer.shape).copy()
 
     def _copy(self, destination, source):
         c.memmove(destination.pointer, source.pointer, source.nbytes)

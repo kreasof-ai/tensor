@@ -64,7 +64,7 @@ def _manifest(value):
         raise ModuleError(
             "tensor.json needs formatVersion, name, version, tensorAbi and exports"
         )
-    if type(value["formatVersion"]) is not int or value["formatVersion"] != 1:
+    if type(value["formatVersion"]) is not int or value["formatVersion"] not in (1, 2):
         raise ModuleError("unsupported module manifest version")
     if not isinstance(value["name"], str) or not NAME.fullmatch(value["name"]):
         raise ModuleError("module name must be lowercase words separated by hyphens")
@@ -82,29 +82,23 @@ def _manifest(value):
             raise ModuleError(f"invalid export name: {name}")
         if isinstance(spec, str):
             spec = {"source": spec}
-        if (
-            not isinstance(spec, dict)
-            or not spec
-            or spec.keys() - {"source", "portable", "artifacts"}
-        ):
-            raise ModuleError(f"{name}: export needs source, portable or artifacts")
-        normalized = {}
-        for field in ("source", "portable"):
-            if field in spec:
-                path = _path(spec[field])
-                if not path.endswith(".py" if field == "source" else ".tbin"):
-                    raise ModuleError(f"{name}: {field} has an invalid suffix")
-                normalized[field] = path
-        if "artifacts" in spec:
-            paths = spec["artifacts"]
-            if not isinstance(paths, list) or not paths or len(paths) > 64:
-                raise ModuleError(f"{name}: artifacts must be a nonempty list")
-            normalized["artifacts"] = [_path(p) for p in paths]
-            if any(not p.endswith(".tbin") for p in normalized["artifacts"]) or len(
-                set(normalized["artifacts"])
-            ) != len(paths):
-                raise ModuleError(f"{name}: invalid or duplicate artifact paths")
-        exports[name] = normalized
+        if isinstance(spec, dict) and "portfolio" in spec:
+            if value["formatVersion"] != 2 or set(spec) != {"portfolio"}:
+                raise ModuleError("shape portfolios require a version-2 export")
+            from tensor.modules.portfolio import validate
+
+            portfolio = spec["portfolio"]
+            validate(portfolio)
+            portfolio["regions"] = [
+                {"bounds": region["bounds"],
+                 **_export({k: v for k, v in region.items() if k != "bounds"}, name)}
+                for region in portfolio["regions"]
+            ]
+            if "evidence" in portfolio:
+                portfolio["evidence"] = _path(portfolio["evidence"])
+            exports[name] = spec
+        else:
+            exports[name] = _export(spec, name)
     dependencies = result.setdefault("dependencies", {})
     if not isinstance(dependencies, dict) or len(dependencies) > 128:
         raise ModuleError("dependencies must be an object")
@@ -152,3 +146,29 @@ def _manifest(value):
     if len(result["files"]) != len(set(result["files"])):
         raise ModuleError("duplicate normalized package file paths")
     return result
+
+
+def _export(spec, name):
+    if (not isinstance(spec, dict) or not spec
+            or spec.keys() - {"source", "portable", "artifacts"}):
+        raise ModuleError(f"{name}: export needs source, portable or artifacts")
+    normalized = {}
+    for field in ("source", "portable"):
+        if field in spec:
+            path = _path(spec[field])
+            if not path.endswith(".py" if field == "source" else ".tbin"):
+                raise ModuleError(f"{name}: {field} has an invalid suffix")
+            normalized[field] = path
+    if "artifacts" in spec:
+        paths = spec["artifacts"]
+        if not isinstance(paths, list) or not paths or len(paths) > 64:
+            raise ModuleError(f"{name}: artifacts must be a nonempty list")
+        normalized["artifacts"] = [_path(p) for p in paths]
+        if (any(not p.endswith(".tbin") for p in normalized["artifacts"])
+                or len(set(normalized["artifacts"])) != len(paths)):
+            raise ModuleError(f"{name}: invalid or duplicate artifact paths")
+    return normalized
+
+
+def _variants(spec):
+    return spec["portfolio"]["regions"] if "portfolio" in spec else [spec]

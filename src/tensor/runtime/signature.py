@@ -186,6 +186,10 @@ def bind_shapes(
                 raise ValueError(
                     f"{name} needs shape {list(expected)} and dtype {descriptor['dtype']}"
                 )
+    if "shape_domain" in manifest:
+        from tensor.runtime.domain import check_domain
+
+        check_domain(manifest["shape_domain"], bound)
     return bound, values
 
 

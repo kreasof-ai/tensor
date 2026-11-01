@@ -35,6 +35,7 @@ class Module:
         nvcc=None,
         nvrtc_home=None,
         cache_dir=None,
+        dimensions=None,
     ):
         data = _cached(self.cache, self.digest)
         if export not in data.manifest["exports"]:
@@ -76,6 +77,16 @@ class Module:
             raise ModuleError("target does not match the requested provider")
         root = self.cache / "packages" / self.digest
         spec = data.manifest["exports"][export]
+        portfolio, region = spec.get("portfolio"), None
+        selected_region = None
+        if portfolio:
+            from tensor.modules.portfolio import select
+
+            region, spec = select(portfolio, dimensions)
+            selected_region = portfolio["regions"][region]
+        elif dimensions is not None:
+            raise ModuleError("dimension-based resolution requires a shape portfolio")
+        dispatch = {} if region is None else {"region": region, "dimensions": dict(dimensions)}
         binaries, candidates = {}, []
         signature = None
         for name in dict.fromkeys(
@@ -85,6 +96,10 @@ class Module:
             ]
         ):
             manifest, files = read_artifact(root / name)
+            if portfolio:
+                from tensor.modules.portfolio import check_artifact
+
+                check_artifact(portfolio, selected_region, manifest)
             logical = _logical(manifest)
             if signature is not None and signature != logical:
                 raise ModuleError("export artifact signatures disagree")
@@ -115,6 +130,7 @@ class Module:
                 "provider": provider,
                 "target": target,
                 "export": export,
+                **dispatch,
             }
         selected_compiler = compiler or (
             "wgsl"
@@ -134,6 +150,7 @@ class Module:
                     "target": target,
                     "compiler": selected_compiler,
                     "abi": [ABI_MAJOR, ABI_MINOR],
+                    **({"region": region} if region is not None else {}),
                 }
             )
         ).hexdigest()
@@ -144,6 +161,10 @@ class Module:
             if record != {"sha256": hashlib.sha256(output.read_bytes()).hexdigest()}:
                 raise ModuleError("cached export hash mismatch")
             cached, _ = read_artifact(output)
+            if portfolio:
+                from tensor.modules.portfolio import check_artifact
+
+                check_artifact(portfolio, selected_region, cached)
             if cached.get("provider", "cuda") != provider or cached["target"] != target:
                 raise ModuleError("cached export target mismatch")
             if (
@@ -162,6 +183,7 @@ class Module:
                 "provider": provider,
                 "target": target,
                 "export": export,
+                **dispatch,
             }
         except (OSError, ValueError, ArtifactError):
             pass
@@ -192,6 +214,10 @@ class Module:
                 cache_dir=cache_dir,
             )
             built, _ = read_artifact(temporary)
+            if portfolio:
+                from tensor.modules.portfolio import check_artifact
+
+                check_artifact(portfolio, selected_region, built)
             logical = _logical(built)
             if signature is not None and signature != logical:
                 raise ModuleError(
@@ -210,6 +236,7 @@ class Module:
             "target": target,
             "export": export,
             "build": result,
+            **dispatch,
         }
 
     def load(self, export, device, **options):

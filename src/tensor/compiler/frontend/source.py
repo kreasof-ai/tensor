@@ -14,7 +14,7 @@ def _canonical(value):
     return value
 
 
-def export_source(module, factory, *arguments, dependencies, outputs=None):
+def export_source(module, factory, *arguments, dependencies, outputs=None, shape_domain=None):
     """Bind producer cache identity to every factory implementation it uses.
 
     The entry file contains specialization metadata only. Algorithm bodies live
@@ -26,6 +26,8 @@ def export_source(module, factory, *arguments, dependencies, outputs=None):
         digest.update(Path(find_spec(name).origin).read_bytes())
     arguments = tuple(_canonical(arg) for arg in arguments)
     extra = f", 'outputs': {outputs!r}" if outputs is not None else ""
+    if shape_domain is not None:
+        extra += f", 'shape_domain': {_canonical(shape_domain)!r}"
     return (
         f"# DSL implementation SHA256: {digest.hexdigest()}\n"
         f"from {module} import {factory}\n\n"
