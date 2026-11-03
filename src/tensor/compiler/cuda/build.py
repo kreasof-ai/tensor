@@ -118,7 +118,7 @@ def build_cuda(
             kernel, target, shape_domain=domain, symbols=symbols)
         lowered_ir = tvm.ir.save_json(tvm.IRModule({symbol: kernel}))
         # Retain pass settings in compiler/cache provenance.
-        pass_config = lowering_options(target)
+        pass_config = lowering_options(target, kernel)
     except Exception as exc:
         raise BuildError(
             f"TileLang lowering failed: {type(exc).__name__}: {exc}"
@@ -141,6 +141,12 @@ def build_cuda(
             raise BuildError(f"required TileLang headers missing: {path}")
     compiler_identity = backend.identity(target, includes)
     compiler_identity["pass_config"] = pass_config
+    compiler_identity["signature_sha256"] = hashlib.sha256(
+        Path(__file__).parent.parent.joinpath("frontend/signature.py").read_bytes()
+    ).hexdigest()
+    compiler_identity["tensor_map_sha256"] = hashlib.sha256(
+        Path(__file__).with_name("tensor_map.py").read_bytes()
+    ).hexdigest()
     compiler_identity["prelowering_sha256"] = lowering_identity()
     compiler_identity["lowering_sha256"] = hashlib.sha256(
         Path(__file__).with_name("lowering.py").read_bytes()
@@ -194,6 +200,11 @@ def build_cuda(
         "kernel.tirx.json": ir.encode(),
         **_notices(tilelang_root),
     }
+    from tensor.compiler.cuda.tensor_map import descriptors
+    tensor_maps = {v["buffer"]:v["descriptor"] for v in descriptors(kernel, lowered).values()}
+    requirement = runtime_requirement(arguments, symbols)
+    if tensor_maps:
+        requirement["required_capabilities"].append("cuda_tensor_maps")
     manifest = {
         "format": "tensor.module",
         "format_version": DOMAIN_FORMAT_VERSION if domain is not None else FORMAT_VERSION,
@@ -203,12 +214,13 @@ def build_cuda(
         "launch": launch,
         "compiler": compiler_identity,
         "provider": "cuda",
-        "runtime_abi": runtime_requirement(arguments, symbols),
+        "runtime_abi": requirement,
         "workspace": workspace_requirement(),
         "arguments": arguments,
         "outputs": outputs,
         "symbols": symbols,
         "abi": abi,
+        **({"cuda_tensor_maps": tensor_maps} if tensor_maps else {}),
         "source_sha256": cache_identity["source_sha256"],
         "tilelang_version": version("tilelang"),
         "tvm_ffi_version": version("apache-tvm-ffi"),
