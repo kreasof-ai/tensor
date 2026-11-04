@@ -6,22 +6,19 @@
 <h1 align="center">Portable kernels. Small runtime.</h1>
 
 <p align="center">
+  <a href="https://deepwiki.com/kreasof-ai/tensor"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
+  <a href="https://kreasof.my.id/projects/tensor"><img alt="Documentation" src="https://img.shields.io/website/http/kreasof.my.id/projects/tensor.svg?down_color=red&down_message=offline&up_message=online"></a>
+</p>
+
+<p align="center">
   Build TileLang kernels into portable artifacts.<br>
   Execute them with a small runtime and your hardware driver.
 </p>
 
 <p align="center">
-  <a href="docs/quickstart.md"><strong>Quickstart</strong></a> &nbsp;·&nbsp;
-  <a href="docs/README.md">Documentation</a> &nbsp;·&nbsp;
-  <a href="research/studies/cuda-showcase/README.md">Benchmarks</a> &nbsp;·&nbsp;
-  <a href="CONTRIBUTING.md">Contributing</a>
-</p>
-
-<p align="center">
   <code>TileLang kernel</code> → <code>Tensor compiler</code> → <code>.tbin</code> → <code>Tensor runtime</code> → <code>device</code>
 </p>
-
----
 
 Compilation and execution are separate: consumers need the runtime and their
 hardware driver, without TileLang, TVM, or PyTorch. CUDA, WebGPU, and a scoped CPU
