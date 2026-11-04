@@ -182,6 +182,8 @@ def device_signature(
         "int64": {"int64_t", "long long"},
         "uint64": {"uint64_t", "unsigned long long"},
     }
+    from tensor.compiler.cuda.tensor_map import descriptors
+    tensor_maps = descriptors(kernel, lowered)
     abi = []
     for parameter, declaration in zip(function.params, parameters):
         match = re.search(r"([A-Za-z_]\w*)\s*$", declaration)
@@ -190,6 +192,12 @@ def device_signature(
             raise ValueError(
                 "lowered argument order/names do not match emitted CUDA signature"
             )
+        if parameter_name in tensor_maps:
+            item = tensor_maps[parameter_name]
+            if declaration[:match.start()].strip() != "__grid_constant__ const CUtensorMap":
+                raise ValueError("unsupported CUDA tensor-map parameter declaration")
+            abi.append(dict(kind="buffer", name=item["buffer"], dtype=item["dtype"]))
+            continue
         if dtype == "handle":
             buffer = buffers.get(parameter_name)
             if buffer is None or "*" not in declaration:

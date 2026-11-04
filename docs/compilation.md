@@ -80,6 +80,20 @@ uv run --locked tensor cache
 Use `tensor inspect --help` for target source and pass tracing. Use new output
 paths. Cache hits reuse checked compiled images, not outputs or device buffers.
 
+On Hopper, GEMM lowering normally chooses warp-group MMA when the tile permits
+it. An operation can request synchronous warp MMA with
+`kernel.with_attr("tensor.cuda.gemm_mode", "mma")`; `"auto"` retains the default.
+This choice preserves the target and pointer/scalar ABI and is recorded in the
+artifact's compiler pass settings and cache identity.
+
+Static Hopper kernels can opt into TMA copies and warp specialization with
+`kernel.with_attr("tensor.cuda.tma", 1)` when targeting `sm_90a`. The compiler
+records tensor-map geometry and its source buffer in the artifact. Buffer
+bindings retain their existing public names and types; the CUDA launch adapter
+encodes aligned descriptors once per bound call, before graph capture. Artifacts
+require the `cuda_tensor_maps` runtime capability. This initial implementation
+accepts contiguous static geometry and one descriptor per source buffer.
+
 ## CUDA operation prelowering
 
 For a standalone projection, describe the operation and let the CUDA producer

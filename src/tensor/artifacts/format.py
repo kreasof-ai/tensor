@@ -245,6 +245,11 @@ def validate_manifest(manifest: object) -> dict:
             abi_names.append(name)
         if len(abi_names) != len(set(abi_names)) or buffers - set(abi_names):
             raise ArtifactError("duplicate or missing kernel buffer ABI argument")
+    from tensor.runtime.tensor_map import validate_manifest as validate_tensor_maps
+    try:
+        validate_tensor_maps(manifest)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ArtifactError(str(exc)) from exc
     for field in ("source_sha256",):
         value = manifest.get(field)
         if not isinstance(value, str) or not HASH.fullmatch(value):

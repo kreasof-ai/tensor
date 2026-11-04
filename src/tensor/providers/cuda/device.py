@@ -17,6 +17,7 @@ class Device(Session):
     device_type = 2
     error = CudaError
     capabilities = CAPABILITIES | {
+        "cuda_tensor_maps",
         "events",
         "async_launch",
         "external_streams",

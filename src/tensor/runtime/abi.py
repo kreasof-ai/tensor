@@ -44,7 +44,7 @@ CAPABILITIES = frozenset(
         "no_external_workspace",
     }
 )
-KNOWN_CAPABILITIES = CAPABILITIES | {"opaque_buffer_handles", "bfloat16_storage"}
+KNOWN_CAPABILITIES = CAPABILITIES | {"opaque_buffer_handles", "bfloat16_storage", "cuda_tensor_maps"}
 
 
 class BufferDescriptor(c.Structure):
@@ -204,9 +204,11 @@ class BoundCall:
             "abi", [dict(item, kind="buffer") for item in manifest["arguments"]]
         )
         self.storage = []
+        self._tensor_maps = {}
+        self._tensor_map_storage = []
         self.executable = executable
         self.arguments = (Argument * len(abi))()
-        for argument, descriptor in zip(self.arguments, abi):
+        for index, (argument, descriptor) in enumerate(zip(self.arguments, abi)):
             name, dtype = descriptor["name"], descriptor["dtype"]
             argument.dtype = DTYPES[dtype]
             if buffer_argument(descriptor):
@@ -214,6 +216,11 @@ class BoundCall:
                 self.storage.append(value)
                 argument.kind = 1
                 argument.buffer = value._descriptor
+                if name in manifest.get("cuda_tensor_maps", {}):
+                    from tensor.providers.cuda.tensor_map import encode
+                    storage, address = encode(device.driver, value, manifest["cuda_tensor_maps"][name])
+                    self._tensor_map_storage.append(storage)
+                    self._tensor_maps[index] = address
                 if "opaque_buffer_handles" in device.capabilities:
                     argument.kind = 3
                     argument.scalar = value._handle
@@ -256,12 +263,12 @@ class BoundCall:
     def cuda_parameters(self):
         return (c.c_void_p * len(self.arguments))(
             *(
-                c.addressof(arg)
+                self._tensor_maps[index] if index in self._tensor_maps else c.addressof(arg)
                 + (
                     Argument.buffer.offset + BufferDescriptor.address.offset
                     if arg.kind == 1
                     else Argument.scalar.offset
                 )
-                for arg in self.arguments
+                for index, arg in enumerate(self.arguments)
             )
         )
